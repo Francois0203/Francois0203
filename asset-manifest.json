@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/Francois0203/website/static/css/main.f855e6bc.css",
-    "main.js": "/Francois0203/website/static/js/main.00ebc40f.js",
-    "static/js/453.bb828c5d.chunk.js": "/Francois0203/website/static/js/453.bb828c5d.chunk.js",
-    "static/media/logo.svg": "/Francois0203/website/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/Francois0203/website/index.html",
-    "main.f855e6bc.css.map": "/Francois0203/website/static/css/main.f855e6bc.css.map",
-    "main.00ebc40f.js.map": "/Francois0203/website/static/js/main.00ebc40f.js.map",
-    "453.bb828c5d.chunk.js.map": "/Francois0203/website/static/js/453.bb828c5d.chunk.js.map"
+    "main.css": "/Francois0203/static/css/main.f855e6bc.css",
+    "main.js": "/Francois0203/static/js/main.0c2754e7.js",
+    "static/js/453.bb828c5d.chunk.js": "/Francois0203/static/js/453.bb828c5d.chunk.js",
+    "static/media/logo.svg": "/Francois0203/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/Francois0203/index.html",
+    "main.f855e6bc.css.map": "/Francois0203/static/css/main.f855e6bc.css.map",
+    "main.0c2754e7.js.map": "/Francois0203/static/js/main.0c2754e7.js.map",
+    "453.bb828c5d.chunk.js.map": "/Francois0203/static/js/453.bb828c5d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.00ebc40f.js"
+    "static/js/main.0c2754e7.js"
   ]
 }
