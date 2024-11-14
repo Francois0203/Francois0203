@@ -1,38 +1,140 @@
-.App {
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  --secondary-color: #800080; /* Set default secondary color */
+  --background-color: #fff; /* Default background color for light mode */
+}
+
+/* Heading Styles */
+h1 {
+  font-family: 'Lora', serif;
+  font-size: 2.5rem;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h2 {
+  font-family: 'Lora', serif;
+  font-size: 2rem;
+  text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+h3 {
+  font-family: 'Lora', serif;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Navbar Styles */
+.navbar {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 1rem;
+  background-color: var(--secondary-color);
+  font-size: 20px;
+}
+
+.navbar a {
   color: white;
+  text-decoration: none;
+  margin: 0 15px;
 }
 
-.App-link {
-  color: #61dafb;
+.navbar a:hover {
+  text-decoration: underline;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Button Styles */
+button {
+  padding: 10px;
+  margin-top: 20px;
+  background-color: var(--secondary-color);
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Theme Controls Styles */
+.theme-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px;
+  font-size: 18px;
+}
+
+.theme-slider {
+  width: 250px; /* Slider width */
+  height: 20px;
+  border-radius: 10px;
+  background: linear-gradient(to right, #fff, #ccc, #333);
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.theme-slider::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 10px;
+}
+
+.theme-slider::-webkit-slider-thumb {
+  width: 40px;  /* Adjusted thumb size to match slider height */
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);  /* Dynamic color */
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;  /* Smooth transition */
+}
+
+.theme-slider::-moz-range-track {
+  height: 10px;
+  border-radius: 10px;
+}
+
+.theme-slider::-moz-range-thumb {
+  width: 40px;  /* Adjusted thumb size to match slider height */
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);  /* Dynamic color */
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;  /* Smooth transition */
+}
+
+.color-picker {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background-color: var(--secondary-color);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.3s ease; /* Smooth transition for color changes */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    font-size: 16px;
+    flex-direction: column;
+    text-align: center;
   }
-  to {
-    transform: rotate(360deg);
+
+  .theme-controls {
+    flex-direction: column;
+    margin: 10px;
+  }
+
+  .theme-slider {
+    width: 120px; /* Smaller slider size for mobile */
   }
 }
