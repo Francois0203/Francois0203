@@ -1,0 +1,44 @@
+.themeSwitch {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.themeSwitch::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--secondary-bg-color);
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.3s ease;
+}
+
+.themeSwitch:hover::before {
+    transform: scale(1);
+}
+
+.themeSwitch:active {
+    transform: scale(0.9);
+}
+
+.icon {
+    color: var(--primary-text-color);
+    font-size: 1.3rem;
+    z-index: 1;
+    transition: transform 0.5s ease, color 0.3s ease;
+}
+
+.themeSwitch:hover .icon {
+    transform: rotate(360deg);
+}
