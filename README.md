@@ -31,12 +31,12 @@ Developing a Python-based digital correlator system for the Nooitgedacht Radio T
 
 ### **Full-Stack Software Engineer** | Aquatico
 Redesigning and rebuilding an enterprise-grade integrated management platform:
-- Laboratory Information Management System (LIMS)
-- Environmental Management System (EMS)
-- Project Management Module
-- Vehicle & Fleet Management
-- Field Sampling & Data Collection
-- Inventory Control System
+- **Laboratory Information Management System (LIMS)** — Variables, analysis packages, and laboratory workflows
+- **Employee Management System (EMS)** — Leave management, staff registration, and HR operations
+- **Reporting Management System** — Comprehensive reporting and analytics dashboard
+- **Project Management** — Project oversight, sampling schedules, and trip planning
+- **Vehicle Management System** — Fleet tracking, maintenance schedules, and vehicle checkups
+- **Financial Management** — Quote generation, purchase orders (POs), and financial operations
 
 **Stack:** React (Vanilla JS), PostgreSQL, Kubernetes, NGINX
 
