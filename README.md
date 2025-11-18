@@ -83,10 +83,32 @@ Pursuing opportunities in **data science** and **project management** — combin
 
 ---
 
+## 📊 GITHUB STATISTICS
+
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=Francois0203&show_icons=true&theme=radical&count_private=true&hide_border=true&bg_color=0D1117&title_color=6A1B9A&icon_color=6A1B9A&text_color=FFFFFF" alt="GitHub Stats" width="49%" />
+  <img src="https://github-readme-streak-stats.herokuapp.com?user=Francois0203&theme=radical&hide_border=true&background=0D1117&ring=6A1B9A&fire=6A1B9A&currStreakLabel=6A1B9A" width="49%" alt="GitHub Streak" />
+</div>
+
+<div align="center">
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Francois0203&layout=compact&theme=radical&hide_border=true&bg_color=0D1117&title_color=6A1B9A&text_color=FFFFFF&langs_count=8" alt="Top Languages" width="49%" />
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Francois0203&theme=react-dark&hide_border=true&bg_color=0D1117&color=6A1B9A&line=6A1B9A&point=FFFFFF" alt="Contribution Graph" width="49%" />
+</div>
+
+<p align="center">
+  <img src="https://github-profile-trophy.vercel.app/?username=Francois0203&theme=radical&no-frame=true&no-bg=true&margin-w=4&column=7" alt="GitHub Trophies" />
+</p>
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=Francois0203&color=6a1b9a&style=for-the-badge&label=PROFILE+VIEWS" alt="Profile Views" />
+</p>
+
+---
+
 <p align="center">
   <em>Available for consulting, collaboration, and career opportunities</em>
 </p>
 
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=Francois0203&color=6a1b9a&style=for-the-badge" alt="Profile Views" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=16&pause=1000&color=6A1B9A&center=true&vCenter=true&width=435&lines=Thanks+for+visiting!;Let's+build+something+amazing+together." alt="Footer" />
 </p>
