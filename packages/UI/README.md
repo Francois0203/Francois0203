@@ -1,6 +1,6 @@
 # @francois0203/ui
 
-A personal UI component library built with React.
+A personal UI component library.
 
 ## Installation
 
