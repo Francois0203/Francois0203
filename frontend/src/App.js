@@ -7,7 +7,7 @@ function App() {
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>Hello React</h1>
       <button onClick={() => setCount(count + 1)}>
-        You clicked {count} times
+        You clicked {count} times.
       </button>
     </div>
   );

@@ -24,6 +24,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          registry-url: "https://npm.pkg.github.com/"
+          scope: '@francois0203'
 
       - name: Install dependencies
         run: |
@@ -33,7 +35,7 @@ jobs:
       - name: Install UI package
         run: |
           cd frontend
-          npm install @francois0203/ui@latest --registry https://npm.pkg.github.com/
+          npm install @francois0203/ui@latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
