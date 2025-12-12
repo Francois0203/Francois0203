@@ -27,11 +27,14 @@ function App() {
 
 - ThemeSwitch
 - Error Boundary
+- Navigation Bar
+- Toast Notifications
+- Tooltip
 
 ## Hooks
 
 - useTheme
--useTooltip
+- useTooltip
 
 ## Styles
 
