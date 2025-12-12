@@ -59,4 +59,4 @@ These styles are imported globally and provide the foundation for all UI compone
 @import './styles/Components.css';
 ```
 
-The theme variables are automatically applied throughout the component library, ensuring consistent styling and easy customization.
+The theme variables are automatically applied throughout the component library, ensuring consistent styling and easy customisation.
