@@ -21,6 +21,8 @@ jobs:
           registry-url: https://npm.pkg.github.com/
       - name: Install dependencies
         run: cd packages/UI && npm ci
+      - name: Bump version
+        run: cd packages/UI && npm version patch --no-git-tag-version
       - name: Build package
         run: cd packages/UI && npm run build
       - name: Publish to GitHub Packages
