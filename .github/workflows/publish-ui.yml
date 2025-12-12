@@ -11,23 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Allows committing version bump
-      packages: admin  # Allows publishing and deleting packages
+      packages: write  # Allows publishing and deleting packages
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           registry-url: "https://npm.pkg.github.com/"
           scope: '@francois0203'
+          cache: 'npm'
+          cache-dependency-path: packages/UI/package-lock.json
 
       - name: Install dependencies
         run: |
           cd packages/UI
-          npm install
+          npm ci
 
       - name: Auto Bump Version
         run: |
@@ -35,7 +37,6 @@ jobs:
           npm version patch -m "chore: bump version to %s [skip ci]"
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git commit -am "chore: bump version"
           git push
 
       - name: Build package
@@ -58,17 +59,35 @@ jobs:
           PACKAGE_NAME=%40francois0203%2Fui
           PACKAGE_TYPE=npm
 
-          # Get package versions sorted by creation date (latest first)
-          versions=$(curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq -r 'if type == "array" then . else empty end | sort_by(.created_at) | reverse | .[].id')
+          # Get package versions (API returns latest first)
+          versions=$(curl -s -f -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq -r '.[] .id')
+
+          if [ $? -ne 0 ]; then
+            echo "Failed to fetch package versions"
+            exit 1
+          fi
+
+          # Count versions
+          version_count=$(echo "$versions" | wc -l)
+          echo "Found $version_count versions"
 
           # Delete all except the latest 2 versions
-          echo "$versions" | tail -n +3 | while read -r version; do
-            if [ -n "$version" ]; then
-              echo "Deleting version: $version"
-              curl -X DELETE -H "Authorization: token $GH_TOKEN" \
-                "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version"
-            fi
-          done
+          if [ "$version_count" -gt 2 ]; then
+            echo "$versions" | tail -n +3 | while read -r version; do
+              if [ -n "$version" ]; then
+                echo "Deleting version: $version"
+                response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: token $GH_TOKEN" \
+                  "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version")
+                if [ "$response" -eq 204 ]; then
+                  echo "Successfully deleted version $version"
+                else
+                  echo "Failed to delete version $version (HTTP $response)"
+                fi
+              fi
+            done
+          else
+            echo "No old versions to delete (keeping $version_count)"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
