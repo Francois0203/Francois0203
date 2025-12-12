@@ -31,11 +31,6 @@ jobs:
         run: |
           cd frontend
           npm install
-
-      - name: Install UI package
-        run: |
-          cd frontend
-          npm install @francois0203/ui@latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
