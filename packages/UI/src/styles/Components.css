@@ -802,7 +802,7 @@ meter::-webkit-meter-bar {
 }
 
 meter::-webkit-meter-optimum-value {
-    background: linear-gradient(90deg, var(--success-color), var(--success-bg-color));
+    background: linear-gradient(90deg, var(--primary-app-color), var(--primary-app-bg-color));
     border-radius: 8px;
     transition: width 0.3s ease;
 }

@@ -18,7 +18,7 @@
   "scripts": {
     "build": "babel src --out-dir dist && npm run copy-css",
     "copy-css": "copyfiles -u 1 'src/**/*.css' dist",
-    "storybook": "storybook dev -p 6007",
+    "storybook": "storybook dev -p 6006",
     "start": "npm run storybook",
     "start:storybook": "npm run storybook",
     "build-storybook": "storybook build"

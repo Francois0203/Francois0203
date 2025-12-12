@@ -17,16 +17,9 @@
     --tersiary-bg-light: #e5e7eb;
     --tersiary-bg-dark: #383a40;
 
-    --frosted-bg-light: rgba(255, 255, 255, 0.65);
-    --frosted-bg-dark: rgba(30, 31, 34, 0.7);
-    --disabled-bg-light: #e6e6e6aa;
-    --disabled-bg-dark: #4c4f557a;
-
     /* Text Colors */
     --primary-text-light: #000000;
     --primary-text-dark: #ffffff;
-    --secondary-text-light: #ffffff;
-    --secondary-text-dark: #000000;
     --disabled-text: #a0a0a0;
 
     /* ==================== DEFAULT COLORS (NORMAL VISION) ==================== */
@@ -37,8 +30,10 @@
     --info-color: #4fbeff;
 
     /* App Brand Colors */
-    --primary-app-color: #6bc5fa;
-    --secondary-app-color: #20fda1;
+    --primary-app-color-light: #6366f1;
+    --primary-app-color-dark: #a5b4fc;
+    --secondary-app-color-light: #06b6d4;
+    --secondary-app-color-dark: #67e8f9;
 
     /* Status Background Colors */
     --success-bg-color: #6eff6e9d;
@@ -47,30 +42,34 @@
     --info-bg-color: #4fbeff9d;
 
     /* App Background Colors */
-    --primary-app-bg-color: #64c6ff9d;
-    --secondary-app-bg-color: #20fda19d;
+    --primary-app-bg-color-light: #312e819d;
+    --primary-app-bg-color-dark: #4f46e59d;
+    --secondary-app-bg-color-light: #164e639d;
+    --secondary-app-bg-color-dark: #0891b29d;
 
     /* Applied Colors (Default Light Mode) */
+    --primary-app-color: var(--primary-app-color-light);
+    --secondary-app-color: var(--secondary-app-color-light);
     --primary-bg-color: var(--primary-bg-light);
     --secondary-bg-color: var(--secondary-bg-light);
     --tersiary-bg-color: var(--tersiary-bg-light);
-    --frosted-bg-color: var(--frosted-bg-light);
-    --disabled-bg-color: var(--disabled-bg-light);
     --primary-text-color: var(--primary-text-light);
-    --secondary-text-color: var(--secondary-text-light);
+    --primary-app-bg-color: var(--primary-app-bg-color-light);
+    --secondary-app-bg-color: var(--secondary-app-bg-color-light);
 }
 
 /* ==================== THEME OVERRIDES ==================== */
 
 /* Dark Theme */
 [data-theme="dark"] {
+    --primary-app-color: var(--primary-app-color-dark);
+    --secondary-app-color: var(--secondary-app-color-dark);
     --primary-bg-color: var(--primary-bg-dark);
     --secondary-bg-color: var(--secondary-bg-dark);
     --tersiary-bg-color: var(--tersiary-bg-dark);
-    --frosted-bg-color: var(--frosted-bg-dark);
-    --disabled-bg-color: var(--disabled-bg-dark);
     --primary-text-color: var(--primary-text-dark);
-    --secondary-text-color: var(--secondary-text-dark);
+    --primary-app-bg-color: var(--primary-app-bg-color-dark);
+    --secondary-app-bg-color: var(--secondary-app-bg-color-dark);
 }
 
 
