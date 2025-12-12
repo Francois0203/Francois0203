@@ -29,6 +29,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Delete old package versions
         run: |
-          gh api repos/$GITHUB_REPOSITORY/packages/npm/ui/versions --jq '.[2:] | .[].id' | xargs -I {} gh api repos/$GITHUB_REPOSITORY/packages/npm/ui/versions/{} -X DELETE
+          gh api repos/$GITHUB_REPOSITORY/packages/npm/francois0203%2Fui/versions --jq '.[2:] | .[].id' | xargs -I {} gh api repos/$GITHUB_REPOSITORY/packages/npm/francois0203%2Fui/versions/{} -X DELETE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
