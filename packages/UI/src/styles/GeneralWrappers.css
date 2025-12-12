@@ -1,0 +1,332 @@
+/* ===================== Input Container & Required Asterisk ==================== */
+.input-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: max-content;
+    overflow: visible;
+}
+.input-container > label {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: max-content;
+    padding-left: 0.6em;
+}
+.input-container:has(> input[required])::after,
+.input-container:has(> input.required)::after,
+.input-container:has(> select[required])::after,
+.input-container:has(> select.required)::after,
+.input-container:has(> textarea[required])::after,
+.input-container:has(> textarea.required)::after,
+.input-container:has(input[required])::after,
+.input-container:has(input.required)::after,
+.input-container:has(select[required])::after,
+.input-container:has(select.required)::after,
+.input-container:has(textarea[required])::after,
+.input-container:has(textarea.required)::after {
+    content: '*';
+    color: var(--error-color);
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1;
+    font-weight: bold;
+    font-size: var(--font-size-md);
+    pointer-events: none;
+}
+
+/* Hide the required asterisk only when a required control has a value (is valid).
+   Restrict the :valid check to controls with the `required` attribute */
+.input-container:has(> input[required]:valid)::after,
+.input-container:has(> textarea[required]:valid)::after,
+.input-container:has(> select[required]:valid)::after,
+.input-container:has(input[required]:valid)::after,
+.input-container:has(textarea[required]:valid)::after,
+.input-container:has(select[required]:valid)::after,
+.input-password-container:has(> input[required]:valid)::after,
+.input-password-container:has(> textarea[required]:valid)::after,
+.input-password-container:has(> select[required]:valid)::after,
+.input-password-container:has(input[required]:valid)::after,
+.input-password-container:has(textarea[required]:valid)::after,
+.input-password-container:has(select[required]:valid)::after {
+    content: none;
+    pointer-events: none;
+}
+
+
+/* ===================== Input Password Container & Eye ==================== */
+.input-password-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.input-password-container input[type="password"],
+.input-password-container input[type="text"] {
+    box-sizing: border-box;
+    padding-right: 2.5em;
+    width: 100%;
+}
+.input-password-container > label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+/* Show required asterisk on password containers (supports attribute or .required class) */
+.input-password-container {
+    /* keep position for the absolutely positioned asterisk */
+    position: relative;
+}
+.input-password-container > label {
+    /* align with the asterisk like other input containers */
+    padding-left: 0.6em;
+    width: max-content;
+}
+.input-password-container:has(> input[required])::after,
+.input-password-container:has(> input.required)::after,
+.input-password-container:has(> select[required])::after,
+.input-password-container:has(> select.required)::after,
+.input-password-container:has(> textarea[required])::after,
+.input-password-container:has(> textarea.required)::after,
+.input-password-container:has(input[required])::after,
+.input-password-container:has(input.required)::after,
+.input-password-container:has(select[required])::after,
+.input-password-container:has(select.required)::after,
+.input-password-container:has(textarea[required])::after,
+.input-password-container:has(textarea.required)::after {
+    content: '*';
+    color: var(--error-color);
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1;
+    font-weight: bold;
+    font-size: var(--font-size-md);
+    pointer-events: none;
+}
+
+.input-eye-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.input-password-eye {
+    position: absolute;
+    right: 0.75em;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    color: var(--disabled-text);
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    z-index: 2;
+    transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.input-password-eye:hover {
+    color: var(--primary-app-color);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+.input-password-eye:focus {
+    transform: translateY(-50%) !important;
+}
+
+
+/* ===================== Header ==================== */
+.header-wrapper {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: transparent !important;
+    box-shadow: 0 4px 24px 0 rgba(32,64,128,0.13), 0 1.5px 8px rgba(0,0,0,0.10);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border-bottom: 2px solid var(--primary-app-color);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: visible;
+    transition: background 0.3s, box-shadow 0.3s;
+    filter: drop-shadow(0 2px 16px rgba(47,209,163,0.08));
+}
+
+.header-main-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 0.8rem 0.2rem 0.8rem;
+    position: relative;
+    transition: padding 0.25s cubic-bezier(.4,2,.6,1), min-height 0.25s cubic-bezier(.4,2,.6,1);
+}
+
+.header-title {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    margin: 0;
+    padding: 0 0.7rem 0.1em 0.7rem;
+    flex: 1 1 auto;
+    text-align: center;
+    line-height: 1.15;
+    background: linear-gradient(to right, var(--primary-app-color), var(--secondary-app-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-emphasis-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(32,253,161,0.10)) drop-shadow(0 1px 4px rgba(76,195,255,0.10));
+    text-shadow:
+        0 1px 4px rgba(32,253,161,0.10),
+        0 1px 2px rgba(76,195,255,0.10);
+    transition: background 0.3s, filter 0.3s, font-size 0.25s cubic-bezier(.4,2,.6,1);
+    animation: headerTitlePop 1.2s cubic-bezier(.23,1.12,.32,1) 0.1s both;
+    box-sizing: border-box;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+@keyframes headerTitlePop {
+    0% {
+        letter-spacing: 0.5em;
+        opacity: 0;
+        filter: blur(8px);
+        transform: scale(0.95);
+    }
+    60% {
+        opacity: 1;
+        filter: blur(0.5px);
+        transform: scale(1.03);
+    }
+    100% {
+        letter-spacing: 0.09em;
+        opacity: 1;
+        filter: blur(0);
+        transform: scale(1);
+    }
+}
+
+
+/* ===================== Page & Page Content ==================== */
+html, body, #root {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  background:
+    linear-gradient(
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      var(--primary-bg-color) 0%,
+      var(--primary-bg-color) 25%,
+      var(--secondary-bg-color) 25%,
+      var(--secondary-bg-color) 50%
+    );
+  background-size: 200% 200%;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+
+.page {
+  width: 100vw;
+  height: calc(100vh - 60px);
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  max-width: 100vw !important;
+}
+
+
+/* ===================== Icons ==================== */
+
+.icon {
+    background-color: transparent;
+    cursor: pointer;
+    transition: transform 0.35s, background-color 0.35s, color 0.35s;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+}
+.icon:hover {
+    transform: scale(1.05);
+    color: var(--text-primary);
+}
+
+/* ----- General ----- */
+.generalIcon {
+    color: var(--primary-app-color);
+}
+.generalIcon:hover {
+    background-color: var(--primary-app-bg-color);
+}
+
+/* ----- Trash ----- */
+.trashIcon {
+    color: var(--error-color);
+}
+.trashIcon:hover {
+    background-color: var(--error-color);
+}
+
+/* ----- Plus ----- */
+.plusIcon {
+    color: var(--success-color);
+}
+.plusIcon:hover {
+    background-color: var(--success-color);
+}
+
+/* ----- Revert ----- */
+.revertIcon {
+    color: var(--warning-color);
+}
+.revertIcon:hover {
+    background-color: var(--warning-color);
+    transform: rotate(-360);
+}
+
+/* ----- Close ----- */
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--disabled-text);
+  cursor: pointer;
+  transition: color 0.18s;
+}
+.closeButton:hover {
+  color: var(--error-color);
+}

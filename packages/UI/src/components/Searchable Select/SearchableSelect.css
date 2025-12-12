@@ -1,0 +1,5 @@
+.searchable-select__input input,
+.searchable-select__control input,
+.searchable-select__control .css-1wa3eu0-ValueContainer {
+  box-shadow: none !important;
+}

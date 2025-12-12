@@ -1,0 +1,171 @@
+.tooltip {
+  position: fixed;
+  background: var(--secondary-bg-color);
+  color: var(--primary-text-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  border: 1px solid var(--primary-app-color);
+  padding: 12px 16px;
+  z-index: 999999;
+  pointer-events: none;
+  white-space: pre-line;
+  max-width: min(320px, calc(100vw - 24px));
+  min-width: 180px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  backdrop-filter: blur(8px);
+
+  opacity: 0;
+  transform: translateY(12px) scale(0.7) rotate(-6deg);
+  transition: 
+    opacity 0.18s cubic-bezier(.4,1.7,.6,1.2),
+    transform 0.22s cubic-bezier(.2,1.8,.4,1.1);
+  will-change: opacity, transform;
+}
+
+/* Enter animation (popup) */
+.tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1) rotate(0deg);
+}
+
+/* Exit animation (pop-out) */
+.tooltip.exit {
+  opacity: 0;
+  transform: translateY(12px) scale(0.7) rotate(-6deg);
+}
+
+/* Placement-specific transforms for initial state */
+.tooltip.right {
+  transform: translateX(-8px) scale(0.95);
+}
+
+.tooltip.left {
+  transform: translateX(8px) scale(0.95);
+}
+
+.tooltip.bottom {
+  transform: translateY(-8px) scale(0.95);
+}
+
+.tooltip.top {
+  transform: translateY(8px) scale(0.95);
+}
+
+/* Placement-specific transforms for visible state */
+.tooltip.right.visible {
+  transform: translateX(0) scale(1);
+}
+
+.tooltip.left.visible {
+  transform: translateX(0) scale(1);
+}
+
+.tooltip.bottom.visible {
+  transform: translateY(0) scale(1);
+}
+
+.tooltip.top.visible {
+  transform: translateY(0) scale(1);
+}
+
+/* Tooltip content styling */
+.heading {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+  color: var(--primary-app-color);
+  font-size: 0.95rem;
+}
+
+.body {
+  font-weight: 400;
+  color: var(--primary-text-color);
+  opacity: 0.9;
+}
+
+/* Tooltip arrows */
+.tooltip::after {
+  content: '';
+  position: absolute;
+  border: 6px solid transparent;
+}
+
+.tooltip.top::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--secondary-bg-color);
+}
+
+.tooltip.bottom::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--secondary-bg-color);
+}
+
+.tooltip.left::after {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: var(--secondary-bg-color);
+}
+
+.tooltip.right::after {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: var(--secondary-bg-color);
+}
+
+/* Arrow borders for better visibility */
+.tooltip::before {
+  content: '';
+  position: absolute;
+  border: 7px solid transparent;
+}
+
+.tooltip.top::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--primary-app-color);
+}
+
+.tooltip.bottom::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--primary-app-color);
+}
+
+.tooltip.left::before {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: var(--primary-app-color);
+}
+
+.tooltip.right::before {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: var(--primary-app-color);
+}
+
+/* Trigger element styling */
+.trigger {
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.trigger:hover {
+  opacity: 0.8;
+}
+
+.trigger:focus {
+  outline: 2px solid var(--primary-app-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

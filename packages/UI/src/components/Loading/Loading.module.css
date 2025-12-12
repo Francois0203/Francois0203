@@ -1,0 +1,78 @@
+.loadingScreenWrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+			background: rgba(121, 121, 121, 0.1);
+			backdrop-filter: blur(3px);
+			-webkit-backdrop-filter: blur(3px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+	transition: background 0.3s;
+}
+
+.loaderContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	padding: 2.5rem 3rem;
+	border-radius: 2rem;
+	background: rgba(255,255,255,0.15);
+	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+	backdrop-filter: blur(8px);
+}
+
+.loader {
+	display: flex;
+	gap: 1.2rem;
+	align-items: center;
+	justify-content: center;
+}
+
+.dot {
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--primary-app-color), var(--secondary-app-color));
+	box-shadow: 0 0 16px var(--primary-app-color), 0 0 32px var(--secondary-app-color);
+	animation: bounce 1.2s infinite cubic-bezier(.68,-0.55,.27,1.55);
+}
+.dot:nth-child(2) {
+	animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+	animation-delay: 0.4s;
+}
+.dot:nth-child(4) {
+	animation-delay: 0.6s;
+}
+
+@keyframes bounce {
+	0%, 100% {
+		transform: translateY(0) scale(1);
+		filter: brightness(1);
+	}
+	30% {
+		transform: translateY(-1.5rem) scale(1.15);
+		filter: brightness(1.2);
+	}
+	60% {
+		transform: translateY(0.5rem) scale(0.95);
+		filter: brightness(0.9);
+	}
+}
+
+.loadingText {
+	color: var(--primary-text-color);
+	font-size: var(--font-size-xl);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-shadow: 0 2px 8px var(--primary-app-bg-color);
+	text-align: center;
+	user-select: none;
+	font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
