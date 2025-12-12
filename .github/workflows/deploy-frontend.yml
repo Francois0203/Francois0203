@@ -37,7 +37,7 @@ jobs:
           cd frontend
           npm install @francois0203/ui@latest
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build
         run: |
