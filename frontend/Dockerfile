@@ -3,21 +3,7 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Set npm config for GitHub Packages
-ARG NODE_AUTH_TOKEN
-RUN npm config set @francois0203:registry https://npm.pkg.github.com/
-RUN npm config set //npm.pkg.github.com/:_authToken ${NODE_AUTH_TOKEN}
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Install UI package
-RUN npm install @francois0203/ui@latest
-
-# Copy source code
+# Copy all files (including installed node_modules)
 COPY . .
 
 # Build the app
