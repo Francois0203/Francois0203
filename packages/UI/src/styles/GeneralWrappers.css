@@ -244,23 +244,6 @@ html, body, #root {
   background-blend-mode: overlay;
 }
 
-.page {
-  width: 100vw;
-  height: calc(100vh - 60px);
-  max-width: 100vw;
-  display: flex;
-  flex-direction: column;
-}
-
-.page-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  height: 100%;
-  max-width: 100vw !important;
-}
-
 
 /* ===================== Icons ==================== */
 
@@ -304,15 +287,6 @@ html, body, #root {
 }
 .plusIcon:hover {
     background-color: var(--success-color);
-}
-
-/* ----- Revert ----- */
-.revertIcon {
-    color: var(--warning-color);
-}
-.revertIcon:hover {
-    background-color: var(--warning-color);
-    transform: rotate(-360);
 }
 
 /* ----- Close ----- */

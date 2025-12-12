@@ -2,8 +2,7 @@ name: Publish UI Package to GitHub Packages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'packages/UI/**'
 
@@ -11,21 +10,63 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write  # Allows committing version bump
+      packages: write  # Allows publishing and deleting packages
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
-          registry-url: https://npm.pkg.github.com/
+          registry-url: "https://npm.pkg.github.com/"
+          scope: '@francois0203'
+
       - name: Install dependencies
-        run: cd packages/UI && npm ci
-      - name: Bump version
-        run: cd packages/UI && npm version patch --no-git-tag-version
+        run: |
+          cd packages/UI
+          npm install
+
+      - name: Auto Bump Version
+        run: |
+          cd packages/UI
+          npm version patch -m "chore: bump version to %s [skip ci]"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git commit -am "chore: bump version"
+          git push
+
       - name: Build package
-        run: cd packages/UI && npm run build
+        run: |
+          cd packages/UI
+          npm run build
+
       - name: Publish to GitHub Packages
-        run: cd packages/UI && npm publish
+        run: |
+          cd packages/UI
+          npm publish --access restricted
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete Old Versions (Keep Latest 2)
+        run: |
+          GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          OWNER=Francois0203
+          REPO=Francois0203
+          PACKAGE_NAME=%40francois0203%2Fui
+          PACKAGE_TYPE=npm
+
+          # Get package versions sorted by creation date (latest first)
+          versions=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq 'sort_by(.created_at) | reverse | .[].id')
+
+          # Delete all except the latest 2 versions
+          echo "$versions" | tail -n +3 | while read -r version; do
+            echo "Deleting version: $version"
+            curl -X DELETE -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version"
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
