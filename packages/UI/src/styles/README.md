@@ -45,7 +45,6 @@ Defines the CSS custom properties (variables) for the theming system.
 - Text color variables
 - Border and shadow definitions
 - Animation and transition settings
-- Color blindness simulation support
 - Responsive breakpoint variables
 
 ## Usage
