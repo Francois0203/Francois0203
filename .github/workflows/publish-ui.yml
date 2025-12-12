@@ -33,10 +33,10 @@ jobs:
 
       - name: Auto Bump Version
         run: |
-          cd packages/UI
-          npm version patch -m "chore: bump version to %s [skip ci]"
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          cd packages/UI
+          npm version patch -m "chore: bump version to %s [skip ci]"
           git push
 
       - name: Build package
