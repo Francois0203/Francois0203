@@ -31,6 +31,7 @@ function App() {
 ## Hooks
 
 - useTheme
+-useTooltip
 
 ## Styles
 
