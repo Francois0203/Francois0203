@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ThemeSwitch } from '../../../src';
+import React from 'react';
+import { ThemeSwitch, useTheme } from '../../../src';
 
 export default {
   title: 'Components/ThemeSwitch',
@@ -7,7 +7,6 @@ export default {
 };
 
 export const Default = () => {
-  const [theme, setTheme] = useState('light');
-  const toggleTheme = () => setTheme(theme === 'light' ? 'dark' : 'light');
+  const { theme, toggleTheme } = useTheme();
   return <ThemeSwitch theme={theme} toggleTheme={toggleTheme} />;
 };
