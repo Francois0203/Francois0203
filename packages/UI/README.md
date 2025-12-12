@@ -46,7 +46,9 @@ function App() {
 
 ## Styles
 
-Import the CSS files as needed.
+- Theme.css
+- Components.css
+- GeneralWrappers.css
 
 ```js
 import '@francois0203/ui/dist/styles/Theme.css';

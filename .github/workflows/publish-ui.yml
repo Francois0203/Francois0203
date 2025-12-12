@@ -53,18 +53,18 @@ jobs:
         run: |
           GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
           OWNER=Francois0203
-          PACKAGE_NAME=UI
+          PACKAGE_NAME=ui
           PACKAGE_TYPE=npm
 
           # Get package versions sorted by creation date (latest first)
           versions=$(curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/orgs/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq 'sort_by(.created_at) | reverse | .[].id')
+            "https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq 'sort_by(.created_at) | reverse | .[].id')
 
           # Delete all except the latest 2 versions
           echo "$versions" | tail -n +3 | while read -r version; do
             echo "Deleting version: $version"
             curl -X DELETE -H "Authorization: token $GH_TOKEN" \
-              "https://api.github.com/orgs/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version"
+              "https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version"
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
