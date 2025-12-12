@@ -12,8 +12,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Francois0203/packages.git",
-    "directory": "UI"
+    "url": "https://github.com/Francois0203/Francois0203.git",
+    "directory": "packages/UI"
   },
   "scripts": {
     "build": "babel src --out-dir dist && npm run copy-css",

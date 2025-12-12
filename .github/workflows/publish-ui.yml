@@ -61,7 +61,7 @@ jobs:
 
           # Get package versions (API returns latest first)
           versions=$(curl -s -f -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq -r '.[] .id')
+            "https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq -r '.[] .id')
 
           if [ $? -ne 0 ]; then
             echo "Failed to fetch package versions"
@@ -78,7 +78,7 @@ jobs:
               if [ -n "$version" ]; then
                 echo "Deleting version: $version"
                 response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: token $GH_TOKEN" \
-                  "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version")
+                  "https://api.github.com/users/$OWNER/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version")
                 if [ "$response" -eq 204 ]; then
                   echo "Successfully deleted version $version"
                 else
