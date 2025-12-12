@@ -23,6 +23,10 @@ function App() {
 }
 ```
 
+## Pages
+
+- Not Found
+
 ## Components
 
 - ThemeSwitch
@@ -30,11 +34,15 @@ function App() {
 - Navigation Bar
 - Toast Notifications
 - Tooltip
+- Loading
+- Modal
+- Searchable Select
 
 ## Hooks
 
 - useTheme
 - useTooltip
+- useAnimations
 
 ## Styles
 

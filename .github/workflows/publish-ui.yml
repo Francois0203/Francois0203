@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Allows committing version bump
-      packages: write  # Allows publishing and deleting packages
+      packages: admin  # Allows publishing and deleting packages
 
     steps:
       - name: Checkout code
