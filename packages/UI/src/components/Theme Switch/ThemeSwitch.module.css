@@ -1,6 +1,6 @@
 .theme-switch {
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
   outline: none;
   cursor: pointer;
   border-radius: 40%;
