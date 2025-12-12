@@ -26,6 +26,7 @@ function App() {
 ## Components
 
 - ThemeSwitch
+- Error Boundary
 
 ## Hooks
 

@@ -60,13 +60,15 @@ jobs:
 
           # Get package versions sorted by creation date (latest first)
           versions=$(curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq 'sort_by(.created_at) | reverse | .[].id')
+            "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions" | jq -r 'if type == "array" then . else empty end | sort_by(.created_at) | reverse | .[].id')
 
           # Delete all except the latest 2 versions
           echo "$versions" | tail -n +3 | while read -r version; do
-            echo "Deleting version: $version"
-            curl -X DELETE -H "Authorization: token $GH_TOKEN" \
-              "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version"
+            if [ -n "$version" ]; then
+              echo "Deleting version: $version"
+              curl -X DELETE -H "Authorization: token $GH_TOKEN" \
+                "https://api.github.com/repos/$OWNER/$REPO/packages/$PACKAGE_TYPE/$PACKAGE_NAME/versions/$version"
+            fi
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
