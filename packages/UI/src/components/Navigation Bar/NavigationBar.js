@@ -1,14 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Home, Waypoints } from 'lucide-react';
+import { GiShield, GiChestArmor, GiBootKick, GiBeltArmor, GiHelmet, GiSwordsEmblem, GiHolyHandGrenade } from 'react-icons/gi';
 
 /* Styling */
 import styles from "./NavigationBar.module.css";
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
+
+// The 7 pieces of Armor of God with corresponding icons
+const ARMOR_OF_GOD = [
+  { icon: GiBeltArmor, name: "Belt of Truth", description: "Stand firm with truth" },
+  { icon: GiChestArmor, name: "Breastplate of Righteousness", description: "Protected by righteousness" },
+  { icon: GiBootKick, name: "Shoes of Peace", description: "Walk in peace" },
+  { icon: GiShield, name: "Shield of Faith", description: "Faith protects us" },
+  { icon: GiHelmet, name: "Helmet of Salvation", description: "Salvation guards our minds" },
+  { icon: GiSwordsEmblem, name: "Sword of the Spirit", description: "The Word of God" },
+  { icon: GiHolyHandGrenade, name: "Prayer", description: "Pray in the Spirit" }
+];
 
 /**
- * Modern NavigationBar component - Click to open dropdown with hover submenus
+ * Christian-themed NavigationBar with burger menu icon
+ * Features the 7 pieces of Armor of God as navigation links
  */
 const NavigationBar = function NavigationBar({ 
   links, 
@@ -17,78 +29,33 @@ const NavigationBar = function NavigationBar({
   className = ""
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hoveredMain, setHoveredMain] = useState(null);
+  const [hoveredLink, setHoveredLink] = useState(null);
   const wrapperRef = useRef();
-  const hoverTimeouts = useRef({});
+  const menuRef = useRef();
 
-  // Clear all hover timeouts
-  const clearAllTimeouts = () => {
-    Object.values(hoverTimeouts.current).forEach(timeout => {
-      if (timeout) clearTimeout(timeout);
-    });
-    hoverTimeouts.current = {};
-  };
-
-  // Handle burger menu click - toggle open/close
+  // Handle burger button click - toggle open/close
   const handleBurgerClick = () => {
     setMenuOpen(prev => !prev);
-    if (menuOpen) {
-      setHoveredMain(null);
-    }
   };
 
-  // Handle main link interactions
-  const handleMainClick = (link, index) => {
-    if (link.subLinks) {
-      // If it has sublinks, toggle the submenu for mobile
-      if (window.innerWidth <= 768) {
-        setHoveredMain(hoveredMain === index ? null : index);
-      }
-    } else {
-      // If no sublinks, navigate directly
-      if (link.onClick) link.onClick();
-      if (link.to) onNavigate(link.to);
-      setMenuOpen(false);
-      setHoveredMain(null);
-    }
-  };
-
-  // Handle sublink clicks
-  const handleSubClick = (subLink) => {
-    if (subLink.onClick) subLink.onClick();
-    if (subLink.to) onNavigate(subLink.to);
+  // Handle link click
+  const handleLinkClick = (link, index) => {
+    if (link.onClick) link.onClick();
+    if (link.to) onNavigate(link.to);
     setMenuOpen(false);
-    setHoveredMain(null);
+    setHoveredLink(null);
   };
 
-  // Handle mouse enter on main links (for desktop hover)
-  const handleMainHover = (index) => {
-    if (window.innerWidth > 768) { // Only on desktop
-      clearAllTimeouts();
-      setHoveredMain(index);
-    }
-  };
-
-  // Handle mouse leave on main links
-  const handleMainLeave = () => {
-    if (window.innerWidth > 768) { // Only on desktop
-      hoverTimeouts.current.submenu = setTimeout(() => {
-        setHoveredMain(null);
-      }, 200);
-    }
-  };
-
-  // Handle dropdown hover to keep it open
-  const handleDropdownHover = () => {
-    clearAllTimeouts();
-  };
-
-  // Close menu when clicking outside
+  // Close menu when clicking outside of button or menu
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+      // Check if click is outside both the wrapper (button) and menu
+      const clickedOutsideWrapper = wrapperRef.current && !wrapperRef.current.contains(event.target);
+      const clickedOutsideMenu = menuRef.current && !menuRef.current.contains(event.target);
+      
+      if (clickedOutsideWrapper && clickedOutsideMenu) {
         setMenuOpen(false);
-        setHoveredMain(null);
+        setHoveredLink(null);
       }
     };
 
@@ -98,7 +65,6 @@ const NavigationBar = function NavigationBar({
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      clearAllTimeouts();
     };
   }, [menuOpen]);
 
@@ -107,7 +73,7 @@ const NavigationBar = function NavigationBar({
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
         setMenuOpen(false);
-        setHoveredMain(null);
+        setHoveredLink(null);
       }
     };
 
@@ -117,11 +83,10 @@ const NavigationBar = function NavigationBar({
 
   return (
     <nav 
-      className={`${styles.navbar} ${className}`} 
-      ref={wrapperRef}
+      className={`${styles.navbar} ${className}`}
     >
-      {/* Burger Button */}
-      <div className={styles.burgerRow}>
+      {/* Burger Menu Button */}
+      <div className={styles.burgerRow} ref={wrapperRef}>
         <button
           className={`${styles.burger} ${menuOpen ? styles.burgerOpen : ""}`}
           aria-label="Toggle navigation menu"
@@ -135,9 +100,10 @@ const NavigationBar = function NavigationBar({
             minHeight: burgerSize,
           }}
         >
-          <span className={styles.burgerBar}></span>
-          <span className={styles.burgerBar}></span>
-          <span className={styles.burgerBar}></span>
+          {/* Burger Lines */}
+          <span className={styles.burgerLine}></span>
+          <span className={styles.burgerLine}></span>
+          <span className={styles.burgerLine}></span>
         </button>
       </div>
 
@@ -145,81 +111,53 @@ const NavigationBar = function NavigationBar({
       {menuOpen && (
         <div 
           className={`${styles.menuDropdown} ${styles.menuDropdownOpen}`}
-          onMouseEnter={handleDropdownHover}
+          ref={menuRef}
         >
+          {/* Armor of God background decorations */}
+          <div className={styles.armorBackground}>
+            {ARMOR_OF_GOD.map((armor, index) => {
+              const ArmorIcon = armor.icon;
+              return (
+                <div 
+                  key={`armor-bg-${index}`} 
+                  className={styles.armorIconBg}
+                  style={{ '--armor-index': index }}
+                >
+                  <ArmorIcon />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Main Navigation Links - Vertical */}
           <ul className={styles.mainLinks}>
-            {/* Render Home and Hub as standalone icons outside mainLink */}
-            {links.map((link, index) => {
-              if (link.label === 'Home') {
-                return (
-                  <li key="nav-home-icon" className={styles.iconStandaloneItem}>
-                    <button
-                      className={styles.iconStandalone}
-                      title="Home"
-                      onClick={() => handleMainClick(link, index)}
-                      type="button"
-                    >
-                      <Home size={22} />
-                    </button>
-                  </li>
-                );
-              }
-              if (link.label === 'Hub') {
-                return (
-                  <li key="nav-hub-icon" className={styles.iconStandaloneItem}>
-                    <button
-                      className={styles.iconStandalone}
-                      title="Hub"
-                      onClick={() => handleMainClick(link, index)}
-                      type="button"
-                    >
-                      <Waypoints size={20} />
-                    </button>
-                  </li>
-                );
-              }
-              // Render normal nav links
+            {links.slice(0, 7).map((link, index) => {
+              const ArmorIcon = ARMOR_OF_GOD[index]?.icon || GiShield;
+              const armorPiece = ARMOR_OF_GOD[index];
+              
               return (
                 <li 
                   key={`${link.label}-${index}`} 
                   className={styles.mainLinkItem}
-                  onMouseEnter={() => handleMainHover(index)}
-                  onMouseLeave={handleMainLeave}
+                  onMouseEnter={() => setHoveredLink(index)}
+                  onMouseLeave={() => setHoveredLink(null)}
                 >
                   <button
-                    className={`${styles.mainLink} ${hoveredMain === index ? styles.mainLinkHovered : ""}`}
-                    onClick={() => handleMainClick(link, index)}
-                    aria-expanded={link.subLinks ? hoveredMain === index : undefined}
+                    className={`${styles.mainLink} ${hoveredLink === index ? styles.mainLinkHovered : ""}`}
+                    onClick={() => handleLinkClick(link, index)}
+                    type="button"
+                    title={armorPiece?.description}
                   >
-                    <span className={styles.mainLinkText}>{link.label}</span>
-                    {link.subLinks && (
-                      <span className={`${styles.dropdownIcon} ${hoveredMain === index ? styles.dropdownIconOpen : ""}`}>
-                        ▼
-                      </span>
-                    )}
+                    <span className={styles.armorIcon}>
+                      <ArmorIcon />
+                    </span>
+                    <span className={styles.linkContent}>
+                      <span className={styles.mainLinkText}>{link.label}</span>
+                      {armorPiece && (
+                        <span className={styles.armorName}>{armorPiece.name}</span>
+                      )}
+                    </span>
                   </button>
-                  {/* Sublinks Dropdown */}
-                  {link.subLinks && hoveredMain === index && (
-                    <div 
-                      className={`${styles.subDropdown} ${styles.subDropdownOpen}`}
-                      onMouseEnter={handleDropdownHover}
-                    >
-                      <ul className={styles.subLinks}>
-                        {[...link.subLinks]
-                          .sort((a, b) => a.label.localeCompare(b.label))
-                          .map((subLink, subIndex) => (
-                            <li key={`${subLink.label}-${subIndex}`} className={styles.subLinkItem}>
-                              <button
-                                className={styles.subLink}
-                                onClick={() => handleSubClick(subLink)}
-                              >
-                                {subLink.label}
-                              </button>
-                            </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                 </li>
               );
             })}

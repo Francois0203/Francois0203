@@ -7,7 +7,7 @@ import { useTooltip } from '../../hooks';
 import styles from './Tooltip.module.css';
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
 
 const Tooltip = ({
   children,

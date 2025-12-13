@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 /* Styling */
 import styles from './Modal.module.css';
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
 
 const Modal = ({ open, onClose, children, title }) => {
   useEffect(() => {
@@ -35,15 +36,12 @@ const Modal = ({ open, onClose, children, title }) => {
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.content} style={{ position: 'relative' }}>
-        <button
-          className="closeButton"
+        <X 
+          className={styles.closeIcon}
           onClick={onClose}
           title="Close"
           aria-label="Close"
-          style={{ position: 'absolute', top: '-20px', right: '-20px', zIndex: 10 }}
-        >
-          &times;
-        </button>
+        />
         {title && <div className={styles.modalTitle}>{title}</div>}
         {children}
       </div>

@@ -3,7 +3,7 @@ import React, { useEffect, useState, memo, useCallback } from "react";
 import styles from "./ToastNotification.module.css";
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
 
 const ToastNotification = memo(({ id, type = "info", title, message, errorCode, onClose }) => {
   const [isClosing, setIsClosing] = useState(false);

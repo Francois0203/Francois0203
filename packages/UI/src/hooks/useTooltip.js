@@ -2,14 +2,11 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 import styles from '../components/Tooltip/Tooltip.module.css';
-import '../styles/Theme.css';
-import '../styles/Components.css';
-import '../styles/GeneralWrappers.css';
 
 export const useTooltip = () => {
-  const [isVisible, setIsVisible] = useState(false);   // tooltip mounted
-  const [isAnimatingIn, setIsAnimatingIn] = useState(false); // entrance animation
-  const [isExiting, setIsExiting] = useState(false);   // leaving animation
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimatingIn, setIsAnimatingIn] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [placement, setPlacement] = useState('right');
   const triggerRef = useRef(null);
@@ -59,7 +56,6 @@ export const useTooltip = () => {
   const showTooltip = useCallback(() => {
     setIsExiting(false);
     setIsVisible(true);
-    // Small delay to ensure the tooltip is mounted before animating in
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setIsAnimatingIn(true);
@@ -70,7 +66,6 @@ export const useTooltip = () => {
   const hideTooltip = useCallback(() => {
     setIsAnimatingIn(false);
     setIsExiting(true);
-    // Match CSS exit animation duration (220ms)
     setTimeout(() => {
       setIsVisible(false);
       setIsExiting(false);

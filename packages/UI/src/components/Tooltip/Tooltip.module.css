@@ -1,10 +1,10 @@
 .tooltip {
   position: fixed;
-  background: var(--secondary-bg-color);
+  background: var(--background-2);
   color: var(--primary-text-color);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.12);
   border-radius: 8px;
-  border: 1px solid var(--primary-app-color);
+  border: 1px solid var(--accent-1);
   padding: 12px 16px;
   z-index: 999999;
   pointer-events: none;
@@ -74,7 +74,7 @@
   font-weight: 600;
   display: block;
   margin-bottom: 6px;
-  color: var(--primary-app-color);
+  color: var(--accent-1);
   font-size: 0.95rem;
 }
 
@@ -95,28 +95,28 @@
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-top-color: var(--secondary-bg-color);
+  border-top-color: var(--background-2);
 }
 
 .tooltip.bottom::after {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-bottom-color: var(--secondary-bg-color);
+  border-bottom-color: var(--background-2);
 }
 
 .tooltip.left::after {
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  border-left-color: var(--secondary-bg-color);
+  border-left-color: var(--background-2);
 }
 
 .tooltip.right::after {
   right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  border-right-color: var(--secondary-bg-color);
+  border-right-color: var(--background-2);
 }
 
 /* Arrow borders for better visibility */
@@ -130,28 +130,28 @@
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-top-color: var(--primary-app-color);
+  border-top-color: var(--accent-1);
 }
 
 .tooltip.bottom::before {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-bottom-color: var(--primary-app-color);
+  border-bottom-color: var(--accent-1);
 }
 
 .tooltip.left::before {
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  border-left-color: var(--primary-app-color);
+  border-left-color: var(--accent-1);
 }
 
 .tooltip.right::before {
   right: 100%;
   top: 50%;
   transform: translateY(-50%);
-  border-right-color: var(--primary-app-color);
+  border-right-color: var(--accent-1);
 }
 
 /* Trigger element styling */
@@ -165,7 +165,7 @@
 }
 
 .trigger:focus {
-  outline: 2px solid var(--primary-app-color);
+  outline: 2px solid var(--accent-1);
   outline-offset: 2px;
   border-radius: 2px;
 }

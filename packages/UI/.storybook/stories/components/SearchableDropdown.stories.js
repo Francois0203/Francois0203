@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { SearchableSelect } from '../../../src';
+import { SearchableDropdown } from '../../../src';
 
 export default {
-  title: 'Components/SearchableSelect',
-  component: SearchableSelect,
+  title: 'Components/Searchable Dropdown',
+  component: SearchableDropdown,
 };
 
 const options = [
@@ -17,7 +17,7 @@ export const Default = () => {
   return (
     <div className="input-container">
       <label>Select an option</label>
-      <SearchableSelect
+      <SearchableDropdown
         options={options}
         value={value}
         onChange={setValue}

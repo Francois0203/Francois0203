@@ -1,3 +1,4 @@
+/* ==================== NAVIGATION BAR ==================== */
 .navbar {
   position: relative;
   z-index: 300;
@@ -14,6 +15,7 @@
   box-sizing: border-box;
 }
 
+/* ==================== BURGER MENU BUTTON ==================== */
 .burger {
   width: 100%;
   height: 100%;
@@ -27,36 +29,15 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 6px;
   outline: none;
-  border-radius: 4px;
   position: relative;
-  transition: transform 0.2s cubic-bezier(.4,2,.6,1);
+  transition: transform 0.3s ease;
   box-sizing: border-box;
   overflow: visible;
   margin: 0;
-}
-
-/* Flying circle that appears when open */
-.burger::after {
-  content: "";
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: var(--primary-app-color);
-  border-radius: 50%;
-  right: 0px;
-  top: 50%;
-  transform: translateY(-50%) translateX(25px);
-  opacity: 0;
-  transition: all 0.6s cubic-bezier(.68,-0.55,.27,1.55);
-  box-shadow: 0 2px 6px rgba(47,209,163,0.3);
-}
-
-.burgerOpen::after {
-  transform: translateY(-50%) translateX(0);
-  opacity: 1;
 }
 
 .burger:hover {
@@ -67,75 +48,66 @@
   transform: scale(0.95);
 }
 
-.burgerBar {
-  display: block;
+/* Burger Lines */
+.burgerLine {
+  width: 28px;
   height: 3px;
-  width: 90%;
-  background: var(--primary-app-color);
-  transition: all 0.7s cubic-bezier(.68,-0.55,.27,1.55);
-  border-radius: 1.5px;
-  box-sizing: border-box;
-  margin: 0;
-  box-shadow: 0 1px 4px rgba(47,209,163,0.13);
-  transform-origin: center;
+  background-color: var(--accent-1);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  display: block;
 }
 
-.burgerBar:nth-child(1) {
-  transition-delay: 0s;
+.burger:hover .burgerLine {
+  background-color: var(--accent-2);
+  box-shadow: 0 0 8px var(--accent-2);
 }
 
-.burgerBar:nth-child(2) {
-  transition-delay: 0.1s;
+/* Open state - transform to X */
+.burgerOpen .burgerLine:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
 }
 
-.burgerBar:nth-child(3) {
-  transition-delay: 0s;
-}
-
-.burgerOpen .burgerBar:nth-child(1) {
-  transform: translateY(2px) translateX(-6px) rotate(-45deg) scaleX(0.7);
-  transform-origin: left center;
-  transition: all 0.7s cubic-bezier(.68,-0.55,.27,1.55);
-}
-
-.burgerOpen .burgerBar:nth-child(2) {
+.burgerOpen .burgerLine:nth-child(2) {
   opacity: 0;
-  transform: scaleX(0);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(-20px);
 }
 
-.burgerOpen .burgerBar:nth-child(3) {
-  transform: translateY(-2px) translateX(-6px) rotate(45deg) scaleX(0.7);
-  transform-origin: left center;
-  transition: all 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+.burgerOpen .burgerLine:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
 }
 
+/* ==================== ANIMATIONS ==================== */
+
+/* ==================== MENU DROPDOWN ==================== */
 .menuDropdown {
   position: absolute;
   top: 100%;
   left: 0;
-  min-width: max-content;
-  max-width: 90vw;
-  background: linear-gradient(135deg, 
-    var(--secondary-bg-color) 0%, 
-    var(--primary-bg-color) 100%);
-  backdrop-filter: blur(12px) saturate(1.2);
-  border: 3px solid var(--primary-app-color);
-  border-radius: 12px;
+  min-width: 320px;
+  max-width: 420px;
+  background: linear-gradient(145deg, 
+    var(--background-1) 0%, 
+    var(--background-2) 100%);
+  backdrop-filter: blur(20px) saturate(1.3);
+  border: 2px solid var(--accent-1);
+  border-radius: 16px;
   box-shadow: 
-    0 8px 32px 0 rgba(107, 197, 250, 0.12),
-    0 4px 16px rgba(32, 253, 161, 0.08),
-    0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 0.8rem;
-  margin-top: 0.5rem;
+    0 12px 48px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(240, 230, 140, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  margin-top: 1rem;
   box-sizing: border-box;
   opacity: 0;
-  transform: translateY(-10px) scale(0.98);
+  transform: translateY(-15px) scale(0.95);
   transition: 
-    opacity 0.25s ease, 
-    transform 0.25s ease;
+    opacity 0.4s cubic-bezier(.4, 2, .6, 1), 
+    transform 0.4s cubic-bezier(.4, 2, .6, 1);
   pointer-events: none;
   z-index: 250;
+  position: relative;
+  overflow: hidden;
 }
 
 .menuDropdownOpen {
@@ -144,363 +116,251 @@
   pointer-events: auto;
 }
 
+/* ==================== ARMOR BACKGROUND DECORATION ==================== */
+.armorBackground {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.08;
+  z-index: 0;
+  border-radius: 16px;
+}
+
+.armorIconBg {
+  position: absolute;
+  font-size: 3.5rem;
+  color: var(--accent-1);
+  filter: blur(1px);
+  animation: floatArmor 8s ease-in-out infinite;
+}
+
+.armorIconBg:nth-child(1) { top: 5%; left: 5%; animation-delay: 0s; }
+.armorIconBg:nth-child(2) { top: 10%; right: 8%; animation-delay: 1s; }
+.armorIconBg:nth-child(3) { bottom: 15%; left: 10%; animation-delay: 2s; }
+.armorIconBg:nth-child(4) { top: 50%; left: 2%; animation-delay: 3s; }
+.armorIconBg:nth-child(5) { bottom: 25%; right: 5%; animation-delay: 4s; }
+.armorIconBg:nth-child(6) { top: 70%; left: 50%; animation-delay: 5s; }
+.armorIconBg:nth-child(7) { bottom: 5%; right: 15%; animation-delay: 6s; }
+
+@keyframes floatArmor {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+/* ==================== VERTICAL MAIN LINKS ==================== */
 .mainLinks {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: column;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 0.8rem;
+  gap: 0.75rem;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 .mainLinkItem {
   position: relative;
   box-sizing: border-box;
+  list-style: none;
 }
 
+/* Main Navigation Link */
 .mainLink {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
+  gap: 1rem;
+  width: 100%;
   color: var(--primary-text-color);
   font-size: var(--font-size-base);
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
-  border: 2px solid var(--primary-app-color);
-  background: linear-gradient(90deg, 
-    var(--primary-app-color), 
-    var(--primary-app-bg-color));
+  border: 1.5px solid transparent;
+  background: linear-gradient(135deg, 
+    var(--background-2) 0%, 
+    var(--background-3) 100%);
   outline: none;
-  text-align: center;
+  text-align: left;
   box-sizing: border-box;
-  border-radius: 6px;
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(.4,2,.6,1);
-  min-width: 100px;
-  white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(.4, 2, .6, 1);
+  padding: 1rem 1.25rem;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .mainLink::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: linear-gradient(135deg, 
-    rgba(107, 197, 250, 0.4), 
-    rgba(32, 253, 161, 0.3),
-    rgba(255, 255, 255, 0.2));
-  transition: left 0.5s cubic-bezier(.4,2,.6,1);
-  z-index: 1;
+    var(--accent-1-background) 0%, 
+    var(--accent-2-background) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
-.mainLink:hover::before,
-.mainLinkHovered::before {
-  left: 100%;
+/* Armor Icon in Link */
+.armorIcon {
+  position: relative;
+  z-index: 2;
+  font-size: 1.6rem;
+  color: var(--accent-2);
+  transition: all 0.3s cubic-bezier(.4, 2, .6, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Link Content */
+.linkContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
 }
 
 .mainLinkText {
-  position: relative;
-  z-index: 2;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-}
-
-.iconStandaloneItem {
-  display: flex;
-  align-items: center;
-  margin: 0 0.2rem;
-}
-
-.iconStandalone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
   color: var(--primary-text-color);
-  background: none !important;
-  border: none !important;
-  box-shadow: none;
-  padding: 0.18rem 0.18rem;
-  margin: 0;
-  font-size: 1.25rem;
-  cursor: pointer;
-  transition: color 0.18s;
 }
 
-.iconStandalone:hover,
-.iconStandalone:focus {
-  color: var(--primary-app-color);
-  outline: none;
-}
-
-.homeIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary-app-color);
-  background: linear-gradient(135deg, var(--primary-app-bg-color) 60%, var(--secondary-app-bg-color) 100%);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(32,253,161,0.10), 0 1px 2px rgba(107,197,250,0.10);
-  padding: 0.25rem;
-  font-size: 1.3rem !important;
-  transition: box-shadow 0.2s, background 0.2s, color 0.2s;
-}
-
-.mainLink:hover .homeIcon,
-.mainLink:focus .homeIcon {
-  color: var(--secondary-app-color);
-  background: linear-gradient(135deg, var(--primary-app-color) 60%, var(--secondary-app-color) 100%);
-  box-shadow: 0 4px 16px rgba(32,253,161,0.18), 0 2px 6px rgba(107,197,250,0.15);
-}
-
-.arrowIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--secondary-app-color);
-  background: linear-gradient(135deg, var(--primary-app-bg-color) 60%, var(--primary-app-color) 100%);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(107,197,250,0.10), 0 1px 2px rgba(32,253,161,0.10);
-  padding: 0.18rem 0.22rem 0.18rem 0.18rem;
-  font-size: 1.1rem !important;
-  margin-right: 0.1rem;
-  transition: box-shadow 0.2s, background 0.2s, color 0.2s;
-}
-
-.mainLink:hover .arrowIcon,
-.mainLink:focus .arrowIcon {
-  color: var(--primary-app-color);
-  background: linear-gradient(135deg, var(--secondary-app-color) 60%, var(--primary-app-color) 100%);
-  box-shadow: 0 4px 16px rgba(107,197,250,0.18), 0 2px 6px rgba(32,253,161,0.15);
-}
-
-.dropdownIcon {
-  font-size: 0.7em;
-  transition: all 0.3s cubic-bezier(.4,2,.6,1);
+.armorName {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--accent-2);
   opacity: 0.7;
-  position: relative;
-  z-index: 2;
+  transition: all 0.3s ease;
+  letter-spacing: 0.2px;
 }
 
-.dropdownIconOpen {
-  transform: rotate(180deg) scale(1.1);
-  opacity: 1;
-  color: var(--secondary-app-color);
-}
-
+/* Hover Effects */
 .mainLink:hover,
 .mainLink:focus,
 .mainLinkHovered {
-  color: var(--primary-text-color);
-  background: linear-gradient(135deg, 
-    var(--primary-app-bg-color), 
-    var(--secondary-app-bg-color));
-  transform: translateY(-3px);
-  border: 2px solid var(--primary-app-bg-color);
+  border-color: var(--accent-1);
+  transform: translateX(5px);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    0 0 24px rgba(240, 230, 140, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.mainLink:hover::before,
+.mainLink:focus::before,
+.mainLinkHovered::before {
+  opacity: 1;
+}
+
+.mainLink:hover .armorIcon,
+.mainLink:focus .armorIcon,
+.mainLinkHovered .armorIcon {
+  color: var(--accent-1);
+  transform: scale(1.15) rotate(-5deg);
+  filter: drop-shadow(0 0 8px var(--accent-1));
+}
+
+.mainLink:hover .mainLinkText,
+.mainLink:focus .mainLinkText,
+.mainLinkHovered .mainLinkText {
+  color: var(--accent-1);
+  transform: translateX(2px);
+}
+
+.mainLink:hover .armorName,
+.mainLink:focus .armorName,
+.mainLinkHovered .armorName {
+  opacity: 1;
+  color: var(--accent-1);
 }
 
 .mainLink:active {
-  transform: translateY(0);
+  transform: translateX(2px) scale(0.98);
   box-shadow: 
-    0 2px 6px rgba(107, 197, 250, 0.1);
+    0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.subDropdown {
-  position: absolute;
-  top: calc(100% + 0.3rem);
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 200px;
-  max-width: 300px;
-  background: var(--primary-bg-color);
-  backdrop-filter: blur(10px);
-  border: 2px solid var(--primary-app-color);
-  border-radius: 8px;
-  box-shadow: 
-    0 8px 24px 0 rgba(107, 197, 250, 0.15),
-    0 4px 12px rgba(32, 253, 161, 0.1),
-    0 2px 6px rgba(0, 0, 0, 0.05);
-  padding: 0.5rem 0;
-  box-sizing: border-box;
-  opacity: 0;
-  transform: translateX(-50%) translateY(-8px) scale(0.95);
-  transition: 
-    opacity 0.2s ease,
-    transform 0.2s ease;
-  pointer-events: none;
-  z-index: 200;
-}
-
-.subDropdownOpen {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(1);
-  pointer-events: auto;
-}
-
-.subLinks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  max-height: 75vh;
-  height: auto;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.subLinkItem {
-  padding: 0;
-  list-style: none;
-  box-sizing: border-box;
-}
-
-.subLink {
-  display: block;
-  width: 95%;
-  padding: 0.7rem 1rem;
-  color: var(--primary-text-color);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  background: linear-gradient(135deg, 
-    transparent, 
-    rgba(107, 197, 250, 0.05));
-  border: none;
-  text-align: left;
-  box-sizing: border-box;
-  position: relative;
-  transition: all 0.3s cubic-bezier(.4,2,.6,1);
-  overflow: hidden;
-  border-radius: 6px;
-  text-transform: capitalize;
-  letter-spacing: 0.3px;
-}
-
-.subLink::before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 1.2rem;
-  width: 0;
-  height: 3px;
-  background: linear-gradient(90deg, 
-    var(--primary-app-color), 
-    var(--secondary-app-color),
-    var(--warning-color));
-  transition: width 0.4s cubic-bezier(.4,2,.6,1);
-  border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(107, 197, 250, 0.3);
-}
-
-.subLink::after {
-  content: "→";
-  position: absolute;
-  right: 1.2rem;
-  top: 50%;
-  transform: translateY(-50%) translateX(15px) scale(0.8);
-  opacity: 0;
-  color: var(--primary-text-color);
-  font-size: 1.5rem;
-  font-weight: bold;
-  transition: 
-    opacity 0.3s ease,
-    transform 0.3s cubic-bezier(.4,2,.6,1);
-}
-
-.subLink:hover,
-.subLink:focus {
-  color: var(--primary-text-color);
-  background: linear-gradient(135deg, 
-    var(--primary-app-bg-color), 
-    var(--secondary-app-bg-color));
-  padding-left: 1.8rem;
-  transform: translateX(5px) scale(1.02);
-  box-shadow: 
-    0 4px 12px rgba(107, 197, 250, 0.2),
-    0 2px 6px rgba(32, 253, 161, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.subLink:hover::before,
-.subLink:focus::before {
-  width: calc(100% - 3rem);
-}
-
-.subLink:hover::after,
-.subLink:focus::after {
-  opacity: 1;
-  transform: translateY(-50%) translateX(0) scale(1);
-}
-
-.subLink:active {
-  background: var(--secondary-app-bg-color);
-  transform: scale(0.98);
-}
-
-/* Mobile responsiveness */
+/* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 768px) {
   .menuDropdown {
-    min-width: 320px;
+    min-width: 300px;
     max-width: 95vw;
     left: -0.5rem;
+    padding: 1.2rem;
+  }
+  
+  .armorIconBg {
+    font-size: 3rem;
   }
   
   .mainLinks {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
+    gap: 0.6rem;
   }
   
   .mainLink {
-    min-width: unset;
-    width: 100%;
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
+    padding: 0.9rem 1rem;
   }
   
-  .subDropdown {
-    position: static;
-    transform: none;
-    width: 100%;
-    margin-top: 0.3rem;
-    border-radius: 6px;
+  .armorIcon {
+    font-size: 1.4rem;
   }
   
-  .subDropdownOpen {
-    transform: none;
+  .mainLinkText {
+    font-size: 0.95rem;
   }
   
-  .subLink {
-    font-size: 0.8rem;
-    padding: 0.4rem 1rem;
+  .armorName {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 480px) {
+  .burger {
+    transform: scale(0.9);
+  }
+
   .menuDropdown {
     min-width: 280px;
     left: -1rem;
+    padding: 1rem;
+  }
+  
+  .armorIconBg {
+    font-size: 2.5rem;
   }
   
   .mainLinks {
-    gap: 0.4rem;
+    gap: 0.5rem;
   }
   
   .mainLink {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.85rem;
+    padding: 0.8rem 0.9rem;
+    gap: 0.8rem;
+  }
+  
+  .armorIcon {
+    font-size: 1.3rem;
+    min-width: 28px;
+  }
+  
+  .mainLinkText {
+    font-size: 0.9rem;
+  }
+  
+  .armorName {
+    font-size: 0.65rem;
   }
 }

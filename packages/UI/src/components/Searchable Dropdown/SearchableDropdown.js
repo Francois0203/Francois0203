@@ -2,10 +2,10 @@ import React from 'react';
 import Select from 'react-select';
 
 /* Styling */
-import './SearchableSelect.css';
+import './SearchableDropdown.css';
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
 
 const customStyles = {
   control: (base, { isDisabled, isFocused }) => ({
@@ -15,16 +15,16 @@ const customStyles = {
     height: '2.6em',
     padding: '0',
     borderRadius: '10px',
-    border: `2px solid ${isFocused ? 'var(--primary-app-color)' : 'var(--disabled-text)'}`,
-    backgroundColor: 'var(--primary-bg-color)',
+    border: `2px solid ${isFocused ? 'var(--accent-1)' : 'var(--disabled-color)'}`,
+    backgroundColor: 'var(--background-1)',
     transition: 'background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease',
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     display: 'flex',
     alignItems: 'center',
-    boxShadow: isFocused ? '0 0 0 1px var(--primary-app-color)' : 'none',
+    boxShadow: isFocused ? '0 0 0 1px var(--accent-1)' : 'none',
     opacity: isDisabled ? 0.6 : 1,
     '&:hover': {
-      borderColor: isFocused ? 'var(--primary-app-color)' : 'var(--primary-app-color)',
+      borderColor: isFocused ? 'var(--accent-1)' : 'var(--accent-1)',
     },
   }),
   valueContainer: (base) => ({
@@ -52,8 +52,8 @@ const customStyles = {
   }),
   menu: (base) => ({
     ...base,
-    background: 'var(--primary-bg-color)',
-    border: '2px solid var(--disabled-text)',
+    background: 'var(--background-1)',
+    border: '2px solid var(--disabled-color)',
     borderRadius: '8px',
     marginTop: '0.2rem',
     zIndex: 20,
@@ -65,7 +65,7 @@ const customStyles = {
   }),
   menuList: (base) => ({
     ...base,
-    background: 'var(--primary-bg-color)',
+    background: 'var(--background-1)',
     borderRadius: '8px',
     padding: '0.2rem 0',
     maxHeight: '300px',
@@ -73,9 +73,9 @@ const customStyles = {
   option: (base, state) => ({
     ...base,
     backgroundColor: state.isSelected
-      ? 'var(--primary-app-color)'
+      ? 'var(--accent-1)'
       : state.isFocused
-      ? 'var(--primary-app-bg-color)'
+      ? 'var(--background-3)'
       : 'inherit',
     fontWeight: state.isSelected ? 600 : 400,
     cursor: 'pointer',
@@ -83,7 +83,7 @@ const customStyles = {
     color: 'var(--primary-text-color)',
     transition: 'background-color 0.25s ease, color 0.25s ease',
     '&:active': {
-      backgroundColor: state.isSelected ? 'var(--primary-app-color)' : 'var(--primary-app-bg-color)',
+      backgroundColor: state.isSelected ? 'var(--accent-1)' : 'var(--background-3)',
     },
   }),
   singleValue: (base, { isDisabled }) => ({
@@ -93,7 +93,7 @@ const customStyles = {
   }),
   placeholder: (base, { isDisabled }) => ({
     ...base,
-    color: 'var(--disabled-text)',
+    color: 'var(--disabled-color)',
     position: 'absolute',
     left: '0.8em',
     top: '50%',
@@ -105,7 +105,7 @@ const customStyles = {
   }),
   dropdownIndicator: (base, { isDisabled, isFocused, selectProps }) => ({
     ...base,
-    color: isFocused ? 'var(--primary-app-color)' : 'var(--disabled-text)',
+    color: isFocused ? 'var(--accent-1)' : 'var(--disabled-color)',
     padding: '0 0.8rem',
     display: 'flex',
     alignItems: 'center',
@@ -114,30 +114,30 @@ const customStyles = {
     transform: selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
     opacity: isDisabled ? 0.6 : 1,
     '&:hover': {
-      color: 'var(--primary-app-color)',
+      color: 'var(--accent-1)',
     },
   }),
   indicatorSeparator: (base, { isDisabled }) => ({
     ...base,
-    backgroundColor: 'var(--disabled-text)',
+    backgroundColor: 'var(--disabled-color)',
     marginTop: '0.5rem',
     marginBottom: '0.5rem',
     opacity: isDisabled ? 0.6 : 1,
   }),
   clearIndicator: (base, { isDisabled }) => ({
     ...base,
-    color: 'var(--disabled-text)',
+    color: 'var(--disabled-color)',
     padding: '0 0.8rem',
     transition: 'color 0.25s ease',
     opacity: isDisabled ? 0.6 : 1,
     '&:hover': {
-      color: 'var(--primary-app-color)',
+      color: 'var(--accent-1)',
     },
   }),
   // Multi-select styles
   multiValue: (base, { isDisabled }) => ({
     ...base,
-    backgroundColor: 'var(--primary-app-bg-color)',
+    backgroundColor: 'var(--background-3)',
     borderRadius: '6px',
     display: 'flex',
     alignItems: 'center',
@@ -153,13 +153,13 @@ const customStyles = {
   }),
   multiValueRemove: (base, { isDisabled }) => ({
     ...base,
-    color: 'var(--disabled-text)',
+    color: 'var(--disabled-color)',
     borderRadius: '0 6px 6px 0',
     transition: 'background-color 0.25s ease, color 0.25s ease',
     opacity: isDisabled ? 0.6 : 1,
     '&:hover': {
-      backgroundColor: 'var(--primary-app-color)',
-      color: 'var(--primary-bg-color)',
+      backgroundColor: 'var(--accent-1)',
+      color: 'var(--background-1)',
     },
   }),
   // Group styles (for grouped options)
@@ -170,7 +170,7 @@ const customStyles = {
   }),
   groupHeading: (base) => ({
     ...base,
-    color: 'var(--disabled-text)',
+    color: 'var(--disabled-color)',
     fontSize: '0.85em',
     fontWeight: 600,
     textTransform: 'uppercase',
@@ -180,22 +180,22 @@ const customStyles = {
   // Loading and no options messages
   loadingMessage: (base) => ({
     ...base,
-    color: 'var(--disabled-text)',
+    color: 'var(--disabled-color)',
     padding: '0.8rem',
   }),
   noOptionsMessage: (base) => ({
     ...base,
-    color: 'var(--disabled-text)',
+    color: 'var(--disabled-color)',
     padding: '0.8rem',
   }),
   // Loading indicator
   loadingIndicator: (base) => ({
     ...base,
-    color: 'var(--primary-app-color)',
+    color: 'var(--accent-1)',
   }),
 };
 
-const SearchableSelect = ({ 
+const SearchableDropdown = ({ 
   options, 
   value, 
   onChange, 
@@ -220,4 +220,4 @@ const SearchableSelect = ({
   />
 );
 
-export default SearchableSelect;
+export default SearchableDropdown;

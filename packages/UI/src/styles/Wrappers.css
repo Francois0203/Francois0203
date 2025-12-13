@@ -119,7 +119,7 @@
     transform: translateY(-50%) !important;
     cursor: pointer;
     font-size: var(--font-size-base);
-    color: var(--disabled-text);
+    color: var(--disabled-text-color);
     background: none !important;
     border: none !important;
     outline: none !important;
@@ -134,173 +134,10 @@
     justify-content: center;
 }
 .input-password-eye:hover {
-    color: var(--primary-app-color);
+    color: var(--accent-1);
     opacity: 1;
     transform: translateY(-50%) scale(1.1) !important;
 }
 .input-password-eye:focus {
     transform: translateY(-50%) !important;
-}
-
-
-/* ===================== Header ==================== */
-.header-wrapper {
-    width: 100%;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: transparent !important;
-    box-shadow: 0 4px 24px 0 rgba(32,64,128,0.13), 0 1.5px 8px rgba(0,0,0,0.10);
-    backdrop-filter: blur(14px) saturate(1.3);
-    border-bottom: 2px solid var(--primary-app-color);
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    overflow: visible;
-    transition: background 0.3s, box-shadow 0.3s;
-    filter: drop-shadow(0 2px 16px rgba(47,209,163,0.08));
-}
-
-.header-main-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.2rem 0.8rem 0.2rem 0.8rem;
-    position: relative;
-    transition: padding 0.25s cubic-bezier(.4,2,.6,1), min-height 0.25s cubic-bezier(.4,2,.6,1);
-}
-
-.header-title {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    margin: 0;
-    padding: 0 0.7rem 0.1em 0.7rem;
-    flex: 1 1 auto;
-    text-align: center;
-    line-height: 1.15;
-    background: linear-gradient(to right, var(--primary-app-color), var(--secondary-app-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-emphasis-color: transparent;
-    filter: drop-shadow(0 2px 8px rgba(32,253,161,0.10)) drop-shadow(0 1px 4px rgba(76,195,255,0.10));
-    text-shadow:
-        0 1px 4px rgba(32,253,161,0.10),
-        0 1px 2px rgba(76,195,255,0.10);
-    transition: background 0.3s, filter 0.3s, font-size 0.25s cubic-bezier(.4,2,.6,1);
-    animation: headerTitlePop 1.2s cubic-bezier(.23,1.12,.32,1) 0.1s both;
-    box-sizing: border-box;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-}
-
-@keyframes headerTitlePop {
-    0% {
-        letter-spacing: 0.5em;
-        opacity: 0;
-        filter: blur(8px);
-        transform: scale(0.95);
-    }
-    60% {
-        opacity: 1;
-        filter: blur(0.5px);
-        transform: scale(1.03);
-    }
-    100% {
-        letter-spacing: 0.09em;
-        opacity: 1;
-        filter: blur(0);
-        transform: scale(1);
-    }
-}
-
-
-/* ===================== Page & Page Content ==================== */
-html, body, #root {
-  height: 100%;
-  min-height: 100%;
-  margin: 0;
-  background:
-    linear-gradient(
-      rgba(255, 255, 255, 0.05) 0%,
-      rgba(255, 255, 255, 0.05) 100%
-    ),
-    repeating-linear-gradient(
-      135deg,
-      var(--primary-bg-color) 0%,
-      var(--primary-bg-color) 25%,
-      var(--secondary-bg-color) 25%,
-      var(--secondary-bg-color) 50%
-    );
-  background-size: 200% 200%;
-  background-attachment: fixed;
-  background-blend-mode: overlay;
-}
-
-
-/* ===================== Icons ==================== */
-
-.icon {
-    background-color: transparent;
-    cursor: pointer;
-    transition: transform 0.35s, background-color 0.35s, color 0.35s;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25rem;
-}
-.icon:hover {
-    transform: scale(1.05);
-    color: var(--text-primary);
-}
-
-/* ----- General ----- */
-.generalIcon {
-    color: var(--primary-app-color);
-}
-.generalIcon:hover {
-    background-color: var(--primary-app-bg-color);
-}
-
-/* ----- Trash ----- */
-.trashIcon {
-    color: var(--error-color);
-}
-.trashIcon:hover {
-    background-color: var(--error-color);
-}
-
-/* ----- Plus ----- */
-.plusIcon {
-    color: var(--success-color);
-}
-.plusIcon:hover {
-    background-color: var(--success-color);
-}
-
-/* ----- Close ----- */
-.closeButton {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: var(--disabled-text);
-  cursor: pointer;
-  transition: color 0.18s;
-}
-.closeButton:hover {
-  color: var(--error-color);
 }

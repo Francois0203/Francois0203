@@ -42,7 +42,6 @@ function App() {
 
 - useTheme
 - useTooltip
-- useAnimations
 
 ## Styles
 

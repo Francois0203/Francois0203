@@ -1,10 +1,10 @@
 import React from 'react';
-import { AlertTriangle, Home as HomeIcon, RotateCcw } from 'lucide-react';
+import { FaExclamationTriangle, FaHome, FaRedo } from 'react-icons/fa';
 
 import styles from './ErrorBoundary.module.css';
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -126,7 +126,7 @@ class ErrorBoundary extends React.Component {
         <div className={styles.container} role="alert" aria-live="assertive">
           <div className={styles.card}>
             <div className={styles.header}>
-              <AlertTriangle className={styles.icon} aria-hidden="true" />
+              <FaExclamationTriangle className={styles.icon} aria-hidden="true" />
               <h1 className={styles.title}>{title}</h1>
             </div>
             
@@ -140,7 +140,7 @@ class ErrorBoundary extends React.Component {
                   type="button"
                   aria-label="Try again"
                 >
-                  <RotateCcw size={16} aria-hidden="true" />
+                  <FaRedo size={16} aria-hidden="true" />
                   <span>{resetButtonText}</span>
                 </button>
               )}
@@ -151,7 +151,7 @@ class ErrorBoundary extends React.Component {
                   type="button"
                   aria-label="Go to home page"
                 >
-                  <HomeIcon size={16} aria-hidden="true" />
+                  <FaHome size={16} aria-hidden="true" />
                   <span>{homeButtonText}</span>
                 </button>
               )}

@@ -9,74 +9,105 @@
 
     /* ==================== STANDARD COLORS ==================== */
 
-    /* Background Colors */
-    --primary-bg-light: #ffffff;
-    --primary-bg-dark: #1e1f22;
-    --secondary-bg-light: #f3f4f6;
-    --secondary-bg-dark: #2b2d31;
-    --tersiary-bg-light: #e5e7eb;
-    --tersiary-bg-dark: #383a40;
-
     /* Text Colors */
-    --primary-text-light: #000000;
-    --primary-text-dark: #ffffff;
-    --disabled-text: #a0a0a0;
+    --primary-text-color-light: #000000;
+    --primary-text-color-dark: #ffffff;
 
-    /* ==================== DEFAULT COLORS (NORMAL VISION) ==================== */
+    --disabled-color: #a0a0a0;
+
     /* Status Colors */
-    --error-color: #D32F2F;
-    --warning-color: #ffbe46;
-    --success-color: #61f561;
-    --info-color: #4fbeff;
+    --error-color: #FF0000;
+    --warning-color: #FFD700;
+    --success-color: #32CD32;
+    --info-color: #1E90FF;
 
-    /* App Brand Colors */
-    --primary-app-color-light: #6366f1;
-    --primary-app-color-dark: #a5b4fc;
-    --secondary-app-color-light: #06b6d4;
-    --secondary-app-color-dark: #67e8f9;
+    --success-background-color: #32CD329d;
+    --warning-background-color: #FFD7009d;
+    --error-background-color: #FF00009d;
+    --info-background-color: #1E90FF9d;
 
-    /* Status Background Colors */
-    --success-bg-color: #6eff6e9d;
-    --warning-bg-color: #ffc8619d;
-    --error-bg-color: #ff75759d;
-    --info-bg-color: #4fbeff9d;
+    /* Accent Colors */
+    --accent-1-light: #dcb818;
+    --accent-2-light: #a35a1b;
+    --accent-3-light: #7a780f;
 
-    /* App Background Colors */
-    --primary-app-bg-color-light: #312e819d;
-    --primary-app-bg-color-dark: #4f46e59d;
-    --secondary-app-bg-color-light: #164e639d;
-    --secondary-app-bg-color-dark: #0891b29d;
+    --accent-1-dark: #f3ff6f;
+    --accent-2-dark: #ffe97c;
+    --accent-3-dark: #7d6116;
+
+
+    /* Accent Background Colors */
+    --accent-1-background-light: #dcb81833;
+    --accent-2-background-light: #a35a1b33;
+    --accent-3-background-light: #7a780f33;
+
+    --accent-1-background-dark:  #f3ff6f33;
+    --accent-2-background-dark:  #ffe97c33;
+    --accent-3-background-dark:  #7d611633;
+
+
+    /* Main Background Colors */
+    --background-1-light: #ffffff;
+    --background-2-light: #f8f9fa;
+    --background-3-light: #e9ecef;
+    --background-4-light: #dee2e6;
+    --frosted-background-light: rgba(18, 18, 18, 0.6);
+
+    --background-1-dark: #121212;
+    --background-2-dark: #36393f;
+    --background-3-dark: #2f3136;
+    --background-4-dark: #202225;
+    --frosted-background-dark: rgba(255, 255, 255, 0.6);
+
 
     /* Applied Colors (Default Light Mode) */
-    --primary-app-color: var(--primary-app-color-light);
-    --secondary-app-color: var(--secondary-app-color-light);
-    --primary-bg-color: var(--primary-bg-light);
-    --secondary-bg-color: var(--secondary-bg-light);
-    --tersiary-bg-color: var(--tersiary-bg-light);
-    --primary-text-color: var(--primary-text-light);
-    --primary-app-bg-color: var(--primary-app-bg-color-light);
-    --secondary-app-bg-color: var(--secondary-app-bg-color-light);
+    --primary-text-color: var(--primary-text-color-light);
+
+    --background-1: var(--background-1-light);
+    --background-2: var(--background-2-light);
+    --background-3: var(--background-3-light);
+    --background-4: var(--background-4-light);
+
+    --accent-1: var(--accent-1-light);
+    --accent-2: var(--accent-2-light);
+    --accent-3: var(--accent-3-light);
+
+    --accent-1-background: var(--accent-1-background-light);
+    --accent-2-background: var(--accent-2-background-light);
+    --accent-3-background: var(--accent-3-background-light);
 }
+
 
 /* ==================== THEME OVERRIDES ==================== */
 
 /* Dark Theme */
 [data-theme="dark"] {
-    --primary-app-color: var(--primary-app-color-dark);
-    --secondary-app-color: var(--secondary-app-color-dark);
-    --primary-bg-color: var(--primary-bg-dark);
-    --secondary-bg-color: var(--secondary-bg-dark);
-    --tersiary-bg-color: var(--tersiary-bg-dark);
-    --primary-text-color: var(--primary-text-dark);
-    --primary-app-bg-color: var(--primary-app-bg-color-dark);
-    --secondary-app-bg-color: var(--secondary-app-bg-color-dark);
+    --primary-text-color: var(--primary-text-color-dark);
+    --background-1: var(--background-1-dark);
+    --background-2: var(--background-2-dark);
+    --background-3: var(--background-3-dark);
+    --background-4: var(--background-4-dark);
+
+    --accent-1: var(--accent-1-dark);
+    --accent-2: var(--accent-2-dark);
+    --accent-3: var(--accent-3-dark);
+
+    --accent-1-background: var(--accent-1-background-dark);
+    --accent-2-background: var(--accent-2-background-dark);
+    --accent-3-background: var(--accent-3-background-dark);
 }
 
 
-
-/* ==================== ANIMATION OVERRIDE ==================== */
-[data-no-animations="true"] * {
-    transition: none !important;
-    animation: none !important;
-    scroll-behavior: auto !important;
+/* ===================== Page & Page Content ==================== */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    var(--background-1) 0%,
+    var(--background-1) 50%,
+    var(--background-2) 50%,
+    var(--background-2) 100%
+  );
+  background-attachment: fixed;
 }

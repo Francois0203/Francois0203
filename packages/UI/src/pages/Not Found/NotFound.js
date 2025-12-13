@@ -1,71 +1,132 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './NotFound.module.css';
 import '../../styles/Theme.css';
-import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
-
-import { Home, ArrowLeft } from 'lucide-react';
 
 const NotFound = () => {
-  const handleGoHome = () => {
-    const base = '/';
-    try {
-      if (window && window.history && window.history.pushState) {
-        window.history.pushState(null, '', base);
-        window.location.reload();
-        return;
-      }
-    } catch (e) {
-      // ignore and fallback
+  const canvasRef = useRef(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [foundButton, setFoundButton] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const animate = () => {
+      // Fill with black
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Set composite mode to cut out the torch area
+      ctx.globalCompositeOperation = 'destination-out';
+
+      // Create radial gradient for torch effect (this will create transparency)
+      const gradient = ctx.createRadialGradient(
+        mousePos.x, mousePos.y, 0,
+        mousePos.x, mousePos.y, 200
+      );
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+      gradient.addColorStop(0.3, 'rgba(0, 0, 0, 0.9)');
+      gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.5)');
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Reset composite mode
+      ctx.globalCompositeOperation = 'source-over';
+
+      requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [mousePos.x, mousePos.y]);
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
     }
-    window.location.href = base;
+  };
+
+  const handleButtonHover = () => {
+    if (!foundButton) {
+      setFoundButton(true);
+    }
   };
 
   return (
-    <div className={`${styles.viewport}`} role="main" aria-labelledby="notfound-title">
-      <div className={styles.bg} aria-hidden="true">
-        <div className={styles.gridOverlay} />
-        <div className={styles.gradientOrb1} />
-        <div className={styles.gradientOrb2} />
-        <div className={styles.gradientOrb3} />
-      </div>
-
+    <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.glitchContainer}>
-          <h1 id="notfound-title" className={styles.mainTitle}>
-            <span className={styles.number}>4</span>
-            <span className={`${styles.number} ${styles.middle}`}>0</span>
-            <span className={styles.number}>4</span>
-            <span className={styles.glitchLayer} aria-hidden="true">404</span>
-          </h1>
-        </div>
-
-        <div className={styles.messageBox}>
-          <div className={styles.scanline} aria-hidden="true" />
-          <h2 className={styles.subtitle}>Page Not Found</h2>
-          <p className={styles.description}>
-            The page you're looking for has drifted into the digital void.
-            It may have been moved, deleted, or never existed at all.
+        {/* Floating orbs for atmosphere */}
+        <div className={`${styles.orb} ${styles.orb1}`} aria-hidden="true" />
+        <div className={`${styles.orb} ${styles.orb2}`} aria-hidden="true" />
+        <div className={`${styles.orb} ${styles.orb3}`} aria-hidden="true" />
+        <div className={`${styles.orb} ${styles.orb4}`} aria-hidden="true" />
+        
+        <div className={styles.topLeft}>
+          <p className={styles.verseText}>
+            "Even though I walk through the darkest valley,
           </p>
+          <p className={styles.verseText}>I will fear no evil, for you are with me"</p>
+          <p className={styles.reference}>— Psalm 23:4</p>
         </div>
 
-        <div className={styles.actions}>
-          <button className={styles.primaryBtn} onClick={handleGoHome} type="button">
-            <Home size={20} />
-            <span>Return Home</span>
-          </button>
-          <button className={styles.secondaryBtn} onClick={() => window.history.back()} type="button">
-            <ArrowLeft size={20} />
-            <span>Go Back</span>
-          </button>
+        <div className={styles.mainMessage}>
+          <div className={styles.errorCode}>404</div>
+          <h1 className={styles.title}>Lost in the Dark</h1>
+          <p className={styles.subtitle}>But His light remains</p>
         </div>
 
-        <div className={styles.floatingElements} aria-hidden="true">
-          <div className={styles.cube} />
-          <div className={`${styles.cube} ${styles.cube2}`} />
-          <div className={`${styles.cube} ${styles.cube3}`} />
+        <div className={styles.topRight}>
+          <p className={styles.smallText}>Where are you going?</p>
+        </div>
+
+        <div className={styles.bottomLeft}>
+          <p className={styles.smallText}>The path you seek no longer exists</p>
+        </div>
+
+        <button 
+          className={`${styles.homeButton} ${foundButton ? styles.discovered : ''}`}
+          onClick={handleGoBack}
+          onMouseEnter={handleButtonHover}
+          aria-label="Return home"
+        >
+          <span className={styles.buttonIcon}>✝</span>
+          <span className={styles.buttonText}>Find Your Way Home</span>
+        </button>
+
+        <div className={styles.bottomRight}>
+          <p className={styles.scripture}>
+            "I am the light of the world.<br />
+            Whoever follows me will never walk in darkness"
+          </p>
+          <p className={styles.reference}>— John 8:12</p>
         </div>
       </div>
+      
+      <canvas ref={canvasRef} className={styles.darkness} />
     </div>
   );
 };

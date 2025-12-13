@@ -7,7 +7,7 @@ import { Moon, Sun } from 'lucide-react';
 import styles from './ThemeSwitch.module.css';
 import '../../styles/Theme.css';
 import '../../styles/Components.css';
-import '../../styles/GeneralWrappers.css';
+import '../../styles/Wrappers.css';
 
 const ThemeSwitch = ({ theme, toggleTheme, size = '3em' }) => {
   const [isPressed, setIsPressed] = useState(false);
