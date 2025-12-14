@@ -9,7 +9,7 @@ import '../../styles/Theme.css';
 import '../../styles/Components.css';
 import '../../styles/Wrappers.css';
 
-const ThemeSwitch = ({ theme, toggleTheme, size = '3em' }) => {
+const ThemeSwitch = ({ theme, toggleTheme, size = 48 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const handlePointerDown = () => setIsPressed(true);
@@ -26,7 +26,7 @@ const ThemeSwitch = ({ theme, toggleTheme, size = '3em' }) => {
       role="button"
       tabIndex={0}
     >
-      <span className={styles['icon']} style={{ fontSize: size }}>
+      <span className={styles['icon']} style={{ fontSize: `${size}px` }}>
         {theme === 'dark' ? <Sun /> : <Moon />}
       </span>
     </span>
