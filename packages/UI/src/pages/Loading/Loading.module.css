@@ -320,14 +320,14 @@
   max-width: 700px;
   padding: 4rem 3rem;
   text-align: center;
-  background: rgba(20, 20, 40, 0.8);
+  background: var(--frosted-background);
   backdrop-filter: blur(20px);
   border-radius: 30px;
-  border: 2px solid rgba(240, 230, 140, 0.3);
+  border: 2px solid var(--accent-1-background);
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 100px rgba(240, 230, 140, 0.1);
+    0 20px 60px var(--accent-1-background),
+    inset 0 1px 0 var(--accent-1),
+    0 0 100px var(--accent-1-background);
   z-index: 10;
   animation: contentFadeIn 1s ease-out;
 }
@@ -362,17 +362,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 20px rgba(240, 230, 140, 0.3);
-  animation: messageGlow 3s ease-in-out infinite;
-}
-
-@keyframes messageGlow {
-  0%, 100% { 
-    filter: drop-shadow(0 0 10px rgba(240, 230, 140, 0.3));
-  }
-  50% { 
-    filter: drop-shadow(0 0 20px rgba(240, 230, 140, 0.6));
-  }
 }
 
 /* Progress Bar */

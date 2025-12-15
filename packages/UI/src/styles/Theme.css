@@ -27,23 +27,23 @@
     --info-background-color: #1E90FF9d;
 
     /* Accent Colors */
-    --accent-1-light: #dcb818;
-    --accent-2-light: #a35a1b;
-    --accent-3-light: #7a780f;
+    --accent-1-light: #008b8b;
+    --accent-2-light: #007f7f;
+    --accent-3-light: #006f6f;
 
-    --accent-1-dark: #f3ff6f;
-    --accent-2-dark: #ffe97c;
-    --accent-3-dark: #7d6116;
+    --accent-1-dark: #2ff3e0;
+    --accent-2-dark: #1de9d4;
+    --accent-3-dark: #00d6c3;
 
 
     /* Accent Background Colors */
-    --accent-1-background-light: #dcb81833;
-    --accent-2-background-light: #a35a1b33;
-    --accent-3-background-light: #7a780f33;
+    --accent-1-background-light: #008b8b33;
+    --accent-2-background-light: #007f7f33;
+    --accent-3-background-light: #006f6f33;
 
-    --accent-1-background-dark:  #f3ff6f33;
-    --accent-2-background-dark:  #ffe97c33;
-    --accent-3-background-dark:  #7d611633;
+    --accent-1-background-dark: #2ff3e033;
+    --accent-2-background-dark: #1de9d433;
+    --accent-3-background-dark: #00d6c333;
 
 
     /* Main Background Colors */
