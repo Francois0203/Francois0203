@@ -16,8 +16,8 @@
     "directory": "packages/UI"
   },
   "scripts": {
-    "build": "babel src --out-dir dist && npm run copy-css",
-    "copy-css": "copyfiles -u 1 'src/**/*.css' dist",
+    "build": "babel src --out-dir dist && npm run copy-assets",
+    "copy-assets": "copyfiles -u 1 'src/**/*.css' 'src/**/*.json' dist",
     "storybook": "storybook dev -p 6006",
     "start": "npm run storybook",
     "start:storybook": "npm run storybook",

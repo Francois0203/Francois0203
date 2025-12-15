@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-// Replaced lucide close icon with a simple accessible button to avoid lucide-react
 
 /* Styling */
 import styles from './Modal.module.css';
