@@ -163,7 +163,7 @@ button:disabled {
 
 button[type="submit"] {
     background-color: var(--success-background-color);
-    border: 1px solid var(--success-color);
+    border-color: var(--success-color);
 }
 button[type="submit"]:hover {
     background-color: var(--success-color) !important;
@@ -171,7 +171,7 @@ button[type="submit"]:hover {
 
 button[type="reset"] {
     background-color: var(--error-background-color);
-    border: 1px solid var(--error-color);
+    border-color: var(--error-color);
 }
 button[type="reset"]:hover {
     background-color: var(--error-color) !important;
@@ -179,7 +179,7 @@ button[type="reset"]:hover {
 
 button[type="button"] {
     background-color: var(--accent-1-background);
-    border: 1px solid var(--accent-1-background);
+    border-color: var(--accent-1-background);
 }
 button[type="button"]:hover {
     background-color: var(--accent-1);
@@ -195,7 +195,7 @@ input[type="checkbox"] {
     appearance: none;
     background: var(--background-1);
     border-radius: 8px !important;
-    border: 2px solid var(--disabled-color);
+    border-color: var(--disabled-color);
     position: relative;
     display: inline-flex;
     cursor: pointer;
@@ -265,7 +265,7 @@ textarea:focus {
 /* ===================== Combobox Input ==================== */
 select {
     cursor: pointer;
-    border: 2px solid var(--disabled-color);
+    border-color: var(--disabled-color);
     padding: 0.5em 0.8em;
     appearance: none;
     display: inline-block;

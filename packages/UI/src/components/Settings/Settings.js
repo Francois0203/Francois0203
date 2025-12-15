@@ -82,6 +82,14 @@ const Settings = function Settings({
           <div className={styles.particle}></div>
           <div className={styles.particle}></div>
           <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
         </div>
 
         {/* Menu Header */}
