@@ -107,10 +107,15 @@ const AppContent = () => {
 // ============================================================================
 // ROOT APP COMPONENT
 // ============================================================================
-const App = () => (
-  <ToastProvider>
-    <AppContent />
-  </ToastProvider>
-);
+const App = () => {
+  // Initialize theme at the root level so it applies to all routes
+  useTheme();
+
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
+  );
+};
 
 export default App;

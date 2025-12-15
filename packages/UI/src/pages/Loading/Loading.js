@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../../hooks/useTheme';
 
 /* Styling */
 import styles from './Loading.module.css';
@@ -14,6 +15,7 @@ const Loading = ({
   message = 'Loading...',
   showVerse = true
 }) => {
+  const { theme } = useTheme();
   const [currentVerse, setCurrentVerse] = useState(0);
   const [stars, setStars] = useState([]);
 
@@ -47,7 +49,7 @@ const Loading = ({
   }, [showVerse]);
 
   return (
-    <div className={styles.loadingScreenWrapper}>
+    <div className={styles.loadingScreenWrapper} data-theme={theme}>
       {/* Starfield Background */}
       <div className={styles.starfield}>
         {stars.map(star => (

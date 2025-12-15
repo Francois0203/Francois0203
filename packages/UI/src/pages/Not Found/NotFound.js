@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTheme } from '../../hooks/useTheme';
 import styles from './NotFound.module.css';
 import '../../styles/Theme.css';
 
@@ -7,6 +8,7 @@ import versesData from '../verses.json';
 const VERSES = versesData.verses;
 
 const NotFound = () => {
+  const { theme } = useTheme();
   const [currentVerse, setCurrentVerse] = useState(0);
   const [foundPath, setFoundPath] = useState(false);
   const [ripples, setRipples] = useState([]);
@@ -47,7 +49,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className={styles.container} onClick={handleClick}>
+    <div className={styles.container} onClick={handleClick} data-theme={theme}>
       {/* Ripple effects */}
       {ripples.map(ripple => (
         <div
