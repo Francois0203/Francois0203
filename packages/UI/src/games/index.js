@@ -1,0 +1,1 @@
+export { default as BugSquasher } from './Bug Squasher';

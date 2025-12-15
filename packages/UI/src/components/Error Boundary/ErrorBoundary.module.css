@@ -1,71 +1,500 @@
-.wrapper {
-  min-height: 100vh;
+/* ==================== ERROR CONTAINER ==================== */
+.errorContainer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    var(--background-1) 0%,
+    var(--background-2) 100%
+  );
 }
 
-.card {
-  max-width: 520px;
-  width: 100%;
-  background: var(--background-2);
+/* ==================== BACKGROUND PARTICLES ==================== */
+.particlesContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--accent-1);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleFloat infinite ease-in-out;
+  box-shadow: 0 0 10px var(--accent-1);
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-100px) scale(1.5);
+  }
+}
+
+/* ==================== BACKGROUND EFFECTS ==================== */
+.backgroundEffects {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glowOrb1,
+.glowOrb2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: orbFloat 15s ease-in-out infinite;
+}
+
+.glowOrb1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--error-color), transparent);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.glowOrb2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--accent-1), transparent);
+  bottom: -100px;
+  right: -100px;
+  animation-delay: 5s;
+}
+
+@keyframes orbFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50px, -50px) scale(1.2);
+  }
+}
+
+/* ==================== CONTENT WRAPPER ==================== */
+.contentWrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 700px;
+  width: 90%;
+  padding: 3rem 2.5rem;
+  background: var(--background-1);
   border: 2px solid var(--error-color);
-  border-radius: 12px;
-  padding: 2rem;
-  color: var(--primary-text-color);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(255, 0, 0, 0.1),
+    0 0 100px var(--accent-1-background),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: contentSlideIn 0.8s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+@keyframes contentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==================== ICON CONTAINER ==================== */
+.iconContainer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alertCircle {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--error-color), #ff6b6b);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 10px 40px rgba(255, 0, 0, 0.3),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  animation: iconPulse 2s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+.alertIcon {
+  font-size: 4rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.pulseRing {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--error-color);
+  border-radius: 50%;
+  animation: ringPulse 2s ease-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* ==================== MESSAGE CONTAINER ==================== */
+.messageContainer {
+  text-align: center;
+  max-width: 600px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .title {
-  margin: 0 0 0.75rem 0;
-  font-size: var(--font-size-lg);
+  font-size: 2.5rem;
+  font-weight: 700;
   color: var(--error-color);
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(255, 0, 0, 0.2);
 }
 
-.message {
-  margin: 0 0 1.5rem 0;
-  font-size: var(--font-size-base);
+.subtitle {
+  font-size: 1.125rem;
   color: var(--disabled-color);
+  margin: 0;
+  line-height: 1.6;
 }
 
-.actions {
+/* ==================== ACTIONS CONTAINER ==================== */
+.actionsContainer {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
-.primary {
-  padding: 0.6rem 1.2rem;
-  font-size: var(--font-size-base);
+.button {
+  flex: 1;
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  border-radius: 8px;
-  border: 2px solid var(--accent-1);
-  background: var(--accent-1-background);
-  color: var(--primary-text-color);
+  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.02em;
 }
 
-.primary:hover {
-  border-color: var(--accent-2);
+.buttonIcon {
+  font-size: 1.3rem;
+  transition: transform 0.3s ease;
 }
 
-.details {
+.primaryButton {
+  background: var(--error-color);
+  color: white;
+  border: 2px solid var(--error-color);
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+}
+
+.primaryButton:hover {
+  background: #ff3333;
+  border-color: #ff3333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 0, 0, 0.3);
+}
+
+.primaryButton:hover .buttonIcon {
+  transform: rotate(180deg);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--accent-1);
+  border: 2px solid var(--accent-1);
+}
+
+.secondaryButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.secondaryButton:hover {
+  color: var(--background-1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px var(--accent-1-background);
+}
+
+.secondaryButton:hover::before {
+  transform: translateX(0);
+}
+
+.secondaryButton:hover .buttonIcon {
+  transform: translateX(-3px);
+}
+
+.secondaryButton:active {
+  transform: translateY(0);
+}
+
+/* ==================== TECHNICAL DETAILS ==================== */
+.technicalDetails {
+  width: 100%;
   margin-top: 1rem;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
 }
 
-.details summary {
+.detailsSummary {
+  padding: 1rem;
+  background: var(--background-3);
+  border: 1px solid var(--accent-3);
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   color: var(--accent-1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  user-select: none;
 }
 
-.pre {
-  margin-top: 0.5rem;
-  padding: 0.75rem;
+.detailsSummary:hover {
+  background: var(--accent-1-background);
+  border-color: var(--accent-1);
+}
+
+.summaryIcon {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.technicalDetails[open] .summaryIcon {
+  transform: rotate(90deg);
+}
+
+.detailsContent {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: var(--background-2);
+  border: 1px solid var(--accent-3);
+  border-radius: 8px;
+  animation: detailsExpand 0.3s ease-out;
+}
+
+@keyframes detailsExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.errorBlock {
+  margin-bottom: 1.5rem;
+}
+
+.errorBlock:last-child {
+  margin-bottom: 0;
+}
+
+.errorBlockTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-2);
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.errorText {
+  padding: 1rem;
   background: var(--error-background-color);
   border: 1px solid var(--error-color);
   border-radius: 6px;
   font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  color: var(--primary-text-color);
   white-space: pre-wrap;
   word-break: break-word;
+  line-height: 1.5;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ==================== CORNER DECORATIONS ==================== */
+.cornerDeco {
+  position: absolute;
+  font-size: 2rem;
+  color: var(--error-color);
+  opacity: 0.3;
+  animation: cornerRotate 8s ease-in-out infinite;
+  text-shadow: 0 0 20px var(--error-color);
+  pointer-events: none;
+}
+
+@keyframes cornerRotate {
+  0%, 100% {
+    opacity: 0.3;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: rotate(180deg) scale(1.2);
+  }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 2.5rem 2rem;
+    gap: 1.5rem;
+  }
+
+  .iconContainer {
+    width: 100px;
+    height: 100px;
+  }
+
+  .alertCircle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .alertIcon {
+    font-size: 3rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .actionsContainer {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: 2rem 1.5rem;
+    gap: 1.25rem;
+    width: 95%;
+  }
+
+  .iconContainer {
+    width: 80px;
+    height: 80px;
+  }
+
+  .alertCircle {
+    width: 70px;
+    height: 70px;
+  }
+
+  .alertIcon {
+    font-size: 2.5rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .button {
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .cornerDeco {
+    font-size: 1.5rem;
+  }
+
+  .glowOrb1,
+  .glowOrb2 {
+    filter: blur(60px);
+    opacity: 0.1;
+  }
 }
