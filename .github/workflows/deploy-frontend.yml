@@ -3,13 +3,6 @@ name: Deploy Frontend to GitHub Pages
 on:
   push:
     branches: [main]
-    paths:
-      - 'frontend/**'
-  workflow_run:
-    workflows:
-      - 'Publish UI Package to GitHub Packages'
-    types:
-      - completed
 
 permissions:
   contents: read
@@ -21,48 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  determine:
-    runs-on: ubuntu-latest
-    outputs:
-      run_frontend: ${{ steps.check.outputs.run_frontend }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Determine whether to run frontend build
-        id: check
-        run: |
-          echo "Event: $GITHUB_EVENT_NAME"
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "run_frontend=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          BEFORE=${{ github.event.before }}
-          AFTER=${{ github.sha }}
-          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            changes=$(git diff --name-only $AFTER)
-          else
-            changes=$(git diff --name-only $BEFORE $AFTER)
-          fi
-          echo "Changes:\n$changes"
-
-          if echo "$changes" | grep -q '^packages/UI/'; then
-            echo "packages changed — skip push-run frontend" >&2
-            echo "run_frontend=false" >> $GITHUB_OUTPUT
-          elif echo "$changes" | grep -q '^frontend/'; then
-            echo "frontend changed — run frontend" >&2
-            echo "run_frontend=true" >> $GITHUB_OUTPUT
-          else
-            echo "no relevant changes — skip" >&2
-            echo "run_frontend=false" >> $GITHUB_OUTPUT
-          fi
-
   build:
-    needs: determine
-    if: needs.determine.outputs.run_frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -79,13 +31,6 @@ jobs:
         run: |
           cd frontend
           npm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Install latest UI package
-        run: |
-          cd frontend
-          npm install @francois0203/ui@latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
