@@ -26,6 +26,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull origin main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -33,6 +39,13 @@ jobs:
           node-version: '18'
           registry-url: "https://npm.pkg.github.com/"
           scope: '@francois0203'
+
+      - name: Install latest UI package
+        run: |
+          cd frontend
+          npm install @francois0203/ui@latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: |
