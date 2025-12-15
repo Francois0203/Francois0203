@@ -1,6 +1,6 @@
 {
   "name": "@francois0203/ui",
-  "version": "1.0.5",
+  "version": "1.0.0",
   "description": "Francois0203's personal UI component library",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
