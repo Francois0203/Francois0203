@@ -47,6 +47,14 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Commit updated package.json
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add frontend/package.json frontend/package-lock.json
+          git diff --staged --quiet || git commit -m "chore: update UI package version [skip ci]"
+          git push
+
       - name: Install dependencies
         run: |
           cd frontend
