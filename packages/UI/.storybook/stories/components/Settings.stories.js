@@ -14,7 +14,7 @@ export const Default = () => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100vh', backgroundColor: theme === 'dark' ? '#1a1a1a' : '#ffffff' }}>
+    <div>
       <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
         <Settings
           theme={theme}
