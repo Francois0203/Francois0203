@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../hooks/useTheme';
+
+/* Styling */
 import styles from './BugSquasher.module.css';
 import '../../styles/Theme.css';
+import '../../styles/Components.css';
+import '../../styles/Wrappers.css';
 
 /**
  * BugSquasher - A fun, interactive bug-clicking game

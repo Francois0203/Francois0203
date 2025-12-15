@@ -1,7 +1,11 @@
 import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
+
+/* Styling */
 import styles from './ErrorBoundary.module.css';
 import '../../styles/Theme.css';
+import '../../styles/Components.css';
+import '../../styles/Wrappers.css';
 
 class ErrorBoundaryInner extends React.Component {
   constructor(props) {
