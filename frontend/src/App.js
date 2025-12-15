@@ -16,6 +16,7 @@ import styles from './App.module.css';
 // EAGER LOADED COMPONENTS
 // ============================================================================
 import Home from './pages/Home';
+import Bio from './pages/Bio';
 
 // ============================================================================
 // NAVIGATION STRUCTURE
@@ -24,6 +25,10 @@ const NAVIGATION_PAGES = [
   {
     label: 'Home',
     to: '/'
+  },
+  {
+    label: 'Bio',
+    to: '/bio'
   }
 ];
 
@@ -89,7 +94,8 @@ const AppContent = () => {
   return (
     <Routes>
       <Route path="/" element={<MemoizedAppLayout />}>
-        <Route index element={<Home />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/bio" element={<Bio />} />
       </Route>
 
       {/* 404 Not Found */}
