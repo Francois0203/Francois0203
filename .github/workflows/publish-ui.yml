@@ -43,30 +43,45 @@ jobs:
           cd packages/UI
           npm run build
 
-      - name: Check if version already published
-        id: check_published
+      - name: Ensure publishable version (auto-bump on conflict)
+        id: ensure_version
         run: |
           cd packages/UI
-          VER=$(node -p "require('./package.json').version")
-          echo "Checking registry for version $VER"
-          if npm view @francois0203/ui@$VER >/dev/null 2>&1; then
-            echo "published=true" >> $GITHUB_OUTPUT
-          else
-            echo "published=false" >> $GITHUB_OUTPUT
-          fi
+          attempts=0
+          max_attempts=5
+          while [ $attempts -lt $max_attempts ]; do
+            VER=$(node -p "require('./package.json').version")
+            echo "Checking registry for version $VER"
+            if npm --registry https://npm.pkg.github.com view @francois0203/ui@$VER >/dev/null 2>&1; then
+              echo "Version $VER already exists, bumping patch"
+              npm version patch -m "chore: bump version to %s [skip ci]"
+              git config --global user.name "github-actions"
+              git config --global user.email "github-actions@github.com"
+              git push --follow-tags
+              attempts=$((attempts+1))
+              sleep 1
+            else
+              echo "published=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+          echo "Max attempts ($max_attempts) reached and version still exists" >&2
+          echo "published=true" >> $GITHUB_OUTPUT
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to GitHub Packages
-        if: steps.check_published.outputs.published == 'false'
+        if: steps.ensure_version.outputs.published == 'false'
         run: |
           cd packages/UI
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Skip publish - already exists
-        if: steps.check_published.outputs.published == 'true'
+      - name: Skip publish - no available version
+        if: steps.ensure_version.outputs.published == 'true'
         run: |
-          echo "Package version already published; skipping npm publish."
+          echo "No available version to publish after $max_attempts attempts; skipping npm publish."
 
       - name: Delete Old Versions (Keep Latest 2)
         run: |
