@@ -110,13 +110,6 @@ const Loading = ({
         </g>
       </svg>
 
-      {/* Shooting Stars */}
-      <div className={styles.shootingStarsContainer}>
-        <div className={styles.shootingStar}></div>
-        <div className={styles.shootingStar}></div>
-        <div className={styles.shootingStar}></div>
-      </div>
-
       {/* Nebula Effects */}
       <div className={styles.nebula}>
         <div className={styles.nebulaOrb1}></div>

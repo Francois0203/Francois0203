@@ -55,6 +55,30 @@
   }
 }
 
+/* ==================== RAINDROPS ==================== */
+.raindrop {
+  position: absolute;
+  top: -20px;
+  width: 2px;
+  height: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.25));
+  border-radius: 2px;
+  transform: translateY(0);
+  pointer-events: none;
+  z-index: 4;
+  /* CSS vars provided inline: --fall-distance (px), --duration (s) */
+  animation: fall var(--duration, 0.9s) linear forwards;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.05));
+  opacity: 0.95;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(var(--fall-distance));
+    opacity: 0.9;
+  }
+}
+
 /* ==================== MAIN CONTENT ==================== */
 .content {
   position: relative;

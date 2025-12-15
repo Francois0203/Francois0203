@@ -129,7 +129,7 @@
     rgba(200, 0, 0, 0.9) 100%
   );
   border-color: var(--error-color);
-  color: white;
+  color: var(--primary-text-color);
 }
 
 .toastMessage.error::before {
@@ -147,7 +147,7 @@
     rgba(30, 180, 30, 0.9) 100%
   );
   border-color: var(--success-color);
-  color: white;
+  color: var(--primary-text-color);
 }
 
 .toastMessage.success::before {
@@ -165,7 +165,7 @@
     rgba(230, 180, 0, 0.9) 100%
   );
   border-color: var(--warning-color);
-  color: #000;
+  color: var(--primary-text-color);
 }
 
 .toastMessage.warning::before {
@@ -177,7 +177,7 @@
 }
 
 .toastMessage.warning .closeButton {
-  color: #000;
+  color: var(--primary-text-color);
 }
 
 .toastMessage.info {
@@ -187,7 +187,7 @@
     rgba(10, 100, 220, 0.9) 100%
   );
   border-color: var(--info-color);
-  color: white;
+  color: var(--primary-text-color);
 }
 
 .toastMessage.info::before {
