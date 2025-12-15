@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -34,8 +36,7 @@ jobs:
           npm version patch -m "chore: bump version to %s [skip ci]"
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git commit -am "chore: bump version"
-          git push
+          git push --follow-tags
 
       - name: Build package
         run: |
