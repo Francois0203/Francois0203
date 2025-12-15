@@ -43,12 +43,30 @@ jobs:
           cd packages/UI
           npm run build
 
+      - name: Check if version already published
+        id: check_published
+        run: |
+          cd packages/UI
+          VER=$(node -p "require('./package.json').version")
+          echo "Checking registry for version $VER"
+          if npm view @francois0203/ui@$VER >/dev/null 2>&1; then
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish to GitHub Packages
+        if: steps.check_published.outputs.published == 'false'
         run: |
           cd packages/UI
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Skip publish - already exists
+        if: steps.check_published.outputs.published == 'true'
+        run: |
+          echo "Package version already published; skipping npm publish."
 
       - name: Delete Old Versions (Keep Latest 2)
         run: |
