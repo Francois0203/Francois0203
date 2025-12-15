@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'packages/UI/**'
-      - '.github/workflows/publish-ui.yml'
 
 jobs:
   publish:
@@ -17,8 +16,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -51,26 +48,6 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Trigger frontend workflow if frontend changed
-        if: always()
-        run: |
-          # Ensure we have history to compute changed files
-          git fetch --no-tags --prune --unshallow || true
-
-          echo "Changed files between ${{ github.event.before }} and ${{ github.sha }}:"
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} || true
-
-          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -qE '^frontend/'; then
-            echo "Frontend changes detected — triggering frontend workflow via repository dispatch."
-            curl -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              https://api.github.com/repos/${{ github.repository }}/dispatches \
-              -d '{"event_type":"trigger-frontend-after-ui"}'
-          else
-            echo "No frontend changes detected; not triggering frontend workflow."
-          fi
 
       - name: Delete Old Versions (Keep Latest 2)
         run: |
