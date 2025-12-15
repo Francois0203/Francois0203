@@ -225,7 +225,7 @@
 .armorIcon {
   position: relative;
   z-index: 2;
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: var(--accent-2);
   transition: all 0.3s cubic-bezier(.4, 2, .6, 1);
   display: flex;
