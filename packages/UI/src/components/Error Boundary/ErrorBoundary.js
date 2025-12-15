@@ -64,8 +64,9 @@ class ErrorBoundaryInner extends React.Component {
             <div className={styles.glowOrb2}></div>
           </div>
 
-          {/* Main content */}
-          <div className={styles.contentWrapper}>
+          {/* Main content (wrapped to allow scrolling on small viewports) */}
+          <div className={styles.contentScroll}>
+            <div className={styles.contentWrapper}>
             {/* Error icon with animation */}
             <div className={styles.iconContainer}>
               <div className={styles.alertCircle}>
@@ -104,7 +105,6 @@ class ErrorBoundaryInner extends React.Component {
             {this.state.error && (
               <details className={styles.technicalDetails}>
                 <summary className={styles.detailsSummary}>
-                  <span className={styles.summaryIcon}>▸</span>
                   View Technical Details
                 </summary>
                 <div className={styles.detailsContent}>
@@ -125,6 +125,7 @@ class ErrorBoundaryInner extends React.Component {
                 </div>
               </details>
             )}
+            </div>
           </div>
 
           {/* Corner decorations */}

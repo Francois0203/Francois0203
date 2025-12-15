@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTheme } from '../../hooks/useTheme';
+import { useTheme } from '../../../../packages/UI/src/hooks/useTheme';
 
 /* Styling */
 import styles from './QuantumGrid.module.css';

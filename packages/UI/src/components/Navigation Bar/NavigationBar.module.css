@@ -105,9 +105,24 @@
     opacity 0.4s cubic-bezier(.4, 2, .6, 1), 
     transform 0.4s cubic-bezier(.4, 2, .6, 1);
   pointer-events: none;
-  z-index: 250;
+  z-index: 299;
   position: relative;
   overflow: hidden;
+}
+
+/* ==================== BACKDROP (page blur) ==================== */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(4px);
+  z-index: 298;
+  animation: nbFadeIn 0.28s ease;
+}
+
+@keyframes nbFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .menuDropdownOpen {

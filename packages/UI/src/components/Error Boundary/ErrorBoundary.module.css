@@ -110,6 +110,25 @@
   gap: 2rem;
 }
 
+/* Make the centered content box itself scrollable so the border stays fixed */
+.contentWrapper {
+  box-sizing: border-box;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scroll wrapper to allow content to scroll inside the fixed full-viewport container */
+.contentScroll {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  box-sizing: border-box;
+}
+
 @keyframes contentSlideIn {
   from {
     opacity: 0;
@@ -423,6 +442,10 @@
     gap: 1.5rem;
   }
 
+  .contentScroll {
+    padding: 1.5rem;
+  }
+
   .iconContainer {
     width: 100px;
     height: 100px;
@@ -459,6 +482,10 @@
     padding: 2rem 1.5rem;
     gap: 1.25rem;
     width: 95%;
+  }
+
+  .contentScroll {
+    padding: 1rem;
   }
 
   .iconContainer {

@@ -164,6 +164,8 @@ const NavigationBar = function NavigationBar({
           </ul>
         </div>
       )}
+      {/* Backdrop overlay to blur the rest of the page when menu is open */}
+      {menuOpen && <div className={styles.backdrop} onClick={() => { setMenuOpen(false); setHoveredLink(null); }}></div>}
     </nav>
   );
 };
