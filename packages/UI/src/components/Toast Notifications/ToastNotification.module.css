@@ -1,3 +1,4 @@
+/* ==================== TOAST WRAPPER ==================== */
 .toastWrapper {
   display: flex;
   flex-direction: column;
@@ -6,126 +7,423 @@
 }
 
 .toastWrapper.opening {
-  animation: slideInFromRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: toastSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .toastWrapper.closing {
-  animation: slideOutToRight 0.4s cubic-bezier(0.4, 0, 1, 1);
+  animation: toastSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1);
   pointer-events: none;
 }
 
+/* ==================== TOAST MESSAGE ==================== */
 .toastMessage {
   position: relative;
-  min-width: 320px;
-  max-width: 420px;
+  min-width: 340px;
+  max-width: 440px;
   padding: 1.25rem 1.75rem;
-  padding-right: 3rem;
-  padding-left: 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding-right: 3.5rem;
+  border-radius: 16px;
+  box-shadow: 
+    0 15px 50px rgba(0, 0, 0, 0.2),
+    0 5px 15px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   font-size: 0.95rem;
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  will-change: backdrop-filter;
-  border-left: 5px solid;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 2px solid;
+  overflow: hidden;
+  transition: transform 0.2s ease;
 }
 
+.toastMessage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.toastMessage::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: toastShine 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes toastShine {
+  0%, 100% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  50% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+.toastMessage:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.25),
+    0 8px 20px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ==================== CLOSE BUTTON ==================== */
 .closeButton {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.1);
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
   color: var(--primary-text-color);
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   padding: 0;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 50%;
   opacity: 0.7;
+  z-index: 3;
+  font-weight: 300;
 }
 
 .closeButton:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--error-color);
+  background: rgba(0, 0, 0, 0.2);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Color variants */
+.closeButton:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+/* ==================== COLOR VARIANTS ==================== */
 .toastMessage.error {
-  background: var(--error-background-color);
-  border-left-color: var(--error-color);
-  color: var(--primary-text-color);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 0, 0.85) 0%,
+    rgba(200, 0, 0, 0.9) 100%
+  );
+  border-color: var(--error-color);
+  color: white;
+}
+
+.toastMessage.error::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 100, 100, 0.2) 0%,
+    rgba(255, 0, 0, 0.1) 100%
+  );
 }
 
 .toastMessage.success {
-  background: var(--success-background-color);
-  border-left-color: var(--success-color);
-  color: var(--primary-text-color);
+  background: linear-gradient(
+    135deg,
+    rgba(50, 205, 50, 0.85) 0%,
+    rgba(30, 180, 30, 0.9) 100%
+  );
+  border-color: var(--success-color);
+  color: white;
+}
+
+.toastMessage.success::before {
+  background: linear-gradient(
+    135deg,
+    rgba(100, 255, 100, 0.2) 0%,
+    rgba(50, 205, 50, 0.1) 100%
+  );
 }
 
 .toastMessage.warning {
-  background: var(--warning-background-color);
-  border-left-color: var(--warning-color);
-  color: var(--primary-text-color);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.85) 0%,
+    rgba(230, 180, 0, 0.9) 100%
+  );
+  border-color: var(--warning-color);
+  color: #000;
+}
+
+.toastMessage.warning::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 100, 0.2) 0%,
+    rgba(255, 215, 0, 0.1) 100%
+  );
+}
+
+.toastMessage.warning .closeButton {
+  color: #000;
 }
 
 .toastMessage.info {
-  background: var(--info-background-color);
-  border-left-color: var(--info-color);
-  color: var(--primary-text-color);
+  background: linear-gradient(
+    135deg,
+    rgba(30, 144, 255, 0.85) 0%,
+    rgba(10, 100, 220, 0.9) 100%
+  );
+  border-color: var(--info-color);
+  color: white;
 }
 
-/* Text layout */
+.toastMessage.info::before {
+  background: linear-gradient(
+    135deg,
+    rgba(100, 180, 255, 0.2) 0%,
+    rgba(30, 144, 255, 0.1) 100%
+  );
+}
+
+/* ==================== ICON INDICATOR ==================== */
+.toastMessage::after {
+  opacity: 0.15;
+}
+
+.toastMessage.error::after {
+  content: '⚠';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  font-size: 8rem;
+  opacity: 0.08;
+  animation: none;
+  transform: rotate(-15deg);
+  z-index: 0;
+}
+
+.toastMessage.success::after {
+  content: '✓';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  font-size: 8rem;
+  opacity: 0.08;
+  animation: none;
+  transform: rotate(-15deg);
+  z-index: 0;
+}
+
+.toastMessage.warning::after {
+  content: '⚡';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  font-size: 8rem;
+  opacity: 0.08;
+  animation: none;
+  transform: rotate(-15deg);
+  z-index: 0;
+}
+
+.toastMessage.info::after {
+  content: 'ℹ';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  font-size: 8rem;
+  opacity: 0.08;
+  animation: none;
+  transform: rotate(-15deg);
+  z-index: 0;
+}
+
+/* ==================== TEXT LAYOUT ==================== */
 .toastHeader {
   font-weight: 700;
-  margin-bottom: 0.4rem;
-  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
   letter-spacing: -0.01em;
+  position: relative;
+  z-index: 3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .toastBody {
   font-weight: 500;
-  line-height: 1.5;
-  opacity: 0.9;
+  line-height: 1.6;
+  opacity: 0.95;
+  position: relative;
+  z-index: 3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .toastFooter {
-  margin-top: 0.6rem;
+  margin-top: 0.75rem;
   font-size: 0.8rem;
-  opacity: 0.7;
+  opacity: 0.8;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  position: relative;
+  z-index: 3;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: 'Courier New', monospace;
 }
 
-/* Animations */
-@keyframes slideInFromRight {
+/* ==================== ANIMATIONS ==================== */
+@keyframes toastSlideIn {
   0% {
     opacity: 0;
-    transform: translateX(400px) scale(0.95);
+    transform: translateX(500px) rotateY(45deg);
+  }
+  60% {
+    transform: translateX(-20px) rotateY(-5deg);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) rotateY(0deg);
   }
 }
 
-@keyframes slideOutToRight {
+@keyframes toastSlideOut {
   0% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotateZ(0deg);
   }
   100% {
     opacity: 0;
-    transform: translateX(400px) scale(0.95);
+    transform: translateX(500px) scale(0.8) rotateZ(10deg);
+  }
+}
+
+/* ==================== PROGRESS BAR ==================== */
+.toastMessage::before {
+  animation: none;
+}
+
+/* Add a subtle pulse to active toasts */
+@keyframes toastPulse {
+  0%, 100% {
+    box-shadow: 
+      0 15px 50px rgba(0, 0, 0, 0.2),
+      0 5px 15px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.25),
+      0 8px 20px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+  .toastMessage {
+    min-width: 300px;
+    max-width: calc(100vw - 3rem);
+    padding: 1.1rem 1.5rem;
+    padding-right: 3rem;
+  }
+
+  .toastHeader {
+    font-size: 1rem;
+  }
+
+  .toastBody {
+    font-size: 0.9rem;
+  }
+
+  .closeButton {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .toastMessage {
+    min-width: 280px;
+    padding: 1rem 1.25rem;
+    padding-right: 2.75rem;
+    border-radius: 12px;
+  }
+
+  .toastHeader {
+    font-size: 0.95rem;
+  }
+
+  .toastBody {
+    font-size: 0.85rem;
+  }
+
+  .toastFooter {
+    font-size: 0.75rem;
+  }
+
+  .closeButton {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .toastMessage.error::after,
+  .toastMessage.success::after,
+  .toastMessage.warning::after,
+  .toastMessage.info::after {
+    font-size: 6rem;
+    bottom: -15px;
+    left: -15px;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+@media (prefers-reduced-motion: reduce) {
+  .toastWrapper.opening {
+    animation: toastFadeIn 0.3s ease;
+  }
+
+  .toastWrapper.closing {
+    animation: toastFadeOut 0.3s ease;
+  }
+
+  @keyframes toastFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes toastFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  .toastMessage::after {
+    animation: none;
+  }
+
+  .toastMessage:hover {
+    transform: none;
+  }
+
+  .closeButton:hover {
+    transform: none;
+  }
+
+  .closeButton:active {
+    transform: none;
   }
 }

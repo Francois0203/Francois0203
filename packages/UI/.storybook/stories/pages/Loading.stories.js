@@ -2,7 +2,7 @@ import React from 'react';
 import { Loading } from '../../../src';
 
 export default {
-  title: 'Components/Loading',
+  title: 'Pages/Loading',
   component: Loading,
   argTypes: {
     message: { control: 'text' },

@@ -1,0 +1,603 @@
+/* ==================== COSMIC LOADING SCREEN ==================== */
+.loadingScreenWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, 
+    rgba(20, 20, 40, 1) 0%, 
+    rgba(5, 5, 15, 1) 100%);
+}
+
+/* ==================== STARFIELD ==================== */
+.starfield {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  animation: twinkle infinite ease-in-out;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ==================== CONSTELLATION SVG ==================== */
+.constellationSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.constellation {
+  stroke: var(--accent-1);
+  stroke-width: 1.5;
+  fill: var(--accent-1);
+  animation: constellationGlow 4s ease-in-out infinite;
+}
+
+.constellation2 {
+  animation-delay: 1.3s;
+  animation-duration: 5s;
+}
+
+.constellation3 {
+  animation-delay: 2.6s;
+  animation-duration: 4.5s;
+}
+
+@keyframes constellationGlow {
+  0%, 100% { 
+    opacity: 0.3; 
+    filter: drop-shadow(0 0 2px var(--accent-1));
+  }
+  50% { 
+    opacity: 0.7; 
+    filter: drop-shadow(0 0 8px var(--accent-1));
+  }
+}
+
+/* ==================== SHOOTING STARS ==================== */
+.shootingStarsContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.shootingStar {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+  animation: shootingStar 3s linear infinite;
+}
+
+.shootingStar:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shootingStar:nth-child(2) {
+  top: 50%;
+  right: 20%;
+  animation-delay: 2s;
+  animation-duration: 3.5s;
+}
+
+.shootingStar:nth-child(3) {
+  top: 70%;
+  left: 60%;
+  animation-delay: 4s;
+  animation-duration: 2.8s;
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: translate(0, 0) rotate(-45deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(300px, 300px) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+.shootingStar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.8) 100%);
+  transform: translateX(-100px);
+  border-radius: 50%;
+}
+
+/* ==================== NEBULA EFFECTS ==================== */
+.nebula {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nebulaOrb1,
+.nebulaOrb2,
+.nebulaOrb3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.15;
+  animation: nebulaFloat 20s ease-in-out infinite;
+}
+
+.nebulaOrb1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--accent-1), transparent);
+  top: -10%;
+  left: -10%;
+  animation-delay: 0s;
+}
+
+.nebulaOrb2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, var(--accent-2), transparent);
+  bottom: -5%;
+  right: -5%;
+  animation-delay: 7s;
+}
+
+.nebulaOrb3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--accent-1), transparent);
+  top: 40%;
+  right: 30%;
+  animation-delay: 14s;
+}
+
+@keyframes nebulaFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+}
+
+/* ==================== CELESTIAL SPINNER ==================== */
+.celestialSpinner {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orbitRing,
+.orbitRing2,
+.orbitRing3 {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: rotate 8s linear infinite;
+}
+
+.orbitRing {
+  width: 180px;
+  height: 180px;
+  border-top-color: var(--accent-1);
+  animation-duration: 8s;
+}
+
+.orbitRing2 {
+  width: 140px;
+  height: 140px;
+  border-right-color: var(--accent-2);
+  animation-duration: 6s;
+  animation-direction: reverse;
+}
+
+.orbitRing3 {
+  width: 100px;
+  height: 100px;
+  border-bottom-color: var(--accent-1);
+  animation-duration: 4s;
+}
+
+.planet,
+.planet2,
+.planet3 {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 15px currentColor;
+}
+
+.planet {
+  width: 12px;
+  height: 12px;
+  background: var(--accent-1);
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.planet2 {
+  width: 10px;
+  height: 10px;
+  background: var(--accent-2);
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.planet3 {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-1);
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.centerStar {
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, white 0%, var(--accent-1) 50%, var(--accent-2) 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px var(--accent-1),
+    0 0 40px var(--accent-2),
+    inset 0 0 10px white;
+  animation: centerPulse 3s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes centerPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 0 20px var(--accent-1),
+      0 0 40px var(--accent-2),
+      inset 0 0 10px white;
+  }
+  50% { 
+    transform: scale(1.15);
+    box-shadow: 
+      0 0 30px var(--accent-1),
+      0 0 60px var(--accent-2),
+      inset 0 0 15px white;
+  }
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  max-width: 700px;
+  padding: 4rem 3rem;
+  text-align: center;
+  background: rgba(20, 20, 40, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 30px;
+  border: 2px solid rgba(240, 230, 140, 0.3);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 100px rgba(240, 230, 140, 0.1);
+  z-index: 10;
+  animation: contentFadeIn 1s ease-out;
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==================== MESSAGE ==================== */
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.message {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0;
+  background: linear-gradient(135deg, white 0%, var(--accent-1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(240, 230, 140, 0.3);
+  animation: messageGlow 3s ease-in-out infinite;
+}
+
+@keyframes messageGlow {
+  0%, 100% { 
+    filter: drop-shadow(0 0 10px rgba(240, 230, 140, 0.3));
+  }
+  50% { 
+    filter: drop-shadow(0 0 20px rgba(240, 230, 140, 0.6));
+  }
+}
+
+/* Progress Bar */
+.progressBar {
+  width: 100%;
+  max-width: 400px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-1) 0%, var(--accent-2) 100%);
+  border-radius: 2px;
+  animation: progressMove 2s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--accent-1);
+}
+
+@keyframes progressMove {
+  0% {
+    width: 0%;
+    margin-left: 0%;
+  }
+  50% {
+    width: 70%;
+    margin-left: 15%;
+  }
+  100% {
+    width: 0%;
+    margin-left: 100%;
+  }
+}
+
+/* ==================== VERSE CONTAINER ==================== */
+.verseContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: verseFadeIn 1.2s ease-in-out;
+  max-width: 600px;
+}
+
+@keyframes verseFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.verseQuote {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.quoteMark {
+  font-size: 3rem;
+  color: var(--accent-1);
+  line-height: 1;
+  opacity: 0.5;
+  font-family: Georgia, serif;
+}
+
+.verse {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.8;
+  margin: 0;
+  padding-top: 0.5rem;
+  font-style: italic;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.reference {
+  color: var(--accent-2);
+  font-size: 1rem;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.verseDivider {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--accent-1) 50%, 
+    transparent 100%);
+  margin-top: 0.5rem;
+  animation: dividerGlow 2s ease-in-out infinite;
+}
+
+@keyframes dividerGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ==================== CORNER DECORATIONS ==================== */
+.cornerDecoration {
+  position: absolute;
+  font-size: 2rem;
+  color: var(--accent-1);
+  opacity: 0.4;
+  animation: cornerTwinkle 4s ease-in-out infinite;
+  text-shadow: 0 0 10px var(--accent-1);
+}
+
+@keyframes cornerTwinkle {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: rotate(0deg) scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: rotate(180deg) scale(1.2);
+  }
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+  .content {
+    max-width: 90vw;
+    padding: 3rem 2rem;
+    gap: 2.5rem;
+  }
+
+  .celestialSpinner {
+    width: 160px;
+    height: 160px;
+  }
+
+  .orbitRing { width: 140px; height: 140px; }
+  .orbitRing2 { width: 110px; height: 110px; }
+  .orbitRing3 { width: 80px; height: 80px; }
+
+  .centerStar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .message {
+    font-size: 2rem;
+  }
+
+  .verse {
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+
+  .reference {
+    font-size: 0.9rem;
+  }
+
+  .quoteMark {
+    font-size: 2.5rem;
+  }
+
+  .cornerDecoration {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 2.5rem 1.5rem;
+    gap: 2rem;
+    border-radius: 20px;
+  }
+
+  .celestialSpinner {
+    width: 140px;
+    height: 140px;
+  }
+
+  .orbitRing { width: 120px; height: 120px; }
+  .orbitRing2 { width: 90px; height: 90px; }
+  .orbitRing3 { width: 60px; height: 60px; }
+
+  .centerStar {
+    width: 20px;
+    height: 20px;
+  }
+
+  .message {
+    font-size: 1.5rem;
+  }
+
+  .verse {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .reference {
+    font-size: 0.85rem;
+  }
+
+  .quoteMark {
+    font-size: 2rem;
+  }
+
+  .progressBar {
+    max-width: 300px;
+  }
+
+  .cornerDecoration {
+    font-size: 1.2rem;
+  }
+
+  .nebulaOrb1,
+  .nebulaOrb2,
+  .nebulaOrb3 {
+    filter: blur(40px);
+    opacity: 0.1;
+  }
+}

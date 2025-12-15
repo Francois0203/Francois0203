@@ -1,5 +1,4 @@
 export { default as ErrorBoundary } from './Error Boundary';
-export { default as Loading } from './Loading';
 export { default as Modal } from './Modal';
 export { default as NavigationBar } from './Navigation Bar';
 export { default as SearchableDropdown } from './Searchable Dropdown';

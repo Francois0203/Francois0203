@@ -20,21 +20,17 @@ const Settings = function Settings({
   className = ""
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const wrapperRef = useRef();
-  const menuRef = useRef();
+  const containerRef = useRef();
 
   // Handle cog button click - toggle open/close
   const handleCogClick = () => {
     setMenuOpen(prev => !prev);
   };
 
-  // Close menu when clicking outside of button or menu
+  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const clickedOutsideWrapper = wrapperRef.current && !wrapperRef.current.contains(event.target);
-      const clickedOutsideMenu = menuRef.current && !menuRef.current.contains(event.target);
-      
-      if (clickedOutsideWrapper && clickedOutsideMenu) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
         setMenuOpen(false);
       }
     };
@@ -61,69 +57,65 @@ const Settings = function Settings({
   }, []);
 
   return (
-    <div className={`${styles.settingsContainer} ${className}`}>
-      {/* Cog Button */}
-      <div className={styles.cogRow} ref={wrapperRef}>
-        <button
-          className={`${styles.cogButton} ${menuOpen ? styles.cogButtonOpen : ""}`}
-          aria-label="Toggle settings menu"
-          aria-expanded={menuOpen}
-          onClick={handleCogClick}
-          type="button"
-          style={{
-            width: cogSize,
-            height: cogSize,
-            minWidth: cogSize,
-            minHeight: cogSize,
-          }}
-        >
-          <GiCog className={styles.cogIcon} />
-        </button>
-      </div>
+    <div className={`${styles.settingsContainer} ${className}`} ref={containerRef}>
+      {/* Cog Button - Fixed in top right */}
+      <button
+        className={`${styles.cogButton} ${menuOpen ? styles.cogButtonActive : ""}`}
+        aria-label="Toggle settings menu"
+        aria-expanded={menuOpen}
+        onClick={handleCogClick}
+        type="button"
+        style={{
+          width: cogSize,
+          height: cogSize,
+        }}
+      >
+        <GiCog className={styles.cogIcon} />
+        <div className={styles.cogGlow}></div>
+      </button>
 
-      {/* Settings Menu */}
-      {menuOpen && (
-        <div 
-          className={`${styles.settingsDropdown} ${styles.settingsDropdownOpen}`}
-          ref={menuRef}
-        >
-          {/* Background decorations */}
-          <div className={styles.settingsBackground}>
-            <div className={styles.cogDecoration}>
-              <GiCog />
-            </div>
-            <div className={styles.cogDecoration}>
-              <GiCog />
-            </div>
-            <div className={styles.cogDecoration}>
-              <GiCog />
-            </div>
-          </div>
+      {/* Settings Dropdown Menu */}
+      <div className={`${styles.settingsDropdown} ${menuOpen ? styles.dropdownOpen : ""}`}>
+        {/* Animated background particles */}
+        <div className={styles.particlesBackground}>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+          <div className={styles.particle}></div>
+        </div>
 
-          {/* Settings Content */}
-          <div className={styles.settingsContent}>
-            {/* Theme Setting */}
-            <div className={styles.settingRow}>
-              <div className={styles.settingControl}>
-                <ThemeSwitch
-                  theme={theme}
-                  toggleTheme={toggleTheme}
-                  size={32}
-                />
+        {/* Menu Header */}
+        <div className={styles.menuHeader}>
+          <h3 className={styles.menuTitle}>Settings</h3>
+          <div className={styles.headerLine}></div>
+        </div>
+
+        {/* Settings Content */}
+        <div className={styles.settingsContent}>
+          {/* Theme Setting */}
+          <div className={styles.settingItem}>
+            <div className={styles.settingLeft}>
+              <div className={styles.iconWrapper}>
+                <IoColorPaletteSharp className={styles.settingIcon} />
               </div>
               <div className={styles.settingInfo}>
-                <span className={styles.settingIcon}>
-                  <IoColorPaletteSharp />
-                </span>
-                <div className={styles.settingText}>
-                  <span className={styles.settingLabel}>Theme</span>
-                  <span className={styles.settingDescription}>Change appearance</span>
-                </div>
+                <h4 className={styles.settingLabel}>Theme</h4>
+                <p className={styles.settingDescription}>Customize appearance</p>
               </div>
+            </div>
+            <div className={styles.settingControl}>
+              <ThemeSwitch
+                theme={theme}
+                toggleTheme={toggleTheme}
+                size={32}
+              />
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Backdrop overlay */}
+      {menuOpen && <div className={styles.backdrop} onClick={() => setMenuOpen(false)}></div>}
     </div>
   );
 };

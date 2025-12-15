@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
+// Replaced lucide close icon with a simple accessible button to avoid lucide-react
 
 /* Styling */
 import styles from './Modal.module.css';
@@ -36,12 +36,15 @@ const Modal = ({ open, onClose, children, title }) => {
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.content} style={{ position: 'relative' }}>
-        <X 
+        <button
           className={styles.closeIcon}
           onClick={onClose}
           title="Close"
           aria-label="Close"
-        />
+          type="button"
+        >
+          ×
+        </button>
         {title && <div className={styles.modalTitle}>{title}</div>}
         {children}
       </div>

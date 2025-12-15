@@ -1,37 +1,69 @@
+/* ==================== CONTAINER ==================== */
 .container {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #000000;
-  cursor: none;
-}
-
-.darkness {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.content {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  background: var(--background-1);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  pointer-events: none;
+  cursor: pointer;
 }
 
-.overlay {
+/* ==================== BACKGROUND DECORATION ==================== */
+.bgDecoration {
   position: absolute;
   inset: 0;
+  background: radial-gradient(
+    circle at 30% 40%, 
+    var(--accent-1-background) 0%, 
+    transparent 50%
+  ),
+  radial-gradient(
+    circle at 70% 60%, 
+    var(--accent-2-background) 0%, 
+    transparent 50%
+  );
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* ==================== RIPPLE EFFECT ==================== */
+.ripple {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--accent-1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  animation: rippleExpand 1s ease-out forwards;
+}
+
+@keyframes rippleExpand {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+  }
+  100% {
+    width: 400px;
+    height: 400px;
+    opacity: 0;
+  }
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.content {
+  position: relative;
   z-index: 2;
-  background: #000000;
+  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+  animation: fadeInUp 0.8s ease-out;
   pointer-events: none;
 }
 
@@ -39,302 +71,299 @@
   pointer-events: auto;
 }
 
-/* Floating orbs for atmosphere */
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  animation: float 20s ease-in-out infinite;
-  filter: blur(60px);
-  opacity: 0.5;
-  z-index: 0;
-}
-
-.orb1 {
-  width: 300px;
-  height: 300px;
-  top: 10%;
-  left: 10%;
-  background: radial-gradient(circle, var(--accent-1) 0%, rgba(63, 94, 140, 0.3) 50%, transparent 100%);
-  animation-delay: 0s;
-  animation-duration: 25s;
-}
-
-.orb2 {
-  width: 250px;
-  height: 250px;
-  bottom: 15%;
-  right: 12%;
-  background: radial-gradient(circle, var(--accent-2) 0%, rgba(106, 78, 138, 0.3) 50%, transparent 100%);
-  animation-delay: 5s;
-  animation-duration: 28s;
-}
-
-.orb3 {
-  width: 280px;
-  height: 280px;
-  top: 50%;
-  left: 60%;
-  background: radial-gradient(circle, var(--accent-1-background) 0%, rgba(79, 111, 93, 0.3) 50%, transparent 100%);
-  animation-delay: 10s;
-  animation-duration: 30s;
-}
-
-.orb4 {
-  width: 220px;
-  height: 220px;
-  top: 30%;
-  right: 35%;
-  background: radial-gradient(circle, var(--accent-1-background) 0%, rgba(30, 144, 255, 0.3) 50%, transparent 100%);
-  animation-delay: 15s;
-  animation-duration: 22s;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.5;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  25% {
-    transform: translate(40px, -40px) scale(1.15);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translate(-30px, 30px) scale(0.85);
-    opacity: 0.4;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Top Left - Main verse */
-.topLeft {
-  position: absolute;
-  top: 8%;
-  left: 6%;
-  max-width: 500px;
-}
-
-.verseText {
-  font-size: var(--font-size-md);
-  font-style: italic;
-  margin: 0 0 0.3rem 0;
-  line-height: 1.7;
-  color: var(--accent-1);
-  font-weight: 400;
-}
-
-.reference {
-  font-size: 0.95rem;
-  margin: 0.8rem 0 0 0;
-  text-align: right;
-  color: var(--accent-3);
-  font-weight: 300;
-  opacity: 0.85;
-  text-align: right;
-  color: var(--accent-3);
-  font-weight: 300;
-}
-
-/* Main center message */
-.mainMessage {
-  text-align: center;
+/* ==================== NUMBER CONTAINER ==================== */
+.numberContainer {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.title {
-  font-size: var(--font-size-xxl);
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  color: var(--accent-1-background);
-  text-transform: uppercase;
-}
-
-.subtitle {
-  font-size: var(--font-size-lg);
-  font-weight: 300;
-  margin: 0;
-  font-style: italic;
-  color: var(--accent-1);
-  font-style: italic;
-  color: var(--accent-3);
-}
-
-/* 404 Error code */
-.errorCode {
-  position: absolute;
-  top: 50%;
-  right: 10%;
-  transform: translateY(-50%);
+.number {
   font-size: 8rem;
   font-weight: 900;
-  color: var(--accent-3);
-  opacity: 0.4;
-  letter-spacing: -0.05em;
+  color: var(--accent-1);
   line-height: 1;
-  user-select: none;
+  opacity: 0;
+  animation: numberFloat 0.6s ease-out forwards;
+  position: relative;
 }
 
-/* Hint text */
-.hint {
+.number:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.number:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.number:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes numberFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.number::after {
+  content: '';
   position: absolute;
-  bottom: 15%;
-  text-align: center;
-}
-
-.hint p {
-  margin: 0;
-  font-size: var(--font-size-base);
-  color: var(--accent-2);
-  font-style: italic;
-}
-
-.homeButton {
-  position: absolute;
-  bottom: 6%;
+  bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: var(--accent-1);
+  opacity: 0.3;
+}
+
+/* ==================== TITLE ==================== */
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary-text-color);
+  margin: 0 0 2rem;
+  letter-spacing: 0.05em;
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==================== VERSE CONTAINER ==================== */
+.verseContainer {
+  min-height: 120px;
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 1.1rem 2.5rem;
-  background: var(--accent-1-background);
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 2rem;
+  animation: verseSlideIn 0.5s ease-out;
+}
+
+@keyframes verseSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.verse {
+  font-size: 1.3rem;
+  font-style: italic;
+  color: var(--accent-2);
+  margin: 0 0 0.5rem;
+  line-height: 1.6;
+}
+
+.reference {
+  font-size: 1rem;
+  color: var(--accent-3);
+  margin: 0 0 1rem;
+  opacity: 0.8;
+}
+
+/* ==================== HOME BUTTON ==================== */
+.homeButton {
+  padding: 1rem 2.5rem;
+  background: transparent;
   border: 2px solid var(--accent-1);
-  border-radius: 10px;
+  border-radius: 50px;
   color: var(--accent-1);
-  font-size: var(--font-size-md);
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.4s ease;
-  box-shadow: 0 0 25px rgba(63, 94, 140, 0.5);
-  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.8s ease-out 0.8s both;
+  position: relative;
+  overflow: hidden;
+}
+
+.homeButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: -1;
 }
 
 .homeButton:hover {
+  color: var(--background-1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.homeButton:hover::before {
+  transform: translateX(0);
+}
+
+.homeButton:active {
+  transform: translateY(0);
+}
+
+/* ==================== PATH INDICATOR (DOTS) ==================== */
+.pathIndicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.8s ease-out 1s both;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-3);
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.dotActive {
+  opacity: 1;
   background: var(--accent-1);
-  border-color: var(--accent-1);
-  color: var(--primary-text-color);
-  transform: translateX(-50%) translateY(-3px);
-  box-shadow: 0 8px 35px rgba(63, 94, 140, 0.7);
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 5px 30px rgba(63, 94, 140, 0.6);
+  transform: scale(1.3);
+  box-shadow: 0 0 10px var(--accent-1);
 }
 
-.homeButton.discovered {
-  animation: subtleGlow 3s ease-in-out infinite;
-}
-
-@keyframes subtleGlow {
-  0%, 100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.2);
-  }
-}
-
-.buttonIcon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.buttonText {
-  letter-spacing: 0.5px;
-}
-
- /* Bottom Right - Scripture */
-.bottomRight {
-  position: absolute;
-  bottom: 8%;
-  right: 6%;
-  max-width: 480px;
-  text-align: right;
-}
-
-.scripture {
-  margin: 0 0 0.6rem 0;
-  font-size: var(--font-size-md);
+/* ==================== HINT ==================== */
+.hint {
+  font-size: 0.9rem;
+  color: var(--accent-3);
+  margin: 0;
+  opacity: 0.6;
+  animation: fadeIn 0.8s ease-out 1.2s both;
   font-style: italic;
-  color: var(--accent-1-background);
-  line-height: 1.8;
-  font-weight: 400;
 }
 
-.bottomRight .reference {
-  text-align: right;
-  font-weight: 300;
-}
-
-/* Responsive design */
+/* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 768px) {
-  .verse {
-    top: 5%;
-    left: 5%;
-    max-width: 90%;
+  .numberContainer {
+    gap: 1rem;
   }
 
-  .verseText {
-    font-size: var(--font-size-base);
+  .number {
+    font-size: 6rem;
   }
 
   .title {
-    font-size: var(--font-size-xl);
+    font-size: 1.5rem;
   }
 
-  .subtitle {
-    font-size: var(--font-size-md);
+  .verse {
+    font-size: 1.1rem;
   }
 
-  .errorCode {
-    font-size: 4rem;
-    right: 5%;
-  }
-
-  .hiddenMessage {
-    bottom: 5%;
-    right: 5%;
-    max-width: 90%;
-  }
-
-  .hiddenMessage p {
+  .reference {
     font-size: 0.9rem;
   }
 
   .homeButton {
-    padding: 0.875rem 1.5rem;
-    font-size: var(--font-size-base);
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .verse,
-  .errorCode,
-  .hiddenMessage {
-    display: none;
+  .content {
+    padding: 1.5rem;
   }
 
-  .mainMessage {
-    margin-bottom: 1rem;
+  .numberContainer {
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
   }
 
-  .hint {
-    bottom: 25%;
+  .number {
+    font-size: 4.5rem;
+  }
+
+  .title {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .verseContainer {
+    min-height: 100px;
+  }
+
+  .verse {
+    font-size: 1rem;
+  }
+
+  .reference {
+    font-size: 0.85rem;
   }
 
   .homeButton {
-    bottom: 10%;
+    padding: 0.8rem 1.8rem;
+    font-size: 0.95rem;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .hint {
+    font-size: 0.85rem;
   }
 }
 
-/* Accessibility */
+/* ==================== ACCESSIBILITY ==================== */
 @media (prefers-reduced-motion: reduce) {
-  .orb {
+  .ripple,
+  .number,
+  .title,
+  .verse,
+  .reference,
+  .homeButton,
+  .pathIndicator,
+  .hint {
     animation: none;
+    opacity: 1;
   }
-  
-  .homeButton.discovered {
+
+  .content {
     animation: none;
   }
 
   .homeButton:hover {
-    transform: translateX(-50%);
+    transform: none;
+  }
+
+  .homeButton:active {
+    transform: none;
+  }
+
+  .dotActive {
+    transform: none;
   }
 }
