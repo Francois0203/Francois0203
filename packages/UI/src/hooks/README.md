@@ -35,3 +35,16 @@ A hook for managing tooltip positioning and visibility.
 - Portal rendering for proper z-index
 
 **Returns:** `{ triggerProps, TooltipPortal }`
+
+## useAPIService
+
+A comprehensive hook for making API calls with standardized error handling and loading states.
+
+**Features:**
+- Support for all HTTP methods
+- Named parameter substitution in URLs
+- User-friendly error messages
+- Loading state management
+- Request timeout configuration
+
+**Returns:** `{ request, isLoading, error, clearError }`
