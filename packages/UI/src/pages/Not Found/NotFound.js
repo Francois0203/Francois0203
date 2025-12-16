@@ -1,171 +1,126 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import styles from './NotFound.module.css';
 import '../../styles/Theme.css';
 
-import versesData from '../verses.json';
-
-const VERSES = versesData.verses;
+import * as Games from '../../games';
 
 const NotFound = () => {
   const { theme } = useTheme();
-  const [currentVerse, setCurrentVerse] = useState(0);
-  const [foundPath, setFoundPath] = useState(false);
-  const [ripples, setRipples] = useState([]);
-  const [drops, setDrops] = useState([]);
+  
   const containerRef = useRef(null);
+  const cardRef = useRef(null);
+  const rafRef = useRef(null);
+  // Build list of available games exported from the games folder
+  const availableGames = Object.entries(Games).map(([key, Comp]) => ({ key, Comp }));
+  const [selectedGameIndex, setSelectedGameIndex] = useState(() => {
+    return Math.floor(Math.random() * Math.max(1, availableGames.length));
+  });
+  const [gameKey, setGameKey] = useState(Date.now());
 
-  // Cycle through verses automatically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentVerse(prev => (prev + 1) % VERSES.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Handle click - create ripple and change verse
-  const handleClick = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    // compute position relative to container
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const newRipple = {
-      id: Date.now(),
-      x,
-      y
-    };
-
-    setRipples(prev => [...prev, newRipple]);
-
-    setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.id !== newRipple.id));
-    }, 1000);
-
-    // Change to next verse
-    setCurrentVerse(prev => (prev + 1) % VERSES.length);
+  const chooseRandomGame = () => {
+    if (!availableGames.length) return;
+    const idx = Math.floor(Math.random() * availableGames.length);
+    setSelectedGameIndex(idx);
+    setGameKey(Date.now()); // force remount
   };
 
-  // Spawn raindrops at random intervals; when a drop lands create a ripple
+  
+
+  // Lightweight parallax/tilt: use mouse position to update transform via rAF
   useEffect(() => {
-    let mounted = true;
-    let timeout;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const spawnDrop = () => {
-      if (!mounted || !containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = Math.random() * rect.width;
-      // landing somewhere between 55% and 95% of height to feel natural
-      const landingY = rect.height * (0.55 + Math.random() * 0.4);
-      const duration = 0.6 + Math.random() * 0.9; // seconds
-      const id = Date.now() + Math.random();
+    let lastX = 0;
+    let lastY = 0;
 
-      const drop = { id, x, landingY, duration };
-      setDrops(prev => [...prev, drop]);
+    const handleMove = (e) => {
+      const evt = e.touches ? e.touches[0] : e;
+      const rect = container.getBoundingClientRect();
+      const x = evt.clientX - rect.left;
+      const y = evt.clientY - rect.top;
+      lastX = (x / rect.width) * 2 - 1; // -1 .. 1
+      lastY = (y / rect.height) * 2 - 1; // -1 .. 1
 
-      // When drop 'lands', remove it and create a ripple
-      setTimeout(() => {
-        setDrops(prev => prev.filter(d => d.id !== id));
-        const ripple = { id: 'r' + id, x, y: landingY };
-        setRipples(prev => [...prev, ripple]);
-        setTimeout(() => {
-          setRipples(prev => prev.filter(r => r.id !== ripple.id));
-        }, 1000);
-      }, duration * 1000 + 40);
-
-      // schedule next drop
-      const nextDelay = 300 + Math.random() * 1200;
-      timeout = setTimeout(spawnDrop, nextDelay);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const rotateX = (-lastY * 8).toFixed(2);
+        const rotateY = (lastX * 10).toFixed(2);
+        const translateX = (lastX * 8).toFixed(1);
+        const translateY = (lastY * -6).toFixed(1);
+        if (cardRef.current) {
+          cardRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translate3d(${translateX}px, ${translateY}px, 0)`;
+        }
+      });
     };
 
-    // start spawning
-    timeout = setTimeout(spawnDrop, 400);
+    const handleLeave = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (cardRef.current) {
+        cardRef.current.style.transition = 'transform 420ms cubic-bezier(.2,.8,.2,1)';
+        cardRef.current.style.transform = 'none';
+        setTimeout(() => {
+          if (cardRef.current) cardRef.current.style.transition = '';
+        }, 500);
+      }
+    };
+
+    container.addEventListener('mousemove', handleMove, { passive: true });
+    container.addEventListener('touchmove', handleMove, { passive: true });
+    container.addEventListener('mouseleave', handleLeave);
+    container.addEventListener('touchend', handleLeave);
 
     return () => {
-      mounted = false;
-      if (timeout) clearTimeout(timeout);
+      container.removeEventListener('mousemove', handleMove);
+      container.removeEventListener('touchmove', handleMove);
+      container.removeEventListener('mouseleave', handleLeave);
+      container.removeEventListener('touchend', handleLeave);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
-  const handleGoHome = () => {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = '/';
-    }
+  const handleGoHome = (e) => {
+    e?.stopPropagation();
+    if (window.history.length > 1) window.history.back();
+    else window.location.href = '/';
   };
 
   return (
-    <div ref={containerRef} className={styles.container} onClick={handleClick} data-theme={theme}>
-      {/* Ripple effects */}
-      {ripples.map(ripple => (
-        <div
-          key={ripple.id}
-          className={styles.ripple}
-          style={{
-            left: `${ripple.x}px`,
-            top: `${ripple.y}px`
-          }}
-        />
-      ))}
+    <div ref={containerRef} className={styles.container} data-theme={theme}>
+      <div className={styles.bgDecoration} />
 
-      {/* Raindrops (falling lines) */}
-      {drops.map(drop => (
-        <div
-          key={drop.id}
-          className={styles.raindrop}
-          style={{
-            left: `${drop.x}px`,
-            // use CSS variable for fall distance and duration
-            ['--fall-distance']: `${drop.landingY}px`,
-            ['--duration']: `${drop.duration}s`
-          }}
-        />
-      ))}
+        <div ref={cardRef} className={styles.card} role="main" aria-labelledby="nf-title">
+        <div className={styles.code}>404 - Page Not Found</div>
 
-      {/* Main content */}
-      <div className={styles.content}>
-        <div className={styles.numberContainer}>
-          <span className={styles.number}>4</span>
-          <span className={styles.number}>0</span>
-          <span className={styles.number}>4</span>
+        <div className={styles.headerRow}>
+          <button className={styles.homeButton} onClick={handleGoHome}>← Home</button>
         </div>
 
-        <h1 className={styles.title}>Page Not Found</h1>
-        
-        <div className={styles.verseContainer} key={currentVerse}>
-          <p className={styles.verse}>
-            "{VERSES[currentVerse].verse}"
-          </p>
-          <p className={styles.reference}>{VERSES[currentVerse].reference}</p>
+        <div className={styles.content}>
+
+          <div className={styles.refreshRow}>
+            <button onClick={() => chooseRandomGame()} className={styles.refreshButton}>Refresh Game</button>
+          </div>
+
+          <div className={styles.gamePanel} onClick={(e) => e.stopPropagation()}>
+          {availableGames.length ? (
+            (() => {
+              const GameComp = availableGames[selectedGameIndex].Comp;
+              return <div key={gameKey} className={styles.externalGame}><GameComp /></div>;
+            })()
+          ) : (
+            <div className={styles.gameHeader}>No games available</div>
+          )}
+          </div>
         </div>
-
-        <button 
-          className={styles.homeButton}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleGoHome();
-          }}
-          onMouseEnter={() => setFoundPath(true)}
-        >
-          {foundPath ? '← Find Your Way Home' : '← Go Back'}
-        </button>
-
-        <div className={styles.pathIndicator}>
-          {VERSES.map((_, index) => (
-            <div
-              key={index}
-              className={`${styles.dot} ${index === currentVerse ? styles.dotActive : ''}`}
-            />
-          ))}
-        </div>
-
-        <p className={styles.hint}>Click anywhere to reveal the next verse</p>
       </div>
 
-      {/* Subtle background decoration */}
-      <div className={styles.bgDecoration} />
+      <div className={styles.shapes} aria-hidden>
+        <span className={styles.shape} style={{ left: '12%', top: '18%', '--s': 1 }} />
+        <span className={styles.shape} style={{ left: '78%', top: '28%', '--s': 0.8 }} />
+        <span className={styles.shape} style={{ left: '52%', top: '74%', '--s': 1.2 }} />
+      </div>
     </div>
   );
 };

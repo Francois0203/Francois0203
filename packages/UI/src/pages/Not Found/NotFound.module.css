@@ -1,4 +1,12 @@
-/* ==================== CONTAINER ==================== */
+/* ==========================
+   Not Found — Styles
+   Cleanly formatted and sectioned
+   ==========================
+*/
+
+/* --------------------------
+   Layout / Container
+   -------------------------- */
 .container {
   position: fixed;
   inset: 0;
@@ -8,385 +16,321 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* ==================== BACKGROUND DECORATION ==================== */
+
+/* --------------------------
+   Background Decoration
+   -------------------------- */
 .bgDecoration {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    circle at 30% 40%, 
-    var(--accent-1-background) 0%, 
-    transparent 50%
-  ),
-  radial-gradient(
-    circle at 70% 60%, 
-    var(--accent-2-background) 0%, 
-    transparent 50%
-  );
-  opacity: 0.3;
+  background: linear-gradient(120deg, var(--accent-1-background) 0%, var(--accent-2-background) 50%, var(--background-1) 100%);
+  background-size: 200% 200%;
+  opacity: 0.16;
   z-index: 0;
+  animation: bgShift 12s linear infinite;
 }
 
-/* ==================== RIPPLE EFFECT ==================== */
-.ripple {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--accent-1);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 5;
-  animation: rippleExpand 1s ease-out forwards;
+@keyframes bgShift {
+  to { background-position: 100% 0; }
 }
 
-@keyframes rippleExpand {
-  0% {
-    width: 20px;
-    height: 20px;
-    opacity: 1;
-  }
-  100% {
-    width: 400px;
-    height: 400px;
-    opacity: 0;
-  }
-}
 
-/* ==================== RAINDROPS ==================== */
-.raindrop {
-  position: absolute;
-  top: -20px;
-  width: 2px;
-  height: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.25));
-  border-radius: 2px;
-  transform: translateY(0);
-  pointer-events: none;
-  z-index: 4;
-  /* CSS vars provided inline: --fall-distance (px), --duration (s) */
-  animation: fall var(--duration, 0.9s) linear forwards;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.05));
-  opacity: 0.95;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(var(--fall-distance));
-    opacity: 0.9;
-  }
-}
-
-/* ==================== MAIN CONTENT ==================== */
-.content {
+/* --------------------------
+   Card (Parallax container)
+   -------------------------- */
+.card {
   position: relative;
   z-index: 2;
-  text-align: center;
-  padding: 2rem;
-  max-width: 600px;
-  animation: fadeInUp 0.8s ease-out;
-  pointer-events: none;
-}
-
-.content > * {
-  pointer-events: auto;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ==================== NUMBER CONTAINER ==================== */
-.numberContainer {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.number {
-  font-size: 8rem;
-  font-weight: 900;
-  color: var(--accent-1);
-  line-height: 1;
-  opacity: 0;
-  animation: numberFloat 0.6s ease-out forwards;
-  position: relative;
-}
-
-.number:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.number:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.number:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-@keyframes numberFloat {
-  0% {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.number::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 3px;
-  background: var(--accent-1);
-  opacity: 0.3;
-}
-
-/* ==================== TITLE ==================== */
-.title {
-  font-size: 2rem;
-  font-weight: 600;
+  width: min(820px, calc(100% - 48px));
+  max-width: 820px;
+  padding: 36px 36px 28px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  box-shadow: 0 12px 40px rgba(2,6,23,0.45);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: box-shadow 280ms ease, transform 420ms cubic-bezier(.2,.8,.2,1);
   color: var(--primary-text-color);
-  margin: 0 0 2rem;
-  letter-spacing: 0.05em;
-  animation: fadeIn 0.8s ease-out 0.4s both;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ==================== VERSE CONTAINER ==================== */
-.verseContainer {
-  min-height: 120px;
+  text-align: center;
+  backdrop-filter: blur(6px) saturate(120%);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  margin-bottom: 2rem;
-  animation: verseSlideIn 0.5s ease-out;
+  max-height: 86vh;
 }
 
-@keyframes verseSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
-.verse {
-  font-size: 1.3rem;
-  font-style: italic;
-  color: var(--accent-2);
-  margin: 0 0 0.5rem;
-  line-height: 1.6;
-}
-
-.reference {
-  font-size: 1rem;
-  color: var(--accent-3);
-  margin: 0 0 1rem;
-  opacity: 0.8;
-}
-
-/* ==================== HOME BUTTON ==================== */
-.homeButton {
-  padding: 1rem 2.5rem;
-  background: transparent;
-  border: 2px solid var(--accent-1);
-  border-radius: 50px;
+/* --------------------------
+   Headings / Title
+   -------------------------- */
+.code {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--accent-1);
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.05em;
-  margin-bottom: 2rem;
-  animation: fadeIn 0.8s ease-out 0.8s both;
-  position: relative;
-  overflow: hidden;
+  margin-bottom: 6px;
 }
 
-.homeButton::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--accent-1);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: -1;
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+
+/* --------------------------
+   Scrollable Content area
+   (verses removed — this contains controls + game)
+   -------------------------- */
+.content {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.12) transparent;
+  padding-right: 6px;
+}
+
+.content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+
+
+/* --------------------------
+   Header / Refresh row
+   -------------------------- */
+.refreshRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+
+/* --------------------------
+   Controls (Home / Next)
+   -------------------------- */
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* prominent accent button used for Home */
+.homeButton {
+  appearance: none;
+  border: 0;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  color: var(--background-1);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 12px 36px rgba(2,6,23,0.48);
+  transition: transform 180ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
 
 .homeButton:hover {
-  color: var(--background-1);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.homeButton:hover::before {
-  transform: translateX(0);
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+  box-shadow: 0 18px 46px rgba(2,6,23,0.5);
 }
 
 .homeButton:active {
   transform: translateY(0);
 }
 
-/* ==================== PATH INDICATOR (DOTS) ==================== */
-.pathIndicator {
+
+/* subtle secondary button kept for compatibility */
+.nextButton {
+  appearance: none;
+  border: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: var(--primary-text-color);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.nextButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 26px rgba(2,6,23,0.36);
+}
+
+.nextButton:active {
+  transform: translateY(0);
+}
+
+
+/* --------------------------
+   Refresh Button (match Home)
+   -------------------------- */
+.refreshButton {
+  appearance: none;
+  border: 0;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  color: var(--background-1);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 12px 36px rgba(2,6,23,0.48);
+  transition: transform 180ms ease, filter 160ms ease, box-shadow 160ms ease;
+}
+
+.refreshButton:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+  box-shadow: 0 18px 46px rgba(2,6,23,0.5);
+}
+
+.refreshButton:active {
+  transform: translateY(0);
+}
+
+
+/* --------------------------
+   Small buttons (game controls)
+   -------------------------- */
+.smallBtn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  border: 0;
+  cursor: pointer;
+}
+
+.smallBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.28);
+}
+
+
+/* --------------------------
+   Floating Shapes / Decoration
+   -------------------------- */
+.shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shape {
+  position: absolute;
+  width: calc(48px * var(--s));
+  height: calc(48px * var(--s));
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  filter: blur(8px);
+  transform: translate3d(0,0,0);
+  animation: floatY calc(6s / var(--s)) ease-in-out infinite;
+}
+
+@keyframes floatY {
+  0% { transform: translateY(-6px); }
+  50% { transform: translateY(8px); }
+  100% { transform: translateY(-6px); }
+}
+
+
+/* --------------------------
+   Game styles
+   -------------------------- */
+.easterControls {
+  margin-top: 10px;
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  animation: fadeIn 0.8s ease-out 1s both;
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-3);
-  opacity: 0.3;
-  transition: all 0.3s ease;
+.playButton {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: inherit;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.dotActive {
-  opacity: 1;
-  background: var(--accent-1);
-  transform: scale(1.3);
-  box-shadow: 0 0 10px var(--accent-1);
+.gamePanel {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
-/* ==================== HINT ==================== */
-.hint {
-  font-size: 0.9rem;
+.gameHeader {
+  font-size: 0.95rem;
   color: var(--accent-3);
-  margin: 0;
-  opacity: 0.6;
-  animation: fadeIn 0.8s ease-out 1.2s both;
-  font-style: italic;
 }
 
-/* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 768px) {
-  .numberContainer {
-    gap: 1rem;
-  }
-
-  .number {
-    font-size: 6rem;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .verse {
-    font-size: 1.1rem;
-  }
-
-  .reference {
-    font-size: 0.9rem;
-  }
-
-  .homeButton {
-    padding: 0.9rem 2rem;
-    font-size: 1rem;
-  }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 36px);
+  grid-auto-rows: 36px;
+  gap: 8px;
 }
 
-@media (max-width: 480px) {
-  .content {
-    padding: 1.5rem;
-  }
-
-  .numberContainer {
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .number {
-    font-size: 4.5rem;
-  }
-
-  .title {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .verseContainer {
-    min-height: 100px;
-  }
-
-  .verse {
-    font-size: 1rem;
-  }
-
-  .reference {
-    font-size: 0.85rem;
-  }
-
-  .homeButton {
-    padding: 0.8rem 1.8rem;
-    font-size: 0.95rem;
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  .hint {
-    font-size: 0.85rem;
-  }
+.cell {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: background 160ms ease, transform 120ms ease;
 }
 
-/* ==================== ACCESSIBILITY ==================== */
-@media (prefers-reduced-motion: reduce) {
-  .ripple,
-  .number,
-  .title,
-  .verse,
-  .reference,
-  .homeButton,
-  .pathIndicator,
-  .hint {
-    animation: none;
-    opacity: 1;
-  }
+.cell:active { transform: translateY(1px); }
 
-  .content {
-    animation: none;
-  }
+.cellActive {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+}
 
-  .homeButton:hover {
-    transform: none;
-  }
+.win {
+  margin-top: 8px;
+  color: var(--accent-1);
+  font-weight: 700;
+}
 
-  .homeButton:active {
-    transform: none;
-  }
 
-  .dotActive {
-    transform: none;
-  }
+/* --------------------------
+   Responsive
+   -------------------------- */
+@media (max-width: 720px) {
+  .card { padding: 20px; border-radius: 12px; }
+  .code { font-size: 2.6rem; }
+  .title { font-size: 1.25rem; }
+}
+
+@media (max-width: 520px) {
+  .grid { grid-template-columns: repeat(5, 28px); grid-auto-rows: 28px; gap: 6px; }
+  .cell, .cellActive { width: 28px; height: 28px; border-radius: 6px; }
 }
