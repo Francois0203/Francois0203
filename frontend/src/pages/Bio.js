@@ -1,73 +1,101 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { MdEmail, MdPhone, MdLocationOn, MdCalendarToday, MdWorkOutline, MdSchool, MdCode, MdFavorite } from 'react-icons/md';
-import { FaLinkedin, FaInstagram, FaGithub, FaExternalLinkAlt, FaAward } from 'react-icons/fa';
+import { FaLinkedin, FaInstagram, FaGithub, FaOrcid, FaAward } from 'react-icons/fa';
 import styles from './Bio.module.css';
 import ProfileImg from '../Images/Profile.jpeg';
 
 const Bio = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [ripples, setRipples] = useState([]);
-  const [drops, setDrops] = useState([]);
+  const [isVisible, setIsVisible] = React.useState(false);
   const containerRef = useRef(null);
-
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Handle click - create ripple
+  // Create ripple directly in DOM to avoid frequent React state updates
+  const lastRippleRef = useRef(0);
   const handleClick = (e) => {
+    // throttle rapid clicks
+    const now = Date.now();
+    if (now - lastRippleRef.current < 80) return;
+    lastRippleRef.current = now;
+
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const newRipple = {
-      id: Date.now(),
-      x,
-      y
-    };
-
-    setRipples(prev => [...prev, newRipple]);
-
-    setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.id !== newRipple.id));
-    }, 1000);
+    const rippleEl = document.createElement('div');
+    rippleEl.className = styles.ripple;
+    rippleEl.style.left = `${x}px`;
+    rippleEl.style.top = `${y}px`;
+    containerRef.current.appendChild(rippleEl);
+    const t = setTimeout(() => {
+      rippleEl.remove();
+      clearTimeout(t);
+    }, 900);
   };
 
-  // Spawn raindrops
+  // Spawn raindrops using direct DOM manipulation (no React state)
   useEffect(() => {
     let mounted = true;
-    let timeout;
+    let schedulerTimeout = null;
+    const activeDropsRef = { current: 0 };
+    const maxDrops = 6; // limit concurrently animated drops
+    const removalTimers = [];
 
     const spawnDrop = () => {
       if (!mounted || !containerRef.current) return;
+      // enforce max concurrent drops
+      if (activeDropsRef.current >= maxDrops) {
+        // schedule next attempt later
+        schedulerTimeout = setTimeout(spawnDrop, 400 + Math.random() * 800);
+        return;
+      }
+
       const rect = containerRef.current.getBoundingClientRect();
       const x = Math.random() * rect.width;
       const landingY = rect.height * (0.55 + Math.random() * 0.4);
       const duration = 0.6 + Math.random() * 0.9;
-      const id = Date.now() + Math.random();
 
-      const drop = { id, x, landingY, duration };
-      setDrops(prev => [...prev, drop]);
+      activeDropsRef.current += 1;
 
-      setTimeout(() => {
-        setDrops(prev => prev.filter(d => d.id !== id));
-        const ripple = { id: 'r' + id, x, y: landingY };
-        setRipples(prev => [...prev, ripple]);
-        setTimeout(() => {
-          setRipples(prev => prev.filter(r => r.id !== ripple.id));
-        }, 1000);
+      const dropEl = document.createElement('div');
+      dropEl.className = styles.raindrop;
+      dropEl.style.left = `${x}px`;
+      dropEl.style.setProperty('--fall-distance', `${landingY}px`);
+      dropEl.style.setProperty('--duration', `${duration}s`);
+      containerRef.current.appendChild(dropEl);
+
+      // Remove drop after its animation + small buffer and create ripple
+      const removeTimer = setTimeout(() => {
+        try { dropEl.remove(); } catch (e) {}
+        // create small ripple on landing
+        const rippleEl = document.createElement('div');
+        rippleEl.className = styles.ripple;
+        rippleEl.style.left = `${x}px`;
+        rippleEl.style.top = `${landingY}px`;
+        containerRef.current.appendChild(rippleEl);
+        const rTimer = setTimeout(() => { try { rippleEl.remove(); } catch (e) {} }, 900);
+        removalTimers.push(rTimer);
+
+        activeDropsRef.current = Math.max(0, activeDropsRef.current - 1);
+        // clear this timer
+        const idx = removalTimers.indexOf(removeTimer);
+        if (idx !== -1) removalTimers.splice(idx, 1);
       }, duration * 1000 + 40);
 
-      const nextDelay = 300 + Math.random() * 1200;
-      timeout = setTimeout(spawnDrop, nextDelay);
+      removalTimers.push(removeTimer);
+
+      const nextDelay = 500 + Math.random() * 1000;
+      schedulerTimeout = setTimeout(spawnDrop, nextDelay);
     };
 
-    timeout = setTimeout(spawnDrop, 400);
+    schedulerTimeout = setTimeout(spawnDrop, 600);
 
     return () => {
       mounted = false;
-      if (timeout) clearTimeout(timeout);
+      if (schedulerTimeout) clearTimeout(schedulerTimeout);
+      removalTimers.forEach(t => clearTimeout(t));
     };
   }, []);
 
@@ -111,30 +139,7 @@ const Bio = () => {
 
   return (
     <div ref={containerRef} className={styles.pageWrapper} onClick={handleClick}>
-      {/* Ripple effects */}
-      {ripples.map(ripple => (
-        <div
-          key={ripple.id}
-          className={styles.ripple}
-          style={{
-            left: `${ripple.x}px`,
-            top: `${ripple.y}px`
-          }}
-        />
-      ))}
-
-      {/* Raindrops */}
-      {drops.map(drop => (
-        <div
-          key={drop.id}
-          className={styles.raindrop}
-          style={{
-            left: `${drop.x}px`,
-            '--fall-distance': `${drop.landingY}px`,
-            '--duration': `${drop.duration}s`
-          }}
-        />
-      ))}
+      {/* Ripple and raindrop visuals are created directly in the DOM to avoid React re-renders */}
 
       {/* Background decoration */}
       <div className={styles.bgDecoration} />
@@ -146,6 +151,7 @@ const Bio = () => {
               <img
                 src={ProfileImg}
                 alt="Profile"
+                loading="lazy"
                 className={styles.photoImage}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
               />
@@ -191,7 +197,7 @@ const Bio = () => {
               <FaInstagram size={24} />
             </a>
             <a href="https://orcid.org/0009-0004-7605-0618" target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-              <FaExternalLinkAlt size={20} />
+              <FaOrcid size={20} />
             </a>
           </div>
 

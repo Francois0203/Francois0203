@@ -15,20 +15,15 @@ import styles from './App.module.css';
 // ============================================================================
 // EAGER LOADED COMPONENTS
 // ============================================================================
-import Home from './pages/Home';
-import Bio from './pages/Bio';
+const Bio = React.lazy(() => import('./pages/Bio'));
 
 // ============================================================================
 // NAVIGATION STRUCTURE
 // ============================================================================
 const NAVIGATION_PAGES = [
   {
-    label: 'Home',
-    to: '/'
-  },
-  {
     label: 'Bio',
-    to: '/bio'
+    to: '/'
   }
 ];
 
@@ -94,12 +89,11 @@ const AppContent = () => {
   return (
     <Routes>
       <Route path="/" element={<MemoizedAppLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/bio" element={<Bio />} />
+        <Route index element={<Bio />} />
+        <Route path="bio" element={<Bio />} />
+        {/* 404 Not Found - handle unknown routes inside app layout */}
+        <Route path="*" element={<NotFound />} />
       </Route>
-
-      {/* 404 Not Found */}
-      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
