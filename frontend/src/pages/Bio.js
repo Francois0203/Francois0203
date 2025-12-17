@@ -32,65 +32,52 @@ const Bio = () => {
     const t = setTimeout(() => {
       rippleEl.remove();
       clearTimeout(t);
-    }, 900);
+    }, 1200);
   };
 
-  // Spawn raindrops using direct DOM manipulation (no React state)
+  // Spawn subtle water particles using direct DOM manipulation (no React state)
   useEffect(() => {
     let mounted = true;
     let schedulerTimeout = null;
-    const activeDropsRef = { current: 0 };
-    const maxDrops = 6; // limit concurrently animated drops
+    const activeParticlesRef = { current: 0 };
+    const maxParticles = 4; // fewer, more subtle particles
     const removalTimers = [];
 
-    const spawnDrop = () => {
+    const spawnParticle = () => {
       if (!mounted || !containerRef.current) return;
-      // enforce max concurrent drops
-      if (activeDropsRef.current >= maxDrops) {
-        // schedule next attempt later
-        schedulerTimeout = setTimeout(spawnDrop, 400 + Math.random() * 800);
+      if (activeParticlesRef.current >= maxParticles) {
+        schedulerTimeout = setTimeout(spawnParticle, 2000 + Math.random() * 3000);
         return;
       }
 
       const rect = containerRef.current.getBoundingClientRect();
       const x = Math.random() * rect.width;
-      const landingY = rect.height * (0.55 + Math.random() * 0.4);
-      const duration = 0.6 + Math.random() * 0.9;
+      const y = Math.random() * rect.height;
+      const duration = 3 + Math.random() * 2;
 
-      activeDropsRef.current += 1;
+      activeParticlesRef.current += 1;
 
-      const dropEl = document.createElement('div');
-      dropEl.className = styles.raindrop;
-      dropEl.style.left = `${x}px`;
-      dropEl.style.setProperty('--fall-distance', `${landingY}px`);
-      dropEl.style.setProperty('--duration', `${duration}s`);
-      containerRef.current.appendChild(dropEl);
+      const particleEl = document.createElement('div');
+      particleEl.className = styles.waterParticle;
+      particleEl.style.left = `${x}px`;
+      particleEl.style.top = `${y}px`;
+      particleEl.style.setProperty('--duration', `${duration}s`);
+      containerRef.current.appendChild(particleEl);
 
-      // Remove drop after its animation + small buffer and create ripple
       const removeTimer = setTimeout(() => {
-        try { dropEl.remove(); } catch (e) {}
-        // create small ripple on landing
-        const rippleEl = document.createElement('div');
-        rippleEl.className = styles.ripple;
-        rippleEl.style.left = `${x}px`;
-        rippleEl.style.top = `${landingY}px`;
-        containerRef.current.appendChild(rippleEl);
-        const rTimer = setTimeout(() => { try { rippleEl.remove(); } catch (e) {} }, 900);
-        removalTimers.push(rTimer);
-
-        activeDropsRef.current = Math.max(0, activeDropsRef.current - 1);
-        // clear this timer
+        try { particleEl.remove(); } catch (e) {}
+        activeParticlesRef.current = Math.max(0, activeParticlesRef.current - 1);
         const idx = removalTimers.indexOf(removeTimer);
         if (idx !== -1) removalTimers.splice(idx, 1);
-      }, duration * 1000 + 40);
+      }, duration * 1000 + 100);
 
       removalTimers.push(removeTimer);
 
-      const nextDelay = 500 + Math.random() * 1000;
-      schedulerTimeout = setTimeout(spawnDrop, nextDelay);
+      const nextDelay = 2500 + Math.random() * 3500;
+      schedulerTimeout = setTimeout(spawnParticle, nextDelay);
     };
 
-    schedulerTimeout = setTimeout(spawnDrop, 600);
+    schedulerTimeout = setTimeout(spawnParticle, 2000);
 
     return () => {
       mounted = false;
@@ -102,44 +89,81 @@ const Bio = () => {
   const experiences = [
     {
       title: "Full Stack Developer",
-      company: "Aquatico",
-      period: "January 2025 - Present",
-      description: "Building comprehensive management systems including Employee Management (leave, HR), Laboratory Information Management (stock, variables, analysis, quotes), Project Management (client registration, resource scheduling), and Reporting Management systems."
+      company: "Aquatico Scientific",
+      location: "Route 21 Business Park, Centurion",
+      period: "2024 - Present",
+      description: "Leading the complete ground-up rebuild of the company's enterprise system architecture. Architecting and developing a comprehensive full-stack solution using React for the frontend and Node.js for the backend, deployed on production servers using Nginx and orchestrated with Kubernetes. The system encompasses multiple integrated modules including laboratory information management, project coordination, and business operations management."
+    },
+    {
+      title: "Shop Assistant",
+      company: "Western Rackets",
+      period: "During Matric Year",
+      description: "Part-time retail position focused on customer service and sales, developing interpersonal communication skills and professional workplace etiquette."
+    },
+    {
+      title: "Waiter",
+      company: "Bean Tree, Krugersdorp",
+      period: "During Matric Year",
+      description: "Food service position emphasizing customer satisfaction, multitasking, and effective communication in a fast-paced environment."
     }
   ];
 
   const education = [
     {
       degree: "MSc. Computer Science",
-      institution: "North-West University",
+      institution: "North-West University, Potchefstroom",
       period: "2026 - Present",
-      details: "Developing a Python telescope correlator with Docker deployment for university telescopy site."
+      details: "Research-focused master's degree with emphasis on astronomical data processing and distributed computing systems."
     },
     {
       degree: "BSc. Hons. Computer Science",
-      institution: "North-West University",
+      institution: "North-West University, Potchefstroom",
       period: "2024",
-      details: "Student Number: 38276909"
+      details: "Honours degree specializing in advanced software engineering and computational research methodologies."
     },
     {
       degree: "BSc. Computer Science & Statistics",
-      institution: "North-West University",
+      institution: "North-West University, Potchefstroom",
       period: "2021 - 2023",
-      details: "Team lead for telescope software and stock management system projects."
+      details: "Dual-major undergraduate degree combining computational theory with statistical analysis and data science fundamentals."
+    },
+    {
+      degree: "National Senior Certificate (Matric)",
+      institution: "Hoërskool Noordheuwel",
+      period: "Completed",
+      details: "Subjects: Physics, Afrikaans Home Language, English First Additional Language, Mathematics, Information Technology, Computer Applications Technology."
     }
   ];
 
   const skills = {
-    "Programming": ["JavaScript", "Python", "Node.js", "R", "SAS"],
-    "Technologies": ["SQL", "Docker", "React"],
-    "Soft Skills": ["Team Leadership", "Project Management", "Data Analysis"]
+    "Programming Languages": ["Python", "JavaScript", "R", "HTML/CSS", "SAS"],
+    "Frameworks & Technologies": ["React", "Node.js", "Docker", "Kubernetes", "Nginx", "SQL", "PostgreSQL"],
+    "Professional Skills": ["Team Leadership", "Project Management", "Full-Stack Development", "System Architecture"]
   };
 
-  const hobbies = ["Gym", "Guitar", "8 Ball Pool", "Squash", "Hiking", "Data Analysis", "Personal Projects"];
+  const projects = [
+    {
+      title: "Telescope Correlator System",
+      period: "Master's Research Project",
+      description: "Developing a Python-based telescope correlator for the university's 4-telescope observatory site. The system is containerized using Docker for seamless deployment and will be integrated into the main CLI program used for celestial observation and student training in physics and computer science."
+    },
+    {
+      title: "Nutrition AI & Body Composition Analysis",
+      period: "Ongoing Personal Project",
+      description: "Machine learning project analyzing multiple datasets to identify key variables influencing body fat percentage. Developed a statistical model using normal distribution theory to estimate body composition metrics. Continues to evolve with expanded datasets and refined predictive algorithms."
+    },
+    {
+      title: "Personal Portfolio Website",
+      period: "Current",
+      description: "Custom-built portfolio and CV website showcasing technical skills through interactive design and modern web technologies."
+    }
+  ];
+
+  const hobbies = ["Gym", "Squash", "Guitar", "8 Ball Pool", "Hiking", "Personal Projects", "Web Development"];
 
   return (
     <div ref={containerRef} className={styles.pageWrapper} onClick={handleClick}>
-      {/* Ripple and raindrop visuals are created directly in the DOM to avoid React re-renders */}
+      {/* Ripple and water particle visuals are created directly in the DOM to avoid React re-renders */}
 
       {/* Background decoration */}
       <div className={styles.bgDecoration} />
@@ -171,7 +195,11 @@ const Bio = () => {
             </div>
             <div className={styles.infoItem}>
               <FaAward size={18} />
-              <span>License Code B</span>
+              <span>Driver's License: Code B</span>
+            </div>
+            <div className={styles.infoItem}>
+              <MdWorkOutline size={18} />
+              <span>Male</span>
             </div>
           </div>
 
@@ -205,7 +233,7 @@ const Bio = () => {
             <section className={styles.section}>
               <div className={styles.sectionTitle}>
                 <MdWorkOutline size={28} />
-                <h2>Experience</h2>
+                <h2>Professional Experience</h2>
               </div>
               <div className={styles.sectionContent}>
                 {experiences.map((exp, index) => (
@@ -214,13 +242,10 @@ const Bio = () => {
                       <h3>{exp.title}</h3>
                       <span className={styles.period}>{exp.period}</span>
                     </div>
-                    <p className={styles.company}>{exp.company}</p>
+                    <p className={styles.company}>{exp.company}{exp.location && ` • ${exp.location}`}</p>
                     <p className={styles.description}>{exp.description}</p>
                   </div>
                 ))}
-                <div className={styles.previousRoles}>
-                  <p><strong>Previous Roles:</strong> Shop Assistant at Western Rackets, Waiter (during matric years)</p>
-                </div>
               </div>
             </section>
 
@@ -264,6 +289,24 @@ const Bio = () => {
 
             <section className={styles.section}>
               <div className={styles.sectionTitle}>
+                <MdCode size={28} />
+                <h2>Notable Projects</h2>
+              </div>
+              <div className={styles.sectionContent}>
+                {projects.map((project, index) => (
+                  <div key={index} className={styles.projectItem}>
+                    <div className={styles.projectHeader}>
+                      <h3>{project.title}</h3>
+                      <span className={styles.period}>{project.period}</span>
+                    </div>
+                    <p className={styles.description}>{project.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={styles.section}>
+              <div className={styles.sectionTitle}>
                 <MdFavorite size={28} />
                 <h2>Interests & Hobbies</h2>
               </div>
@@ -277,7 +320,7 @@ const Bio = () => {
             </section>
 
             <section className={styles.additionalInfo}>
-              <p><strong>Languages:</strong> English, Afrikaans</p>
+              <p><strong>Languages:</strong> Afrikaans, English</p>
               <p><strong>Faith:</strong> Christian</p>
             </section>
           </div>

@@ -29,52 +29,78 @@
   pointer-events: none;
 }
 
-/* ==================== RIPPLE EFFECT ==================== */
+/* ==================== RIPPLE EFFECT (CLICK) ==================== */
 .ripple {
   position: fixed;
-  width: 400px;
-  height: 400px;
-  border: 2px solid var(--accent-1);
+  width: 350px;
+  height: 350px;
+  border: 3px solid var(--accent-1);
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0);
   transform-origin: center center;
   pointer-events: none;
   z-index: 5;
-  animation: rippleExpand 900ms cubic-bezier(.22,.9,.33,1) forwards;
+  animation: rippleExpand 1200ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
   will-change: transform, opacity;
+  box-shadow: 
+    0 0 20px var(--accent-1),
+    inset 0 0 20px var(--accent-1);
 }
 
 @keyframes rippleExpand {
   0% {
     transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
+    opacity: 0.9;
+    border-width: 3px;
+  }
+  50% {
+    opacity: 0.6;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1.2);
     opacity: 0;
+    border-width: 1px;
   }
 }
 
-/* ==================== RAINDROPS ==================== */
-.raindrop {
+/* ==================== SUBTLE WATER PARTICLES ==================== */
+.waterParticle {
   position: fixed;
-  top: -20px;
-  width: 2px;
-  height: 14px;
-  background: linear-gradient(180deg, var(--accent-1), transparent);
-  border-radius: 2px;
-  transform: translateY(0) translateZ(0);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-2), transparent);
+  transform: translate(-50%, -50%) scale(0);
   pointer-events: none;
-  z-index: 4;
-  animation: fall var(--duration, 0.9s) linear forwards;
-  opacity: 0.7;
+  z-index: 3;
+  animation: waterFloat var(--duration, 4s) ease-in-out forwards;
+  opacity: 0;
   will-change: transform, opacity;
+  box-shadow: 
+    0 0 12px var(--accent-2),
+    inset 0 0 6px var(--accent-1);
 }
 
-@keyframes fall {
-  to {
-    transform: translateY(var(--fall-distance));
-    opacity: 0.5;
+@keyframes waterFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  10% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, calc(-50% - 30px)) scale(1.2);
+  }
+  90% {
+    opacity: 0.3;
+    transform: translate(-50%, calc(-50% - 50px)) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 60px)) scale(0);
   }
 }
 
@@ -103,27 +129,30 @@
 
 /* ==================== GLASS CONTAINER ==================== */
 .glassContainer {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px) saturate(140%);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border-radius: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
   box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
-  padding: 3rem 2.5rem;
+    0 16px 48px 0 rgba(0, 0, 0, 0.2),
+    0 8px 24px 0 rgba(0, 0, 0, 0.15),
+    inset 0 2px 0 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 0 0 rgba(0, 0, 0, 0.1);
+  padding: 3.5rem 3rem;
   animation: glassAppear 1s ease-out 0.3s backwards;
   position: relative;
+  overflow: hidden;
 }
 
 @keyframes glassAppear {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.92) translateY(20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -133,13 +162,40 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 2px;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.3),
+    var(--accent-1),
+    var(--accent-2),
     transparent
   );
+  opacity: 0.6;
+}
+
+.glassContainer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 70%
+  );
+  animation: glassShimmer 15s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes glassShimmer {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(10%, 10%) rotate(360deg);
+  }
 }
 
 /* ==================== PHOTO SECTION ==================== */
@@ -399,6 +455,7 @@
 .section:nth-child(3) { --delay: 0.2s; }
 .section:nth-child(4) { --delay: 0.3s; }
 .section:nth-child(5) { --delay: 0.4s; }
+.section:nth-child(6) { --delay: 0.5s; }
 
 .section:hover {
   transform: translateY(-4px);
@@ -436,9 +493,10 @@
   padding: 1.5rem;
 }
 
-/* ==================== EXPERIENCE & EDUCATION ==================== */
+/* ==================== EXPERIENCE & EDUCATION & PROJECTS ==================== */
 .experienceItem,
-.educationItem {
+.educationItem,
+.projectItem {
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -446,20 +504,23 @@
 }
 
 .experienceItem:hover,
-.educationItem:hover {
+.educationItem:hover,
+.projectItem:hover {
   padding-left: 1rem;
   border-left: 3px solid var(--accent-2);
 }
 
 .experienceItem:last-child,
-.educationItem:last-child {
+.educationItem:last-child,
+.projectItem:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
 .experienceHeader,
-.educationHeader {
+.educationHeader,
+.projectHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -469,7 +530,8 @@
 }
 
 .experienceHeader h3,
-.educationHeader h3 {
+.educationHeader h3,
+.projectHeader h3 {
   margin: 0;
   font-size: var(--font-size-md);
   color: var(--accent-1);
@@ -478,7 +540,8 @@
 }
 
 .experienceItem:hover h3,
-.educationItem:hover h3 {
+.educationItem:hover h3,
+.projectItem:hover h3 {
   color: var(--accent-2);
 }
 
@@ -493,7 +556,8 @@
 }
 
 .experienceItem:hover .period,
-.educationItem:hover .period {
+.educationItem:hover .period,
+.projectItem:hover .period {
   background: var(--accent-2);
   color: var(--background-1);
 }
@@ -655,7 +719,8 @@
   }
 
   .experienceHeader,
-  .educationHeader {
+  .educationHeader,
+  .projectHeader {
     flex-direction: column;
     align-items: flex-start;
   }
