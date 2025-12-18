@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MdEmail, MdPhone, MdLocationOn, MdMessage } from 'react-icons/md';
-import { FaLinkedin, FaGithub, FaInstagram, FaOrcid } from 'react-icons/fa';
+import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart } from 'react-icons/fa';
 import styles from './Contact.module.css';
 
 const Contact = () => {
@@ -245,10 +245,33 @@ const Contact = () => {
           ))}
         </div>
 
-        {/* Footer message */}
-        <div className={styles.footerMessage}>
-          <div className={styles.pulsingDot} />
-          <p>Available for freelance projects</p>
+        {/* Donation Section */}
+        <div className={styles.divider}>
+          <div className={styles.dividerLine} />
+          <span className={styles.dividerText}>Support</span>
+          <div className={styles.dividerLine} />
+        </div>
+
+        <div className={styles.donationSection}>
+          <div className={styles.donationCard}>
+            <div className={styles.donationIcon}>
+              <FaHeart size={36} />
+              <div className={styles.heartBeat} />
+            </div>
+            <h3 className={styles.donationTitle}>Support My Studies</h3>
+            <p className={styles.donationText}>
+              Contributions help fund my academic journey and research pursuits.
+            </p>
+            <a 
+              href="https://pos.snapscan.io/qr/JOkZ6v6j" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={styles.donationButton}
+            >
+              <span>Donate via SnapScan</span>
+              <div className={styles.buttonShine} />
+            </a>
+          </div>
         </div>
       </div>
     </div>

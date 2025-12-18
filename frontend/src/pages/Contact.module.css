@@ -564,25 +564,16 @@
   transform: translateX(8px) scale(1.2);
 }
 
-/* ==================== FOOTER MESSAGE ==================== */
-.footerMessage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
-  margin-top: 3rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
-  border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+/* ==================== DONATION SECTION ==================== */
+.donationSection {
+  margin: 3rem 0;
   animation: fadeInUp 0.8s ease-out 1.2s backwards;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -590,29 +581,141 @@
   }
 }
 
-.pulsingDot {
-  width: 12px;
-  height: 12px;
-  background: var(--success-color);
-  border-radius: 50%;
+.donationCard {
   position: relative;
-  animation: pulse 2s ease-in-out infinite;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  overflow: hidden;
 }
 
-@keyframes pulse {
+.donationCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.donationIcon {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF6B9D;
+  border: 3px solid #FF6B9D;
+  animation: heartFloat 3s ease-in-out infinite;
+}
+
+@keyframes heartFloat {
   0%, 100% {
-    box-shadow: 0 0 0 0 var(--success-color);
+    transform: translateY(0);
   }
   50% {
-    box-shadow: 0 0 0 8px transparent;
+    transform: translateY(-10px);
   }
 }
 
-.footerMessage p {
-  margin: 0;
+.heartBeat {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 2px solid #FF6B9D;
+  animation: heartBeatPulse 2s ease-out infinite;
+}
+
+@keyframes heartBeatPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.donationTitle {
+  position: relative;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  z-index: 1;
+}
+
+.donationText {
+  position: relative;
+  font-size: 1.1rem;
+  color: var(--primary-text-color);
+  opacity: 0.85;
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+  z-index: 1;
+}
+
+.donationButton {
+  position: relative;
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  border: none;
+  border-radius: 50px;
   color: var(--primary-text-color);
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.donationButton:hover {
+  transform: translateY(-4px) scale(1.05);
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), 0 0 40px var(--accent-1);
+}
+
+.donationButton span {
+  position: relative;
+  z-index: 2;
+}
+
+.buttonShine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
+}
+
+.donationButton:hover .buttonShine {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -652,6 +755,23 @@
     width: 36px;
     height: 36px;
   }
+
+  .donationCard {
+    padding: 2.5rem 2rem;
+  }
+
+  .donationIcon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .donationTitle {
+    font-size: 1.6rem;
+  }
+
+  .donationText {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -684,8 +804,12 @@
     height: 22px;
   }
 
-  .footerMessage {
-    flex-direction: column;
-    text-align: center;
+  .donationCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .donationButton {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
   }
 }
