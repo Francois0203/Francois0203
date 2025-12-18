@@ -1,0 +1,691 @@
+/* ==================== CONTACT WRAPPER ==================== */
+.contactWrapper {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--background-1);
+  padding: 3rem 1.5rem 5rem 1.5rem;
+}
+
+/* ==================== MAGNETIC FIELD BACKGROUND ==================== */
+.magneticField {
+  position: fixed;
+  inset: 0;
+  opacity: 0.4;
+  transition: background 0.2s ease-out;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==================== CIRCUIT LINES ==================== */
+.circuitLines {
+  position: fixed;
+  inset: 0;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==================== DNA HELIX ==================== */
+.helixContainer {
+  position: fixed;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  width: 120px;
+  height: 600px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.3;
+}
+
+.helixStrand {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  animation: helixRotate 12s linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes helixRotate {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+.helixDot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-1);
+  border-radius: 50%;
+  left: 50%;
+  top: calc(var(--index) * 8.33%);
+  transform: translateX(-50%) translateX(calc(50px * cos(var(--index) * 30deg)));
+  box-shadow: 0 0 15px var(--accent-1);
+  animation: helixDotGlow 2s ease-in-out infinite;
+  animation-delay: calc(var(--index) * 0.1s);
+}
+
+@keyframes helixDotGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-50%) translateX(calc(50px * cos(var(--index) * 30deg))) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateX(calc(50px * cos(var(--index) * 30deg))) scale(1.3);
+  }
+}
+
+.helixBridge {
+  position: absolute;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+  left: 50%;
+  top: calc(var(--bridge-index) * 12.5%);
+  transform: translateX(-50%);
+  opacity: 0.4;
+  animation: bridgePulse 3s ease-in-out infinite;
+  animation-delay: calc(var(--bridge-index) * 0.2s);
+}
+
+@keyframes bridgePulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.circuitLine {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawLine 3s ease-out forwards;
+}
+
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.circuitNode {
+  opacity: 0;
+  animation: nodeAppear 0.5s ease-out 2s forwards, nodePulse 2s ease-in-out 2.5s infinite;
+}
+
+@keyframes nodeAppear {
+  to { opacity: 1; }
+}
+
+@keyframes nodePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+
+/* ==================== ENERGY PARTICLES ==================== */
+.energyParticle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-1), transparent);
+  pointer-events: none;
+  z-index: 5;
+  animation: energyFloat var(--duration, 3s) ease-in-out forwards;
+  opacity: 0;
+  box-shadow: 0 0 10px var(--accent-1);
+}
+
+@keyframes energyFloat {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translate(0, 0) scale(1);
+  }
+  80% {
+    opacity: 0.4;
+    transform: translate(var(--tx, 20px), var(--ty, -40px)) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 30px), var(--ty, -60px)) scale(0);
+  }
+}
+
+/* ==================== CONTENT CONTAINER ==================== */
+.contentContainer {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.contentContainer.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==================== HEADER SECTION ==================== */
+.headerSection {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInDown 0.8s ease-out 0.3s backwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.messageIcon {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-1);
+  border: 3px solid var(--accent-1);
+  animation: iconSpin 20s linear infinite, iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes iconSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.iconGlow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-1), transparent);
+  opacity: 0.3;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+}
+
+.mainTitle {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--primary-text-color);
+  opacity: 0.8;
+  margin: 0;
+  line-height: 1.8;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ==================== CONTACT GRID ==================== */
+.contactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.contactCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: cardSlideIn 0.6s ease-out backwards;
+}
+
+.contactCard:nth-child(1) { animation-delay: 0.5s; }
+.contactCard:nth-child(2) { animation-delay: 0.6s; }
+.contactCard:nth-child(3) { animation-delay: 0.7s; }
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.contactCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--card-color), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.contactCard.hovered::before {
+  opacity: 0.15;
+}
+
+.contactCard.hovered {
+  transform: translateY(-12px) scale(1.03);
+  border-color: var(--card-color);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 0 40px var(--card-color);
+}
+
+.cardContent {
+  position: relative;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.cardIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--card-color);
+  transition: all 0.4s ease;
+  border: 2px solid var(--card-color);
+}
+
+.contactCard.hovered .cardIcon {
+  transform: rotate(360deg) scale(1.15);
+  background: var(--card-color);
+  color: var(--background-1);
+  box-shadow: 0 0 30px var(--card-color);
+}
+
+.cardTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: var(--accent-1);
+  transition: color 0.3s ease;
+}
+
+.contactCard.hovered .cardTitle {
+  color: var(--card-color);
+}
+
+.cardValue {
+  font-size: 1rem;
+  color: var(--primary-text-color);
+  opacity: 0.9;
+  margin: 0;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.cardShine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
+}
+
+.contactCard.hovered .cardShine {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+/* ==================== DIVIDER ==================== */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin: 4rem 0;
+  animation: fadeIn 0.8s ease-out 0.9s backwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dividerLine {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-1),
+    transparent
+  );
+  opacity: 0.3;
+}
+
+.dividerText {
+  color: var(--accent-2);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.dividerText::before,
+.dividerText::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--accent-2);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+.dividerText::before {
+  left: -20px;
+}
+
+.dividerText::after {
+  right: -20px;
+  animation-delay: 1s;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-50%) scale(1.5); }
+}
+
+/* ==================== SOCIAL GRID ==================== */
+.socialGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.socialCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+  color: var(--primary-text-color);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  animation: socialSlideIn 0.5s ease-out backwards;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes socialSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.socialCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--social-color);
+  transform: scaleY(0);
+  transition: transform 0.4s ease;
+}
+
+.socialCard:hover::before {
+  transform: scaleY(1);
+}
+
+.socialCard:hover {
+  transform: translateX(12px);
+  border-color: var(--social-color);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.socialIcon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--social-color);
+  transition: all 0.4s ease;
+  border: 2px solid var(--social-color);
+  flex-shrink: 0;
+}
+
+.socialCard:hover .socialIcon {
+  background: var(--social-color);
+  color: var(--background-1);
+  transform: rotate(360deg) scale(1.1);
+  box-shadow: 0 0 20px var(--social-color);
+}
+
+.socialInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.socialName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--accent-1);
+  transition: color 0.3s ease;
+}
+
+.socialCard:hover .socialName {
+  color: var(--social-color);
+}
+
+.socialUsername {
+  font-size: 0.95rem;
+  color: var(--primary-text-color);
+  opacity: 0.7;
+  margin: 0;
+}
+
+.socialArrow {
+  font-size: 1.5rem;
+  color: var(--accent-2);
+  transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+
+.socialCard:hover .socialArrow {
+  color: var(--social-color);
+  transform: translateX(8px) scale(1.2);
+}
+
+/* ==================== FOOTER MESSAGE ==================== */
+.footerMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 0.8s ease-out 1.2s backwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pulsingDot {
+  width: 12px;
+  height: 12px;
+  background: var(--success-color);
+  border-radius: 50%;
+  position: relative;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--success-color);
+  }
+  50% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+.footerMessage p {
+  margin: 0;
+  color: var(--primary-text-color);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .contactWrapper {
+    padding: 2rem 1rem;
+  }
+
+  .mainTitle {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .socialGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .divider {
+    gap: 1rem;
+  }
+
+  .dividerText {
+    font-size: 0.9rem;
+  }
+
+  .messageIcon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .messageIcon svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardContent {
+    padding: 2rem 1.5rem;
+  }
+
+  .cardIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .cardIcon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .socialCard {
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+  }
+
+  .socialIcon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .socialIcon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .footerMessage {
+    flex-direction: column;
+    text-align: center;
+  }
+}
