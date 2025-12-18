@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MdSpeed, MdLightbulb, MdPrecisionManufacturing, MdGroups } from 'react-icons/md';
 import styles from './Home.module.css';
 
@@ -160,6 +161,10 @@ const Home = () => {
             <span className={styles.tech}>Docker</span>
             <span className={styles.tech}>PostgreSQL</span>
           </div>
+        </div>
+        {/* Support Button */}
+        <div className={styles.supportWrap}>
+          <Link to="/contact" className={styles.supportButton}>Support & Contact</Link>
         </div>
       </div>
     </div>
