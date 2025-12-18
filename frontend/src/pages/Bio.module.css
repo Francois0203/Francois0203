@@ -455,7 +455,6 @@
 .section:nth-child(3) { --delay: 0.2s; }
 .section:nth-child(4) { --delay: 0.3s; }
 .section:nth-child(5) { --delay: 0.4s; }
-.section:nth-child(6) { --delay: 0.5s; }
 
 .section:hover {
   transform: translateY(-4px);
@@ -493,10 +492,9 @@
   padding: 1.5rem;
 }
 
-/* ==================== EXPERIENCE & EDUCATION & PROJECTS ==================== */
+/* ==================== EXPERIENCE & EDUCATION ==================== */
 .experienceItem,
-.educationItem,
-.projectItem {
+.educationItem {
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -504,23 +502,20 @@
 }
 
 .experienceItem:hover,
-.educationItem:hover,
-.projectItem:hover {
+.educationItem:hover {
   padding-left: 1rem;
   border-left: 3px solid var(--accent-2);
 }
 
 .experienceItem:last-child,
-.educationItem:last-child,
-.projectItem:last-child {
+.educationItem:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
 .experienceHeader,
-.educationHeader,
-.projectHeader {
+.educationHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -530,8 +525,7 @@
 }
 
 .experienceHeader h3,
-.educationHeader h3,
-.projectHeader h3 {
+.educationHeader h3 {
   margin: 0;
   font-size: var(--font-size-md);
   color: var(--accent-1);
@@ -540,8 +534,7 @@
 }
 
 .experienceItem:hover h3,
-.educationItem:hover h3,
-.projectItem:hover h3 {
+.educationItem:hover h3 {
   color: var(--accent-2);
 }
 
@@ -556,8 +549,7 @@
 }
 
 .experienceItem:hover .period,
-.educationItem:hover .period,
-.projectItem:hover .period {
+.educationItem:hover .period {
   background: var(--accent-2);
   color: var(--background-1);
 }
@@ -575,17 +567,6 @@
   line-height: 1.7;
   color: var(--primary-text-color);
   opacity: 0.9;
-}
-
-.previousRoles {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  opacity: 0.85;
-}
-
-.previousRoles p {
-  margin: 0;
 }
 
 /* ==================== SKILLS ==================== */
@@ -719,8 +700,7 @@
   }
 
   .experienceHeader,
-  .educationHeader,
-  .projectHeader {
+  .educationHeader {
     flex-direction: column;
     align-items: flex-start;
   }

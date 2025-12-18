@@ -140,8 +140,10 @@
   font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 900;
   margin: 0;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  padding: 0.1em 0;
 }
 
 .firstName {

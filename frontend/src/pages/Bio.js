@@ -141,24 +141,6 @@ const Bio = () => {
     "Professional Skills": ["Team Leadership", "Project Management", "Full-Stack Development", "System Architecture"]
   };
 
-  const projects = [
-    {
-      title: "Telescope Correlator System",
-      period: "Master's Research Project",
-      description: "Developing a Python-based telescope correlator for the university's 4-telescope observatory site. The system is containerized using Docker for seamless deployment and will be integrated into the main CLI program used for celestial observation and student training in physics and computer science."
-    },
-    {
-      title: "Nutrition AI & Body Composition Analysis",
-      period: "Ongoing Personal Project",
-      description: "Machine learning project analyzing multiple datasets to identify key variables influencing body fat percentage. Developed a statistical model using normal distribution theory to estimate body composition metrics. Continues to evolve with expanded datasets and refined predictive algorithms."
-    },
-    {
-      title: "Personal Portfolio Website",
-      period: "Current",
-      description: "Custom-built portfolio and CV website showcasing technical skills through interactive design and modern web technologies."
-    }
-  ];
-
   const hobbies = ["Gym", "Squash", "Guitar", "8 Ball Pool", "Hiking", "Personal Projects", "Web Development"];
 
   return (
@@ -282,24 +264,6 @@ const Bio = () => {
                         <span key={index} className={styles.skillTag}>{skill}</span>
                       ))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className={styles.section}>
-              <div className={styles.sectionTitle}>
-                <MdCode size={28} />
-                <h2>Notable Projects</h2>
-              </div>
-              <div className={styles.sectionContent}>
-                {projects.map((project, index) => (
-                  <div key={index} className={styles.projectItem}>
-                    <div className={styles.projectHeader}>
-                      <h3>{project.title}</h3>
-                      <span className={styles.period}>{project.period}</span>
-                    </div>
-                    <p className={styles.description}>{project.description}</p>
                   </div>
                 ))}
               </div>
