@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { GiCog } from 'react-icons/gi';
 import { IoColorPaletteSharp } from 'react-icons/io5';
+import { FaStopwatch } from 'react-icons/fa';
 import ThemeSwitch from '../Theme Switch';
+import ReduceAnimationsSwitch from '../Reduce Animations Switch';
 
 /* Styling */
 import styles from "./Settings.module.css";
@@ -117,6 +119,21 @@ const Settings = function Settings({
                 toggleTheme={toggleTheme}
                 size={32}
               />
+            </div>
+          </div>
+          {/* Reduce Animations Setting */}
+          <div className={styles.settingItem}>
+            <div className={styles.settingLeft}>
+              <div className={styles.iconWrapper}>
+                <FaStopwatch className={styles.settingIcon} />
+              </div>
+              <div className={styles.settingInfo}>
+                <h4 className={styles.settingLabel}>Reduce animations</h4>
+                <p className={styles.settingDescription}>Disable non-essential UI animations</p>
+              </div>
+            </div>
+            <div className={styles.settingControl}>
+              <ReduceAnimationsSwitch size={20} />
             </div>
           </div>
         </div>
