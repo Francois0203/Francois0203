@@ -97,11 +97,6 @@ const Projects = () => {
         label: "View Repository",
         url: "https://github.com/Francois0203",
         icon: <FaGithub />
-      },
-      {
-        label: "View Live Site",
-        url: "https://francois0203.github.io",
-        icon: <FaRocket />
       }
     ]
   };

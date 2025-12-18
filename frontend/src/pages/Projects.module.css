@@ -285,6 +285,7 @@
 .projectLink:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px var(--accent-1-background);
+  background-color: var(--accent-1-background);
 }
 
 .projectLink svg {
