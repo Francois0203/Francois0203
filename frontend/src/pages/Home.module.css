@@ -1,10 +1,8 @@
 /* ==================== HOME WRAPPER ==================== */
 .homeWrapper {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
+  position: relative;
+  width: 100%;
   min-height: 100vh;
-  overflow-y: auto;
   overflow-x: hidden;
   cursor: pointer;
   background: var(--background-1);
@@ -30,6 +28,108 @@
   opacity: 0.3;
   z-index: 0;
   pointer-events: none;
+  transition: transform 0.3s ease-out;
+  will-change: transform;
+}
+
+/* ==================== FLOATING CODE MATRIX ==================== */
+.codeMatrix {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  transition: transform 0.5s ease-out;
+  will-change: transform;
+}
+
+.codeSymbol {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  opacity: 0;
+  animation: floatAndFade var(--duration, 20s) ease-in-out var(--delay, 0s) infinite;
+  text-shadow: 0 0 10px currentColor;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes floatAndFade {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.8);
+  }
+  10% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(var(--tx, 30px), var(--ty, -50px)) rotate(180deg) scale(1.2);
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx2, -20px), var(--ty2, -100px)) rotate(360deg) scale(0.6);
+  }
+}
+
+/* ==================== ANIMATED ORBS ==================== */
+.orbsContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.4;
+  transition: transform 0.6s ease-out;
+  will-change: transform;
+  animation: orbPulse 8s ease-in-out infinite;
+}
+
+.orb1 {
+  width: 400px;
+  height: 400px;
+  background: var(--accent-1);
+  top: 10%;
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.orb2 {
+  width: 500px;
+  height: 500px;
+  background: var(--accent-2);
+  top: 50%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.orb3 {
+  width: 350px;
+  height: 350px;
+  background: var(--accent-3);
+  bottom: 15%;
+  left: 40%;
+  animation-delay: 4s;
+}
+
+@keyframes orbPulse {
+  0%, 100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2) translate(20px, -20px);
+    opacity: 0.5;
+  }
 }
 
 /* ==================== RIPPLE EFFECT ==================== */
@@ -100,7 +200,7 @@
 /* ==================== CONTENT CONTAINER ==================== */
 .contentContainer {
   position: relative;
-  max-width: 1100px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   padding: 2rem 1.5rem;
@@ -110,6 +210,10 @@
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   z-index: 10;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .contentContainer > * {
@@ -121,207 +225,233 @@
   transform: translateY(0);
 }
 
-/* ==================== HERO BOX ==================== */
-.heroBox {
-  position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  overflow: hidden;
-  margin-bottom: 2rem;
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: heroSlideIn 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-@keyframes heroSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.heroCanvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  opacity: 0.6;
-}
-
-.heroContent {
-  position: relative;
-  z-index: 2;
+/* ==================== HERO SECTION ==================== */
+.heroSection {
   text-align: center;
-  padding: 3rem 2rem;
   width: 100%;
-}
-
-.heroText {
-  margin-bottom: 2.5rem;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.8s ease-out 0.2s backwards;
+  position: relative;
 }
 
 .heroLabel {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.25em;
   color: var(--accent-2);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
-  opacity: 0;
-  animation: fadeIn 0.8s ease-out 0.3s forwards;
+  padding: 0.5rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  animation: labelFloat 3s ease-in-out infinite;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+@keyframes labelFloat {
+  0%, 100% {
+    transform: translateY(0px);
   }
-  to {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.labelDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-1);
+  display: inline-block;
+  box-shadow: 0 0 10px var(--accent-1);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
     opacity: 1;
-    transform: translateY(0);
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
   }
 }
 
-.heroName {
-  font-size: clamp(3rem, 10vw, 6rem);
-  font-weight: 900;
-  margin: 0 0 1rem 0;
-  line-height: 1;
-  letter-spacing: -0.02em;
+.heroTitle {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  padding: 0.25rem 0.5rem;
   background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3));
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradientShift 4s ease infinite, heroNameAppear 0.8s ease-out 0.5s backwards;
-  text-shadow: 0 0 40px var(--accent-1-background);
+  animation: gradientShift 5s ease infinite;
+  position: relative;
+  display: inline-block;
+  overflow: visible;
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
-@keyframes heroNameAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
+.titleUnderline {
+  width: 150px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--accent-1), var(--accent-2), transparent);
+  margin: 0 auto 1.5rem;
+  border-radius: 2px;
+  animation: underlineExpand 2s ease-in-out infinite;
+}
+
+@keyframes underlineExpand {
+  0%, 100% {
+    width: 150px;
+    opacity: 0.6;
   }
-  to {
+  50% {
+    width: 200px;
     opacity: 1;
-    transform: scale(1);
   }
 }
 
-.heroTagline {
+.heroSubtitle {
   font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--accent-2);
+  opacity: 0.95;
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+  text-shadow: 0 0 20px var(--accent-2-background);
+}
+
+.heroDescription {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
   color: var(--primary-text-color);
   opacity: 0.85;
-  margin: 0;
+  margin: 0 0 2.5rem 0;
   font-weight: 400;
-  letter-spacing: 0.01em;
-  animation: fadeIn 0.8s ease-out 0.7s backwards;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
 }
 
-/* ==================== HERO CTA ==================== */
-.heroCta {
-  animation: fadeIn 0.8s ease-out 0.9s backwards;
+/* ==================== CTA BUTTONS ==================== */
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
-.glowButton {
+.primaryButton,
+.secondaryButton {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.25rem 2.5rem;
-  background: transparent;
-  border: 2px solid var(--accent-1);
-  border-radius: 12px;
-  color: var(--accent-1);
-  font-weight: 700;
-  font-size: 1.1rem;
+  padding: 1.15rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
   text-decoration: none;
-  overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 
-    0 0 20px var(--accent-1-background),
-    inset 0 0 20px transparent;
-  animation: buttonPulse 2s ease-in-out infinite;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 1;
 }
 
-@keyframes buttonPulse {
-  0%, 100% {
-    box-shadow: 
-      0 0 20px var(--accent-1-background),
-      inset 0 0 20px transparent;
-  }
-  50% {
-    box-shadow: 
-      0 0 40px var(--accent-1),
-      inset 0 0 30px var(--accent-1-background);
-  }
+.buttonContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  position: relative;
+  z-index: 2;
 }
 
-.glowButtonBg {
+.primaryButton {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: white;
+  border: none;
+  box-shadow: 0 8px 32px var(--accent-1-background);
+}
+
+.buttonGlow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 48px var(--accent-1);
+}
+
+.primaryButton:hover .buttonGlow {
+  opacity: 1;
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  color: var(--accent-1);
+  border: 2px solid var(--accent-1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.secondaryButton::before {
+  content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  border-radius: 50px;
 }
 
-.glowButton:hover .glowButtonBg {
-  transform: scaleX(1);
+.secondaryButton:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 32px var(--accent-1-background);
+  color: white;
+  border-color: transparent;
 }
 
-.glowButton:hover {
-  color: var(--background-1);
-  border-color: var(--accent-1);
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 
-    0 20px 60px var(--accent-1-background),
-    0 0 60px var(--accent-1),
-    inset 0 0 40px transparent;
+.secondaryButton:hover::before {
+  opacity: 1;
 }
 
-.glowButtonText,
-.glowButtonIcon {
-  position: relative;
-  z-index: 1;
-  transition: transform 0.3s ease;
+.primaryButton:active,
+.secondaryButton:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
-.glowButton:hover .glowButtonIcon {
-  transform: translateX(4px) rotate(15deg);
-}
-
-/* ==================== STATS BAR ==================== */
-.statsBar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  padding: 1.5rem 2rem;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  margin-bottom: 1.5rem;
-  animation: fadeInUp 0.8s ease-out 1.1s backwards;
+/* ==================== INFO CARDS ==================== */
+.infoCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 850px;
+  animation: fadeInUp 0.8s ease-out 0.4s backwards;
 }
 
 @keyframes fadeInUp {
@@ -335,262 +465,355 @@
   }
 }
 
-.statItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.statNumber {
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: var(--accent-1);
-  line-height: 1;
-}
-
-.statText {
-  font-size: 0.7rem;
-  color: var(--primary-text-color);
-  opacity: 0.7;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-.statDivider {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(to bottom, transparent, var(--accent-1), transparent);
-  opacity: 0.3;
-}
-
-/* ==================== TECH ROW ==================== */
-.techRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
-  flex-wrap: wrap;
-  animation: fadeInUp 0.8s ease-out 1.3s backwards;
-}
-
-.techLabel {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--primary-text-color);
-  opacity: 0.6;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.techItems {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.techItem {
-  font-size: 0.85rem;
-  color: var(--accent-2);
-  font-weight: 600;
-  padding: 0.4rem 0.9rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  cursor: default;
-}
-
-.techItem:hover {
-  background: var(--accent-1);
-  color: var(--background-1);
-  border-color: var(--accent-1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--accent-1-background);
-}
-
-/* ==================== SECONDARY CTA ==================== */
-.secondaryCta {
-  text-align: center;
-  padding: 1rem;
-  animation: fadeInUp 0.8s ease-out 1.5s backwards;
-}
-
-.textLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--accent-2);
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
+.infoCard {
   position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  cursor: pointer;
 }
 
-.textLink::after {
+.infoCard::before {
   content: '';
   position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent-1);
-  transition: width 0.3s ease;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.textLink:hover::after {
-  width: 100%;
+.infoCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-1);
 }
 
-.textLink:hover {
+.infoCard:hover::before {
+  opacity: 0.1;
+}
+
+.cardShine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
+}
+
+.infoCard:hover .cardShine {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+.cardIconWrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.cardIcon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  color: white;
+  box-shadow: 0 8px 24px var(--accent-1-background);
+  transition: all 0.4s ease;
+  z-index: 1;
+}
+
+.infoCard:hover .cardIcon {
+  transform: rotateY(360deg) scale(1.1);
+  box-shadow: 0 12px 36px var(--accent-1);
+}
+
+.infoCard h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
   color: var(--accent-1);
-  transform: translateX(4px);
+  margin: 0 0 0.5rem 0;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s ease;
 }
 
-.arrowIcon {
-  transition: transform 0.3s ease;
+.infoCard:hover h3 {
+  color: var(--accent-2);
 }
 
-.textLink:hover .arrowIcon {
-  transform: translateX(4px);
+.infoCard p {
+  font-size: 0.95rem;
+  color: var(--primary-text-color);
+  opacity: 0.85;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  line-height: 1.5;
 }
+
+
 
 /* ==================== RESPONSIVE ==================== */
+/* Tablet */
 @media (max-width: 768px) {
+  .homeWrapper {
+    padding: 1.5rem 0;
+  }
+
   .contentContainer {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1.25rem;
   }
 
-  .heroBox {
-    min-height: 350px;
-    margin-bottom: 1.5rem;
+  .orb1 {
+    width: 300px;
+    height: 300px;
   }
 
-  .heroContent {
-    padding: 2rem 1.5rem;
+  .orb2 {
+    width: 350px;
+    height: 350px;
   }
 
-  .heroText {
-    margin-bottom: 2rem;
+  .orb3 {
+    width: 250px;
+    height: 250px;
+  }
+
+  .heroSection {
+    margin-bottom: 2.5rem;
   }
 
   .heroLabel {
     font-size: 0.65rem;
+    margin-bottom: 1.25rem;
+    padding: 0.45rem 1.25rem;
+    gap: 0.6rem;
+  }
+
+  .labelDot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .heroTitle {
     margin-bottom: 1rem;
   }
 
-  .heroName {
-    margin-bottom: 0.75rem;
-  }
-
-  .glowButton {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-  }
-
-  .statsBar {
-    gap: 1.5rem;
-    padding: 1.25rem 1.5rem;
+  .titleUnderline {
+    width: 130px;
+    height: 3px;
     margin-bottom: 1.25rem;
   }
 
-  .statNumber {
-    font-size: 1.5rem;
+  .heroSubtitle {
+    margin-bottom: 0.875rem;
   }
 
-  .statText {
-    font-size: 0.65rem;
+  .heroDescription {
+    margin-bottom: 2rem;
   }
 
-  .statDivider {
-    height: 35px;
+  .ctaButtons {
+    gap: 0.875rem;
   }
 
-  .techRow {
-    gap: 0.75rem;
-  }
-
-  .techLabel {
-    font-size: 0.75rem;
-    width: 100%;
-    text-align: center;
-    margin-bottom: 0.25rem;
-  }
-
-  .techItems {
-    gap: 0.5rem;
-  }
-
-  .techItem {
-    font-size: 0.75rem;
-    padding: 0.35rem 0.75rem;
-  }
-
-  .textLink {
+  .primaryButton,
+  .secondaryButton {
+    padding: 1rem 2.25rem;
     font-size: 0.95rem;
+  }
+
+  .infoCards {
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .infoCard {
+    padding: 1.25rem;
+  }
+
+  .cardIcon {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 0.875rem;
+  }
+
+  .infoCard h3 {
+    font-size: 1rem;
+  }
+
+  .infoCard p {
+    font-size: 0.85rem;
   }
 }
 
+/* Mobile */
 @media (max-width: 480px) {
+  .homeWrapper {
+    padding: 1rem 0;
+  }
+
   .contentContainer {
-    padding: 1.25rem 0.875rem;
+    padding: 1rem 0.875rem;
   }
 
-  .heroBox {
-    min-height: 300px;
+  .orb1 {
+    width: 250px;
+    height: 250px;
   }
 
-  .heroContent {
-    padding: 1.5rem 1rem;
+  .orb2 {
+    width: 300px;
+    height: 300px;
   }
 
-  .heroName {
-    font-size: clamp(2.5rem, 12vw, 4rem);
+  .orb3 {
+    width: 200px;
+    height: 200px;
   }
 
-  .heroTagline {
-    font-size: clamp(0.9rem, 3vw, 1.2rem);
+  .codeSymbol {
+    font-size: 0.75rem !important;
   }
 
-  .glowButton {
-    padding: 0.875rem 1.75rem;
-    font-size: 0.95rem;
+  .heroSection {
+    margin-bottom: 2rem;
+  }
+
+  .heroLabel {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    padding: 0.4rem 1rem;
     gap: 0.5rem;
   }
 
-  .statsBar {
+  .labelDot {
+    width: 4px;
+    height: 4px;
+  }
+
+  .heroTitle {
+    margin-bottom: 0.875rem;
+  }
+
+  .titleUnderline {
+    width: 100px;
+    height: 3px;
+    margin-bottom: 1rem;
+  }
+
+  .heroSubtitle {
+    margin-bottom: 0.75rem;
+  }
+
+  .heroDescription {
+    margin-bottom: 1.75rem;
+  }
+
+  .ctaButtons {
     flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    padding: 1rem 1.75rem;
+    font-size: 0.9rem;
+  }
+
+  .buttonContent {
+    justify-content: center;
+  }
+
+  .infoCards {
     gap: 1rem;
-    padding: 1rem;
+    grid-template-columns: 1fr;
   }
 
-  .statDivider {
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--accent-1), transparent);
+  .infoCard {
+    padding: 1.5rem 1.25rem;
   }
 
-  .techRow {
-    padding: 0.75rem;
+  .cardIcon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.75rem;
+  }
+
+  .infoCard h3 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .infoCard p {
+    font-size: 0.85rem;
   }
 }
 
-/* ==================== VERY SMALL SCREENS ==================== */
+/* Very Small Mobile */
 @media (max-width: 360px) {
-  .heroBox {
-    min-height: 280px;
+  .homeWrapper {
+    padding: 0.75rem 0;
   }
 
-  .heroContent {
-    padding: 1.25rem 0.875rem;
+  .contentContainer {
+    padding: 0.75rem 0.75rem;
   }
 
-  .glowButton {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
+  .orb1, .orb2, .orb3 {
+    filter: blur(40px);
+  }
+
+  .heroLabel {
+    font-size: 0.55rem;
+    padding: 0.35rem 0.875rem;
+  }
+
+  .labelDot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .titleUnderline {
+    width: 80px;
+  }
+
+  .heroDescription {
+    font-size: 0.85rem;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  .infoCard {
+    padding: 1.25rem 1rem;
+  }
+
+  .cardIcon {
+    width: 48px;
+    height: 48px;
   }
 }

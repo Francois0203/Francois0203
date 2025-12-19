@@ -5,109 +5,76 @@ import styles from './Home.module.css';
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
-  const heroCanvasRef = useRef(null);
+  const codeMatrixRef = useRef(null);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Hero Canvas Animation - Geometric particles
+  // Track mouse position for interactive effects
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    setMousePos({ x, y });
+  };
+
+  // Floating Code Matrix Animation
   useEffect(() => {
-    const canvas = heroCanvasRef.current;
-    if (!canvas) return;
+    const container = codeMatrixRef.current;
+    if (!container) return;
 
-    const ctx = canvas.getContext('2d');
-    let width = canvas.offsetWidth;
-    let height = canvas.offsetHeight;
-    let animationId;
+    const codeSymbols = ['<', '>', '{', '}', '[', ']', '(', ')', '/', '\\', ';', ':', '=', '+', '-', '*', '&', '|', '%', '#', '@', '$'];
+    const colors = ['var(--accent-1)', 'var(--accent-2)', 'var(--accent-3)'];
+    let mounted = true;
+    const elements = [];
 
-    const resizeCanvas = () => {
-      width = canvas.offsetWidth;
-      height = canvas.offsetHeight;
-      canvas.width = width;
-      canvas.height = height;
+    const createCodeElement = () => {
+      if (!mounted || elements.length >= 25) return;
+
+      const el = document.createElement('div');
+      el.className = styles.codeSymbol;
+      el.textContent = codeSymbols[Math.floor(Math.random() * codeSymbols.length)];
+      el.style.left = `${Math.random() * 100}%`;
+      el.style.top = `${Math.random() * 100}%`;
+      el.style.color = colors[Math.floor(Math.random() * colors.length)];
+      
+      const duration = 15 + Math.random() * 20;
+      el.style.setProperty('--duration', `${duration}s`);
+      el.style.setProperty('--delay', `${Math.random() * 5}s`);
+      el.style.setProperty('--tx', `${(Math.random() - 0.5) * 100}px`);
+      el.style.setProperty('--ty', `${-50 - Math.random() * 100}px`);
+      el.style.setProperty('--tx2', `${(Math.random() - 0.5) * 80}px`);
+      el.style.setProperty('--ty2', `${-100 - Math.random() * 100}px`);
+      el.style.fontSize = `${0.8 + Math.random() * 1.2}rem`;
+      
+      container.appendChild(el);
+      elements.push(el);
+
+      setTimeout(() => {
+        if (el.parentNode) el.remove();
+        const idx = elements.indexOf(el);
+        if (idx !== -1) elements.splice(idx, 1);
+      }, duration * 1000);
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Create geometric particles
-    const particles = [];
-    const particleCount = 40;
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 3 + 1,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.5 + 0.3,
-        rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.02
-      });
+    // Initial spawn
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => createCodeElement(), i * 200);
     }
 
-    const animate = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      const color = isDark ? '47, 243, 224' : '0, 139, 139';
-
-      particles.forEach((p) => {
-        // Update position
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.rotation += p.rotationSpeed;
-
-        // Wrap around edges
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-
-        // Draw geometric shape
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation);
-        ctx.fillStyle = `rgba(${color}, ${p.opacity})`;
-        
-        // Draw square
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        
-        // Draw outline
-        ctx.strokeStyle = `rgba(${color}, ${p.opacity * 0.5})`;
-        ctx.lineWidth = 0.5;
-        ctx.strokeRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        
-        ctx.restore();
-
-        // Draw connections
-        particles.forEach((p2) => {
-          const dx = p.x - p2.x;
-          const dy = p.y - p2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 100) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${color}, ${0.1 * (1 - distance / 100)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        });
-      });
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animate();
+    // Continuous spawning
+    const interval = setInterval(() => {
+      if (Math.random() > 0.7) createCodeElement();
+    }, 2000);
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      if (animationId) cancelAnimationFrame(animationId);
+      mounted = false;
+      clearInterval(interval);
+      elements.forEach(el => el.remove());
     };
   }, []);
 
@@ -193,67 +160,120 @@ const Home = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className={styles.homeWrapper} onClick={handleClick}>
-      <div className={styles.bgDecoration} />
+    <div 
+      ref={containerRef} 
+      className={styles.homeWrapper} 
+      onClick={handleClick}
+      onMouseMove={handleMouseMove}
+    >
+      {/* Background with parallax effect */}
+      <div 
+        className={styles.bgDecoration}
+        style={{
+          transform: `translate(${mousePos.x * 10}px, ${mousePos.y * 10}px)`
+        }}
+      />
+
+      {/* Floating Code Matrix */}
+      <div 
+        ref={codeMatrixRef}
+        className={styles.codeMatrix}
+        style={{
+          transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 15}px)`
+        }}
+      />
+
+      {/* Animated Orbs */}
+      <div className={styles.orbsContainer}>
+        <div 
+          className={`${styles.orb} ${styles.orb1}`}
+          style={{
+            transform: `translate(${mousePos.x * -20}px, ${mousePos.y * -20}px)`
+          }}
+        />
+        <div 
+          className={`${styles.orb} ${styles.orb2}`}
+          style={{
+            transform: `translate(${mousePos.x * 25}px, ${mousePos.y * 25}px)`
+          }}
+        />
+        <div 
+          className={`${styles.orb} ${styles.orb3}`}
+          style={{
+            transform: `translate(${mousePos.x * -15}px, ${mousePos.y * 30}px)`
+          }}
+        />
+      </div>
 
       <div className={`${styles.contentContainer} ${isVisible ? styles.visible : ''}`}>
-        {/* Hero Section with Canvas */}
-        <div className={styles.heroBox}>
-          <canvas ref={heroCanvasRef} className={styles.heroCanvas} />
-          <div className={styles.heroContent}>
-            <div className={styles.heroText}>
-              <div className={styles.heroLabel}>DEVELOPER • RESEARCHER • INNOVATOR</div>
-              <h1 className={styles.heroName}>
-                FRANCOIS<br/>MEIRING
-              </h1>
-              <p className={styles.heroTagline}>
-                Transforming ideas into elegant, scalable solutions
-              </p>
+        {/* Hero Section with Glassmorphism */}
+        <div className={styles.heroSection}>
+          <div className={styles.heroLabel}>
+            <span className={styles.labelDot}></span>
+            DEVELOPER • RESEARCHER • INNOVATOR
+            <span className={styles.labelDot}></span>
+          </div>
+          <h1 className={styles.heroTitle}>
+            François Meiring
+          </h1>
+          <div className={styles.titleUnderline} />
+          <p className={styles.heroSubtitle}>
+            Full Stack Developer & MSc Computer Science Student
+          </p>
+          <p className={styles.heroDescription}>
+            Crafting innovative solutions at the intersection of technology and creativity
+          </p>
+          
+          {/* Primary CTA Buttons */}
+          <div className={styles.ctaButtons}>
+            <Link to="/contact" className={styles.primaryButton}>
+              <span className={styles.buttonGlow}></span>
+              <span className={styles.buttonContent}>
+                <span>Contact & Support</span>
+                <MdRocketLaunch size={20} />
+              </span>
+            </Link>
+            <Link to="/projects" className={styles.secondaryButton}>
+              <span className={styles.buttonContent}>
+                <span>View Projects</span>
+                <MdArrowForward size={20} />
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Enhanced Info Cards */}
+        <div className={styles.infoCards}>
+          <div className={styles.infoCard}>
+            <div className={styles.cardIconWrapper}>
+              <div className={styles.cardIcon}>
+                <MdRocketLaunch size={24} />
+              </div>
             </div>
-            <div className={styles.heroCta}>
-              <Link to="/contact" className={styles.glowButton}>
-                <span className={styles.glowButtonText}>Contact & Donations</span>
-                <MdRocketLaunch className={styles.glowButtonIcon} size={20} />
-                <div className={styles.glowButtonBg} />
-              </Link>
+            <h3>Current Role</h3>
+            <p>Full Stack Developer</p>
+            <div className={styles.cardShine} />
+          </div>
+          <div className={styles.infoCard}>
+            <div className={styles.cardIconWrapper}>
+              <div className={styles.cardIcon}>
+                <MdArrowForward size={24} />
+              </div>
             </div>
+            <h3>Education</h3>
+            <p>MSc Computer Science</p>
+            <div className={styles.cardShine} />
           </div>
-        </div>
-
-        {/* Mini Stats Bar */}
-        <div className={styles.statsBar}>
-          <div className={styles.statItem}>
-            <span className={styles.statNumber}>5+</span>
-            <span className={styles.statText}>Technologies</span>
+          <div className={styles.infoCard}>
+            <div className={styles.cardIconWrapper}>
+              <div className={styles.cardIcon}>
+                <MdRocketLaunch size={24} />
+              </div>
+            </div>
+            <h3>Technologies</h3>
+            <p>React • Node.js • Python</p>
+            <div className={styles.cardShine} />
           </div>
-          <div className={styles.statDivider} />
-          <div className={styles.statItem}>
-            <span className={styles.statNumber}>MSc</span>
-            <span className={styles.statText}>Computer Science</span>
-          </div>
-          <div className={styles.statDivider} />
-          <div className={styles.statItem}>
-            <span className={styles.statNumber}>Full Stack Developer</span>
-            <span className={styles.statText}>Current Position</span>
-          </div>
-        </div>
-
-        {/* Tech Stack Minimal */}
-        <div className={styles.techRow}>
-          <span className={styles.techLabel}>Stack:</span>
-          <div className={styles.techItems}>
-            {['JavaScript', 'React', 'Node.js', 'Python', 'Docker', 'SQL'].map((tech, i) => (
-              <span key={i} className={styles.techItem}>{tech}</span>
-            ))}
-          </div>
-        </div>
-
-        {/* Secondary CTA */}
-        <div className={styles.secondaryCta}>
-          <a href="#projects" className={styles.textLink}>
-            Explore My Work
-            <MdArrowForward className={styles.arrowIcon} />
-          </a>
         </div>
       </div>
     </div>

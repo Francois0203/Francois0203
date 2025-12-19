@@ -7,78 +7,58 @@
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--background-1);
+  cursor: pointer;
 }
 
-/* ==================== PARALLAX PARTICLES ==================== */
-.particlesContainer {
+/* ==================== RIPPLE EFFECT (CLICK) - Same as Bio ==================== */
+.ripple {
   position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  width: 120px;
-  height: 120px;
+  width: 350px;
+  height: 350px;
+  border: 3px solid var(--accent-1);
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    var(--accent-2),
-    transparent 70%
-  );
-  opacity: 0.06;
-  transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-  animation: particleFloat calc(15s + var(--index) * 2s) ease-in-out infinite;
+  transform: translate(-50%, -50%) scale(0);
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: 5;
+  animation: rippleExpand 1200ms cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: transform, opacity;
+  box-shadow: 
+    0 0 20px var(--accent-1),
+    inset 0 0 20px var(--accent-1);
 }
 
-.particle:nth-child(1) { top: 10%; left: 15%; }
-.particle:nth-child(2) { top: 25%; right: 20%; }
-.particle:nth-child(3) { top: 50%; left: 10%; }
-.particle:nth-child(4) { bottom: 20%; right: 15%; }
-.particle:nth-child(5) { top: 70%; left: 25%; }
-.particle:nth-child(6) { top: 15%; right: 35%; }
-.particle:nth-child(7) { bottom: 35%; left: 40%; }
-.particle:nth-child(8) { bottom: 10%; right: 30%; }
-
-@keyframes particleFloat {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  25% {
-    transform: translate(30px, -30px) scale(1.1);
+@keyframes rippleExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.9;
+    border-width: 3px;
   }
   50% {
-    transform: translate(-20px, 20px) scale(0.9);
+    opacity: 0.6;
   }
-  75% {
-    transform: translate(40px, 10px) scale(1.05);
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+    border-width: 1px;
   }
 }
 
-/* ==================== BACKGROUND DECORATION ==================== */
+/* ==================== BACKGROUND DECORATION - Same as Bio ==================== */
 .bgDecoration {
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(
-      circle at 20% 30%, 
-      var(--accent-1-background) 0%, 
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 80% 70%, 
-      var(--accent-2-background) 0%, 
-      transparent 40%
-    ),
-    linear-gradient(
-      135deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.01) 50%,
-      transparent 100%
-    );
-  opacity: 0.4;
+  background: radial-gradient(
+    circle at 30% 40%, 
+    var(--accent-1-background) 0%, 
+    transparent 50%
+  ),
+  radial-gradient(
+    circle at 70% 60%, 
+    var(--accent-2-background) 0%, 
+    transparent 50%
+  );
+  opacity: 0.3;
   z-index: 0;
   pointer-events: none;
 }
@@ -86,14 +66,19 @@
 /* ==================== CONTAINER ==================== */
 .projectsContainer {
   position: relative;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 2rem 1.5rem;
   color: var(--primary-text-color);
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 1s ease-out, transform 1s ease-out;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   z-index: 10;
+  pointer-events: none;
+}
+
+.projectsContainer > * {
+  pointer-events: auto;
 }
 
 .projectsContainer.visible {
@@ -104,7 +89,7 @@
 /* ==================== HEADER ==================== */
 .header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
   animation: fadeInDown 0.8s ease-out 0.2s backwards;
 }
 
@@ -120,57 +105,42 @@
 }
 
 .mainTitle {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2rem, 5vw, 2.5rem);
   font-weight: 800;
-  margin: 0 0 1rem 0;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-3), var(--accent-2));
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  position: relative;
-  display: inline-block;
-}
-
-.mainTitle::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--accent-1), transparent);
-  border-radius: 2px;
 }
 
 .subtitle {
-  font-size: var(--font-size-lg);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
   color: var(--accent-2);
-  margin: 1.5rem 0 0 0;
+  margin: 0;
   font-weight: 500;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 /* ==================== PROJECT CARD ==================== */
 .projectCard {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-radius: 32px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  animation: cardAppear 1s ease-out 0.4s backwards;
+  animation: cardAppear 0.8s ease-out 0.3s backwards;
   position: relative;
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.5s ease;
 }
 
 @keyframes cardAppear {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(30px);
+    transform: scale(0.96) translateY(20px);
   }
   to {
     opacity: 1;
@@ -184,24 +154,15 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: linear-gradient(
     90deg,
     transparent,
     var(--accent-1),
     var(--accent-2),
-    var(--accent-3),
     transparent
   );
-  opacity: 0.8;
-}
-
-.projectCard:hover {
-  transform: translateY(-8px);
-  box-shadow: 
-    0 30px 80px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  border-color: var(--accent-1);
+  opacity: 0.6;
 }
 
 /* ==================== CARD HEADER ==================== */
@@ -301,25 +262,25 @@
 
 /* ==================== CARD BODY ==================== */
 .cardBody {
-  padding: 2.5rem 3rem 3rem;
+  padding: 1.75rem 2rem 2rem;
 }
 
 /* ==================== SECTIONS ==================== */
 .section {
-  margin-bottom: 3.5rem;
-  animation: fadeInUp 0.8s ease-out calc(0.6s + var(--delay, 0s)) backwards;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease-out calc(0.4s + var(--delay, 0s)) backwards;
 }
 
 .section:nth-child(1) { --delay: 0s; }
-.section:nth-child(2) { --delay: 0.1s; }
-.section:nth-child(3) { --delay: 0.2s; }
-.section:nth-child(4) { --delay: 0.3s; }
-.section:nth-child(5) { --delay: 0.4s; }
+.section:nth-child(2) { --delay: 0.05s; }
+.section:nth-child(3) { --delay: 0.1s; }
+.section:nth-child(4) { --delay: 0.15s; }
+.section:nth-child(5) { --delay: 0.2s; }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -332,92 +293,57 @@
 }
 
 .sectionTitle {
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--accent-2);
-  margin: 0 0 1.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  position: relative;
-  padding-bottom: 0.75rem;
-}
-
-.sectionTitle::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 60px;
-  height: 3px;
-  background: var(--accent-1);
-  border-radius: 2px;
+  color: var(--accent-1);
+  margin: 0 0 1rem 0;
 }
 
 .description {
-  font-size: var(--font-size-md);
-  line-height: 1.8;
+  font-size: 0.95rem;
+  line-height: 1.7;
   color: var(--primary-text-color);
-  opacity: 0.95;
+  opacity: 0.9;
   margin: 0;
 }
 
 /* ==================== TECH STACK ==================== */
 .techGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.875rem;
 }
 
 .techItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1.5rem 1rem;
+  gap: 0.5rem;
+  padding: 1rem 0.75rem;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-  overflow: hidden;
-}
-
-.techItem::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--tech-color);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
 }
 
 .techItem:hover {
-  transform: translateY(-8px) scale(1.05);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--tech-color);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
-
-.techItem:hover::before {
-  opacity: 1;
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .techIcon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--tech-color);
   transition: transform 0.3s ease;
 }
 
 .techItem:hover .techIcon {
-  transform: scale(1.2) rotate(5deg);
+  transform: scale(1.15);
 }
 
 .techName {
-  font-size: var(--font-size-base);
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--primary-text-color);
   text-align: center;
@@ -426,139 +352,93 @@
 /* ==================== FEATURES ==================== */
 .featuresGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
 }
 
 .featureCard {
-  padding: 2rem;
+  padding: 1.5rem;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.4s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.featureCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    var(--accent-1-background),
-    transparent
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
 }
 
 .featureCard:hover {
-  transform: translateY(-6px);
-  border-color: var(--accent-1);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
-}
-
-.featureCard:hover::before {
-  opacity: 1;
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .featureIcon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--accent-2);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   display: inline-block;
   transition: transform 0.3s ease;
-  position: relative;
-  z-index: 1;
 }
 
 .featureCard:hover .featureIcon {
-  transform: scale(1.15) rotate(5deg);
+  transform: scale(1.1);
 }
 
 .featureTitle {
-  font-size: var(--font-size-lg);
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--accent-1);
-  margin: 0 0 1rem 0;
-  position: relative;
-  z-index: 1;
+  margin: 0 0 0.75rem 0;
 }
 
 .featureDescription {
-  font-size: var(--font-size-base);
-  line-height: 1.7;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: var(--primary-text-color);
-  opacity: 0.9;
+  opacity: 0.85;
   margin: 0;
-  position: relative;
-  z-index: 1;
 }
 
 /* ==================== ARCHITECTURE ==================== */
 .architectureFlow {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .architectureLayer {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
   align-items: flex-start;
-  padding: 1.75rem;
+  padding: 1.25rem;
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  border-left: 4px solid var(--accent-1);
-  transition: all 0.4s ease;
-  position: relative;
-}
-
-.architectureLayer::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--accent-2);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.4s ease;
+  border-radius: 12px;
+  border-left: 3px solid var(--accent-1);
+  transition: all 0.3s ease;
 }
 
 .architectureLayer:hover {
   background: rgba(255, 255, 255, 0.05);
-  transform: translateX(8px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.architectureLayer:hover::before {
-  transform: scaleY(1);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .layerNumber {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--accent-1);
   color: var(--background-1);
   border-radius: 50%;
-  font-size: var(--font-size-lg);
+  font-size: 1.05rem;
   font-weight: 700;
-  box-shadow: 0 4px 16px var(--accent-1-background);
+  box-shadow: 0 3px 12px var(--accent-1-background);
   transition: all 0.3s ease;
 }
 
 .architectureLayer:hover .layerNumber {
-  transform: scale(1.15) rotate(5deg);
+  transform: scale(1.1);
 }
 
 .layerContent {
@@ -566,17 +446,17 @@
 }
 
 .layerTitle {
-  font-size: var(--font-size-lg);
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--accent-1);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .layerDescription {
-  font-size: var(--font-size-base);
-  line-height: 1.7;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: var(--primary-text-color);
-  opacity: 0.9;
+  opacity: 0.85;
   margin: 0;
 }
 
@@ -584,77 +464,74 @@
 .highlightsList {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.875rem;
 }
 
 .highlight {
   display: flex;
-  gap: 1rem;
+  gap: 0.875rem;
   align-items: flex-start;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 12px;
-  border-left: 3px solid var(--accent-2);
+  border-radius: 10px;
+  border-left: 2px solid var(--accent-2);
   transition: all 0.3s ease;
 }
 
 .highlight:hover {
   background: rgba(255, 255, 255, 0.04);
-  transform: translateX(6px);
-  border-left-color: var(--accent-1);
+  transform: translateX(4px);
 }
 
 .highlightBullet {
   flex-shrink: 0;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: var(--accent-2);
   font-weight: 700;
   line-height: 1;
-  transition: transform 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .highlight:hover .highlightBullet {
-  transform: scale(1.3);
   color: var(--accent-1);
 }
 
 .highlight p {
   margin: 0;
-  font-size: var(--font-size-base);
-  line-height: 1.7;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: var(--primary-text-color);
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 /* ==================== COMING SOON BANNER ==================== */
 .comingSoonBanner {
-  margin-top: 4rem;
-  padding: 3rem;
+  margin-top: 2.5rem;
+  padding: 2rem;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.04),
     rgba(255, 255, 255, 0.02)
   );
-  border-radius: 24px;
-  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
   text-align: center;
-  animation: fadeInUp 0.8s ease-out 1s backwards;
-  transition: all 0.4s ease;
+  animation: fadeInUp 0.6s ease-out 0.7s backwards;
+  transition: all 0.3s ease;
 }
 
 .comingSoonBanner:hover {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(255, 255, 255, 0.04)
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.03)
   );
-  border-color: var(--accent-1);
-  transform: scale(1.02);
+  border-color: var(--accent-2);
 }
 
 .bannerIcon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -663,52 +540,38 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 }
 
 .comingSoonBanner h3 {
-  font-size: var(--font-size-xl);
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--accent-1);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .comingSoonBanner p {
-  font-size: var(--font-size-md);
+  font-size: 0.95rem;
   color: var(--primary-text-color);
-  opacity: 0.8;
+  opacity: 0.75;
   margin: 0;
 }
 
 /* ==================== RESPONSIVE ==================== */
-@media (max-width: 1024px) {
-  .projectsContainer {
-    padding: 3rem 1.5rem;
-  }
-
-  .cardHeader,
-  .cardBody {
-    padding: 2rem 2rem;
-  }
-
-  .featuresGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Tablet */
 @media (max-width: 768px) {
   .projectsContainer {
-    padding: 2rem 1rem;
+    padding: 1.75rem 1.25rem;
   }
 
   .header {
-    margin-bottom: 3rem;
+    margin-bottom: 1.75rem;
   }
 
   .cardHeader {
     flex-direction: column;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.5rem;
   }
 
   .headerContent {
@@ -723,54 +586,274 @@
   .projectLink {
     width: 100%;
     justify-content: center;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
   }
 
   .cardBody {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.5rem 1.75rem;
+  }
+
+  .section {
+    margin-bottom: 1.75rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.15rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
   }
 
   .techGrid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .techItem {
+    padding: 0.875rem 0.65rem;
+  }
+
+  .techIcon {
+    font-size: 1.75rem;
+  }
+
+  .techName {
+    font-size: 0.8rem;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  .featureCard {
+    padding: 1.35rem;
+  }
+
+  .featureIcon {
+    font-size: 1.75rem;
+  }
+
+  .featureTitle {
+    font-size: 1rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .featureDescription {
+    font-size: 0.85rem;
+  }
+
+  .architectureFlow {
+    gap: 0.875rem;
   }
 
   .architectureLayer {
-    flex-direction: column;
+    padding: 1.1rem;
+    gap: 1.1rem;
+  }
+
+  .layerNumber {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .layerTitle {
+    font-size: 1rem;
+  }
+
+  .layerDescription {
+    font-size: 0.85rem;
+  }
+
+  .highlightsList {
+    gap: 0.75rem;
+  }
+
+  .highlight {
+    padding: 0.875rem 1.1rem;
+  }
+
+  .highlight p {
+    font-size: 0.85rem;
+  }
+
+  .comingSoonBanner {
+    margin-top: 2rem;
+    padding: 1.75rem;
+  }
+
+  .bannerIcon {
+    font-size: 2.25rem;
+  }
+
+  .comingSoonBanner h3 {
+    font-size: 1.25rem;
+  }
+
+  .comingSoonBanner p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .projectsContainer {
+    padding: 1.5rem 1rem;
+  }
+
+  .header {
+    margin-bottom: 1.5rem;
+  }
+
+  .mainTitle {
+    margin-bottom: 0.4rem;
+  }
+
+  .cardHeader {
+    padding: 1.35rem 1.25rem;
+  }
+
+  .projectTitle {
+    font-size: 1.35rem;
+  }
+
+  .projectSubtitle {
+    font-size: 0.9rem;
+  }
+
+  .projectLink {
+    padding: 0.7rem 1.1rem;
+    font-size: 0.85rem;
+  }
+
+  .cardBody {
+    padding: 1.35rem 1.25rem 1.5rem;
+  }
+
+  .section {
+    margin-bottom: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .description {
+    font-size: 0.85rem;
+  }
+
+  .techGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .techItem {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .techIcon {
+    font-size: 1.5rem;
+  }
+
+  .techName {
+    font-size: 0.75rem;
+  }
+
+  .featureCard {
+    padding: 1.2rem;
+  }
+
+  .featureIcon {
+    font-size: 1.6rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .featureTitle {
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .featureDescription {
+    font-size: 0.8rem;
+  }
+
+  .architectureLayer {
+    padding: 1rem;
     gap: 1rem;
   }
 
   .layerNumber {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+  }
+
+  .layerTitle {
+    font-size: 0.95rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .layerDescription {
+    font-size: 0.8rem;
+  }
+
+  .highlight {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .highlightBullet {
+    font-size: 1.1rem;
+  }
+
+  .highlight p {
+    font-size: 0.8rem;
   }
 
   .comingSoonBanner {
-    padding: 2rem;
+    margin-top: 1.75rem;
+    padding: 1.5rem;
+  }
+
+  .bannerIcon {
+    font-size: 2rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .comingSoonBanner h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .comingSoonBanner p {
+    font-size: 0.85rem;
   }
 }
 
-@media (max-width: 480px) {
-  .mainTitle {
-    font-size: 2rem;
+/* Very Small Mobile */
+@media (max-width: 360px) {
+  .projectsContainer {
+    padding: 1.25rem 0.875rem;
   }
 
-  .subtitle {
-    font-size: var(--font-size-md);
+  .cardHeader {
+    padding: 1.2rem 1.1rem;
   }
 
-  .projectTitle {
-    font-size: 1.5rem;
-  }
-
-  .cardHeader,
   .cardBody {
-    padding: 1.5rem 1rem;
+    padding: 1.2rem 1.1rem 1.35rem;
   }
 
   .techGrid {
     grid-template-columns: 1fr;
   }
 
-  .section {
-    margin-bottom: 2.5rem;
+  .architectureLayer {
+    padding: 0.875rem;
   }
 }

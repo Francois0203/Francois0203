@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MdEmail, MdPhone, MdLocationOn, MdMessage } from 'react-icons/md';
+import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart } from 'react-icons/fa';
 import styles from './Contact.module.css';
 
@@ -167,110 +167,91 @@ const Contact = () => {
       <div className={`${styles.contentContainer} ${isVisible ? styles.visible : ''}`}>
         {/* Header */}
         <div className={styles.headerSection}>
-          <div className={styles.messageIcon}>
-            <MdMessage size={48} />
-            <div className={styles.iconGlow} />
-          </div>
-          <h1 className={styles.mainTitle}>Let's Connect</h1>
+          <h1 className={styles.mainTitle}>Get in Touch</h1>
           <p className={styles.subtitle}>
-            Ready to collaborate on your next project or just want to chat about technology?
-            <br />
-            I'm always open to new opportunities and conversations.
+            Let's collaborate and bring your ideas to life
           </p>
         </div>
 
-        {/* Contact Methods */}
-        <div className={styles.contactGrid}>
-          {contactMethods.map((method, index) => (
-            <div
-              key={index}
-              className={`${styles.contactCard} ${hoveredCard === index ? styles.hovered : ''}`}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
-              style={{ '--card-color': method.color }}
-            >
-              {method.link ? (
-                <a href={method.link} className={styles.cardContent}>
-                  <div className={styles.cardIcon}>
-                    {method.icon}
-                  </div>
-                  <h3 className={styles.cardTitle}>{method.title}</h3>
-                  <p className={styles.cardValue}>{method.value}</p>
-                  <div className={styles.cardShine} />
-                </a>
-              ) : (
-                <div className={styles.cardContent}>
-                  <div className={styles.cardIcon}>
-                    {method.icon}
-                  </div>
-                  <h3 className={styles.cardTitle}>{method.title}</h3>
-                  <p className={styles.cardValue}>{method.value}</p>
-                  <div className={styles.cardShine} />
-                </div>
-              )}
+        {/* PROMINENT Support Section - Moved to Top */}
+        <div className={styles.supportBanner}>
+          <div className={styles.supportCard}>
+            <div className={styles.supportIcon}>
+              <FaHeart size={48} />
             </div>
-          ))}
-        </div>
-
-        {/* Divider */}
-        <div className={styles.divider}>
-          <div className={styles.dividerLine} />
-          <span className={styles.dividerText}>Find me on</span>
-          <div className={styles.dividerLine} />
-        </div>
-
-        {/* Social Links */}
-        <div className={styles.socialGrid}>
-          {socialLinks.map((social, index) => (
-            <a
-              key={index}
-              href={social.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.socialCard}
-              style={{ 
-                '--social-color': social.color,
-                '--delay': `${index * 0.1}s`
-              }}
-            >
-              <div className={styles.socialIcon}>
-                {social.icon}
-              </div>
-              <div className={styles.socialInfo}>
-                <h4 className={styles.socialName}>{social.name}</h4>
-                <p className={styles.socialUsername}>{social.username}</p>
-              </div>
-              <div className={styles.socialArrow}>→</div>
-            </a>
-          ))}
-        </div>
-
-        {/* Donation Section */}
-        <div className={styles.divider}>
-          <div className={styles.dividerLine} />
-          <span className={styles.dividerText}>Support</span>
-          <div className={styles.dividerLine} />
-        </div>
-
-        <div className={styles.donationSection}>
-          <div className={styles.donationCard}>
-            <div className={styles.donationIcon}>
-              <FaHeart size={36} />
-              <div className={styles.heartBeat} />
+            <div className={styles.supportContent}>
+              <h2 className={styles.supportTitle}>Support My Academic Journey</h2>
+              <p className={styles.supportText}>
+                Your contributions help fund my MSc Computer Science studies and research pursuits. 
+                Every donation makes a meaningful difference in advancing my academic and professional development.
+              </p>
             </div>
-            <h3 className={styles.donationTitle}>Support My Studies</h3>
-            <p className={styles.donationText}>
-              Contributions help fund my academic journey and research pursuits.
-            </p>
             <a 
               href="https://pos.snapscan.io/qr/JOkZ6v6j" 
               target="_blank" 
               rel="noopener noreferrer"
-              className={styles.donationButton}
+              className={styles.supportButton}
             >
+              <FaHeart size={20} />
               <span>Donate via SnapScan</span>
-              <div className={styles.buttonShine} />
             </a>
+          </div>
+        </div>
+
+        {/* Contact Methods */}
+        <div className={styles.contactSection}>
+          <h2 className={styles.sectionTitle}>Contact Information</h2>
+          <div className={styles.contactGrid}>
+            {contactMethods.map((method, index) => (
+              <div
+                key={index}
+                className={`${styles.contactCard} ${hoveredCard === index ? styles.hovered : ''}`}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                {method.link ? (
+                  <a href={method.link} className={styles.cardContent}>
+                    <div className={styles.cardIcon}>
+                      {method.icon}
+                    </div>
+                    <h3 className={styles.cardTitle}>{method.title}</h3>
+                    <p className={styles.cardValue}>{method.value}</p>
+                  </a>
+                ) : (
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardIcon}>
+                      {method.icon}
+                    </div>
+                    <h3 className={styles.cardTitle}>{method.title}</h3>
+                    <p className={styles.cardValue}>{method.value}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Social Links */}
+        <div className={styles.socialSection}>
+          <h2 className={styles.sectionTitle}>Connect With Me</h2>
+          <div className={styles.socialGrid}>
+            {socialLinks.map((social, index) => (
+              <a
+                key={index}
+                href={social.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.socialCard}
+              >
+                <div className={styles.socialIcon}>
+                  {social.icon}
+                </div>
+                <div className={styles.socialInfo}>
+                  <h4 className={styles.socialName}>{social.name}</h4>
+                  <p className={styles.socialUsername}>{social.username}</p>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       </div>

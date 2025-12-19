@@ -12,26 +12,28 @@ const Projects = () => {
     setIsVisible(true);
   }, []);
 
-  // Parallax particles effect
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!containerRef.current) return;
-      const particles = containerRef.current.querySelectorAll(`.${styles.particle}`);
-      const { clientX, clientY } = e;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+  // Click ripple effect (same as Bio page)
+  const lastRippleRef = useRef(0);
+  const handleClick = (e) => {
+    const now = Date.now();
+    if (now - lastRippleRef.current < 80) return;
+    lastRippleRef.current = now;
 
-      particles.forEach((particle, i) => {
-        const speed = (i + 1) * 0.02;
-        const x = (clientX - centerX) * speed;
-        const y = (clientY - centerY) * speed;
-        particle.style.transform = `translate(${x}px, ${y}px)`;
-      });
-    };
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    const rippleEl = document.createElement('div');
+    rippleEl.className = styles.ripple;
+    rippleEl.style.left = `${x}px`;
+    rippleEl.style.top = `${y}px`;
+    containerRef.current.appendChild(rippleEl);
+    const t = setTimeout(() => {
+      rippleEl.remove();
+      clearTimeout(t);
+    }, 1200);
+  };
 
   const project = {
     title: "Personal Portfolio Website",
@@ -102,15 +104,8 @@ const Projects = () => {
   };
 
   return (
-    <div ref={containerRef} className={styles.projectsWrapper}>
-      {/* Animated background particles */}
-      <div className={styles.particlesContainer}>
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className={styles.particle} style={{ '--index': i }} />
-        ))}
-      </div>
-
-      {/* Background decoration */}
+    <div ref={containerRef} className={styles.projectsWrapper} onClick={handleClick}>
+      {/* Background decoration (same as Bio page) */}
       <div className={styles.bgDecoration} />
 
       <div className={`${styles.projectsContainer} ${isVisible ? styles.visible : ''}`}>
