@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaStopwatch } from 'react-icons/fa';
 
 import styles from './ReduceAnimationsSwitch.module.css';
 import '../../styles/Theme.css';
@@ -16,7 +15,6 @@ const ReduceAnimationsSwitch = ({ size = 22 }) => {
       return false;
     }
   });
-  const [isPressed, setIsPressed] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -31,26 +29,18 @@ const ReduceAnimationsSwitch = ({ size = 22 }) => {
   }, [enabled]);
 
   const toggle = () => setEnabled((v) => !v);
-  const handlePointerDown = () => setIsPressed(true);
-  const handlePointerUp = () => setIsPressed(false);
 
   return (
-    <span
-      className={`${styles['reduce-switch']} ${isPressed ? styles['pressed'] : ''}`}
+    <button
+      className={`${styles.switch} ${enabled ? styles.checked : ''}`}
       onClick={toggle}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      role="button"
-      aria-pressed={enabled}
-      tabIndex={0}
+      role="switch"
+      aria-checked={enabled}
       aria-label="Reduce Animations"
+      type="button"
     >
-      <span className={styles.icon} style={{ fontSize: `${size}px` }} aria-hidden="true">
-        <FaStopwatch />
-      </span>
-      <span className={styles.badge} aria-hidden="true">{enabled ? 'Off' : 'On'}</span>
-    </span>
+      <span className={styles.thumb}></span>
+    </button>
   );
 };
 
