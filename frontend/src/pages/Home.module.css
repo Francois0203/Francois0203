@@ -729,20 +729,28 @@
   }
 
   .ctaButtons {
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-direction: row;
+    gap: 0.5rem;
     width: 100%;
   }
 
   .primaryButton,
   .secondaryButton {
-    width: 100%;
-    padding: 1rem 1.75rem;
-    font-size: 0.9rem;
+    flex: 1;
+    padding: 0.875rem 1rem;
+    font-size: 0.8rem;
+    min-width: 0;
   }
 
   .buttonContent {
     justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .buttonContent span:first-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .infoCards {
@@ -802,10 +810,23 @@
     font-size: 0.85rem;
   }
 
+  .ctaButtons {
+    gap: 0.4rem;
+  }
+
   .primaryButton,
   .secondaryButton {
-    padding: 0.875rem 1.5rem;
-    font-size: 0.85rem;
+    padding: 0.75rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .buttonContent {
+    gap: 0.3rem;
+  }
+
+  .buttonContent svg {
+    width: 16px;
+    height: 16px;
   }
 
   .infoCard {
