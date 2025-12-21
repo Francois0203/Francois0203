@@ -88,8 +88,18 @@ const Projects = () => {
           <div key={projectIndex} className={`${styles.projectCard} ${expanded[projectIndex] ? '' : styles.collapsed}`}>
             <div className={styles.cardHeader}>
               <div className={styles.headerContent}>
-                <h2 className={styles.projectTitle}>{project.title}</h2>
-                <p className={styles.projectSubtitle}>{project.subtitle}</p>
+                <button
+                  className={styles.titleToggle}
+                  onClick={(e) => { e.stopPropagation(); toggleExpanded(projectIndex); }}
+                  aria-expanded={!!expanded[projectIndex]}
+                  aria-label={expanded[projectIndex] ? 'Collapse project' : 'Expand project'}
+                >
+                  <div className={styles.titleText}>
+                    <h2 className={styles.projectTitle}>{project.title}</h2>
+                    <p className={styles.projectSubtitle}>{project.subtitle}</p>
+                  </div>
+                  <span className={styles.collapseToggleIcon}>▾</span>
+                </button>
               </div>
               <div className={styles.projectLinks}>
                 {project.links.map((link, index) => {
@@ -108,14 +118,6 @@ const Projects = () => {
                   );
                 })}
               </div>
-              <button
-                className={styles.collapseToggle}
-                onClick={(e) => { e.stopPropagation(); toggleExpanded(projectIndex); }}
-                aria-expanded={!!expanded[projectIndex]}
-                aria-label={expanded[projectIndex] ? 'Collapse project' : 'Expand project'}
-              >
-                <span className={styles.collapseToggleIcon}>▾</span>
-              </button>
             </div>
 
             <div className={styles.cardBody}>
