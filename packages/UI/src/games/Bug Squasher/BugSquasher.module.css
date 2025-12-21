@@ -1,19 +1,22 @@
 /* ==================== BUG SQUASHER WRAPPER ==================== */
 .bugSquasherWrapper {
   width: 100%;
-  max-width: 800px;
+  max-width: 920px;
   margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 12px;
 }
 
 /* ==================== GAME CONTAINER ==================== */
 .gameContainer {
   width: 100%;
-  padding: 2rem;
+  padding: clamp(12px, 2.5vw, 2rem);
   background: var(--background-2);
   border: 2px solid var(--accent-1);
   border-radius: 16px;
   box-shadow: 0 10px 40px var(--accent-1-background);
   animation: gameSlideIn 0.5s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes gameSlideIn {
@@ -36,12 +39,13 @@
 }
 
 .gameTitle {
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
   font-weight: 700;
   color: var(--accent-1);
   margin: 0;
   text-shadow: 0 2px 10px var(--accent-1-background);
   animation: titleBounce 0.6s ease-out;
+  line-height: 1.05;
 }
 
 @keyframes titleBounce {
@@ -59,7 +63,7 @@
 }
 
 .gameInstructions {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
   color: var(--disabled-color);
   margin: 0;
   text-align: center;
@@ -78,7 +82,7 @@
 
 .scoreDisplay {
   display: flex;
-  gap: 2rem;
+  gap: 1.25rem;
   width: 100%;
   justify-content: center;
   flex-wrap: wrap;
@@ -97,6 +101,10 @@
   transition: all 0.3s ease;
 }
 
+/* Keep score cards inside container: allow shrinking and limit width */
+.scoreDisplay { align-items: center; box-sizing: border-box; }
+.scoreStat { flex: 0 1 220px; max-width: 48%; box-sizing: border-box; }
+
 .scoreStat:hover {
   transform: translateY(-3px);
   box-shadow: 0 5px 15px var(--accent-1-background);
@@ -112,14 +120,14 @@
 }
 
 .scoreValue {
-  font-size: 2rem;
+  font-size: clamp(1.25rem, 3.5vw, 2rem);
   color: var(--accent-1);
   font-weight: 700;
 }
 
 .gameButton {
-  padding: 1rem 3rem;
-  font-size: 1.2rem;
+  padding: clamp(0.6rem, 1.8vw, 1rem) clamp(1rem, 3.5vw, 3rem);
+  font-size: clamp(0.95rem, 2.5vw, 1.2rem);
   font-weight: 700;
   background: var(--accent-1);
   color: var(--background-1);
@@ -132,6 +140,7 @@
   animation: fadeIn 0.8s ease-out 0.6s both;
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
 }
 
 .gameButton::before {
@@ -204,13 +213,14 @@
 .gameArea {
   position: relative;
   width: 100%;
-  height: 350px;
+  height: clamp(220px, 35vh, 420px);
   background: var(--background-1);
   border: 2px solid var(--accent-3);
   border-radius: 12px;
   overflow: hidden;
   cursor: crosshair;
   box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+  touch-action: none;
 }
 
 .waitingMessage {
@@ -235,7 +245,10 @@
 }
 
 .bug {
+  --bug-size: clamp(28px, 5.5vw, 56px);
   position: absolute;
+  width: var(--bug-size);
+  height: var(--bug-size);
   cursor: pointer;
   user-select: none;
   animation: bugWiggle infinite ease-in-out;
@@ -284,109 +297,25 @@
 }
 
 /* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 768px) {
-  .gameContainer {
-    padding: 1.5rem;
-  }
 
-  .gameTitle {
-    font-size: 1.75rem;
-  }
-
-  .gameInstructions {
-    font-size: 0.95rem;
-  }
-
-  .scoreDisplay {
-    gap: 1rem;
-  }
-
-  .scoreStat {
-    padding: 0.75rem 1.25rem;
-  }
-
-  .scoreValue {
-    font-size: 1.75rem;
-  }
-
-  .gameButton {
-    padding: 0.9rem 2.5rem;
-    font-size: 1.1rem;
-  }
-
-  .gameArea {
-    height: 300px;
-  }
-
-  .gameStats {
-    padding: 0.75rem;
-  }
-
-  .statValue {
-    font-size: 1.25rem;
-  }
-
-  .statLabel {
-    font-size: 0.9rem;
-  }
+@media (max-width: 900px) {
+  .gameContainer { padding: clamp(10px, 2.5vw, 1.6rem); }
+  .gameArea { height: clamp(200px, 30vh, 380px); }
 }
 
 @media (max-width: 480px) {
-  .bugSquasherWrapper {
-    padding: 0;
-  }
-
-  .gameContainer {
-    padding: 1.25rem;
-    border-radius: 12px;
-  }
-
-  .gameTitle {
-    font-size: 1.5rem;
-  }
-
-  .gameInstructions {
-    font-size: 0.9rem;
-  }
-
-  .scoreDisplay {
-    gap: 0.75rem;
-    flex-direction: column;
-  }
-
-  .scoreStat {
-    width: 100%;
-    padding: 0.75rem 1rem;
-  }
-
-  .scoreValue {
-    font-size: 1.5rem;
-  }
-
-  .gameButton {
-    padding: 0.85rem 2rem;
-    font-size: 1rem;
-    width: 100%;
-  }
-
-  .gameArea {
-    height: 250px;
-  }
-
-  .gameStats {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .stat {
-    justify-content: space-between;
-  }
-
-  .statValue {
-    font-size: 1.25rem;
-  }
-
-  .waitingMessage {
-    font-size: 1.25rem;
-  }
+  .bugSquasherWrapper { padding: 0; }
+  .gameContainer { padding: 12px; border-radius: 12px; }
+  .gameTitle { font-size: clamp(1.2rem, 6vw, 1.6rem); }
+  .gameInstructions { font-size: 0.9rem; }
+  .scoreDisplay { gap: 0.6rem; flex-direction: column; }
+  .scoreStat { width: 100%; padding: 0.45rem 0.9rem; }
+  /* When stacked vertically, avoid the fixed flex-basis (220px) forcing height */
+  .scoreStat { flex: 0 1 auto; max-width: 100%; }
+  .scoreValue { font-size: 1.25rem; }
+  .gameButton { padding: 0.7rem 1rem; font-size: 0.95rem; width: 100%; }
+  .gameArea { height: clamp(160px, 28vh, 300px); }
+  .gameStats { flex-direction: column; gap: 0.6rem; }
+  .stat { justify-content: space-between; }
+  .waitingMessage { font-size: 1rem; }
 }
