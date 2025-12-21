@@ -181,6 +181,41 @@
   flex-wrap: wrap;
 }
 
+/* Collapse toggle button */
+.collapseToggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--accent-1);
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem; /* larger hit area */
+}
+
+.collapseToggle:hover { transform: translateY(-2px); }
+
+.collapseToggleIcon { display: inline-block; transition: transform 0.25s ease; font-size: 1.9rem; line-height: 1; }
+
+/* Card body collapse/expand animation */
+.cardBody {
+  padding: 1.75rem 2rem 2rem;
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 360ms ease, padding 360ms ease;
+}
+
+.projectCard.collapsed .cardBody {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.projectCard.collapsed .collapseToggleIcon { transform: rotate(-90deg); }
+
 .headerContent {
   flex: 1;
   min-width: 300px;

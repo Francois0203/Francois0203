@@ -1,0 +1,135 @@
+[
+  {
+    "title": "Personal Portfolio Website",
+    "subtitle": "A Modern, Component-Based React Application",
+    "description": "This personal portfolio website represents a comprehensive full-stack web development project, showcasing modern web technologies, architectural design patterns, and automated deployment workflows. Built entirely from scratch, the project demonstrates proficiency in React development, package management, CI/CD implementation, and production deployment strategies.",
+    "techStack": [
+      { "name": "React", "icon": "FaReact", "color": "#61DAFB" },
+      { "name": "JavaScript", "icon": "FaCode", "color": "#F7DF1E" },
+      { "name": "CSS Modules", "icon": "FaPalette", "color": "#1572B6" },
+      { "name": "GitHub Actions", "icon": "FaCogs", "color": "#2088FF" },
+      { "name": "GitHub Pages", "icon": "AiOutlineDeploymentUnit", "color": "#222222" },
+      { "name": "NPM Registry", "icon": "FaNpm", "color": "#CB3837" }
+    ],
+    "features": [
+      {
+        "title": "Component Package Architecture",
+        "description": "Developed a custom NPM package published to GitHub Package Registry containing reusable React components, global theme system, typography definitions, and styling utilities. This modular architecture enables consistent design language across the application and facilitates future scalability.",
+        "icon": "MdAutoAwesome"
+      },
+      {
+        "title": "Automated CI/CD Pipeline",
+        "description": "Implemented dual GitHub Actions workflows for continuous integration and deployment. The first pipeline builds and publishes the component package to GitHub Package Registry upon changes. The second pipeline builds the frontend application, consuming the package, and deploys the production build to GitHub Pages with zero-downtime deployment.",
+        "icon": "MdCached"
+      },
+      {
+        "title": "Production Deployment",
+        "description": "Configured automated deployment to GitHub Pages using the Francois0203 repository, enabling public access to the portfolio website. The deployment process includes build optimization, asset compression, and proper routing configuration for single-page application functionality.",
+        "icon": "FaRocket"
+      },
+      {
+        "title": "Modern Design System",
+        "description": "Created a comprehensive design system with glassmorphism effects, fluid animations, responsive layouts, and interactive visual elements. The UI features water-themed particle effects, click ripple animations, and smooth transitions that enhance user engagement while maintaining performance.",
+        "icon": "FaPalette"
+      }
+    ],
+    "architecture": {
+      "title": "Technical Architecture",
+      "components": [
+        {
+          "layer": "Component Package",
+          "description": "Shared React components, theme variables, global styles, typography system, and utility functions published as an NPM package to GitHub Package Registry."
+        },
+        {
+          "layer": "Frontend Application",
+          "description": "React-based single-page application consuming the component package, implementing routing, state management, and page-specific components."
+        },
+        {
+          "layer": "CI/CD Pipeline",
+          "description": "Automated workflows for package publishing and frontend deployment triggered by repository commits, ensuring consistent build processes and deployment reliability."
+        },
+        {
+          "layer": "Production Hosting",
+          "description": "Static site hosting on GitHub Pages with custom domain support, HTTPS enforcement, and optimized asset delivery."
+        }
+      ]
+    },
+    "highlights": [
+      "Designed and implemented a modular component architecture enabling code reusability and maintainability across multiple projects",
+      "Configured GitHub Actions for automated testing, building, and deployment, reducing manual deployment time and eliminating human error",
+      "Established NPM package publishing workflow to GitHub Package Registry with versioning and dependency management",
+      "Optimized build process for production deployment including code splitting, asset optimization, and performance enhancements",
+      "Implemented responsive design principles ensuring optimal user experience across desktop, tablet, and mobile devices"
+    ],
+    "links": [
+      { "label": "View Repository", "url": "https://github.com/Francois0203", "icon": "FaGithub" }
+    ]
+  },
+  {
+    "title": "Telescope Correlator",
+    "subtitle": "Production-Ready FX Correlator for Radio Telescope Arrays",
+    "description": "A professional-grade telescope correlator implementing the FX architecture for processing radio telescope data. This system processes voltage streams from radio telescope antenna arrays and produces visibility data suitable for astronomical image synthesis. Designed for both development (simulation) and production (real telescope) operation modes, it represents a complete signal processing pipeline for radio astronomy applications.",
+    "techStack": [
+      { "name": "Python", "icon": "FaPython", "color": "#3776AB" },
+      { "name": "NumPy", "icon": "SiNumpy", "color": "#013243" },
+      { "name": "Docker", "icon": "FaDocker", "color": "#2496ED" },
+      { "name": "pytest", "icon": "SiPytest", "color": "#0A9EDC" },
+      { "name": "Signal Processing", "icon": "MdRadio", "color": "#FF6B6B" },
+      { "name": "Radio Astronomy", "icon": "MdScience", "color": "#4ECDC4" }
+    ],
+    "features": [
+      {
+        "title": "FX Correlator Architecture",
+        "description": "Implements the industry-standard FX correlation pipeline with F-Engine for channelization via windowed FFT (time to frequency domain conversion), X-Engine for cross-correlation and integration between antenna pairs, and geometric delay compensation accounting for array geometry and source position. Processes complex voltage data through the complete correlation pipeline.",
+        "icon": "MdRadio"
+      },
+      {
+        "title": "Dual Operation Modes",
+        "description": "Features separate development and production modes. Development mode provides simulated telescope data for algorithm testing, validation, and learning without hardware. Production mode handles live network streaming (TCP/UDP protocols) and file processing from real telescope arrays with comprehensive monitoring, quality checks, and calibration support.",
+        "icon": "MdSpeed"
+      },
+      {
+        "title": "Network Data Streaming",
+        "description": "Real-time processing of telescope data streams via TCP/UDP protocols with configurable buffer management, timeout handling, and quality monitoring. Supports live correlation of data from antenna arrays with automatic stream recovery and comprehensive error handling for production astronomical observations.",
+        "icon": "MdCached"
+      },
+      {
+        "title": "Comprehensive Testing",
+        "description": "Includes 33 automated tests covering all components: F-Engine channelization accuracy, X-Engine correlation fidelity, geometric delay compensation precision, and end-to-end pipeline validation. Features accuracy validation against analytical solutions ensuring mathematical correctness without requiring physical telescope hardware.",
+        "icon": "SiPytest"
+      }
+    ],
+    "architecture": {
+      "title": "System Architecture",
+      "components": [
+        {
+          "layer": "Data Ingestion",
+          "description": "Frontend module handling simulated data generation for development, network streaming (TCP/UDP) for live observations, and file processing for recorded data. Includes protocol handlers and buffer management."
+        },
+        {
+          "layer": "F-Engine (Channelization)",
+          "description": "Applies window functions (Hanning, Hamming, Blackman) and performs FFT to convert time-domain signals to frequency domain. Supports optional quantization for bandwidth reduction and configurable overlap for improved spectral response."
+        },
+        {
+          "layer": "Delay Compensation",
+          "description": "Calculates geometric delays based on antenna positions and source direction. Applies phase corrections to align signals accounting for baseline geometry, enabling coherent cross-correlation of signals from distributed antennas."
+        },
+        {
+          "layer": "X-Engine (Correlation)",
+          "description": "Cross-correlates all antenna pairs to produce complex visibilities for each frequency channel. Accumulates correlations over integration time and validates physical properties (Hermitian symmetry, real autocorrelations)."
+        }
+      ]
+    },
+    "highlights": [
+      "Implemented complete FX correlation pipeline with sub-picosecond delay precision and FFT accuracy validation against analytical solutions",
+      "Designed dual-mode architecture separating development simulations from production telescope operations with safety features and validation",
+      "Built containerized deployment using Docker for reproducible execution across Windows, Linux, and macOS platforms",
+      "Developed comprehensive CLI with interactive shells for development and production modes, providing intuitive workflow management",
+      "Created 33-test validation suite covering unit tests for each processing stage and integration tests for end-to-end pipeline verification",
+      "Implemented real-time network streaming with TCP/UDP support, configurable buffering, and production-grade monitoring and logging"
+    ],
+    "links": [
+      { "label": "View Repository", "url": "https://github.com/Francois0203/Telescope-Correlator", "icon": "FaGithub" }
+    ]
+  }
+]
