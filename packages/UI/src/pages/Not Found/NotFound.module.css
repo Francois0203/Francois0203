@@ -28,15 +28,19 @@
 .bgDecoration {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, var(--accent-1-background) 0%, var(--accent-2-background) 50%, var(--background-1) 100%);
+  background: linear-gradient(135deg, 
+    var(--accent-1-background) 0%, 
+    var(--accent-2-background) 50%, 
+    var(--background-2) 100%);
   background-size: 200% 200%;
-  opacity: 0.16;
+  opacity: 0.2;
   z-index: 0;
-  animation: bgShift 12s linear infinite;
+  animation: bgShift 15s ease-in-out infinite;
 }
 
 @keyframes bgShift {
-  to { background-position: 100% 0; }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 
@@ -48,21 +52,28 @@
   z-index: 2;
   width: min(880px, calc(100% - 48px));
   max-width: 880px;
-  padding: 36px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  box-shadow: 0 12px 40px rgba(2,6,23,0.45);
+  padding: var(--spacing-2xl);
+  border-radius: var(--radius-xl);
+  background: var(--background-1);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
   transform-style: preserve-3d;
   will-change: transform;
-  transition: box-shadow 280ms ease, transform 420ms cubic-bezier(.2,.8,.2,1);
+  transition: box-shadow var(--transition-base), transform var(--transition-slow) cubic-bezier(.2,.8,.2,1);
   color: var(--primary-text-color);
   text-align: center;
-  backdrop-filter: blur(6px) saturate(120%);
+  backdrop-filter: blur(12px) saturate(120%);
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 56px);
   width: 100%;
   box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: var(--spacing-xl);
+  }
 }
 
 
@@ -144,16 +155,26 @@
 /* prominent accent button used for Home */
 .homeButton {
   appearance: none;
-  border: 0;
-  padding: 12px 18px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-  color: var(--background-1);
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  background: var(--accent-1);
+  color: white;
+  font-weight: 600;
+  font-size: var(--font-size-base);
   cursor: pointer;
-  font-weight: 700;
-  font-size: 1rem;
-  box-shadow: 0 12px 36px rgba(2,6,23,0.48);
-  transition: transform 180ms ease, filter 160ms ease, box-shadow 160ms ease;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+}
+
+.homeButton:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.homeButton:active {
+  transform: translateY(0);
 }
 
 .homeButton:hover {

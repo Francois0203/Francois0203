@@ -3,17 +3,22 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-width: max-content;
+    min-width: min-content;
+    width: 100%;
     overflow: visible;
+    margin-bottom: var(--spacing-md);
 }
+
 .input-container > label {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: max-content;
-    padding-left: 0.6em;
+    width: 100%;
+    padding-left: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
 }
+
 .input-container:has(> input[required])::after,
 .input-container:has(> input.required)::after,
 .input-container:has(> select[required])::after,
@@ -29,16 +34,15 @@
     content: '*';
     color: var(--error-color);
     position: absolute;
-    left: 0;
+    left: var(--spacing-xs);
     top: 0;
     line-height: 1;
-    font-weight: bold;
+    font-weight: 700;
     font-size: var(--font-size-md);
     pointer-events: none;
 }
 
-/* Hide the required asterisk only when a required control has a value (is valid).
-   Restrict the :valid check to controls with the `required` attribute */
+/* Hide the required asterisk only when a required control has a value (is valid) */
 .input-container:has(> input[required]:valid)::after,
 .input-container:has(> textarea[required]:valid)::after,
 .input-container:has(> select[required]:valid)::after,
@@ -61,28 +65,23 @@
     position: relative;
     display: inline-block;
     width: 100%;
+    margin-bottom: var(--spacing-md);
 }
+
 .input-password-container input[type="password"],
 .input-password-container input[type="text"] {
     box-sizing: border-box;
-    padding-right: 2.5em;
+    padding-right: 3em;
     width: 100%;
 }
+
 .input-password-container > label {
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--spacing-xs);
+    padding-left: var(--spacing-md);
+    width: 100%;
 }
 
-/* Show required asterisk on password containers (supports attribute or .required class) */
-.input-password-container {
-    /* keep position for the absolutely positioned asterisk */
-    position: relative;
-}
-.input-password-container > label {
-    /* align with the asterisk like other input containers */
-    padding-left: 0.6em;
-    width: max-content;
-}
 .input-password-container:has(> input[required])::after,
 .input-password-container:has(> input.required)::after,
 .input-password-container:has(> select[required])::after,
@@ -98,10 +97,10 @@
     content: '*';
     color: var(--error-color);
     position: absolute;
-    left: 0;
+    left: var(--spacing-xs);
     top: 0;
     line-height: 1;
-    font-weight: bold;
+    font-weight: 700;
     font-size: var(--font-size-md);
     pointer-events: none;
 }
@@ -114,30 +113,34 @@
 
 .input-password-eye {
     position: absolute;
-    right: 0.75em;
+    right: var(--spacing-md);
     top: 50% !important;
     transform: translateY(-50%) !important;
     cursor: pointer;
-    font-size: var(--font-size-base);
-    color: var(--disabled-text-color);
+    font-size: var(--font-size-lg);
+    color: var(--tertiary-text-color);
     background: none !important;
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
-    padding: 0 !important;
+    padding: var(--spacing-xs) !important;
     margin: 0 !important;
     line-height: 1 !important;
     z-index: 2;
-    transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transition: color var(--transition-fast), transform var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: var(--radius-sm);
 }
+
 .input-password-eye:hover {
     color: var(--accent-1);
-    opacity: 1;
     transform: translateY(-50%) scale(1.1) !important;
+    background-color: var(--accent-1-background) !important;
 }
-.input-password-eye:focus {
-    transform: translateY(-50%) !important;
+
+.input-password-eye:focus-visible {
+    outline: 2px solid var(--accent-1) !important;
+    outline-offset: 2px;
 }

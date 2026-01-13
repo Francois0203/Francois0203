@@ -18,21 +18,27 @@
 /* ==================== TOAST MESSAGE ==================== */
 .toastMessage {
   position: relative;
-  min-width: 340px;
-  max-width: 440px;
-  padding: 1.25rem 1.75rem;
+  min-width: 320px;
+  max-width: 420px;
+  padding: var(--spacing-md) var(--spacing-xl);
   padding-right: 3.5rem;
-  border-radius: 16px;
-  box-shadow: 
-    0 15px 50px rgba(0, 0, 0, 0.2),
-    0 5px 15px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  font-size: 0.95rem;
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 2px solid;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  font-size: var(--font-size-base);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  border: 1px solid;
   overflow: hidden;
-  transition: transform 0.2s ease;
+  transition: transform var(--transition-fast);
+}
+
+@media (max-width: 480px) {
+  .toastMessage {
+    min-width: 280px;
+    max-width: 90vw;
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-right: 3rem;
+  }
 }
 
 .toastMessage::before {
@@ -80,41 +86,37 @@
 
 .toastMessage:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.25),
-    0 8px 20px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: var(--shadow-xl), 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* ==================== CLOSE BUTTON ==================== */
 .closeButton {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.1);
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.15);
   border: none;
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
-  color: var(--primary-text-color);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: currentColor;
+  transition: all var(--transition-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
   padding: 0;
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  opacity: 0.7;
+  border-radius: var(--radius-full);
+  opacity: 0.8;
   z-index: 3;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .closeButton:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .closeButton:active {
@@ -125,11 +127,11 @@
 .toastMessage.error {
   background: linear-gradient(
     135deg,
-    rgba(255, 0, 0, 0.85) 0%,
-    rgba(200, 0, 0, 0.9) 100%
+    rgba(220, 38, 38, 0.9) 0%,
+    rgba(185, 28, 28, 0.95) 100%
   );
   border-color: var(--error-color);
-  color: var(--primary-text-color);
+  color: white;
 }
 
 .toastMessage.error::before {
@@ -143,11 +145,11 @@
 .toastMessage.success {
   background: linear-gradient(
     135deg,
-    rgba(50, 205, 50, 0.85) 0%,
-    rgba(30, 180, 30, 0.9) 100%
+    rgba(16, 185, 129, 0.9) 0%,
+    rgba(5, 150, 105, 0.95) 100%
   );
   border-color: var(--success-color);
-  color: var(--primary-text-color);
+  color: white;
 }
 
 .toastMessage.success::before {
@@ -161,11 +163,11 @@
 .toastMessage.warning {
   background: linear-gradient(
     135deg,
-    rgba(255, 215, 0, 0.85) 0%,
-    rgba(230, 180, 0, 0.9) 100%
+    rgba(245, 158, 11, 0.9) 0%,
+    rgba(217, 119, 6, 0.95) 100%
   );
   border-color: var(--warning-color);
-  color: var(--primary-text-color);
+  color: white;
 }
 
 .toastMessage.warning::before {
@@ -183,11 +185,11 @@
 .toastMessage.info {
   background: linear-gradient(
     135deg,
-    rgba(30, 144, 255, 0.85) 0%,
-    rgba(10, 100, 220, 0.9) 100%
+    rgba(59, 130, 246, 0.9) 0%,
+    rgba(37, 99, 235, 0.95) 100%
   );
   border-color: var(--info-color);
-  color: var(--primary-text-color);
+  color: white;
 }
 
 .toastMessage.info::before {

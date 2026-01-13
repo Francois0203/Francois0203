@@ -8,11 +8,11 @@
 }
 
 .container {
-	padding: clamp(12px, 2.5vw, 2rem);
-	background: var(--background-2);
-	border: 2px solid var(--accent-1);
-	border-radius: 14px;
-	box-shadow: 0 12px 40px var(--accent-1-background);
+	padding: clamp(var(--spacing-md), 2.5vw, var(--spacing-2xl));
+	background: var(--background-1);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-lg);
 	box-sizing: border-box;
 }
 
@@ -24,7 +24,19 @@
 
 .statsRow { display:flex; gap:1rem; margin-top:0.5rem; flex-wrap:wrap; justify-content:center; }
 
-.statBox { background:var(--background-3); padding:0.6rem 0.9rem; border-radius:10px; border:1px solid var(--accent-2); text-align:center; }
+.statBox { 
+	background: var(--background-2); 
+	padding: var(--spacing-sm) var(--spacing-md); 
+	border-radius: var(--radius-md); 
+	border: 1px solid var(--border-color); 
+	text-align: center;
+	transition: all var(--transition-fast);
+}
+
+.statBox:hover {
+	border-color: var(--accent-1);
+	box-shadow: var(--shadow-sm);
+}
 
 .statLabel { font-size:clamp(0.75rem, 2.2vw, 0.9rem); color:var(--disabled-color); font-weight:600; }
 
@@ -32,9 +44,37 @@
 
 .menuButtons { display:flex; gap:0.75rem; margin-top:0.75rem; }
 
-.btnPrimary { padding: clamp(0.6rem,1.6vw,0.9rem) clamp(0.9rem,2.5vw,1.4rem); background:var(--accent-1); color:var(--background-1); border:2px solid var(--accent-1); border-radius:8px; cursor:pointer; font-weight:700; }
+.btnPrimary { 
+	padding: clamp(var(--spacing-sm), 1.6vw, var(--spacing-md)) clamp(var(--spacing-md), 2.5vw, var(--spacing-lg)); 
+	background: var(--accent-1); 
+	color: white; 
+	border: none; 
+	border-radius: var(--radius-md); 
+	cursor: pointer; 
+	font-weight: 600;
+	transition: all var(--transition-base);
+	box-shadow: var(--shadow-sm);
+}
 
-.btn { padding: clamp(0.45rem,1.2vw,0.6rem) clamp(0.8rem,2vw,1rem); background:var(--background-3); border:1px solid var(--accent-2); border-radius:8px; cursor:pointer; }
+.btnPrimary:hover {
+	background: var(--accent-hover);
+	box-shadow: var(--shadow-md);
+	transform: translateY(-2px);
+}
+
+.btn { 
+	padding: clamp(var(--spacing-xs), 1.2vw, var(--spacing-sm)) clamp(var(--spacing-sm), 2vw, var(--spacing-md)); 
+	background: var(--background-2); 
+	border: 1px solid var(--border-color); 
+	border-radius: var(--radius-md); 
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.btn:hover {
+	background: var(--background-3);
+	border-color: var(--accent-1);
+}
 
 .note { color:var(--disabled-color); margin-top:0.6rem; }
 
@@ -51,32 +91,49 @@
 .headerButtons { display:flex; gap:0.5rem; }
 
 .grid {
-	display:grid;
+	display: grid;
 	gap: clamp(6px, 1.2vw, 10px);
-	padding: clamp(8px, 1.8vw, 1rem);
-	background:var(--background-1);
-	border-radius:10px;
-	border:2px solid var(--accent-3);
+	padding: clamp(var(--spacing-sm), 1.8vw, var(--spacing-md));
+	background: var(--background-2);
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--border-color);
 	min-height: clamp(220px, 36vh, 420px);
 	grid-template-columns: repeat(auto-fit, minmax(clamp(56px, 8vw, 120px), 1fr));
 }
 
 .cell {
-	width:100%;
+	width: 100%;
 	aspect-ratio: 1 / 1;
-	position:relative;
-	border-radius:8px;
-	background:linear-gradient(135deg, var(--background-2), var(--background-3));
-	border:2px solid var(--accent-2);
-	overflow:hidden;
-	cursor:pointer;
+	position: relative;
+	border-radius: var(--radius-md);
+	background: var(--background-3);
+	border: 1px solid var(--border-color);
+	overflow: hidden;
+	cursor: pointer;
+	transition: all var(--transition-fast);
 }
 
-.cellInner { position:absolute; inset:8%; border-radius:6px; background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03)); box-shadow: inset 0 2px 6px rgba(0,0,0,0.06); }
+.cell:hover {
+	border-color: var(--accent-2);
+	box-shadow: var(--shadow-sm);
+}
 
-.cell.on { background: linear-gradient(135deg, var(--accent-3), var(--accent-2)); }
+.cellInner { 
+	position: absolute; 
+	inset: 8%; 
+	border-radius: var(--radius-sm); 
+	background: linear-gradient(135deg, var(--background-2), var(--background-3)); 
+	box-shadow: inset 0 2px 6px rgba(0,0,0,0.1); 
+}
 
-.cell.on .cellInner { box-shadow: 0 6px 18px var(--accent-1-background); }
+.cell.on { 
+	background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); 
+	border-color: var(--accent-1);
+}
+
+.cell.on .cellInner { 
+	box-shadow: 0 4px 12px var(--accent-1-background); 
+}
 
 .footer { color:var(--disabled-color); text-align:center; }
 
