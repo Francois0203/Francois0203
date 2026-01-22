@@ -916,3 +916,59 @@
     grid-template-columns: 1fr;
   }
 }
+/* ==================== PERFORMANCE OPTIMIZATIONS FOR MOBILE ==================== */
+@media (max-width: 768px) {
+  /* Simplify glassmorphism on mobile */
+  .glassContainer {
+    backdrop-filter: blur(8px) saturate(120%); /* Reduced from 12px */
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+
+  /* Reduce shadow complexity */
+  .ripple {
+    box-shadow: 0 0 10px var(--accent-1);
+  }
+
+  .waterParticle {
+    box-shadow: 0 0 6px var(--accent-2);
+  }
+
+  /* Simplify card effects */
+  .experienceCard,
+  .educationCard,
+  .achievementCard,
+  .hobbyCard {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .experienceCard:hover,
+  .educationCard:hover,
+  .achievementCard:hover,
+  .hobbyCard:hover {
+    transform: translateY(-2px); /* Reduced from -4px */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .waterParticle,
+  .ripple {
+    display: none;
+  }
+
+  .experienceCard:hover,
+  .educationCard:hover,
+  .achievementCard:hover,
+  .hobbyCard:hover {
+    transform: none;
+  }
+}

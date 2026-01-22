@@ -838,3 +838,77 @@
     height: 48px;
   }
 }
+
+/* ==================== PERFORMANCE OPTIMIZATIONS FOR MOBILE ==================== */
+/* Reduce animations on mobile devices to improve performance */
+@media (max-width: 768px) {
+  /* Disable expensive blur effects on mobile */
+  .orb {
+    filter: blur(30px); /* Reduced from 60px */
+    opacity: 0.2; /* Reduced opacity */
+    animation: none; /* Disable pulsing animation */
+  }
+
+  /* Simplify glassmorphism effects */
+  .heroLabel {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Reduce shadow complexity */
+  .ripple {
+    box-shadow: 0 0 10px var(--accent-1);
+  }
+
+  .raindrop {
+    box-shadow: none;
+  }
+
+  .codeSymbol {
+    text-shadow: 0 0 5px currentColor; /* Reduced from 10px */
+  }
+
+  /* Simplify floating animations */
+  @keyframes floatAndFade {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.8);
+    }
+    50% {
+      opacity: 0.5; /* Reduced from 0.8 */
+      transform: translate(var(--tx, 30px), var(--ty, -50px)) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--tx2, -20px), var(--ty2, -100px)) scale(0.8);
+    }
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable all animations for accessibility */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .orb,
+  .codeSymbol,
+  .raindrop,
+  .ripple {
+    display: none;
+  }
+
+  .bgDecoration {
+    transform: none !important;
+  }
+
+  .codeMatrix,
+  .orbsContainer {
+    transform: none !important;
+  }
+}

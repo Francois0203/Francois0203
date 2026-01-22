@@ -775,3 +775,48 @@
     height: 42px;
   }
 }
+/* ==================== PERFORMANCE OPTIMIZATIONS FOR MOBILE ==================== */
+@media (max-width: 768px) {
+  /* Simplify glassmorphism on mobile */
+  .glassContainer {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+
+  /* Reduce shadow complexity */
+  .energyParticle {
+    box-shadow: 0 0 6px var(--accent-1);
+  }
+
+  /* Simplify card effects */
+  .contactCard,
+  .socialCard {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .contactCard:hover,
+  .socialCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .energyParticle {
+    display: none;
+  }
+
+  .contactCard:hover,
+  .socialCard:hover {
+    transform: none;
+  }
+}

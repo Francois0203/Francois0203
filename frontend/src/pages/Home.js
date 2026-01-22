@@ -1,39 +1,52 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
 import styles from './Home.module.css';
+import { 
+  shouldReduceAnimations, 
+  getOptimalParticleCount, 
+  getOptimalInterval,
+  throttle 
+} from '../utils/deviceUtils';
 
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
   const codeMatrixRef = useRef(null);
+  const reduceAnimations = useRef(shouldReduceAnimations());
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Track mouse position for interactive effects
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    setMousePos({ x, y });
-  };
+  // Track mouse position for interactive effects (throttled for performance)
+  const handleMouseMove = useMemo(
+    () => throttle((e) => {
+      if (!containerRef.current || reduceAnimations.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      setMousePos({ x, y });
+    }, 50),
+    []
+  );
 
-  // Floating Code Matrix Animation
+  // Floating Code Matrix Animation (optimized for mobile)
   useEffect(() => {
     const container = codeMatrixRef.current;
-    if (!container) return;
+    if (!container || reduceAnimations.current) return;
 
     const codeSymbols = ['<', '>', '{', '}', '[', ']', '(', ')', '/', '\\', ';', ':', '=', '+', '-', '*', '&', '|', '%', '#', '@', '$'];
     const colors = ['var(--accent-1)', 'var(--accent-2)', 'var(--accent-3)'];
     let mounted = true;
     const elements = [];
+    
+    // Reduce max particles for performance
+    const maxParticles = getOptimalParticleCount(25, 8);
 
     const createCodeElement = () => {
-      if (!mounted || elements.length >= 25) return;
+      if (!mounted || elements.length >= maxParticles) return;
 
       const el = document.createElement('div');
       el.className = styles.codeSymbol;
@@ -61,15 +74,18 @@ const Home = () => {
       }, duration * 1000);
     };
 
-    // Initial spawn
-    for (let i = 0; i < 20; i++) {
-      setTimeout(() => createCodeElement(), i * 200);
+    // Initial spawn - fewer particles, longer delay
+    const initialCount = getOptimalParticleCount(20, 5);
+    const spawnDelay = getOptimalInterval(200);
+    for (let i = 0; i < initialCount; i++) {
+      setTimeout(() => createCodeElement(), i * spawnDelay);
     }
 
-    // Continuous spawning
+    // Continuous spawning - less frequent on mobile
+    const spawnInterval = getOptimalInterval(2000);
     const interval = setInterval(() => {
       if (Math.random() > 0.7) createCodeElement();
-    }, 2000);
+    }, spawnInterval);
 
     return () => {
       mounted = false;
@@ -101,8 +117,11 @@ const Home = () => {
     }, 1200);
   };
 
-  // Spawn raindrops
+  // Spawn raindrops (optimized for mobile)
   useEffect(() => {
+    // Skip raindrop effect on mobile devices
+    if (reduceAnimations.current) return;
+
     let mounted = true;
     let schedulerTimeout = null;
     const removalTimers = [];
@@ -146,7 +165,8 @@ const Home = () => {
 
       removalTimers.push(removeTimer);
 
-      const nextDelay = 800 + Math.random() * 1200;
+      // Less frequent spawning
+      const nextDelay = getOptimalInterval(800) + Math.random() * 1200;
       schedulerTimeout = setTimeout(spawnRaindrop, nextDelay);
     };
 
@@ -169,7 +189,7 @@ const Home = () => {
       {/* Background with parallax effect */}
       <div 
         className={styles.bgDecoration}
-        style={{
+        style={reduceAnimations.current ? {} : {
           transform: `translate(${mousePos.x * 10}px, ${mousePos.y * 10}px)`
         }}
       />
@@ -178,7 +198,7 @@ const Home = () => {
       <div 
         ref={codeMatrixRef}
         className={styles.codeMatrix}
-        style={{
+        style={reduceAnimations.current ? {} : {
           transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 15}px)`
         }}
       />
@@ -187,19 +207,19 @@ const Home = () => {
       <div className={styles.orbsContainer}>
         <div 
           className={`${styles.orb} ${styles.orb1}`}
-          style={{
+          style={reduceAnimations.current ? {} : {
             transform: `translate(${mousePos.x * -20}px, ${mousePos.y * -20}px)`
           }}
         />
         <div 
           className={`${styles.orb} ${styles.orb2}`}
-          style={{
+          style={reduceAnimations.current ? {} : {
             transform: `translate(${mousePos.x * 25}px, ${mousePos.y * 25}px)`
           }}
         />
         <div 
           className={`${styles.orb} ${styles.orb3}`}
-          style={{
+          style={reduceAnimations.current ? {} : {
             transform: `translate(${mousePos.x * -15}px, ${mousePos.y * 30}px)`
           }}
         />

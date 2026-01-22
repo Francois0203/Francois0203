@@ -1,10 +1,137 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { FaReact, FaGithub, FaNpm, FaRocket, FaCogs, FaPalette, FaCode, FaPython, FaDocker } from 'react-icons/fa';
 import { MdAutoAwesome, MdCached, MdRadio, MdScience, MdSpeed } from 'react-icons/md';
 import { AiOutlineDeploymentUnit } from "react-icons/ai";
 import { SiNumpy, SiPytest } from "react-icons/si";
 import projectsData from '../data/projects.json';
 import styles from './Projects.module.css';
+
+// Memoized ProjectCard component to prevent unnecessary re-renders
+const ProjectCard = React.memo(({ 
+  project, 
+  projectIndex, 
+  isExpanded, 
+  onToggleExpanded, 
+  IconMap 
+}) => {
+  const handleToggle = useCallback((e) => {
+    e.stopPropagation();
+    onToggleExpanded(projectIndex);
+  }, [projectIndex, onToggleExpanded]);
+
+  return (
+    <div className={`${styles.projectCard} ${isExpanded ? '' : styles.collapsed}`}>
+      <div className={styles.cardHeader}>
+        <div className={styles.headerContent}>
+          <button
+            className={styles.titleToggle}
+            onClick={handleToggle}
+            aria-expanded={!!isExpanded}
+            aria-label={isExpanded ? 'Collapse project' : 'Expand project'}
+          >
+            <div className={styles.titleText}>
+              <h2 className={styles.projectTitle}>{project.title}</h2>
+              <p className={styles.projectSubtitle}>{project.subtitle}</p>
+            </div>
+            <span className={styles.collapseToggleIcon}>▾</span>
+          </button>
+        </div>
+        <div className={styles.projectLinks}>
+          {project.links.map((link, index) => {
+            const LIcon = IconMap[link.icon];
+            return (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.projectLink}
+              >
+                {LIcon ? <LIcon /> : null}
+                <span>{link.label}</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Only render card body if expanded - improves performance */}
+      {isExpanded && (
+        <div className={styles.cardBody}>
+          {/* Description */}
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Overview</h3>
+            <p className={styles.description}>{project.description}</p>
+          </section>
+
+          {/* Tech Stack */}
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Technology Stack</h3>
+            <div className={styles.techGrid}>
+              {project.techStack.map((tech, index) => {
+                const Icon = IconMap[tech.icon];
+                return (
+                  <div key={index} className={styles.techItem} style={{ '--tech-color': tech.color }}>
+                    <div className={styles.techIcon}>{Icon ? <Icon /> : null}</div>
+                    <span className={styles.techName}>{tech.name}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Key Features */}
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Key Features & Implementation</h3>
+            <div className={styles.featuresGrid}>
+              {project.features.map((feature, index) => {
+                const FIcon = IconMap[feature.icon];
+                return (
+                  <div key={index} className={styles.featureCard}>
+                    <div className={styles.featureIcon}>{FIcon ? <FIcon /> : null}</div>
+                    <h4 className={styles.featureTitle}>{feature.title}</h4>
+                    <p className={styles.featureDescription}>{feature.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Architecture */}
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>{project.architecture.title}</h3>
+            <div className={styles.architectureFlow}>
+              {project.architecture.components.map((component, index) => (
+                <div key={index} className={styles.architectureLayer}>
+                  <div className={styles.layerNumber}>{index + 1}</div>
+                  <div className={styles.layerContent}>
+                    <h4 className={styles.layerTitle}>{component.layer}</h4>
+                    <p className={styles.layerDescription}>{component.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Development Highlights */}
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Development Highlights</h3>
+            <div className={styles.highlightsList}>
+              {project.highlights.map((highlight, index) => (
+                <div key={index} className={styles.highlight}>
+                  <span className={styles.highlightBullet}>•</span>
+                  <p>{highlight}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+});
+
+ProjectCard.displayName = 'ProjectCard';
 
 const Projects = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -16,7 +143,7 @@ const Projects = () => {
 
   // Click ripple effect
   const lastRippleRef = useRef(0);
-  const handleClick = (e) => {
+  const handleClick = useCallback((e) => {
     const now = Date.now();
     if (now - lastRippleRef.current < 80) return;
     lastRippleRef.current = now;
@@ -35,13 +162,13 @@ const Projects = () => {
       rippleEl.remove();
       clearTimeout(t);
     }, 1200);
-  };
+  }, []);
 
   // Data imported from JSON; icons in JSON are string keys mapped to components below
   const projects = projectsData;
 
-  // Map icon keys from JSON to actual components
-  const IconMap = {
+  // Map icon keys from JSON to actual components (memoized)
+  const IconMap = useMemo(() => ({
     FaReact,
     FaGithub,
     FaNpm,
@@ -59,18 +186,18 @@ const Projects = () => {
     AiOutlineDeploymentUnit,
     SiNumpy,
     SiPytest
-  };
+  }), []);
 
   // Track which project cards are expanded (default: all collapsed)
   const [expanded, setExpanded] = useState(() => projects.map(() => false));
 
-  const toggleExpanded = (i) => {
+  const toggleExpanded = useCallback((i) => {
     setExpanded(prev => {
       const next = [...prev];
       next[i] = !next[i];
       return next;
     });
-  };
+  }, []);
 
   return (
     <div ref={containerRef} className={styles.projectsWrapper} onClick={handleClick}>
@@ -85,111 +212,14 @@ const Projects = () => {
 
         {/* Project Cards */}
         {projects.map((project, projectIndex) => (
-          <div key={projectIndex} className={`${styles.projectCard} ${expanded[projectIndex] ? '' : styles.collapsed}`}>
-            <div className={styles.cardHeader}>
-              <div className={styles.headerContent}>
-                <button
-                  className={styles.titleToggle}
-                  onClick={(e) => { e.stopPropagation(); toggleExpanded(projectIndex); }}
-                  aria-expanded={!!expanded[projectIndex]}
-                  aria-label={expanded[projectIndex] ? 'Collapse project' : 'Expand project'}
-                >
-                  <div className={styles.titleText}>
-                    <h2 className={styles.projectTitle}>{project.title}</h2>
-                    <p className={styles.projectSubtitle}>{project.subtitle}</p>
-                  </div>
-                  <span className={styles.collapseToggleIcon}>▾</span>
-                </button>
-              </div>
-              <div className={styles.projectLinks}>
-                {project.links.map((link, index) => {
-                  const LIcon = IconMap[link.icon];
-                  return (
-                    <a
-                      key={index}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.projectLink}
-                    >
-                      {LIcon ? <LIcon /> : null}
-                      <span>{link.label}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className={styles.cardBody}>
-              {/* Description */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Overview</h3>
-                <p className={styles.description}>{project.description}</p>
-              </section>
-
-              {/* Tech Stack */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Technology Stack</h3>
-                <div className={styles.techGrid}>
-                  {project.techStack.map((tech, index) => {
-                    const Icon = IconMap[tech.icon];
-                    return (
-                      <div key={index} className={styles.techItem} style={{ '--tech-color': tech.color }}>
-                        <div className={styles.techIcon}>{Icon ? <Icon /> : null}</div>
-                        <span className={styles.techName}>{tech.name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* Key Features */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Key Features & Implementation</h3>
-                <div className={styles.featuresGrid}>
-                  {project.features.map((feature, index) => {
-                    const FIcon = IconMap[feature.icon];
-                    return (
-                      <div key={index} className={styles.featureCard}>
-                        <div className={styles.featureIcon}>{FIcon ? <FIcon /> : null}</div>
-                        <h4 className={styles.featureTitle}>{feature.title}</h4>
-                        <p className={styles.featureDescription}>{feature.description}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* Architecture */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>{project.architecture.title}</h3>
-                <div className={styles.architectureFlow}>
-                  {project.architecture.components.map((component, index) => (
-                    <div key={index} className={styles.architectureLayer}>
-                      <div className={styles.layerNumber}>{index + 1}</div>
-                      <div className={styles.layerContent}>
-                        <h4 className={styles.layerTitle}>{component.layer}</h4>
-                        <p className={styles.layerDescription}>{component.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Development Highlights */}
-              <section className={styles.section}>
-                <h3 className={styles.sectionTitle}>Development Highlights</h3>
-                <div className={styles.highlightsList}>
-                  {project.highlights.map((highlight, index) => (
-                    <div key={index} className={styles.highlight}>
-                      <span className={styles.highlightBullet}>•</span>
-                      <p>{highlight}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-          </div>
+          <ProjectCard
+            key={projectIndex}
+            project={project}
+            projectIndex={projectIndex}
+            isExpanded={expanded[projectIndex]}
+            onToggleExpanded={toggleExpanded}
+            IconMap={IconMap}
+          />
         ))}
 
         {/* Coming Soon Banner */}

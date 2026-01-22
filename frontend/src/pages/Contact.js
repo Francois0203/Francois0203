@@ -1,30 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart } from 'react-icons/fa';
 import styles from './Contact.module.css';
+import { shouldReduceAnimations, getOptimalInterval, throttle } from '../utils/deviceUtils';
 
 const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
   const containerRef = useRef(null);
+  const reduceAnimations = useRef(shouldReduceAnimations());
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Create magnetic particle effect on hover
+  // Create magnetic particle effect on hover (throttled for performance)
   const [magnetPos, setMagnetPos] = useState({ x: 0, y: 0 });
   
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMagnetPos({ x, y });
-  };
+  const handleMouseMove = useMemo(
+    () => throttle((e) => {
+      if (!containerRef.current || reduceAnimations.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      setMagnetPos({ x, y });
+    }, 50),
+    []
+  );
 
-  // Spawn energy particles around contact cards
+  // Spawn energy particles around contact cards (optimized for mobile)
   useEffect(() => {
+    // Skip energy particles on mobile devices
+    if (reduceAnimations.current) return;
+
     let mounted = true;
     let timeout;
 
@@ -51,7 +59,9 @@ const Contact = () => {
         if (particle.parentNode) particle.remove();
       }, duration * 1000);
 
-      timeout = setTimeout(spawnEnergyParticle, 400 + Math.random() * 600);
+      // Less frequent spawning
+      const spawnDelay = getOptimalInterval(400) + Math.random() * 600;
+      timeout = setTimeout(spawnEnergyParticle, spawnDelay);
     };
 
     timeout = setTimeout(spawnEnergyParticle, 1000);

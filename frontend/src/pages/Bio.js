@@ -3,10 +3,13 @@ import { MdEmail, MdPhone, MdLocationOn, MdCalendarToday, MdWorkOutline, MdSchoo
 import { FaLinkedin, FaInstagram, FaGithub, FaOrcid, FaAward } from 'react-icons/fa';
 import styles from './Bio.module.css';
 import ProfileImg from '../Images/Profile.jpeg';
+import { shouldReduceAnimations, getOptimalParticleCount, getOptimalInterval } from '../utils/deviceUtils';
 
 const Bio = () => {
   const [isVisible, setIsVisible] = React.useState(false);
   const containerRef = useRef(null);
+  const reduceAnimations = useRef(shouldReduceAnimations());
+  
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -35,18 +38,21 @@ const Bio = () => {
     }, 1200);
   };
 
-  // Spawn subtle water particles using direct DOM manipulation (no React state)
+  // Spawn subtle water particles using direct DOM manipulation (optimized for mobile)
   useEffect(() => {
+    // Skip or reduce water particles on mobile devices
+    if (reduceAnimations.current) return;
+
     let mounted = true;
     let schedulerTimeout = null;
     const activeParticlesRef = { current: 0 };
-    const maxParticles = 4; // fewer, more subtle particles
+    const maxParticles = getOptimalParticleCount(4, 2); // Reduced from 4 to 2 on mobile
     const removalTimers = [];
 
     const spawnParticle = () => {
       if (!mounted || !containerRef.current) return;
       if (activeParticlesRef.current >= maxParticles) {
-        schedulerTimeout = setTimeout(spawnParticle, 2000 + Math.random() * 3000);
+        schedulerTimeout = setTimeout(spawnParticle, getOptimalInterval(2000) + Math.random() * 3000);
         return;
       }
 
@@ -73,7 +79,7 @@ const Bio = () => {
 
       removalTimers.push(removeTimer);
 
-      const nextDelay = 2500 + Math.random() * 3500;
+      const nextDelay = getOptimalInterval(2500) + Math.random() * 3500;
       schedulerTimeout = setTimeout(spawnParticle, nextDelay);
     };
 
