@@ -74,6 +74,9 @@ const Home = () => {
         ripple.className = styles.rainDrop;
         ripple.style.left = `${startX}%`;
         ripple.style.top = `${endY}vh`;
+        // Random ripple size (100px - 250px)
+        const rippleSize = 100 + Math.random() * 150;
+        ripple.style.setProperty('--ripple-size', `${rippleSize}px`);
 
         if (rainRef.current) {
           rainRef.current.appendChild(ripple);
@@ -107,6 +110,41 @@ const Home = () => {
       mounted = false;
       clearInterval(rainInterval);
       drops.forEach(drop => drop.remove());
+    };
+  }, []);
+
+  // ========================================
+  // EFFECTS - Click Ripple Effect
+  // ========================================
+  useEffect(() => {
+    if (reduceAnimations.current || !rainRef.current) return;
+
+    const handleClick = (e) => {
+      if (!rainRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      const ripple = document.createElement('div');
+      ripple.className = styles.rainDrop;
+      ripple.style.left = `${x}%`;
+      ripple.style.top = `${y}%`;
+      // Consistent click ripple size (200px)
+      ripple.style.setProperty('--ripple-size', '200px');
+
+      rainRef.current.appendChild(ripple);
+
+      setTimeout(() => {
+        if (ripple.parentNode) ripple.remove();
+      }, 2000);
+    };
+
+    const container = containerRef.current;
+    container.addEventListener('click', handleClick);
+
+    return () => {
+      container.removeEventListener('click', handleClick);
     };
   }, []);
 

@@ -28,83 +28,12 @@ const Contact = () => {
   // REFS
   // ========================================
   const containerRef = useRef(null);
-  const rainRef = useRef(null);
-  const reduceAnimations = useRef(
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
 
   // ========================================
   // EFFECTS - Page Mount
   // ========================================
   useEffect(() => {
     setIsVisible(true);
-  }, []);
-
-  // ========================================
-  // EFFECTS - Rain Ripple Animation
-  // ========================================
-  useEffect(() => {
-    if (reduceAnimations.current || !rainRef.current) return;
-
-    let mounted = true;
-    const drops = [];
-    const maxDrops = 4; // Reduced amount
-
-    const createRainDrop = () => {
-      if (!mounted || !rainRef.current || drops.length >= maxDrops) return;
-
-      const startX = Math.random() * 100;
-      const endY = 50 + Math.random() * 50; // Land somewhere in middle-bottom of screen
-
-      // Create falling drop
-      const drop = document.createElement('div');
-      drop.className = styles.fallingDrop;
-      drop.style.left = `${startX}%`;
-      drop.style.setProperty('--end-y', `${endY}vh`);
-
-      rainRef.current.appendChild(drop);
-      drops.push(drop);
-
-      // Create ripple where drop lands after fall animation
-      setTimeout(() => {
-        const ripple = document.createElement('div');
-        ripple.className = styles.rainDrop;
-        ripple.style.left = `${startX}%`;
-        ripple.style.top = `${endY}vh`;
-
-        if (rainRef.current) {
-          rainRef.current.appendChild(ripple);
-          drops.push(ripple);
-        }
-
-        setTimeout(() => {
-          if (ripple.parentNode) ripple.remove();
-          const idx = drops.indexOf(ripple);
-          if (idx !== -1) drops.splice(idx, 1);
-        }, 2000);
-      }, 800); // Duration of fall
-
-      // Remove falling drop
-      setTimeout(() => {
-        if (drop.parentNode) drop.remove();
-        const idx = drops.indexOf(drop);
-        if (idx !== -1) drops.splice(idx, 1);
-      }, 900);
-    };
-
-    // Start with fewer drops
-    setTimeout(createRainDrop, 500);
-    setTimeout(createRainDrop, 1500);
-
-    const rainInterval = setInterval(() => {
-      if (mounted && drops.length < maxDrops) createRainDrop();
-    }, 3000); // Less frequent
-
-    return () => {
-      mounted = false;
-      clearInterval(rainInterval);
-      drops.forEach(drop => drop.remove());
-    };
   }, []);
 
   // ========================================
@@ -129,9 +58,6 @@ const Contact = () => {
       ref={containerRef}
       className={`${styles.container} ${isVisible ? styles.visible : ''}`}
     >
-      {/* Rain Ripple Background */}
-      <div ref={rainRef} className={styles.rainContainer} />
-
       {/* Page Header */}
       <div className={styles.pageHeader}>
         <div className={styles.headerIcon}>
