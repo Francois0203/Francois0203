@@ -1,9 +1,15 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MdRocketLaunch, MdArrowForward, MdWorkOutline, MdCode } from 'react-icons/md';
+import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
 
 /* Data */
 import homeData from '../../data/home.json';
+
+/* Images */
+import image1 from '../../Images/1. Playing Guitar.jpg';
+import image2 from '../../Images/2. Family Graduation.jpg';
+import image3 from '../../Images/3. St. Lucia Adventure.jpg';
+import image4 from '../../Images/4. Modeling.jpg';
 
 /* Styling */
 import styles from './Home.module.css';
@@ -22,10 +28,6 @@ const Home = () => {
   // STATE MANAGEMENT
   // ========================================
   const [isVisible, setIsVisible] = useState(false);
-  const [currentTitleIndex, setCurrentTitleIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [hoveredStat, setHoveredStat] = useState(null);
   
   // ========================================
   // REFS
@@ -149,150 +151,110 @@ const Home = () => {
   }, []);
 
   // ========================================
-  // EFFECTS - Typing Animation
+  // IMAGE MAP
   // ========================================
-  useEffect(() => {
-    const titles = homeData.hero.titles;
-    const currentTitle = titles[currentTitleIndex];
-    const typingSpeed = 100;
-    const deletingSpeed = 50;
-    const pauseDuration = 2000;
-
-    let timeout;
-
-    if (!isDeleting) {
-      if (displayedText.length < currentTitle.length) {
-        timeout = setTimeout(() => {
-          setDisplayedText(currentTitle.slice(0, displayedText.length + 1));
-        }, typingSpeed);
-      } else {
-        timeout = setTimeout(() => {
-          setIsDeleting(true);
-        }, pauseDuration);
-      }
-    } else {
-      if (displayedText.length > 0) {
-        timeout = setTimeout(() => {
-          setDisplayedText(displayedText.slice(0, -1));
-        }, deletingSpeed);
-      } else {
-        setIsDeleting(false);
-        setCurrentTitleIndex((prevIndex) => (prevIndex + 1) % titles.length);
-      }
-    }
-
-    return () => clearTimeout(timeout);
-  }, [displayedText, isDeleting, currentTitleIndex]);
-
-  // ========================================
-  // HANDLERS
-  // ========================================
-  const handleStatHover = useCallback((index) => {
-    setHoveredStat(index);
-  }, []);
-
-  const handleStatLeave = useCallback(() => {
-    setHoveredStat(null);
-  }, []);
-
-  // ========================================
-  // ICON MAP
-  // ========================================
-  const iconMap = {
-    MdWorkOutline,
-    MdRocketLaunch,
-    MdCode
+  const imageMap = {
+    1: image1,
+    2: image2,
+    3: image3,
+    4: image4
   };
 
   // ========================================
   // RENDER
   // ========================================
   return (
-    <div 
-      ref={containerRef} 
-      className={`${styles.container} ${isVisible ? styles.visible : ''}`}
-    >
-      {/* Rain Ripple Effect */}
-      <div ref={rainRef} className={styles.rainContainer} />
+    <div className={styles.pageWrapper}>
+      <div 
+        ref={containerRef} 
+        className={`${styles.container} ${isVisible ? styles.visible : ''}`}
+      >
+        {/* Rain Ripple Effect */}
+        <div ref={rainRef} className={styles.rainContainer} />
 
-      {/* Animated Background - CSS Only */}
-      <div className={styles.backgroundEffects}>
-        <div className={styles.orb1} />
-        <div className={styles.orb2} />
-        <div className={styles.orb3} />
+        {/* Animated Background */}
+        <div className={styles.backgroundEffects}>
+          <div className={styles.orb1} />
+          <div className={styles.orb2} />
+          <div className={styles.orb3} />
+        </div>
+
+        {/* Main Content */}
+        <div className={styles.content}>
+          {/* Hero Section */}
+          <div className={styles.hero}>
+            <div className={styles.greetingWrapper}>
+              <span className={styles.decorLine} />
+              <p className={styles.greeting}>{homeData.hero.greeting}</p>
+              <span className={styles.decorLine} />
+            </div>
+            
+            <h1 className={styles.name}>
+              {homeData.hero.name}
+            </h1>
+            
+            <p className={styles.tagline}>{homeData.hero.tagline}</p>
+            
+            <p className={styles.description}>{homeData.hero.description}</p>
+          </div>
+
+          {/* Call to Action */}
+          <div className={styles.ctaContainer}>
+            <Link to={homeData.cta.primary.link} className={`${styles.button} ${styles.primaryButton}`}>
+              <MdRocketLaunch />
+              <span>{homeData.cta.primary.text}</span>
+            </Link>
+            
+            <Link to={homeData.cta.secondary.link} className={`${styles.button} ${styles.secondaryButton}`}>
+              <span>{homeData.cta.secondary.text}</span>
+              <MdArrowForward />
+            </Link>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className={styles.scrollIndicator}>
+            <div className={styles.scrollArrow}></div>
+          </div>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className={styles.content}>
-        {/* Hero Section */}
-        <div className={styles.hero}>
-          <div className={styles.greetingWrapper}>
-            <span className={styles.decorLine} />
-            <p className={styles.greeting}>{homeData.hero.greeting}</p>
-            <span className={styles.decorLine} />
-          </div>
-          
-          <h1 className={styles.name}>
-            {homeData.hero.name}
-          </h1>
-          
-          <div className={styles.titleContainer}>
-            <div className={styles.titleWrapper}>
-              <span className={styles.titleBracket}>{'<'}</span>
-              <h2 className={styles.title}>
-                {displayedText}
-                <span className={styles.cursor}>|</span>
-              </h2>
-              <span className={styles.titleBracket}>{'/>'}</span>
+      {/* Memory Lane Section - Alternating Layout */}
+      <div className={styles.memoryLaneSection}>
+        <div className={styles.memoryLaneContainer}>
+          <div className={styles.memoryLaneHeader}>
+            <div className={styles.sectionDivider}>
+              <span className={styles.dividerLine} />
+              <span className={styles.dividerDot} />
+              <span className={styles.dividerLine} />
             </div>
+            <h2 className={styles.memoryLaneTitle}>{homeData.memoryLane.title}</h2>
+            <p className={styles.memoryLaneSubtitle}>{homeData.memoryLane.subtitle}</p>
           </div>
           
-          <p className={styles.description}>{homeData.hero.description}</p>
-          
-          {/* Decorative Elements */}
-          <div className={styles.heroDecor}>
-            <div className={styles.decorDot} />
-            <div className={styles.decorDot} />
-            <div className={styles.decorDot} />
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className={styles.statsContainer}>
-          {homeData.quickStats.map((stat, index) => {
-            const Icon = iconMap[stat.icon];
-            return (
+          <div className={styles.memoryTimeline}>
+            {homeData.memoryLane.memories.map((memory, index) => (
               <div 
-                key={index} 
-                className={`${styles.statCard} ${hoveredStat === index ? styles.statCardActive : ''}`}
-                onMouseEnter={() => handleStatHover(index)}
-                onMouseLeave={handleStatLeave}
+                key={memory.number} 
+                className={`${styles.memoryItem} ${memory.number % 2 === 0 ? styles.memoryItemReverse : ''}`}
+                style={{ animationDelay: `${index * 0.2}s` }}
               >
-                <div className={styles.statIconWrapper}>
-                  <div className={styles.statIcon}>
-                    {Icon && <Icon />}
-                  </div>
+                <div className={styles.memoryImageContainer}>
+                  <div className={styles.memoryNumberBadge}>{memory.number}</div>
+                  <img 
+                    src={imageMap[memory.number]} 
+                    alt={memory.title}
+                    className={styles.memoryImage}
+                    loading="lazy"
+                  />
+                  <div className={styles.memoryImageOverlay} />
                 </div>
-                <div className={styles.statContent}>
-                  <div className={styles.statValue}>{stat.value}</div>
-                  <div className={styles.statLabel}>{stat.label}</div>
+                <div className={styles.memoryTextContainer}>
+                  <h3 className={styles.memoryTitle}>{memory.title}</h3>
+                  <p className={styles.memoryDescription}>{memory.description}</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Call to Action */}
-        <div className={styles.ctaContainer}>
-          <Link to={homeData.cta.primary.link} className={`${styles.button} ${styles.primaryButton}`}>
-            <MdRocketLaunch />
-            <span>{homeData.cta.primary.text}</span>
-          </Link>
-          
-          <Link to={homeData.cta.secondary.link} className={`${styles.button} ${styles.secondaryButton}`}>
-            <span>{homeData.cta.secondary.text}</span>
-            <MdArrowForward />
-          </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>
