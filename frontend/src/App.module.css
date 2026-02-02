@@ -24,11 +24,16 @@
  */
 .navigationBar {
   position: fixed;
-  top: 0;
+  top: var(--spacing-md);
   left: 0;
   right: 0;
   z-index: var(--z-sticky);
   background: transparent;
+  pointer-events: none;
+}
+
+.navigationBar > * {
+  pointer-events: auto;
 }
 
 /* ========================================
@@ -39,7 +44,7 @@
   position: fixed;
   top: var(--spacing-md);
   right: var(--spacing-md);
-  z-index: var(--z-sticky);
+  z-index: calc(var(--z-sticky) + 1);
 }
 
 /* ========================================
@@ -63,15 +68,15 @@
 /* Tablet */
 @media (max-width: 768px) {
   .themeSwitch {
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
+    top: var(--spacing-md);
+    right: var(--spacing-md);
   }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
   .themeSwitch {
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
   }
 }

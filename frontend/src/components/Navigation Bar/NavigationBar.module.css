@@ -41,16 +41,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--spacing-xs);
   list-style: none;
   margin: 0;
   padding: var(--spacing-sm);
-  background: transparent;
-  backdrop-filter: none;
-  border: none;
+  /* Liquid Glass Effect */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
-  box-shadow: none;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 2px 4px 0 rgba(255, 255, 255, 0.1) inset;
+  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navLinks::-webkit-scrollbar {
+  display: none;
 }
 
 .navItem {
@@ -73,13 +87,16 @@
   white-space: nowrap;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .navLink::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--accent-1);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   opacity: 0;
   transition: opacity var(--transition-base);
   border-radius: var(--radius-full);
@@ -89,10 +106,11 @@
 .navLink:hover {
   color: var(--primary-text-color);
   transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .navLink:hover::before {
-  opacity: 0.1;
+  opacity: 1;
 }
 
 .navLink:active {
@@ -101,9 +119,14 @@
 
 /* Active Link State */
 .navLinkActive {
-  color: white;
+  color: var(--primary-text-color);
   background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  box-shadow: var(--shadow-md);
+  box-shadow: 
+    0 4px 16px 0 rgba(79, 70, 229, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
+    var(--shadow-md);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .navLinkActive::before {
@@ -111,15 +134,20 @@
 }
 
 .navLinkActive:hover {
-  color: white;
+  color: var(--primary-text-color);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 
+    0 8px 24px 0 rgba(79, 70, 229, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+    var(--shadow-lg);
 }
 
 /* ========================================
  * RESPONSIVE BREAKPOINTS
  * ========================================
- */
+ *  overflow-x: auto;
+    justify-content: flex-start;
+  /
 
 /* Tablet */
 @media (max-width: 768px) {
@@ -136,6 +164,8 @@
   .navLink {
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: var(--font-size-sm);
+    overflow-x: auto;
+    justify-content: flex-start;
   }
 }
 
@@ -152,6 +182,8 @@
   }
 
   .navLink {
+    overflow-x: auto;
+    justify-content: flex-start;
     padding: 6px 10px;
     font-size: var(--font-size-xs);
   }

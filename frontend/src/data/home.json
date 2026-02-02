@@ -16,28 +16,28 @@
     }
   },
   "memoryLane": {
-    "title": "A Trip Down Memory Lane",
-    "subtitle": "Moments and adventures that have shaped my journey",
+    "title": "A Glimpse Into Who I Am",
+    "subtitle": "Interests and values that shape me",
     "memories": [
       {
         "number": 1,
-        "title": "Playing Guitar",
-        "description": "Music has always been a creative outlet for me. Whether strumming chords or composing melodies, the guitar helps me express ideas beyond words and code."
+        "title": "Love for Guitar",
+        "description": "Playing guitar shows my creative side. I enjoy using music to relax, express feelings, and think in new ways."
       },
       {
         "number": 2,
-        "title": "Family Graduation",
-        "description": "Celebrating achievements with the people who matter most. This milestone represents years of dedication, support, and the foundation that continues to drive my ambitions."
+        "title": "Valuing Close Relationships",
+        "description": "I care a lot about the people close to me. Strong relationships keep me supported, grounded, and motivated."
       },
       {
         "number": 3,
-        "title": "St. Lucia Adventure",
-        "description": "Exploring new places fuels my curiosity and broadens my perspective. Travel teaches me to embrace different cultures and see the world through fresh eyes."
+        "title": "Adventurous Side",
+        "description": "I enjoy adventures and new experiences. Exploring helps me learn, grow, and stay curious about the world."
       },
       {
         "number": 4,
-        "title": "Modeling",
-        "description": "Stepping outside my comfort zone has taught me confidence and adaptability. Trying new experiences reminds me that growth happens when we dare to be different."
+        "title": "Interest in Modeling",
+        "description": "Modeling reflects my confidence and willingness to be seen. It pushes me to present myself well and try new things."
       }
     ]
   }
