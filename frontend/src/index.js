@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter, useNavigate, useLocation } from 'react-router-dom';
 import App from './App';
-import { ErrorBoundary } from '@francois0203/ui';
+import { ErrorBoundary } from './components';
 
 /* Styling  */
-import '@francois0203/ui/dist/styles/Theme.css';
-import '@francois0203/ui/dist/styles/Components.css';
-import '@francois0203/ui/dist/styles/Wrappers.css';
+import './styles/Theme.css';
+import './styles/Wrappers.css';
+import './styles/Components.css';
 
 function ErrorBoundaryWrapper({ children }) {
   // hooks must be used inside Router; this wrapper will be rendered inside <BrowserRouter>

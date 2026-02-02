@@ -1,65 +1,44 @@
 [
   {
-    "title": "Personal Portfolio Website",
-    "subtitle": "A Modern, Component-Based React Application",
-    "description": "This personal portfolio website represents a comprehensive full-stack web development project, showcasing modern web technologies, architectural design patterns, and automated deployment workflows. Built entirely from scratch, the project demonstrates proficiency in React development, package management, CI/CD implementation, and production deployment strategies.",
+    "title": "Francois0203 Portfolio Website",
+    "subtitle": "Modern React-Based Personal Portfolio & Professional Showcase",
+    "description": "A professionally designed personal portfolio website built with React, showcasing projects, skills, and experience through an interactive, responsive interface. Features a modern design system with theme switching, animated components, and optimized performance. The site demonstrates full-stack development capabilities, responsive design principles, and attention to user experience across all device types.",
     "techStack": [
       { "name": "React", "icon": "FaReact", "color": "#61DAFB" },
       { "name": "JavaScript", "icon": "FaCode", "color": "#F7DF1E" },
       { "name": "CSS Modules", "icon": "FaPalette", "color": "#1572B6" },
-      { "name": "GitHub Actions", "icon": "FaCogs", "color": "#2088FF" },
-      { "name": "GitHub Pages", "icon": "AiOutlineDeploymentUnit", "color": "#222222" },
-      { "name": "NPM Registry", "icon": "FaNpm", "color": "#CB3837" }
+      { "name": "React Router", "icon": "FaCogs", "color": "#CA4245" },
+      { "name": "GitHub Pages", "icon": "AiOutlineDeploymentUnit", "color": "#222222" }
     ],
     "features": [
       {
-        "title": "Component Package Architecture",
-        "description": "Developed a custom NPM package published to GitHub Package Registry containing reusable React components, global theme system, typography definitions, and styling utilities. This modular architecture enables consistent design language across the application and facilitates future scalability.",
+        "title": "Responsive Design System",
+        "description": "Fully responsive layout that adapts seamlessly to desktop, tablet, and mobile devices. Features a comprehensive theme system with light/dark mode switching and CSS custom properties for consistent styling across all components.",
+        "icon": "FaPalette"
+      },
+      {
+        "title": "Interactive Components",
+        "description": "Custom-built reusable React components including navigation, modals, tooltips, toast notifications, and form elements. Features smooth animations, ripple effects, and particle systems that adapt to device capabilities and user preferences.",
         "icon": "MdAutoAwesome"
       },
       {
-        "title": "Automated CI/CD Pipeline",
-        "description": "Implemented dual GitHub Actions workflows for continuous integration and deployment. The first pipeline builds and publishes the component package to GitHub Package Registry upon changes. The second pipeline builds the frontend application, consuming the package, and deploys the production build to GitHub Pages with zero-downtime deployment.",
-        "icon": "MdCached"
+        "title": "Performance Optimized",
+        "description": "Optimized for fast load times and smooth interactions with lazy loading, code splitting, and efficient rendering. Animations automatically reduce on mobile devices and respect user's motion preferences for accessibility.",
+        "icon": "MdSpeed"
       },
       {
-        "title": "Production Deployment",
-        "description": "Configured automated deployment to GitHub Pages using the Francois0203 repository, enabling public access to the portfolio website. The deployment process includes build optimization, asset compression, and proper routing configuration for single-page application functionality.",
+        "title": "GitHub Pages Deployment",
+        "description": "Automated deployment pipeline using GitHub Actions, enabling seamless updates and continuous delivery. Hosted on GitHub Pages with custom domain support and HTTPS enforcement.",
         "icon": "FaRocket"
-      },
-      {
-        "title": "Modern Design System",
-        "description": "Created a comprehensive design system with glassmorphism effects, fluid animations, responsive layouts, and interactive visual elements. The UI features water-themed particle effects, click ripple animations, and smooth transitions that enhance user engagement while maintaining performance.",
-        "icon": "FaPalette"
       }
     ],
-    "architecture": {
-      "title": "Technical Architecture",
-      "components": [
-        {
-          "layer": "Component Package",
-          "description": "Shared React components, theme variables, global styles, typography system, and utility functions published as an NPM package to GitHub Package Registry."
-        },
-        {
-          "layer": "Frontend Application",
-          "description": "React-based single-page application consuming the component package, implementing routing, state management, and page-specific components."
-        },
-        {
-          "layer": "CI/CD Pipeline",
-          "description": "Automated workflows for package publishing and frontend deployment triggered by repository commits, ensuring consistent build processes and deployment reliability."
-        },
-        {
-          "layer": "Production Hosting",
-          "description": "Static site hosting on GitHub Pages with custom domain support, HTTPS enforcement, and optimized asset delivery."
-        }
-      ]
-    },
+    "summary": "A modern, professionally-designed portfolio website showcasing technical skills, projects, and experience through an engaging, responsive interface.",
     "highlights": [
-      "Designed and implemented a modular component architecture enabling code reusability and maintainability across multiple projects",
-      "Configured GitHub Actions for automated testing, building, and deployment, reducing manual deployment time and eliminating human error",
-      "Established NPM package publishing workflow to GitHub Package Registry with versioning and dependency management",
-      "Optimized build process for production deployment including code splitting, asset optimization, and performance enhancements",
-      "Implemented responsive design principles ensuring optimal user experience across desktop, tablet, and mobile devices"
+      "Designed and implemented complete UI/UX with modern design principles and accessibility in mind",
+      "Built reusable component library with consistent theming and responsive layouts",
+      "Implemented performance optimizations including lazy loading and reduced animations for mobile devices",
+      "Configured automated deployment pipeline for continuous delivery",
+      "Created interactive animations and effects that enhance user experience without compromising performance"
     ],
     "links": [
       { "label": "View Repository", "url": "https://github.com/Francois0203", "icon": "FaGithub" }

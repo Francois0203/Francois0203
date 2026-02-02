@@ -1,0 +1,75 @@
+{
+  "personalInfo": {
+    "name": "Francois Meiring",
+    "title": "Full Stack Developer & Computer Science Researcher",
+    "dateOfBirth": "2 March 2002",
+    "location": "Irene, Centurion",
+    "driversLicense": "Code B",
+    "gender": "Male",
+    "languages": ["Afrikaans", "English"],
+    "faith": "Christian"
+  },
+  "contact": {
+    "email": "francoismeiring0203@gmail.com",
+    "phone": "+27 65 131 0546"
+  },
+  "socialLinks": {
+    "linkedin": "https://www.linkedin.com/in/francois-meiring",
+    "github": "https://github.com/Francois0203",
+    "instagram": "https://www.instagram.com/francois0203/",
+    "orcid": "https://orcid.org/0009-0004-7605-0618"
+  },
+  "experiences": [
+    {
+      "title": "Full Stack Developer",
+      "company": "Aquatico Scientific",
+      "location": "Route 21 Business Park, Centurion",
+      "period": "2024 - Present",
+      "description": "Leading the complete ground-up rebuild of the company's enterprise system architecture. Architecting and developing a comprehensive full-stack solution using React for the frontend and Node.js for the backend, deployed on production servers using Nginx and orchestrated with Kubernetes. The system encompasses multiple integrated modules including laboratory information management, project coordination, and business operations management."
+    },
+    {
+      "title": "Shop Assistant",
+      "company": "Western Rackets",
+      "period": "During Matric Year",
+      "description": "Part-time retail position focused on customer service and sales, developing interpersonal communication skills and professional workplace etiquette."
+    },
+    {
+      "title": "Waiter",
+      "company": "Bean Tree, Krugersdorp",
+      "period": "During Matric Year",
+      "description": "Food service position emphasizing customer satisfaction, multitasking, and effective communication in a fast-paced environment."
+    }
+  ],
+  "education": [
+    {
+      "degree": "MSc. Computer Science",
+      "institution": "North-West University, Potchefstroom",
+      "period": "2026 - Present",
+      "details": "Research-focused master's degree with emphasis on astronomical data processing and distributed computing systems."
+    },
+    {
+      "degree": "BSc. Hons. Computer Science",
+      "institution": "North-West University, Potchefstroom",
+      "period": "2024",
+      "details": "Honours degree specializing in advanced software engineering and computational research methodologies."
+    },
+    {
+      "degree": "BSc. Computer Science & Statistics",
+      "institution": "North-West University, Potchefstroom",
+      "period": "2021 - 2023",
+      "details": "Dual-major undergraduate degree combining computational theory with statistical analysis and data science fundamentals."
+    },
+    {
+      "degree": "National Senior Certificate (Matric)",
+      "institution": "Hoërskool Noordheuwel",
+      "period": "Completed",
+      "details": "Subjects: Physics, Afrikaans Home Language, English First Additional Language, Mathematics, Information Technology, Computer Applications Technology."
+    }
+  ],
+  "skills": {
+    "Programming Languages": ["Python", "JavaScript", "R", "HTML/CSS", "SAS"],
+    "Frameworks & Technologies": ["React", "Node.js", "Docker", "Kubernetes", "Nginx", "SQL", "PostgreSQL"],
+    "Professional Skills": ["Team Leadership", "Project Management", "Full-Stack Development", "System Architecture"]
+  },
+  "hobbies": ["Gym", "Squash", "Guitar", "8 Ball Pool", "Hiking", "Personal Projects", "Web Development"]
+}

@@ -1,0 +1,69 @@
+{
+  "heading": {
+    "title": "Let's Connect",
+    "subtitle": "Feel free to reach out for collaborations, opportunities, or just to say hello!"
+  },
+  "contactMethods": [
+    {
+      "type": "email",
+      "label": "Email",
+      "value": "francoismeiring0203@gmail.com",
+      "link": "mailto:francoismeiring0203@gmail.com",
+      "icon": "MdEmail",
+      "primary": true
+    },
+    {
+      "type": "phone",
+      "label": "Phone",
+      "value": "+27 65 131 0546",
+      "link": "tel:+27651310546",
+      "icon": "MdPhone",
+      "primary": true
+    },
+    {
+      "type": "location",
+      "label": "Location",
+      "value": "Irene, Centurion, South Africa",
+      "icon": "MdLocationOn",
+      "primary": false
+    }
+  ],
+  "socialLinks": [
+    {
+      "platform": "LinkedIn",
+      "url": "https://www.linkedin.com/in/francois-meiring",
+      "icon": "FaLinkedin",
+      "color": "#0077B5"
+    },
+    {
+      "platform": "GitHub",
+      "url": "https://github.com/Francois0203",
+      "icon": "FaGithub",
+      "color": "#333333"
+    },
+    {
+      "platform": "Instagram",
+      "url": "https://www.instagram.com/francois0203/",
+      "icon": "FaInstagram",
+      "color": "#E4405F"
+    },
+    {
+      "platform": "ORCID",
+      "url": "https://orcid.org/0009-0004-7605-0618",
+      "icon": "FaOrcid",
+      "color": "#A6CE39"
+    }
+  ],
+  "donation": {
+    "enabled": true,
+    "title": "Support My Studies",
+    "message": "If you’d like to help me continue my education and learning journey, you can donate here. Any support means a lot to me!",
+    "link": "https://www.paypal.com/donate/?hosted_button_id=WLYQLDC9UZWMW",
+    "buttonText": "Support My Studies 📚",
+    "icon": "FaHeart"
+    },
+  "availability": {
+    "status": "open",
+    "message": "Currently available for freelance projects and part-time opportunities"
+  }
+}

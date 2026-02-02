@@ -1,0 +1,194 @@
+/* ============================================================================
+ * NAVIGATION BAR STYLES
+ * ============================================================================
+ * Professional, responsive navigation with horizontal layout
+ * ============================================================================
+ */
+
+/* ========================================
+ * BASE NAVBAR CONTAINER
+ * ========================================
+ */
+.navbar {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  padding: 0;
+  box-sizing: border-box;
+  z-index: var(--z-sticky);
+}
+
+/* ========================================
+ * NAV CONTAINER - Centers navigation with space for settings
+ * ========================================
+ */
+.navContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-right: 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ========================================
+ * NAVIGATION LINKS - Always horizontal
+ * ========================================
+ */
+.navLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-sm);
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  border-radius: var(--radius-full);
+  box-shadow: none;
+}
+
+.navItem {
+  list-style: none;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--secondary-text-color);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-1);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  border-radius: var(--radius-full);
+  z-index: -1;
+}
+
+.navLink:hover {
+  color: var(--primary-text-color);
+  transform: translateY(-1px);
+}
+
+.navLink:hover::before {
+  opacity: 0.1;
+}
+
+.navLink:active {
+  transform: translateY(0);
+}
+
+/* Active Link State */
+.navLinkActive {
+  color: white;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  box-shadow: var(--shadow-md);
+}
+
+.navLinkActive::before {
+  opacity: 0;
+}
+
+.navLinkActive:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+ * RESPONSIVE BREAKPOINTS
+ * ========================================
+ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .navContainer {
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-right: 70px;
+  }
+
+  .navLinks {
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .navLink {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .navContainer {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    padding-right: 60px;
+  }
+
+  .navLinks {
+    gap: 3px;
+    padding: 4px;
+  }
+
+  .navLink {
+    padding: 6px 10px;
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 360px) {
+  .navContainer {
+    padding: var(--spacing-xs);
+    padding-right: 56px;
+  }
+
+  .navLinks {
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .navLink {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ========================================
+ * ACCESSIBILITY
+ * ========================================
+ */
+
+/* Focus States */
+.navLink:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .navLink {
+    transition: none;
+  }
+}

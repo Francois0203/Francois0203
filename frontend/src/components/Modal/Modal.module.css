@@ -1,0 +1,233 @@
+/* ============================================================================
+ * MODAL COMPONENT STYLES
+ * ============================================================================
+ * Professional modal dialog with backdrop
+ * ============================================================================
+ */
+
+/* ========================================
+ * MODAL OVERLAY/BACKDROP
+ * ========================================
+ */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  animation: fadeIn var(--transition-base);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+ * MODAL CONTENT
+ * ========================================
+ */
+.content {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+ * MODAL HEADER
+ * ========================================
+ */
+.modalHeader {
+  position: relative;
+  padding: var(--spacing-xl);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-2);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--primary-text-color);
+  padding-right: var(--spacing-3xl);
+}
+
+/* ========================================
+ * MODAL BODY
+ * ========================================
+ */
+.modalBody {
+  flex: 1;
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.modalBody::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modalBody::-webkit-scrollbar-track {
+  background: var(--background-2);
+  border-radius: var(--radius-sm);
+}
+
+.modalBody::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.modalBody::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-1);
+}
+
+/* ========================================
+ * CLOSE BUTTON
+ * ========================================
+ */
+.closeButton {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--secondary-text-color);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  padding: 0;
+  z-index: 1;
+}
+
+.closeButton:hover {
+  background: var(--error-color);
+  border-color: var(--error-color);
+  color: white;
+  transform: rotate(90deg) scale(1.1);
+}
+
+.closeButton:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 2px;
+}
+
+/* ========================================
+ * RESPONSIVE DESIGN
+ * ========================================
+ */
+@media (max-width: 768px) {
+  .overlay {
+    padding: var(--spacing-md);
+  }
+
+  .content {
+    max-height: 90vh;
+  }
+
+  .modalHeader {
+    padding: var(--spacing-lg);
+  }
+
+  .modalTitle {
+    font-size: var(--font-size-xl);
+  }
+
+  .modalBody {
+    padding: var(--spacing-lg);
+  }
+
+  .closeButton {
+    width: 32px;
+    height: 32px;
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: var(--spacing-sm);
+  }
+
+  .content {
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: var(--spacing-md);
+  }
+
+  .modalTitle {
+    font-size: var(--font-size-lg);
+    padding-right: var(--spacing-2xl);
+  }
+
+  .modalBody {
+    padding: var(--spacing-md);
+  }
+
+  .closeButton {
+    width: 28px;
+    height: 28px;
+    font-size: 1.125rem;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+}
+
+/* ========================================
+ * ACCESSIBILITY
+ * ========================================
+ */
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .content {
+    animation: none;
+  }
+
+  .closeButton:hover {
+    transform: none;
+  }
+
+  .closeButton:active {
+    transform: none;
+  }
+}
