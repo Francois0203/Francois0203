@@ -1,156 +1,218 @@
 import React, { useState, useRef, useEffect } from "react";
-import { HiCog } from 'react-icons/hi';
-import { MdColorLens, MdSpeed } from 'react-icons/md';
+import { createPortal } from "react-dom";
+import { GiCog } from 'react-icons/gi';
+import { IoColorPaletteSharp } from 'react-icons/io5';
+import { FaStopwatch } from 'react-icons/fa';
 import ThemeSwitch from '../Theme Switch';
 import ReduceAnimationsSwitch from '../Reduce Animations Switch';
 
-/* Styling */
+// ============================================
+// IMPORTS - STYLING
+// ============================================
+
 import styles from "./Settings.module.css";
 import '../../styles/Theme.css';
+import '../../styles/Components.css';
+import '../../styles/Wrappers.css';
 
-/* ============================================================================
- * SETTINGS COMPONENT
- * ============================================================================
- * Professional settings dropdown with theme and animation controls
- * Features:
- * - Floating action button with dropdown menu
- * - Smooth animations and transitions
- * - Click-outside to close functionality
- * - Keyboard accessibility (Escape to close)
- * - Responsive design for all devices
- * ============================================================================
- */
+// ============================================
+// SETTINGS COMPONENT
+// ============================================
+// Floating settings panel with morphing animations
+// Features liquid glass effect and gradient backgrounds
 
 const Settings = function Settings({ 
   theme,
   toggleTheme,
+  cogSize = 45,
   className = ""
 }) {
-  // ========================================
-  // STATE & REFS
-  // ========================================
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef(null);
-
-  // ========================================
-  // EVENT HANDLERS
-  // ========================================
+  // ----------------------------------------
+  // State & Refs
+  // ----------------------------------------
   
-  const toggleMenu = () => {
-    setIsOpen(prev => !prev);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [hoveredSetting, setHoveredSetting] = useState(null);
+  const containerRef = useRef();
+
+  // ----------------------------------------
+  // Event Handlers
+  // ----------------------------------------
+  
+  const handleCogClick = () => {
+    setMenuOpen(prev => !prev);
   };
 
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
-
-  // ========================================
-  // EFFECTS
-  // ========================================
+  // ----------------------------------------
+  // Effects
+  // ----------------------------------------
+  // Handle click outside to close menu
   
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
-        closeMenu();
+        setMenuOpen(false);
+        setHoveredSetting(null);
       }
     };
 
-    if (isOpen) {
+    if (menuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [menuOpen]);
 
-  // Close menu on Escape key
+  // Handle escape key to close menu
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === 'Escape' && isOpen) {
-        closeMenu();
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        setHoveredSetting(null);
       }
     };
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
+  }, []);
 
-  // ========================================
-  // RENDER
-  // ========================================
+  // ----------------------------------------
+  // Render
+  // ----------------------------------------
   
   return (
     <div className={`${styles.settingsContainer} ${className}`} ref={containerRef}>
-      
-      {/* Settings Toggle Button */}
-      <button
-        className={`${styles.settingsButton} ${isOpen ? styles.settingsButtonActive : ''}`}
-        onClick={toggleMenu}
-        type="button"
-        aria-label="Settings"
-        aria-expanded={isOpen}
-        aria-haspopup="true"
+      {/* Floating Cog Button */}
+      <div
+        className={`${styles.cogButton} ${menuOpen ? styles.cogButtonActive : ""}`}
+        onClick={handleCogClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCogClick();
+          }
+        }}
+        aria-label="Toggle settings menu"
+        aria-expanded={menuOpen}
+        style={{
+          width: cogSize,
+          height: cogSize,
+        }}
       >
-        <HiCog className={styles.cogIcon} />
-      </button>
-
-      {/* Settings Dropdown Panel */}
-      <div className={`${styles.settingsPanel} ${isOpen ? styles.settingsPanelOpen : ''}`}>
-        
-        {/* Panel Header */}
-        <div className={styles.panelHeader}>
-          <h3 className={styles.panelTitle}>Settings</h3>
-        </div>
-
-        {/* Settings Options */}
-        <div className={styles.settingsOptions}>
-          
-          {/* Theme Setting */}
-          <div className={styles.settingItem}>
-            <div className={styles.settingLabel}>
-              <MdColorLens className={styles.settingIcon} />
-              <div className={styles.settingText}>
-                <span className={styles.settingName}>Theme</span>
-                <span className={styles.settingDescription}>Switch between light and dark mode</span>
-              </div>
-            </div>
-            <div className={styles.settingControl}>
-              <ThemeSwitch
-                theme={theme}
-                toggleTheme={toggleTheme}
-              />
-            </div>
-          </div>
-
-          {/* Animations Setting */}
-          <div className={styles.settingItem}>
-            <div className={styles.settingLabel}>
-              <MdSpeed className={styles.settingIcon} />
-              <div className={styles.settingText}>
-                <span className={styles.settingName}>Reduce Animations</span>
-                <span className={styles.settingDescription}>Minimize motion for better performance</span>
-              </div>
-            </div>
-            <div className={styles.settingControl}>
-              <ReduceAnimationsSwitch />
-            </div>
-          </div>
-
-        </div>
+        <GiCog className={styles.cogIcon} />
       </div>
 
-      {/* Backdrop Overlay for Mobile */}
-      {isOpen && (
+      {/* Settings Panel */}
+      {menuOpen && (
+        <div className={styles.settingsPanel}>
+          {/* Animated gradient background */}
+          <div className={styles.gradientBackground}>
+            <div className={styles.gradientOrb} data-orb="1"></div>
+            <div className={styles.gradientOrb} data-orb="2"></div>
+            <div className={styles.gradientOrb} data-orb="3"></div>
+            <div className={styles.gradientOrb} data-orb="4"></div>
+          </div>
+
+          {/* Settings Header */}
+          <div className={styles.panelHeader}>
+            <h3 className={styles.panelTitle}>Preferences</h3>
+            <div className={styles.headerAccent}></div>
+          </div>
+
+          {/* Settings Content */}
+          <div className={styles.settingsContent}>
+            {/* Theme Setting */}
+            <div 
+              className={`${styles.settingCard} ${hoveredSetting === 0 ? styles.settingCardHovered : ''}`}
+              onMouseEnter={() => setHoveredSetting(0)}
+              onMouseLeave={() => setHoveredSetting(null)}
+              data-accent="1"
+            >
+              <div className={styles.cardGlow}></div>
+              <div className={styles.settingMain}>
+                <div className={styles.settingIconBox}>
+                  <IoColorPaletteSharp className={styles.settingIcon} />
+                  <div className={styles.iconPulse}></div>
+                </div>
+                <div className={styles.settingDetails}>
+                  <h4 className={styles.settingTitle}>Appearance</h4>
+                  <p className={styles.settingSubtitle}>Switch between light & dark mode</p>
+                </div>
+              </div>
+              <div className={styles.settingAction}>
+                <ThemeSwitch
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  size={32}
+                />
+              </div>
+              <svg className={styles.cardBrush} viewBox="0 0 200 4" preserveAspectRatio="none">
+                <path 
+                  d="M0,2 Q50,0 100,2 T200,2" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  fill="none"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+
+            {/* Animations Setting */}
+            <div 
+              className={`${styles.settingCard} ${hoveredSetting === 1 ? styles.settingCardHovered : ''}`}
+              onMouseEnter={() => setHoveredSetting(1)}
+              onMouseLeave={() => setHoveredSetting(null)}
+              data-accent="2"
+            >
+              <div className={styles.cardGlow}></div>
+              <div className={styles.settingMain}>
+                <div className={styles.settingIconBox}>
+                  <FaStopwatch className={styles.settingIcon} />
+                  <div className={styles.iconPulse}></div>
+                </div>
+                <div className={styles.settingDetails}>
+                  <h4 className={styles.settingTitle}>Motion</h4>
+                  <p className={styles.settingSubtitle}>Reduce animations for accessibility</p>
+                </div>
+              </div>
+              <div className={styles.settingAction}>
+                <ReduceAnimationsSwitch size={20} />
+              </div>
+              <svg className={styles.cardBrush} viewBox="0 0 200 4" preserveAspectRatio="none">
+                <path 
+                  d="M0,2 Q50,0 100,2 T200,2" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  fill="none"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Backdrop overlay — portalled to body so it escapes the stacking context */}
+      {menuOpen && createPortal(
         <div 
           className={styles.backdrop} 
-          onClick={closeMenu}
-          role="presentation"
-        />
+          onClick={() => {
+            setMenuOpen(false);
+            setHoveredSetting(null);
+          }}
+        />,
+        document.body
       )}
     </div>
   );
 };
+
+// ============================================
+// EXPORTS
+// ============================================
 
 export default Settings;

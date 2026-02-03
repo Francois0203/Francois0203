@@ -1,226 +1,382 @@
-/* ============================================================================
- * NAVIGATION BAR STYLES
- * ============================================================================
- * Professional, responsive navigation with horizontal layout
- * ============================================================================
- */
+/* ==================== NAVBAR SHELL ==================== */
+/* Minimal wrapper — only positions the burger and
+   gives the dropdown an anchor point.                    */
 
-/* ========================================
- * BASE NAVBAR CONTAINER
- * ========================================
- */
 .navbar {
   position: relative;
-  width: 100%;
+  z-index: 300;
   background: transparent;
   padding: 0;
+  min-height: 0;
   box-sizing: border-box;
-  z-index: var(--z-sticky);
 }
 
-/* ========================================
- * NAV CONTAINER - Centers navigation with space for settings
- * ========================================
- */
-.navContainer {
+/* ==================== BURGER ROW ==================== */
+
+.burgerRow {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+/* ==================== BURGER BUTTON ==================== */
+
+.burger {
+  /* Sizing is injected via inline style; these are
+     safety defaults so nothing collapses.              */
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  /* Reset button chrome */
+  padding: 0;
+  margin: 0;
+  background: none !important;
+  border: none !important;
+  outline: none;
+  box-sizing: border-box;
+  overflow: visible;
+
+  /* Layout */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  padding-right: 80px;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
+  cursor: pointer;
+
+  /* Colour – uses the same accent variable as icons */
+  color: var(--accent-1);
+  transition: color 0.3s ease, transform 0.25s ease;
 }
 
-/* ========================================
- * NAVIGATION LINKS - Always horizontal
- * ========================================
- */
-.navLinks {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: var(--spacing-xs);
+.burger:hover {
+  color: var(--accent-2);
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 6px var(--accent-2-background));
+}
+
+.burger:active {
+  transform: scale(0.93);
+}
+
+/* Rotate the icon when the menu is open */
+.burgerOpen {
+  color: var(--accent-2);
+  transform: rotate(90deg);
+  transition: color 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==================== BACKDROP OVERLAY ==================== */
+/* Full-page frosted glass that sits behind the dropdown
+   and above the page content.                            */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 298;
+  animation: backdropFadeIn 0.28s ease;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ==================== DROPDOWN PANEL ==================== */
+/* The liquid-glass card that slides down from the burger. */
+
+.menuDropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 300px;
+  max-width: 380px;
+  width: 100%;
+
+  /* Liquid glass background */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.30) 50%,
+    rgba(255, 255, 255, 0.40) 100%
+  );
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+
+  /* Border & shadow */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+
+  /* Spacing */
+  padding: 12px;
+  box-sizing: border-box;
+  z-index: 299;
+  overflow: hidden;
+
+  /* -- Entrance animation (initial hidden state) -- */
+  opacity: 0;
+  transform: translateY(-14px) scale(0.96);
+  transition:
+    opacity   0.32s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+/* Dark-theme override */
+[data-theme="dark"] .menuDropdown {
+  background: linear-gradient(
+    135deg,
+    rgba(58, 59, 63, 0.60) 0%,
+    rgba(47, 48, 53, 0.45) 50%,
+    rgba(58, 59, 63, 0.55) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Visible / open state */
+.menuDropdownOpen {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* ==================== LINK LIST ==================== */
+/* Vertical stack of navigation items inside the panel. */
+
+.linkList {
   list-style: none;
   margin: 0;
-  padding: var(--spacing-sm);
-  /* Liquid Glass Effect */
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-full);
-  box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-    0 2px 4px 0 rgba(255, 255, 255, 0.1) inset;
-  overflow: hidden;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.navLinks::-webkit-scrollbar {
-  display: none;
-}
-
-.navItem {
-  list-style: none;
-}
-
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  color: var(--secondary-text-color);
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  white-space: nowrap;
+.linkItem {
   position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
 }
 
-.navLink::before {
+/* ==================== INDIVIDUAL LINK ==================== */
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--primary-text-color);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  overflow: visible;
+  transition:
+    background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transform  0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Subtle inner glow on hover */
+.link::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border-radius: 14px;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.18), transparent);
   opacity: 0;
-  transition: opacity var(--transition-base);
-  border-radius: var(--radius-full);
-  z-index: -1;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
 }
 
-.navLink:hover {
-  color: var(--primary-text-color);
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.navLink:hover::before {
+.link:hover::before,
+.linkHovered::before {
   opacity: 1;
 }
 
-.navLink:active {
-  transform: translateY(0);
+.link:active {
+  transform: scale(0.97);
 }
 
-/* Active Link State */
-.navLinkActive {
-  color: var(--primary-text-color);
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  box-shadow: 
-    0 4px 16px 0 rgba(79, 70, 229, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.15) inset,
-    var(--shadow-md);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+/* ==================== ICON PILLS ==================== */
+/* Each index gets its own accent colour via CSS vars.  */
+
+.linkIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.navLinkActive::before {
+/* ── Default (resting) colours ─────────────────────── */
+.link[data-index="0"] .linkIcon { background: var(--accent-1-background); color: var(--accent-1); }
+.link[data-index="1"] .linkIcon { background: var(--accent-2-background); color: var(--accent-2); }
+.link[data-index="2"] .linkIcon { background: var(--accent-3-background); color: var(--accent-3); }
+.link[data-index="3"] .linkIcon { background: var(--accent-4-background); color: var(--accent-4); }
+.link[data-index="4"] .linkIcon { background: var(--accent-1-background); color: var(--accent-1); }
+.link[data-index="5"] .linkIcon { background: var(--accent-2-background); color: var(--accent-2); }
+.link[data-index="6"] .linkIcon { background: var(--accent-3-background); color: var(--accent-3); }
+
+/* ── Hover colours ─────────────────────────────────── */
+.link[data-index="0"]:hover .linkIcon, .link[data-index="0"].linkHovered .linkIcon { background: var(--accent-1); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-1-background); }
+.link[data-index="1"]:hover .linkIcon, .link[data-index="1"].linkHovered .linkIcon { background: var(--accent-2); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-2-background); }
+.link[data-index="2"]:hover .linkIcon, .link[data-index="2"].linkHovered .linkIcon { background: var(--accent-3); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-3-background); }
+.link[data-index="3"]:hover .linkIcon, .link[data-index="3"].linkHovered .linkIcon { background: var(--accent-4); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-4-background); }
+.link[data-index="4"]:hover .linkIcon, .link[data-index="4"].linkHovered .linkIcon { background: var(--accent-1); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-1-background); }
+.link[data-index="5"]:hover .linkIcon, .link[data-index="5"].linkHovered .linkIcon { background: var(--accent-2); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-2-background); }
+.link[data-index="6"]:hover .linkIcon, .link[data-index="6"].linkHovered .linkIcon { background: var(--accent-3); color: var(--background-1); box-shadow: 0 4px 14px var(--accent-3-background); }
+
+/* Icon bounce on hover */
+.link:hover .linkIcon,
+.linkHovered .linkIcon {
+  transform: translateY(-2px) scale(1.08);
+}
+
+/* ==================== LABEL ==================== */
+
+.linkLabel {
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  transition: color 0.28s ease, transform 0.28s ease;
+}
+
+/* ── Hover label colours ───────────────────────────── */
+.link[data-index="0"]:hover .linkLabel, .link[data-index="0"].linkHovered .linkLabel { color: var(--accent-1); }
+.link[data-index="1"]:hover .linkLabel, .link[data-index="1"].linkHovered .linkLabel { color: var(--accent-2); }
+.link[data-index="2"]:hover .linkLabel, .link[data-index="2"].linkHovered .linkLabel { color: var(--accent-3); }
+.link[data-index="3"]:hover .linkLabel, .link[data-index="3"].linkHovered .linkLabel { color: var(--accent-4); }
+.link[data-index="4"]:hover .linkLabel, .link[data-index="4"].linkHovered .linkLabel { color: var(--accent-1); }
+.link[data-index="5"]:hover .linkLabel, .link[data-index="5"].linkHovered .linkLabel { color: var(--accent-2); }
+.link[data-index="6"]:hover .linkLabel, .link[data-index="6"].linkHovered .linkLabel { color: var(--accent-3); }
+
+/* Slight slide-right on hover */
+.link:hover .linkLabel,
+.linkHovered .linkLabel {
+  transform: translateX(3px);
+}
+
+/* ==================== BRUSH STROKE ==================== */
+/* Wavy SVG underline that sweeps in on hover / active. */
+
+.brushStroke {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: calc(100% - 24px);
+  height: 6px;
   opacity: 0;
+  transform-origin: center;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.navLinkActive:hover {
-  color: var(--primary-text-color);
-  transform: translateY(-2px);
-  box-shadow: 
-    0 8px 24px 0 rgba(79, 70, 229, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
-    var(--shadow-lg);
+/* Per-index stroke colours */
+.link[data-index="0"] .brushStroke { color: var(--accent-1); }
+.link[data-index="1"] .brushStroke { color: var(--accent-2); }
+.link[data-index="2"] .brushStroke { color: var(--accent-3); }
+.link[data-index="3"] .brushStroke { color: var(--accent-4); }
+.link[data-index="4"] .brushStroke { color: var(--accent-1); }
+.link[data-index="5"] .brushStroke { color: var(--accent-2); }
+.link[data-index="6"] .brushStroke { color: var(--accent-3); }
+
+/* Sweep in on hover */
+.link:hover .brushStroke,
+.linkHovered .brushStroke {
+  opacity: 1;
+  transform: translateX(-50%) scaleX(1);
 }
 
-/* ========================================
- * RESPONSIVE BREAKPOINTS
- * ========================================
- *  overflow-x: auto;
-    justify-content: flex-start;
-  /
+/* ==================== ACTIVE STATE ==================== */
+/* Persists the filled icon + coloured label + visible
+   brush stroke even when the link is not hovered.      */
 
-/* Tablet */
+.linkActive .linkIcon {
+  transform: scale(1.05);
+}
+
+/* Active icon fills */
+.link[data-index="0"].linkActive .linkIcon { background: var(--accent-1); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-1-background); }
+.link[data-index="1"].linkActive .linkIcon { background: var(--accent-2); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-2-background); }
+.link[data-index="2"].linkActive .linkIcon { background: var(--accent-3); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-3-background); }
+.link[data-index="3"].linkActive .linkIcon { background: var(--accent-4); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-4-background); }
+.link[data-index="4"].linkActive .linkIcon { background: var(--accent-1); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-1-background); }
+.link[data-index="5"].linkActive .linkIcon { background: var(--accent-2); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-2-background); }
+.link[data-index="6"].linkActive .linkIcon { background: var(--accent-3); color: var(--background-1); box-shadow: 0 2px 10px var(--accent-3-background); }
+
+/* Active label colours + weight */
+.link[data-index="0"].linkActive .linkLabel { color: var(--accent-1); font-weight: 600; }
+.link[data-index="1"].linkActive .linkLabel { color: var(--accent-2); font-weight: 600; }
+.link[data-index="2"].linkActive .linkLabel { color: var(--accent-3); font-weight: 600; }
+.link[data-index="3"].linkActive .linkLabel { color: var(--accent-4); font-weight: 600; }
+.link[data-index="4"].linkActive .linkLabel { color: var(--accent-1); font-weight: 600; }
+.link[data-index="5"].linkActive .linkLabel { color: var(--accent-2); font-weight: 600; }
+.link[data-index="6"].linkActive .linkLabel { color: var(--accent-3); font-weight: 600; }
+
+/* Brush stroke stays visible for the active link */
+.linkActive .brushStroke {
+  opacity: 0.75;
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
 @media (max-width: 768px) {
-  .navContainer {
-    padding: var(--spacing-sm) var(--spacing-md);
-    padding-right: 70px;
+  .menuDropdown {
+    min-width: 280px;
+    max-width: 92vw;
+    padding: 10px;
   }
 
-  .navLinks {
-    gap: 4px;
-    padding: 6px;
+  .link {
+    padding: 9px 12px;
+    gap: 10px;
   }
 
-  .navLink {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: var(--font-size-sm);
-    overflow-x: auto;
-    justify-content: flex-start;
+  .linkIcon {
+    width: 34px;
+    height: 34px;
   }
 }
 
-/* Small Mobile Devices */
 @media (max-width: 480px) {
-  .navContainer {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    padding-right: 60px;
+  .menuDropdown {
+    min-width: 260px;
+    max-width: 88vw;
+    padding: 8px;
+    border-radius: 16px;
   }
 
-  .navLinks {
-    gap: 3px;
-    padding: 4px;
+  .link {
+    padding: 8px 10px;
+    gap: 10px;
+    border-radius: 12px;
   }
 
-  .navLink {
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding: 6px 10px;
-    font-size: var(--font-size-xs);
-  }
-}
-
-/* Extra Small Devices */
-@media (max-width: 360px) {
-  .navContainer {
-    padding: var(--spacing-xs);
-    padding-right: 56px;
+  .linkIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
   }
 
-  .navLinks {
-    gap: 2px;
-    padding: 4px;
-  }
-
-  .navLink {
-    padding: 5px 8px;
-    font-size: 0.75rem;
-  }
-}
-
-/* ========================================
- * ACCESSIBILITY
- * ========================================
- */
-
-/* Focus States */
-.navLink:focus-visible {
-  outline: 2px solid var(--accent-1);
-  outline-offset: 2px;
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .navLink {
-    transition: none;
+  .linkLabel {
+    font-size: 0.9rem;
   }
 }

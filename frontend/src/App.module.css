@@ -24,9 +24,8 @@
  */
 .navigationBar {
   position: fixed;
-  top: var(--spacing-md);
-  left: 0;
-  right: 0;
+  top: 0.5rem;
+  left: 0.5rem;
   z-index: var(--z-sticky);
   background: transparent;
   pointer-events: none;
@@ -42,8 +41,8 @@
  */
 .themeSwitch {
   position: fixed;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: calc(var(--z-sticky) + 1);
 }
 

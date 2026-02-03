@@ -1,635 +1,655 @@
-/* ============================================================================
- * SETTINGS COMPONENT STYLES
- * ============================================================================
- * Professional settings panel with dropdown menu
- * ============================================================================
- */
-
-/* ========================================
- * SETTINGS CONTAINER
- * ========================================
- */
+/* ==================== SETTINGS CONTAINER ==================== */
 .settingsContainer {
   position: relative;
-  z-index: var(--z-dropdown);
+  z-index: 1000;
 }
 
-/* ========================================
- * SETTINGS TOGGLE BUTTON
- * ========================================
- */
-.settingsButton {
+/* ==================== FLOATING COG BUTTON ==================== */
+.cogButton {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  background: var(--frosted-background);
-  backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  color: var(--secondary-text-color);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  z-index: 1001;
 }
 
-.settingsButton::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  opacity: 0;
-  transition: opacity var(--transition-base);
-  border-radius: var(--radius-full);
+[data-theme="dark"] .cogButton {
+  background: linear-gradient(
+    135deg,
+    rgba(58, 59, 63, 0.7) 0%,
+    rgba(47, 48, 53, 0.5) 100%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
-.settingsButton:hover {
+.cogButton:hover {
+  transform: scale(1.1) translateY(-2px);
   border-color: var(--accent-1);
-  transform: scale(1.05);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 
+    0 12px 32px var(--accent-1-background),
+    0 0 0 6px var(--accent-1-background),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-.settingsButton:hover::before {
-  opacity: 0.1;
-}
-
-.settingsButton:active {
+.cogButton:active {
   transform: scale(0.95);
 }
 
-.settingsButtonActive {
-  border-color: var(--accent-1);
-  color: var(--accent-1);
+.cogButtonActive {
+  border-color: var(--accent-2);
+  box-shadow: 
+    0 12px 40px var(--accent-2-background),
+    0 0 0 8px var(--accent-2-background);
 }
 
 .cogIcon {
-  font-size: 1.5rem;
-  transition: transform var(--transition-slow);
-  position: relative;
-  z-index: 1;
+  font-size: 1.6rem;
+  color: var(--primary-text-color);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.settingsButton:hover .cogIcon {
-  transform: rotate(90deg);
-}
-
-.settingsButtonActive .cogIcon {
+.cogButton:hover .cogIcon {
   transform: rotate(180deg);
-  color: var(--accent-1);
+  color: var(--accent-2);
 }
 
-/* ========================================
- * SETTINGS DROPDOWN PANEL
- * ========================================
- */
-.settingsPanel {
-  position: absolute;
-  top: calc(100% + var(--spacing-sm));
-  right: 0;
-  width: 340px;
-  max-height: 80vh;
-  background: var(--background-1);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-12px) scale(0.95);
-  pointer-events: none;
-  transition: all var(--transition-slow);
-  z-index: var(--z-dropdown);
+.cogButtonActive .cogIcon {
+  transform: rotate(360deg);
+  color: var(--accent-3);
 }
 
-.settingsPanelOpen {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
+/* ==================== BACKDROP ==================== */
+/* Full-page frosted glass that sits behind the panel
+   and above the page content — matches NavigationBar. */
 
-/* ========================================
- * PANEL HEADER
- * ========================================
- */
-.panelHeader {
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-color);
-  background: var(--background-2);
-}
-
-.panelTitle {
-  margin: 0;
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--primary-text-color);
-}
-
-/* ========================================
- * SETTINGS OPTIONS
- * ========================================
- */
-.settingsOptions {
-  padding: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.settingItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: var(--background-2);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
-}
-
-.settingItem:hover {
-  background: var(--background-3);
-  border-color: var(--border-color-hover);
-  transform: translateX(2px);
-}
-
-.settingLabel {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  flex: 1;
-  min-width: 0;
-}
-
-.settingIcon {
-  flex-shrink: 0;
-  font-size: 1.5rem;
-  color: var(--accent-1);
-}
-
-.settingText {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  min-width: 0;
-}
-
-.settingName {
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  color: var(--primary-text-color);
-}
-
-.settingDescription {
-  font-size: var(--font-size-xs);
-  color: var(--secondary-text-color);
-  line-height: 1.4;
-}
-
-.settingControl {
-  flex-shrink: 0;
-}
-
-/* ========================================
- * BACKDROP OVERLAY
- * ========================================
- */
 .backdrop {
-  display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-  z-index: calc(var(--z-dropdown) - 1);
-  animation: fadeIn var(--transition-base);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 998;
+  animation: backdropFadeIn 0.28s ease;
 }
 
-@keyframes fadeIn {
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==================== SETTINGS PANEL - LIQUID GLASS ==================== */
+.settingsPanel {
+  position: fixed;
+  top: 75px;
+  right: 10px;
+  min-width: 380px;
+  max-width: calc(100vw - 20px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+  animation: panelSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 999;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .settingsPanel {
+  background: linear-gradient(
+    135deg,
+    rgba(58, 59, 63, 0.75) 0%,
+    rgba(47, 48, 53, 0.6) 50%,
+    rgba(58, 59, 63, 0.7) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+@keyframes panelSlideIn {
   from {
     opacity: 0;
+    transform: translateY(-20px) scale(0.95);
   }
   to {
     opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
-/* ========================================
- * RESPONSIVE DESIGN
- * ========================================
- */
+/* ==================== GRADIENT BACKGROUND ==================== */
+.gradientBackground {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.2;
+}
 
-/* Tablet and Mobile */
-@media (max-width: 768px) {
-  .settingsPanel {
-    width: 320px;
-    max-width: calc(100vw - var(--spacing-xl));
+.gradientOrb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  animation: orbDrift 12s ease-in-out infinite;
+}
+
+.gradientOrb[data-orb="1"] {
+  top: -30%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-1), transparent);
+  animation-delay: 0s;
+}
+
+.gradientOrb[data-orb="2"] {
+  bottom: -40%;
+  left: -25%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, var(--accent-2), transparent);
+  animation-delay: 3s;
+}
+
+.gradientOrb[data-orb="3"] {
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, var(--accent-3), transparent);
+  animation-delay: 6s;
+}
+
+.gradientOrb[data-orb="4"] {
+  bottom: 20%;
+  right: 10%;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, var(--accent-4), transparent);
+  animation-delay: 9s;
+}
+
+@keyframes orbDrift {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
   }
-
-  .backdrop {
-    display: block;
+  25% { 
+    transform: translate(30px, -40px) scale(1.2);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translate(-20px, 30px) scale(0.9);
+    opacity: 0.4;
+  }
+  75% { 
+    transform: translate(40px, 20px) scale(1.1);
+    opacity: 0.7;
   }
 }
 
-/* Small Mobile Devices */
-@media (max-width: 480px) {
-  .settingsButton {
-    width: 44px;
-    height: 44px;
-  }
-
-  .cogIcon {
-    font-size: 1.25rem;
-  }
-
-  .settingsPanel {
-    width: calc(100vw - var(--spacing-lg));
-    right: calc(var(--spacing-md) * -1);
-  }
-
-  .settingItem {
-    padding: var(--spacing-sm);
-  }
-
-  .settingIcon {
-    font-size: 1.25rem;
-  }
-
-  .settingName {
-    font-size: var(--font-size-sm);
-  }
-
-  .settingDescription {
-    font-size: 0.75rem;
-  }
-}
-
-/* ========================================
- * ACCESSIBILITY
- * ========================================
- */
-
-/* Focus States */
-.settingsButton:focus-visible {
-  outline: 2px solid var(--accent-1);
-  outline-offset: 2px;
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .settingsButton,
-  .settingsPanel,
-  .backdrop,
-  .cogIcon,
-  .settingItem {
-    transition: none;
-    animation: none;
-  }
-
-  .settingsButton:hover .cogIcon,
-  .settingsButtonActive .cogIcon {
-    transform: none;
-  }
-}
-
-.particle:nth-child(9) {
-  top: 30%;
-  left: 25%;
-  animation-delay: 1.2s;
-  animation-duration: 6.2s;
-}
-
-.particle:nth-child(10) {
-  bottom: 40%;
-  right: 20%;
-  animation-delay: 2.8s;
-  animation-duration: 7.8s;
-}
-
-.particle:nth-child(11) {
-  top: 70%;
-  left: 12%;
-  animation-delay: 0.8s;
-  animation-duration: 5.8s;
-}
-
-.particle:nth-child(12) {
-  top: 25%;
-  right: 18%;
-  animation-delay: 3.2s;
-  animation-duration: 8.2s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(10px, -10px) scale(1.2); }
-  50% { transform: translate(-5px, 10px) scale(0.8); }
-  75% { transform: translate(-10px, -5px) scale(1.1); }
-}
-
-/* ==================== MENU HEADER ==================== */
-.menuHeader {
+/* ==================== PANEL HEADER ==================== */
+.panelHeader {
   position: relative;
-  padding: 1.5rem 1.5rem 1rem;
   z-index: 1;
+  margin-bottom: 20px;
 }
 
-.menuTitle {
-  font-size: 1.5rem;
+.panelTitle {
+  font-size: var(--font-size-lg);
   font-weight: 700;
   color: var(--primary-text-color);
-  margin: 0;
+  margin: 0 0 8px 0;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: slideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.headerLine {
+.headerAccent {
   height: 3px;
-  background: linear-gradient(90deg, var(--accent-1) 0%, var(--accent-2) 50%, transparent 100%);
-  margin-top: 0.75rem;
+  width: 60px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
   border-radius: 2px;
-  animation: expandLine 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  animation: accentPulse 2s ease-in-out infinite;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes expandLine {
-  from { width: 0; }
-  to { width: 100%; }
+@keyframes accentPulse {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: scaleX(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scaleX(1.1);
+  }
 }
 
 /* ==================== SETTINGS CONTENT ==================== */
 .settingsContent {
   position: relative;
   z-index: 1;
-  padding: 0.5rem 1.5rem 1.5rem;
-  animation: fadeInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==================== SETTING ITEM ==================== */
-.settingItem {
+/* ==================== SETTING CARD ==================== */
+.settingCard {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem;
-  background: linear-gradient(
-    135deg,
-    var(--background-2) 0%,
-    var(--background-3) 100%
-  );
-  border: 2px solid transparent;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
-  position: relative;
-  overflow: hidden;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
-.settingItem::before {
-  content: "";
+[data-theme="dark"] .settingCard {
+  background: rgba(58, 59, 63, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Card glow effect */
+.cardGlow {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    var(--accent-1-background) 0%,
-    var(--accent-2-background) 100%
-  );
+  background: radial-gradient(circle at 50% 50%, transparent 30%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
-.settingItem::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
-  transition: left 0.6s ease;
-  z-index: 1;
+.settingCard[data-accent="1"] .cardGlow {
+  background: radial-gradient(circle at 50% 50%, var(--accent-1-background) 0%, transparent 70%);
 }
 
-.settingItem:hover {
-  border-color: var(--accent-1);
-  transform: translateY(-2px);
-  box-shadow: 
-    0 8px 24px var(--accent-1-background),
-    0 0 20px var(--accent-1);
+.settingCard[data-accent="2"] .cardGlow {
+  background: radial-gradient(circle at 50% 50%, var(--accent-3-background) 0%, transparent 70%);
 }
 
-.settingItem:hover::before {
+.settingCardHovered .cardGlow {
   opacity: 1;
 }
 
-.settingItem:hover::after {
-  left: 100%;
+.settingCardHovered {
+  transform: translateX(4px) scale(1.02);
+  border-color: transparent;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-/* ==================== SETTING LEFT SIDE ==================== */
-.settingLeft {
+.settingCard[data-accent="1"]:hover {
+  border-color: var(--accent-1);
+  box-shadow: 
+    0 8px 32px var(--accent-1-background),
+    0 0 0 3px var(--accent-1-background);
+}
+
+.settingCard[data-accent="2"]:hover {
+  border-color: var(--accent-3);
+  box-shadow: 
+    0 8px 32px var(--accent-3-background),
+    0 0 0 3px var(--accent-3-background);
+}
+
+/* Card brush stroke */
+.cardBrush {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.settingCard[data-accent="1"] .cardBrush {
+  color: var(--accent-1);
+}
+
+.settingCard[data-accent="2"] .cardBrush {
+  color: var(--accent-3);
+}
+
+.settingCardHovered .cardBrush {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ==================== SETTING MAIN ==================== */
+.settingMain {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  position: relative;
-  z-index: 2;
+  gap: 14px;
 }
 
-.iconWrapper {
-  width: 48px;
-  height: 48px;
+.settingIconBox {
+  position: relative;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
   border-radius: 12px;
-  border: 2px solid var(--accent-1);
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  overflow: visible;
 }
 
-.settingItem:hover .iconWrapper {
-  transform: rotate(-10deg) scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  border-color: var(--accent-2);
+.settingCard[data-accent="1"] .settingIconBox {
+  background: var(--accent-1-background);
+}
+
+.settingCard[data-accent="2"] .settingIconBox {
+  background: var(--accent-3-background);
+}
+
+.settingCardHovered .settingIconBox {
+  transform: translateY(-3px) rotate(5deg) scale(1.1);
+}
+
+.settingCard[data-accent="1"]:hover .settingIconBox {
+  background: var(--accent-1);
+  box-shadow: 0 6px 20px var(--accent-1-background);
+}
+
+.settingCard[data-accent="2"]:hover .settingIconBox {
+  background: var(--accent-3);
+  box-shadow: 0 6px 20px var(--accent-3-background);
+}
+
+/* Icon pulse effect */
+.iconPulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 12px;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: iconPulseAnim 2s ease-out infinite;
+}
+
+.settingCard[data-accent="1"] .iconPulse {
+  color: var(--accent-1);
+}
+
+.settingCard[data-accent="2"] .iconPulse {
+  color: var(--accent-3);
+}
+
+@keyframes iconPulseAnim {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
 }
 
 .settingIcon {
-  font-size: 1.5rem;
-  color: var(--accent-1);
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  font-size: 1.4rem;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 1;
 }
 
-.settingItem:hover .settingIcon {
-  color: var(--accent-2);
+.settingCard[data-accent="1"] .settingIcon {
+  color: var(--accent-1);
+}
+
+.settingCard[data-accent="2"] .settingIcon {
+  color: var(--accent-3);
+}
+
+.settingCard[data-accent="1"]:hover .settingIcon {
+  color: var(--background-1);
   transform: scale(1.1);
 }
 
-.settingInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+.settingCard[data-accent="2"]:hover .settingIcon {
+  color: var(--background-1);
+  transform: scale(1.1);
 }
 
-.settingLabel {
-  font-size: 1.05rem;
+.settingDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.settingTitle {
+  font-size: var(--font-size-base);
   font-weight: 600;
   color: var(--primary-text-color);
   letter-spacing: 0.3px;
-  transition: all 0.3s ease;
   margin: 0;
+  transition: all 0.3s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.settingItem:hover .settingLabel {
+.settingCard[data-accent="1"]:hover .settingTitle {
   color: var(--accent-1);
-  transform: translateX(2px);
 }
 
-.settingDescription {
-  font-size: 0.8rem;
-  color: var(--accent-2);
-  opacity: 0.75;
+.settingCard[data-accent="2"]:hover .settingTitle {
+  color: var(--accent-3);
+}
+
+.settingSubtitle {
+  font-size: 0.825rem;
+  color: var(--primary-text-color);
+  opacity: 0.65;
   letter-spacing: 0.2px;
-  transition: all 0.3s ease;
   margin: 0;
+  transition: all 0.3s ease;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.settingItem:hover .settingDescription {
-  opacity: 1;
-  color: var(--accent-1);
+.settingCardHovered .settingSubtitle {
+  opacity: 0.85;
 }
 
-/* ==================== SETTING CONTROL ==================== */
-.settingControl {
-  position: relative;
-  z-index: 2;
-  transition: transform 0.3s ease;
+/* ==================== SETTING ACTION ==================== */
+.settingAction {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
 }
 
-.settingItem:hover .settingControl {
-  transform: scale(1.05);
+.settingCardHovered .settingAction {
+  transform: scale(1.08);
 }
 
 /* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 768px) {
-  .settingsContainer {
-    top: 15px;
-    right: 15px;
+  .cogButton {
+    top: 12px;
+    right: 20px;
+    width: 46px !important;
+    height: 46px !important;
   }
 
-  .settingsDropdown {
-    width: calc(100vw - 30px);
-    max-width: 380px;
+  .settingsPanel {
+    min-width: min(340px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
     top: 70px;
-    right: 15px;
+    right: 16px;
+    left: auto;
+    padding: 20px;
   }
 
-  .menuHeader {
-    padding: 1.25rem 1.25rem 0.75rem;
+  .panelTitle {
+    font-size: var(--font-size-md);
   }
 
-  .menuTitle {
-    font-size: 1.3rem;
+  .settingCard {
+    padding: 14px 16px;
   }
 
-  .settingsContent {
-    padding: 0.5rem 1.25rem 1.25rem;
-  }
-
-  .settingItem {
-    padding: 1rem;
-  }
-
-  .iconWrapper {
-    width: 44px;
-    height: 44px;
+  .settingIconBox {
+    width: 40px;
+    height: 40px;
   }
 
   .settingIcon {
     font-size: 1.3rem;
   }
-
-  .settingLabel {
-    font-size: 1rem;
-  }
-
-  .settingDescription {
-    font-size: 0.75rem;
-  }
 }
 
 @media (max-width: 480px) {
   .cogButton {
-    width: 44px;
-    height: 44px;
+    top: 6px;
+    right: 12px;
+    width: 40px !important;
+    height: 40px !important;
   }
 
   .cogIcon {
     font-size: 1.3rem;
   }
 
-  .settingsDropdown {
-    width: calc(100vw - 20px);
-    right: 10px;
-    top: 65px;
+  .settingsPanel {
+    min-width: auto;
+    width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    right: 8px;
+    left: 8px;
+    top: 58px;
+    padding: 16px;
+    border-radius: 20px;
   }
 
-  .menuHeader {
-    padding: 1rem 1rem 0.5rem;
-  }
-
-  .menuTitle {
-    font-size: 1.2rem;
+  .panelTitle {
+    font-size: 1.075rem;
   }
 
   .settingsContent {
-    padding: 0.5rem 1rem 1rem;
+    gap: 10px;
   }
 
-  .settingItem {
-    padding: 0.9rem;
+  .settingCard {
+    padding: 12px;
   }
 
-  .settingLeft {
-    gap: 0.75rem;
+  .settingMain {
+    gap: 12px;
   }
 
-  .iconWrapper {
-    width: 40px;
-    height: 40px;
+  .settingIconBox {
+    width: 36px;
+    height: 36px;
   }
 
   .settingIcon {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
   }
 
-  .settingLabel {
-    font-size: 0.95rem;
+  .settingTitle {
+    font-size: 0.9rem;
   }
 
-  .settingDescription {
+  .settingSubtitle {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .settingsPanel {
+    padding: 12px;
+    top: 56px;
+  }
+
+  .panelTitle {
+    font-size: 1rem;
+  }
+
+  .settingCard {
+    padding: 10px;
+  }
+
+  .settingMain {
+    gap: 10px;
+  }
+
+  .settingIconBox {
+    width: 32px;
+    height: 32px;
+  }
+
+  .settingIcon {
+    font-size: 1.05rem;
+  }
+
+  .settingTitle {
+    font-size: 0.85rem;
+  }
+
+  .settingSubtitle {
     font-size: 0.7rem;
   }
 }
