@@ -11,82 +11,58 @@
   right: 20px;
   width: 50px;
   height: 50px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.3) 100%
-  );
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease, border-color 0.2s ease,
+              box-shadow 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow: visible;
   z-index: 1001;
 }
 
 [data-theme="dark"] .cogButton {
-  background: linear-gradient(
-    135deg,
-    rgba(58, 59, 63, 0.7) 0%,
-    rgba(47, 48, 53, 0.5) 100%
-  );
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  background: rgba(30, 32, 38, 0.7);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
 }
 
 .cogButton:hover {
-  transform: scale(1.1) translateY(-2px);
+  transform: translateY(-1px);
   border-color: var(--accent-1);
-  box-shadow: 
-    0 12px 32px var(--accent-1-background),
-    0 0 0 6px var(--accent-1-background),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .cogButton:active {
-  transform: scale(0.95);
+  transform: translateY(0);
 }
 
 .cogButtonActive {
-  border-color: var(--accent-2);
-  box-shadow: 
-    0 12px 40px var(--accent-2-background),
-    0 0 0 8px var(--accent-2-background);
+  border-color: var(--accent-1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .cogIcon {
-  font-size: 1.6rem;
-  color: var(--primary-text-color);
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  font-size: 1.4rem;
+  color: var(--accent-1);
+  transition: transform 0.4s ease, color 0.2s ease;
 }
 
 .cogButton:hover .cogIcon {
-  transform: rotate(180deg);
-  color: var(--accent-2);
+  transform: rotate(90deg);
 }
 
 .cogButtonActive .cogIcon {
-  transform: rotate(360deg);
-  color: var(--accent-3);
+  transform: rotate(180deg);
 }
 
 /* ==================== BACKDROP ==================== */
-/* Full-page frosted glass that sits behind the panel
-   and above the page content — matches NavigationBar. */
-
 .backdrop {
   position: fixed;
   inset: 0;
@@ -99,172 +75,103 @@
 
 @keyframes backdropFadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
-/* ==================== SETTINGS PANEL - LIQUID GLASS ==================== */
+/* ==================== SETTINGS PANEL ==================== */
 .settingsPanel {
   position: fixed;
-  top: 75px;
+  top: 72px;
   right: 10px;
-  min-width: 380px;
-  max-width: calc(100vw - 20px);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.4) 100%
-  );
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 
-    0 16px 48px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.3);
-  animation: panelSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  background: rgba(250, 250, 252, 0.82);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: panelSlideIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 999;
   overflow: hidden;
   box-sizing: border-box;
 }
 
 [data-theme="dark"] .settingsPanel {
-  background: linear-gradient(
-    135deg,
-    rgba(58, 59, 63, 0.75) 0%,
-    rgba(47, 48, 53, 0.6) 50%,
-    rgba(58, 59, 63, 0.7) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 16px 48px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  background: rgba(22, 24, 30, 0.88);
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 @keyframes panelSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-/* ==================== GRADIENT BACKGROUND ==================== */
+/* ==================== GRID BACKGROUND ==================== */
+/* Subtle data-grid painted as a repeating CSS pattern.
+   The four .gradientOrb divs in the JSX are hidden —
+   the grid lives on the parent container instead.       */
+
 .gradientBackground {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: -1px -1px;
+}
+
+[data-theme="dark"] .gradientBackground {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
 }
 
 .gradientOrb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  animation: orbDrift 12s ease-in-out infinite;
-}
-
-.gradientOrb[data-orb="1"] {
-  top: -30%;
-  right: -20%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, var(--accent-1), transparent);
-  animation-delay: 0s;
-}
-
-.gradientOrb[data-orb="2"] {
-  bottom: -40%;
-  left: -25%;
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, var(--accent-2), transparent);
-  animation-delay: 3s;
-}
-
-.gradientOrb[data-orb="3"] {
-  top: 50%;
-  left: 50%;
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle, var(--accent-3), transparent);
-  animation-delay: 6s;
-}
-
-.gradientOrb[data-orb="4"] {
-  bottom: 20%;
-  right: 10%;
-  width: 160px;
-  height: 160px;
-  background: radial-gradient(circle, var(--accent-4), transparent);
-  animation-delay: 9s;
-}
-
-@keyframes orbDrift {
-  0%, 100% { 
-    transform: translate(0, 0) scale(1);
-    opacity: 0.6;
-  }
-  25% { 
-    transform: translate(30px, -40px) scale(1.2);
-    opacity: 0.8;
-  }
-  50% { 
-    transform: translate(-20px, 30px) scale(0.9);
-    opacity: 0.4;
-  }
-  75% { 
-    transform: translate(40px, 20px) scale(1.1);
-    opacity: 0.7;
-  }
+  display: none;
 }
 
 /* ==================== PANEL HEADER ==================== */
 .panelHeader {
   position: relative;
   z-index: 1;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 
 .panelTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--primary-text-color);
-  margin: 0 0 8px 0;
-  letter-spacing: 0.5px;
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  margin: 0;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  opacity: 0.45;
 }
 
+/* Thin rule running to the right of the label */
 .headerAccent {
-  height: 3px;
-  width: 60px;
-  background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
-  border-radius: 2px;
-  animation: accentPulse 2s ease-in-out infinite;
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
 }
 
-@keyframes accentPulse {
-  0%, 100% { 
-    opacity: 0.6;
-    transform: scaleX(1);
-  }
-  50% { 
-    opacity: 1;
-    transform: scaleX(1.1);
-  }
+[data-theme="dark"] .headerAccent {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ==================== SETTINGS CONTENT ==================== */
@@ -273,7 +180,7 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 /* ==================== SETTING CARD ==================== */
@@ -282,250 +189,151 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 10px;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: none;
 }
 
 [data-theme="dark"] .settingCard {
-  background: rgba(58, 59, 63, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(40, 42, 50, 0.5);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
-/* Card glow effect */
+.settingCard:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 3px var(--accent-1-background);
+}
+
+[data-theme="dark"] .settingCard:hover {
+  background: rgba(50, 52, 62, 0.7);
+}
+
+/* Glow div kept as a class; visually inactive */
 .cardGlow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 30%, transparent 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-}
-
-.settingCard[data-accent="1"] .cardGlow {
-  background: radial-gradient(circle at 50% 50%, var(--accent-1-background) 0%, transparent 70%);
-}
-
-.settingCard[data-accent="2"] .cardGlow {
-  background: radial-gradient(circle at 50% 50%, var(--accent-3-background) 0%, transparent 70%);
-}
-
-.settingCardHovered .cardGlow {
-  opacity: 1;
+  display: none;
 }
 
 .settingCardHovered {
-  transform: translateX(4px) scale(1.02);
-  border-color: transparent;
-  box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.settingCard[data-accent="1"]:hover {
+  background: rgba(255, 255, 255, 0.85);
   border-color: var(--accent-1);
-  box-shadow: 
-    0 8px 32px var(--accent-1-background),
-    0 0 0 3px var(--accent-1-background);
+  box-shadow: 0 0 0 3px var(--accent-1-background);
 }
 
-.settingCard[data-accent="2"]:hover {
-  border-color: var(--accent-3);
-  box-shadow: 
-    0 8px 32px var(--accent-3-background),
-    0 0 0 3px var(--accent-3-background);
+[data-theme="dark"] .settingCardHovered {
+  background: rgba(50, 52, 62, 0.7);
 }
 
-/* Card brush stroke */
+/* Brush stroke SVG kept as a class; visually inactive */
 .cardBrush {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  opacity: 0;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  pointer-events: none;
-}
-
-.settingCard[data-accent="1"] .cardBrush {
-  color: var(--accent-1);
-}
-
-.settingCard[data-accent="2"] .cardBrush {
-  color: var(--accent-3);
-}
-
-.settingCardHovered .cardBrush {
-  opacity: 1;
-  transform: scaleX(1);
+  display: none;
 }
 
 /* ==================== SETTING MAIN ==================== */
 .settingMain {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
+/* ==================== ICON BOX ==================== */
 .settingIconBox {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background 0.18s ease, border-color 0.18s ease;
   flex-shrink: 0;
   overflow: visible;
 }
 
-.settingCard[data-accent="1"] .settingIconBox {
-  background: var(--accent-1-background);
+[data-theme="dark"] .settingIconBox {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-.settingCard[data-accent="2"] .settingIconBox {
-  background: var(--accent-3-background);
-}
-
-.settingCardHovered .settingIconBox {
-  transform: translateY(-3px) rotate(5deg) scale(1.1);
-}
-
-.settingCard[data-accent="1"]:hover .settingIconBox {
+.settingCard:hover .settingIconBox {
   background: var(--accent-1);
-  box-shadow: 0 6px 20px var(--accent-1-background);
+  border-color: var(--accent-1);
 }
 
-.settingCard[data-accent="2"]:hover .settingIconBox {
-  background: var(--accent-3);
-  box-shadow: 0 6px 20px var(--accent-3-background);
-}
-
-/* Icon pulse effect */
+/* Pulse ring — hidden */
 .iconPulse {
-  position: absolute;
-  inset: -4px;
-  border-radius: 12px;
-  border: 2px solid currentColor;
-  opacity: 0;
-  animation: iconPulseAnim 2s ease-out infinite;
+  display: none;
 }
 
-.settingCard[data-accent="1"] .iconPulse {
-  color: var(--accent-1);
-}
-
-.settingCard[data-accent="2"] .iconPulse {
-  color: var(--accent-3);
-}
-
-@keyframes iconPulseAnim {
-  0% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(1.3);
-    opacity: 0;
-  }
-}
-
+/* ==================== ICON ==================== */
 .settingIcon {
-  font-size: 1.4rem;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-size: 1.1rem;
+  color: var(--accent-1);
+  transition: color 0.18s ease;
   position: relative;
   z-index: 1;
 }
 
-.settingCard[data-accent="1"] .settingIcon {
-  color: var(--accent-1);
+.settingCard:hover .settingIcon {
+  color: #fff;
 }
 
-.settingCard[data-accent="2"] .settingIcon {
-  color: var(--accent-3);
-}
-
-.settingCard[data-accent="1"]:hover .settingIcon {
-  color: var(--background-1);
-  transform: scale(1.1);
-}
-
-.settingCard[data-accent="2"]:hover .settingIcon {
-  color: var(--background-1);
-  transform: scale(1.1);
-}
-
+/* ==================== LABEL COLUMN ==================== */
 .settingDetails {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   flex: 1;
   min-width: 0;
   overflow: hidden;
 }
 
 .settingTitle {
-  font-size: var(--font-size-base);
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--primary-text-color);
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   margin: 0;
-  transition: all 0.3s ease;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  transition: color 0.18s ease;
 }
 
-.settingCard[data-accent="1"]:hover .settingTitle {
+.settingCard:hover .settingTitle {
   color: var(--accent-1);
 }
 
-.settingCard[data-accent="2"]:hover .settingTitle {
-  color: var(--accent-3);
-}
-
+/* Monospace subtitle gives it a "metric / key-value" feel */
 .settingSubtitle {
-  font-size: 0.825rem;
+  font-size: 0.735rem;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   color: var(--primary-text-color);
-  opacity: 0.65;
-  letter-spacing: 0.2px;
+  opacity: 0.42;
+  letter-spacing: 0.15px;
   margin: 0;
-  transition: all 0.3s ease;
+  transition: opacity 0.18s ease;
   line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
+.settingCard:hover .settingSubtitle,
 .settingCardHovered .settingSubtitle {
-  opacity: 0.85;
+  opacity: 0.6;
 }
 
-/* ==================== SETTING ACTION ==================== */
+/* ==================== TOGGLE ACTION ==================== */
 .settingAction {
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
+  transition: none;
 }
 
-.settingCardHovered .settingAction {
-  transform: scale(1.08);
-}
-
-/* ==================== RESPONSIVE DESIGN ==================== */
+/* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
   .cogButton {
     top: 12px;
@@ -535,29 +343,24 @@
   }
 
   .settingsPanel {
-    min-width: min(340px, calc(100vw - 32px));
+    width: min(340px, calc(100vw - 32px));
     max-width: calc(100vw - 32px);
     top: 70px;
     right: 16px;
-    left: auto;
-    padding: 20px;
-  }
-
-  .panelTitle {
-    font-size: var(--font-size-md);
+    padding: 18px;
   }
 
   .settingCard {
-    padding: 14px 16px;
+    padding: 11px 13px;
   }
 
   .settingIconBox {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
   }
 
   .settingIcon {
-    font-size: 1.3rem;
+    font-size: 1rem;
   }
 }
 
@@ -570,66 +373,25 @@
   }
 
   .cogIcon {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .settingsPanel {
-    min-width: auto;
     width: calc(100vw - 16px);
     max-width: calc(100vw - 16px);
     right: 8px;
     left: 8px;
     top: 58px;
-    padding: 16px;
-    border-radius: 20px;
-  }
-
-  .panelTitle {
-    font-size: 1.075rem;
+    padding: 14px;
+    border-radius: 12px;
   }
 
   .settingsContent {
-    gap: 10px;
+    gap: 6px;
   }
 
   .settingCard {
-    padding: 12px;
-  }
-
-  .settingMain {
-    gap: 12px;
-  }
-
-  .settingIconBox {
-    width: 36px;
-    height: 36px;
-  }
-
-  .settingIcon {
-    font-size: 1.15rem;
-  }
-
-  .settingTitle {
-    font-size: 0.9rem;
-  }
-
-  .settingSubtitle {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .settingsPanel {
-    padding: 12px;
-    top: 56px;
-  }
-
-  .panelTitle {
-    font-size: 1rem;
-  }
-
-  .settingCard {
-    padding: 10px;
+    padding: 10px 12px;
   }
 
   .settingMain {
@@ -642,7 +404,7 @@
   }
 
   .settingIcon {
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
 
   .settingTitle {
@@ -651,5 +413,37 @@
 
   .settingSubtitle {
     font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .settingsPanel {
+    padding: 12px;
+    top: 56px;
+  }
+
+  .settingCard {
+    padding: 9px 10px;
+  }
+
+  .settingMain {
+    gap: 9px;
+  }
+
+  .settingIconBox {
+    width: 30px;
+    height: 30px;
+  }
+
+  .settingIcon {
+    font-size: 0.95rem;
+  }
+
+  .settingTitle {
+    font-size: 0.82rem;
+  }
+
+  .settingSubtitle {
+    font-size: 0.68rem;
   }
 }
