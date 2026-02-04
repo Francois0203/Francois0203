@@ -43,8 +43,7 @@ const NavigationBar = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const [hoveredLink, setHoveredLink] = useState(null);
 
-  const burgerRef = useRef(null);
-  const menuRef = useRef(null);
+  const containerRef = useRef(null);
 
   // ----------------------------------------
   // Derived Helpers
@@ -79,19 +78,26 @@ const NavigationBar = ({
   // ----------------------------------------
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      const outsideBurger = burgerRef.current && !burgerRef.current.contains(e.target);
-      const outsideMenu = menuRef.current && !menuRef.current.contains(e.target);
-      if (outsideBurger && outsideMenu) closeMenu();
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        closeMenu();
+      }
     };
 
-    if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [menuOpen]);
 
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") closeMenu();
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
     };
 
     document.addEventListener("keydown", handleEscape);
@@ -103,15 +109,21 @@ const NavigationBar = ({
   // ----------------------------------------
 
   return (
-    <nav className={`${styles.navbar} ${className}`} aria-label="Main navigation">
-      
-      {/* Burger Button */}
-      <div className={styles.burgerRow} ref={burgerRef}>
+    <div className={`${styles.navbarContainer} ${className}`} ref={containerRef}>
+      <nav className={styles.navbar} aria-label="Main navigation">
+        
+        {/* Burger Button */}
         <button
           className={`${styles.burger} ${menuOpen ? styles.burgerOpen : ""}`}
           aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={menuOpen}
           onClick={toggleMenu}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleMenu();
+            }
+          }}
           type="button"
           style={{
             width: burgerSize,
@@ -120,65 +132,68 @@ const NavigationBar = ({
             minHeight: burgerSize,
           }}
         >
-          {menuOpen ? <LuX size={burgerIconSize} /> : <LuMenu size={burgerIconSize} />}
+          {menuOpen ? (
+            <LuX size={burgerIconSize} className={styles.burgerIcon} />
+          ) : (
+            <LuMenu size={burgerIconSize} className={styles.burgerIcon} />
+          )}
         </button>
-      </div>
 
-      {/* Dropdown Menu */}
-      {menuOpen && (
-        <div
-          className={`${styles.menuDropdown} ${styles.menuDropdownOpen}`}
-          ref={menuRef}
-          role="menu"
-        >
-          <ul className={styles.linkList} role="menubar">
-            {links && links.slice(0, 7).map((link, index) => {
-              const Icon = ICONS[index] || LuCode;
-              const active = isActive(link, index);
-              const hovered = hoveredLink === index;
+        {/* Dropdown Menu */}
+        {menuOpen && (
+          <div
+            className={`${styles.menuDropdown} ${styles.menuDropdownOpen}`}
+            role="menu"
+          >
+            <ul className={styles.linkList} role="menubar">
+              {links && links.slice(0, 7).map((link, index) => {
+                const Icon = ICONS[index] || LuCode;
+                const active = isActive(link, index);
+                const hovered = hoveredLink === index;
 
-              return (
-                <li
-                  key={`nav-${index}`}
-                  className={styles.linkItem}
-                  role="none"
-                  onMouseEnter={() => setHoveredLink(index)}
-                  onMouseLeave={() => setHoveredLink(null)}
-                >
-                  <div
-                    className={[
-                      styles.link,
-                      hovered ? styles.linkHovered : "",
-                      active ? styles.linkActive : "",
-                    ].join(" ")}
-                    onClick={() => handleLinkClick(link, index)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        handleLinkClick(link, index);
-                      }
-                    }}
-                    role="menuitem"
-                    tabIndex={0}
-                    aria-current={active ? "page" : undefined}
-                    data-index={index}
+                return (
+                  <li
+                    key={`nav-${index}`}
+                    className={styles.linkItem}
+                    role="none"
+                    onMouseEnter={() => setHoveredLink(index)}
+                    onMouseLeave={() => setHoveredLink(null)}
                   >
-                    {/* Icon pill */}
-                    <div className={styles.linkIcon}>
-                      <Icon size={20} />
+                    <div
+                      className={[
+                        styles.link,
+                        hovered ? styles.linkHovered : "",
+                        active ? styles.linkActive : "",
+                      ].join(" ")}
+                      onClick={() => handleLinkClick(link, index)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleLinkClick(link, index);
+                        }
+                      }}
+                      role="menuitem"
+                      tabIndex={0}
+                      aria-current={active ? "page" : undefined}
+                      data-index={index}
+                    >
+                      {/* Icon pill */}
+                      <div className={styles.linkIcon}>
+                        <Icon size={20} />
+                      </div>
+
+                      {/* Label */}
+                      <span className={styles.linkLabel}>{link.label}</span>
                     </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </nav>
 
-                    {/* Label */}
-                    <span className={styles.linkLabel}>{link.label}</span>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
-      {/* Backdrop Overlay */}
+      {/* Backdrop Overlay - outside nav, below burger */}
       {menuOpen && (
         <div
           className={styles.backdrop}
@@ -186,7 +201,7 @@ const NavigationBar = ({
           aria-hidden="true"
         />
       )}
-    </nav>
+    </div>
   );
 };
 
