@@ -18,8 +18,7 @@ import '../../styles/Wrappers.css';
 // ============================================
 // SETTINGS COMPONENT
 // ============================================
-// Floating settings panel with morphing animations
-// Features liquid glass effect and gradient backgrounds
+// Floating settings panel with liquid glass effect
 
 const Settings = function Settings({ 
   theme,
@@ -46,7 +45,6 @@ const Settings = function Settings({
   // ----------------------------------------
   // Effects
   // ----------------------------------------
-  // Handle click outside to close menu
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -65,7 +63,6 @@ const Settings = function Settings({
     };
   }, [menuOpen]);
 
-  // Handle escape key to close menu
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === 'Escape') {
@@ -108,19 +105,10 @@ const Settings = function Settings({
 
       {/* Settings Panel */}
       {menuOpen && (
-        <div className={styles.settingsPanel}>
-          {/* Animated gradient background */}
-          <div className={styles.gradientBackground}>
-            <div className={styles.gradientOrb} data-orb="1"></div>
-            <div className={styles.gradientOrb} data-orb="2"></div>
-            <div className={styles.gradientOrb} data-orb="3"></div>
-            <div className={styles.gradientOrb} data-orb="4"></div>
-          </div>
-
+        <div className={`${styles.settingsPanel} ${styles.settingsPanelOpen}`}>
           {/* Settings Header */}
           <div className={styles.panelHeader}>
             <h3 className={styles.panelTitle}>Preferences</h3>
-            <div className={styles.headerAccent}></div>
           </div>
 
           {/* Settings Content */}
@@ -130,13 +118,11 @@ const Settings = function Settings({
               className={`${styles.settingCard} ${hoveredSetting === 0 ? styles.settingCardHovered : ''}`}
               onMouseEnter={() => setHoveredSetting(0)}
               onMouseLeave={() => setHoveredSetting(null)}
-              data-accent="1"
+              data-index={0}
             >
-              <div className={styles.cardGlow}></div>
               <div className={styles.settingMain}>
                 <div className={styles.settingIconBox}>
                   <IoColorPaletteSharp className={styles.settingIcon} />
-                  <div className={styles.iconPulse}></div>
                 </div>
                 <div className={styles.settingDetails}>
                   <h4 className={styles.settingTitle}>Appearance</h4>
@@ -150,15 +136,6 @@ const Settings = function Settings({
                   size={32}
                 />
               </div>
-              <svg className={styles.cardBrush} viewBox="0 0 200 4" preserveAspectRatio="none">
-                <path 
-                  d="M0,2 Q50,0 100,2 T200,2" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              </svg>
             </div>
 
             {/* Animations Setting */}
@@ -166,13 +143,11 @@ const Settings = function Settings({
               className={`${styles.settingCard} ${hoveredSetting === 1 ? styles.settingCardHovered : ''}`}
               onMouseEnter={() => setHoveredSetting(1)}
               onMouseLeave={() => setHoveredSetting(null)}
-              data-accent="2"
+              data-index={1}
             >
-              <div className={styles.cardGlow}></div>
               <div className={styles.settingMain}>
                 <div className={styles.settingIconBox}>
                   <FaStopwatch className={styles.settingIcon} />
-                  <div className={styles.iconPulse}></div>
                 </div>
                 <div className={styles.settingDetails}>
                   <h4 className={styles.settingTitle}>Motion</h4>
@@ -182,21 +157,12 @@ const Settings = function Settings({
               <div className={styles.settingAction}>
                 <ReduceAnimationsSwitch size={20} />
               </div>
-              <svg className={styles.cardBrush} viewBox="0 0 200 4" preserveAspectRatio="none">
-                <path 
-                  d="M0,2 Q50,0 100,2 T200,2" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              </svg>
             </div>
           </div>
         </div>
       )}
 
-      {/* Backdrop overlay — portalled to body so it escapes the stacking context */}
+      {/* Backdrop overlay */}
       {menuOpen && createPortal(
         <div 
           className={styles.backdrop} 

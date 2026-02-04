@@ -686,6 +686,35 @@ a.contactValue:hover {
   .donationSection {
     padding: var(--spacing-lg);
   }
+  
+  /* Make donation card stack vertically on narrow screens */
+  .donationCard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+  }
+
+  .donationIcon {
+    width: 64px;
+    height: 64px;
+    font-size: 2rem;
+  }
+
+  .donationContent {
+    width: 100%;
+  }
+
+  .donationGlow {
+    top: auto;
+    right: 10%;
+    bottom: -20%;
+    width: 220px;
+    height: 220px;
+    filter: blur(40px);
+    opacity: 0.12;
+  }
 }
 
 @media (max-width: 480px) {
@@ -751,13 +780,16 @@ a.contactValue:hover {
     font-size: 1.25rem;
   }
 
+  /* Alias legacy class names and adjust sizes for small phones */
+  .donationMessage,
   .donationText {
-    font-size: 0.875rem;
+    font-size: 0.95rem;
   }
 
+  .donationButton,
   .donateButton {
     padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: 0.875rem;
+    font-size: 0.9rem;
   }
 
   .availabilityBanner {
@@ -785,6 +817,26 @@ a.contactValue:hover {
   .socialCard,
   .donationSection {
     padding: var(--spacing-sm);
+  }
+
+  .donationCard {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .donationIcon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
+  }
+
+  .donationGlow {
+    width: 120px;
+    height: 120px;
+    bottom: -35%;
+    right: 0;
+    filter: blur(30px);
+    opacity: 0.08;
   }
 
   .contactValue {

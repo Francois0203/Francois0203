@@ -11,32 +11,39 @@
   right: 20px;
   width: 50px;
   height: 50px;
-  background: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  
+  /* Liquid glass effect */
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease, border-color 0.2s ease,
-              box-shadow 0.2s ease, transform 0.15s ease;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
   overflow: visible;
   z-index: 1001;
 }
 
 [data-theme="dark"] .cogButton {
-  background: rgba(30, 32, 38, 0.7);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  background: rgba(30, 32, 38, 0.5);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .cogButton:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   border-color: var(--accent-1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .cogButton:active {
@@ -45,13 +52,23 @@
 
 .cogButtonActive {
   border-color: var(--accent-1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 2px var(--accent-1-background);
+}
+
+[data-theme="dark"] .cogButtonActive {
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 2px var(--accent-1-background);
 }
 
 .cogIcon {
   font-size: 1.4rem;
   color: var(--accent-1);
-  transition: transform 0.4s ease, color 0.2s ease;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .cogButton:hover .cogIcon {
@@ -70,7 +87,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 998;
-  animation: backdropFadeIn 0.28s ease;
+  animation: backdropFadeIn 0.3s ease;
 }
 
 @keyframes backdropFadeIn {
@@ -85,93 +102,62 @@
   right: 10px;
   width: 340px;
   max-width: calc(100vw - 24px);
-  background: rgba(250, 250, 252, 0.82);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  animation: panelSlideIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  
+  /* Enhanced liquid glass background */
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(32px) saturate(250%);
+  -webkit-backdrop-filter: blur(32px) saturate(250%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.4);
   z-index: 999;
   overflow: hidden;
   box-sizing: border-box;
+  
+  /* Initial state for animation */
+  opacity: 0;
+  transform: translateY(-12px) scale(0.95);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
 }
 
 [data-theme="dark"] .settingsPanel {
-  background: rgba(22, 24, 30, 0.88);
-  border-color: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  background: rgba(22, 24, 30, 0.3);
+  backdrop-filter: blur(32px) saturate(250%);
+  -webkit-backdrop-filter: blur(32px) saturate(250%);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 12px 48px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
 
-@keyframes panelSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ==================== GRID BACKGROUND ==================== */
-/* Subtle data-grid painted as a repeating CSS pattern.
-   The four .gradientOrb divs in the JSX are hidden —
-   the grid lives on the parent container instead.       */
-
-.gradientBackground {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-position: -1px -1px;
-}
-
-[data-theme="dark"] .gradientBackground {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-}
-
-.gradientOrb {
-  display: none;
+.settingsPanelOpen {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 /* ==================== PANEL HEADER ==================== */
 .panelHeader {
   position: relative;
   z-index: 1;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .panelTitle {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--primary-text-color);
   margin: 0;
-  letter-spacing: 1.1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  opacity: 0.45;
-}
-
-/* Thin rule running to the right of the label */
-.headerAccent {
-  flex: 1;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="dark"] .headerAccent {
-  background: rgba(255, 255, 255, 0.08);
+  opacity: 0.5;
 }
 
 /* ==================== SETTINGS CONTENT ==================== */
@@ -190,48 +176,70 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.07);
-  border-radius: 10px;
-  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  
+  /* Layered liquid glass for cards */
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   overflow: hidden;
-  box-shadow: none;
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 [data-theme="dark"] .settingCard {
-  background: rgba(40, 42, 50, 0.5);
-  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(40, 42, 50, 0.35);
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-.settingCard:hover {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: var(--accent-1);
-  box-shadow: 0 0 0 3px var(--accent-1-background);
+.settingCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
-[data-theme="dark"] .settingCard:hover {
-  background: rgba(50, 52, 62, 0.7);
-}
-
-/* Glow div kept as a class; visually inactive */
-.cardGlow {
-  display: none;
-}
-
+.settingCard:hover,
 .settingCardHovered {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px) saturate(260%);
+  -webkit-backdrop-filter: blur(20px) saturate(260%);
   border-color: var(--accent-1);
-  box-shadow: 0 0 0 3px var(--accent-1-background);
+  box-shadow: 
+    0 0 0 3px var(--accent-1-background),
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transform: translateY(-2px);
 }
 
+[data-theme="dark"] .settingCard:hover,
 [data-theme="dark"] .settingCardHovered {
-  background: rgba(50, 52, 62, 0.7);
+  background: rgba(50, 52, 62, 0.5);
+  backdrop-filter: blur(20px) saturate(260%);
+  -webkit-backdrop-filter: blur(20px) saturate(260%);
+  box-shadow: 
+    0 0 0 3px var(--accent-1-background),
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* Brush stroke SVG kept as a class; visually inactive */
-.cardBrush {
-  display: none;
+.settingCard:hover::before,
+.settingCardHovered::before {
+  opacity: 1;
 }
 
 /* ==================== SETTING MAIN ==================== */
@@ -239,49 +247,72 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
 }
 
 /* ==================== ICON BOX ==================== */
 .settingIconBox {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: background 0.18s ease, border-color 0.18s ease;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
-  overflow: visible;
 }
 
 [data-theme="dark"] .settingIconBox {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-.settingCard:hover .settingIconBox {
+/* Icon colors based on index */
+.settingCard[data-index="0"] .settingIconBox {
+  background: var(--accent-1-background);
+}
+
+.settingCard[data-index="1"] .settingIconBox {
+  background: var(--accent-2-background);
+}
+
+.settingCard[data-index="0"]:hover .settingIconBox,
+.settingCard[data-index="0"].settingCardHovered .settingIconBox {
   background: var(--accent-1);
   border-color: var(--accent-1);
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 4px 14px var(--accent-1-background);
 }
 
-/* Pulse ring — hidden */
-.iconPulse {
-  display: none;
+.settingCard[data-index="1"]:hover .settingIconBox,
+.settingCard[data-index="1"].settingCardHovered .settingIconBox {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 4px 14px var(--accent-2-background);
 }
 
 /* ==================== ICON ==================== */
 .settingIcon {
-  font-size: 1.1rem;
-  color: var(--accent-1);
-  transition: color 0.18s ease;
-  position: relative;
-  z-index: 1;
+  font-size: 1.15rem;
+  transition: color 0.3s ease;
 }
 
-.settingCard:hover .settingIcon {
+.settingCard[data-index="0"] .settingIcon {
+  color: var(--accent-1);
+}
+
+.settingCard[data-index="1"] .settingIcon {
+  color: var(--accent-2);
+}
+
+.settingCard[data-index="0"]:hover .settingIcon,
+.settingCard[data-index="0"].settingCardHovered .settingIcon,
+.settingCard[data-index="1"]:hover .settingIcon,
+.settingCard[data-index="1"].settingCardHovered .settingIcon {
   color: #fff;
 }
 
@@ -296,41 +327,44 @@
 }
 
 .settingTitle {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--primary-text-color);
   letter-spacing: 0.2px;
   margin: 0;
-  transition: color 0.18s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.settingCard:hover .settingTitle {
+.settingCard[data-index="0"]:hover .settingTitle,
+.settingCard[data-index="0"].settingCardHovered .settingTitle {
   color: var(--accent-1);
+  transform: translateX(2px);
 }
 
-/* Monospace subtitle gives it a "metric / key-value" feel */
+.settingCard[data-index="1"]:hover .settingTitle,
+.settingCard[data-index="1"].settingCardHovered .settingTitle {
+  color: var(--accent-2);
+  transform: translateX(2px);
+}
+
 .settingSubtitle {
-  font-size: 0.735rem;
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.74rem;
   color: var(--primary-text-color);
-  opacity: 0.42;
-  letter-spacing: 0.15px;
+  opacity: 0.5;
   margin: 0;
-  transition: opacity 0.18s ease;
+  transition: opacity 0.3s ease;
   line-height: 1.4;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 .settingCard:hover .settingSubtitle,
 .settingCardHovered .settingSubtitle {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 /* ==================== TOGGLE ACTION ==================== */
 .settingAction {
   flex-shrink: 0;
-  transition: none;
+  margin-left: 8px;
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -347,7 +381,7 @@
     max-width: calc(100vw - 32px);
     top: 70px;
     right: 16px;
-    padding: 18px;
+    padding: 14px;
   }
 
   .settingCard {
@@ -355,12 +389,12 @@
   }
 
   .settingIconBox {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
 
   .settingIcon {
-    font-size: 1rem;
+    font-size: 1.08rem;
   }
 }
 
@@ -383,15 +417,16 @@
     left: 8px;
     top: 58px;
     padding: 14px;
-    border-radius: 12px;
+    border-radius: 14px;
   }
 
   .settingsContent {
-    gap: 6px;
+    gap: 7px;
   }
 
   .settingCard {
-    padding: 10px 12px;
+    padding: 11px 12px;
+    border-radius: 11px;
   }
 
   .settingMain {
@@ -399,20 +434,20 @@
   }
 
   .settingIconBox {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
   }
 
   .settingIcon {
-    font-size: 1rem;
+    font-size: 1.02rem;
   }
 
   .settingTitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .settingSubtitle {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
   }
 }
 
@@ -423,7 +458,7 @@
   }
 
   .settingCard {
-    padding: 9px 10px;
+    padding: 10px 11px;
   }
 
   .settingMain {
@@ -431,19 +466,19 @@
   }
 
   .settingIconBox {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
   }
 
   .settingIcon {
-    font-size: 0.95rem;
+    font-size: 0.98rem;
   }
 
   .settingTitle {
-    font-size: 0.82rem;
+    font-size: 0.87rem;
   }
 
   .settingSubtitle {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
   }
 }
