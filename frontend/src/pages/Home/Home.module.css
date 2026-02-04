@@ -397,7 +397,8 @@
   }
 
   .scrollIndicator {
-    display: none;
+    display: flex;
+    margin-top: var(--spacing-lg);
   }
 }
 
@@ -445,6 +446,20 @@
 
   .button svg {
     font-size: 1rem;
+  }
+
+  /* Make scroll indicator visible and slightly smaller on very small phones */
+  .scrollIndicator {
+    display: flex;
+    margin-top: var(--spacing-md);
+  }
+
+  .scrollArrow {
+    width: 20px;
+    height: 20px;
+    border-left: 2px solid var(--accent-1);
+    border-bottom: 2px solid var(--accent-1);
+    transform: rotate(-45deg);
   }
 }
 

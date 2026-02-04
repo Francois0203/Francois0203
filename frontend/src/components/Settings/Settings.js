@@ -23,7 +23,7 @@ import '../../styles/Wrappers.css';
 const Settings = function Settings({ 
   theme,
   toggleTheme,
-  cogSize = 45,
+  cogSize = 50,
   className = ""
 }) {
   // ----------------------------------------
@@ -78,6 +78,7 @@ const Settings = function Settings({
   // ----------------------------------------
   // Render
   // ----------------------------------------
+  const cogIconSize = Math.max(16, Math.round(cogSize * 0.6));
   
   return (
     <div className={`${styles.settingsContainer} ${className}`} ref={containerRef}>
@@ -98,9 +99,11 @@ const Settings = function Settings({
         style={{
           width: cogSize,
           height: cogSize,
+          minWidth: cogSize,
+          minHeight: cogSize,
         }}
       >
-        <GiCog className={styles.cogIcon} />
+        <GiCog size={cogIconSize} className={styles.cogIcon} />
       </div>
 
       {/* Settings Panel */}

@@ -33,7 +33,7 @@ const NavigationBar = ({
   links,
   onNavigate,
   activeTab = null,
-  burgerSize = 45,
+  burgerSize = 50,
   className = ""
 }) => {
   // ----------------------------------------

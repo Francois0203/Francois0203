@@ -484,6 +484,8 @@ a.contactValue:hover {
   border-radius: 50%;
   filter: blur(60px);
   animation: pulse 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .donationIcon {
@@ -518,6 +520,8 @@ a.contactValue:hover {
 
 .donationContent {
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .donationTitle {
@@ -549,6 +553,8 @@ a.contactValue:hover {
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  z-index: 2;
 }
 
 .donationButton:hover {
