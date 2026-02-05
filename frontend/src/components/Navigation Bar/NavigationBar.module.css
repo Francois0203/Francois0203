@@ -14,6 +14,21 @@
   box-sizing: border-box;
 }
 
+/* Explicitly disable the global button shine for this navbar and its burger */
+.navbar::before,
+.navbar::after,
+.navbarContainer::before,
+.navbarContainer::after,
+.burger::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  background-image: none !important;
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
 /* ==================== BURGER BUTTON ==================== */
 .burger {
   position: fixed;
