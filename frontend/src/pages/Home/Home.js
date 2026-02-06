@@ -10,6 +10,7 @@ import image1 from '../../Images/1. Playing Guitar.jpg';
 import image2 from '../../Images/2. Family Graduation.jpg';
 import image3 from '../../Images/3. St. Lucia Adventure.jpg';
 import image4 from '../../Images/4. Modeling.jpg';
+import image5 from '../../Images/5. Relationship.jpg';
 
 /* Styling */
 import styles from './Home.module.css';
@@ -157,7 +158,8 @@ const Home = () => {
     1: image1,
     2: image2,
     3: image3,
-    4: image4
+    4: image4,
+    5: image5,
   };
 
   // ========================================
