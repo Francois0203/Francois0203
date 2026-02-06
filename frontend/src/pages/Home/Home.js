@@ -5,13 +5,6 @@ import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
 /* Data */
 import homeData from '../../data/home.json';
 
-/* Images */
-import image1 from '../../Images/1. Playing Guitar.jpg';
-import image2 from '../../Images/2. Family Graduation.jpg';
-import image3 from '../../Images/3. St. Lucia Adventure.jpg';
-import image4 from '../../Images/4. Modeling.jpg';
-import image5 from '../../Images/5. Relationship.jpg';
-
 /* Styling */
 import styles from './Home.module.css';
 import '../../styles/Theme.css';
@@ -152,14 +145,15 @@ const Home = () => {
   }, []);
 
   // ========================================
-  // IMAGE MAP
+  // HELPER FUNCTION - Dynamic Image Import
   // ========================================
-  const imageMap = {
-    1: image1,
-    2: image2,
-    3: image3,
-    4: image4,
-    5: image5,
+  const getImage = (imageName) => {
+    try {
+      return require(`../../Images/${imageName}`);
+    } catch (error) {
+      console.error(`Image not found: ${imageName}`, error);
+      return null;
+    }
   };
 
   // ========================================
@@ -243,7 +237,7 @@ const Home = () => {
                 <div className={styles.memoryImageContainer}>
                   <div className={styles.memoryNumberBadge}>{memory.number}</div>
                   <img 
-                    src={imageMap[memory.number]} 
+                    src={getImage(memory.image)} 
                     alt={memory.title}
                     className={styles.memoryImage}
                     loading="lazy"

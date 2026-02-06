@@ -21,8 +21,8 @@ import styles from "./NavigationBar.module.css";
 // CONSTANTS
 // ============================================
 
-// Developer / Data-science themed icons for links
-const ICONS = [LuCpu, LuTerminal, LuDatabase, LuCode, LuServer, LuGitBranch, LuActivity];
+// Icon set for navigation links
+const ICONS = [LuCpu, LuTerminal, LuDatabase, LuCode, LuServer, LuGitBranch, LuActivity, LuMenu, LuX];
 
 // ============================================
 // NAVIGATION BAR COMPONENT
@@ -124,7 +124,6 @@ const NavigationBar = ({
               toggleMenu();
             }
           }}
-          type="button"
           style={{
             width: burgerSize,
             height: burgerSize,
@@ -147,7 +146,7 @@ const NavigationBar = ({
           >
             <ul className={styles.linkList} role="menubar">
               {links && links.slice(0, 7).map((link, index) => {
-                const Icon = ICONS[index] || LuCode;
+                const Icon = ICONS[index];
                 const active = isActive(link, index);
                 const hovered = hoveredLink === index;
 
