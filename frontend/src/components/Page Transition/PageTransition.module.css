@@ -1,0 +1,67 @@
+/* ============================================================================
+ * PAGE TRANSITION STYLES - Professional Smooth Transitions
+ * ============================================================================
+ */
+
+.pageTransition {
+  width: 100%;
+  min-height: 100vh;
+  /* Enable hardware acceleration for smoother animations */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.fadeIn {
+  animation: fadeInSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fadeOut {
+  animation: fadeOutSlide 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+/* Smooth fade in with subtle upward motion and scale */
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+    filter: blur(4px);
+  }
+  50% {
+    opacity: 0.5;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Smooth fade out with subtle downward motion */
+@keyframes fadeOutSlide {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.97);
+    filter: blur(3px);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .fadeIn,
+  .fadeOut {
+    animation: none;
+  }
+  
+  .pageTransition {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

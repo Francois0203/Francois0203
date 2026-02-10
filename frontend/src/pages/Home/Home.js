@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
 
+/* Components */
+import { SkillsGlobe } from '../../components';
+
 /* Data */
 import homeData from '../../data/home.json';
 
@@ -27,10 +30,8 @@ const Home = () => {
   // REFS
   // ========================================
   const containerRef = useRef(null);
-  const rainRef = useRef(null);
-  const reduceAnimations = useRef(
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  const contentRef = useRef(null);
+  const heroRef = useRef(null);
 
   // ========================================
   // EFFECTS - Page Mount
@@ -40,108 +41,32 @@ const Home = () => {
   }, []);
 
   // ========================================
-  // EFFECTS - Rain Ripple Animation
+  // EFFECTS - Parallax Scroll (Optimized)
   // ========================================
   useEffect(() => {
-    if (reduceAnimations.current || !rainRef.current) return;
+    let ticking = false;
 
-    let mounted = true;
-    const drops = [];
-    const maxDrops = 4; // Reduced amount
-
-    const createRainDrop = () => {
-      if (!mounted || !rainRef.current || drops.length >= maxDrops) return;
-
-      const startX = Math.random() * 100;
-      const endY = 50 + Math.random() * 50; // Land somewhere in middle-bottom of screen
-
-      // Create falling drop
-      const drop = document.createElement('div');
-      drop.className = styles.fallingDrop;
-      drop.style.left = `${startX}%`;
-      drop.style.setProperty('--end-y', `${endY}vh`);
-
-      rainRef.current.appendChild(drop);
-      drops.push(drop);
-
-      // Create ripple where drop lands after fall animation
-      setTimeout(() => {
-        const ripple = document.createElement('div');
-        ripple.className = styles.rainDrop;
-        ripple.style.left = `${startX}%`;
-        ripple.style.top = `${endY}vh`;
-        // Random ripple size (100px - 250px)
-        const rippleSize = 100 + Math.random() * 150;
-        ripple.style.setProperty('--ripple-size', `${rippleSize}px`);
-
-        if (rainRef.current) {
-          rainRef.current.appendChild(ripple);
-          drops.push(ripple);
-        }
-
-        setTimeout(() => {
-          if (ripple.parentNode) ripple.remove();
-          const idx = drops.indexOf(ripple);
-          if (idx !== -1) drops.splice(idx, 1);
-        }, 2000);
-      }, 800); // Duration of fall
-
-      // Remove falling drop
-      setTimeout(() => {
-        if (drop.parentNode) drop.remove();
-        const idx = drops.indexOf(drop);
-        if (idx !== -1) drops.splice(idx, 1);
-      }, 900);
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          
+          if (contentRef.current) {
+            contentRef.current.style.transform = `translate3d(0, ${scrollY * 0.3}px, 0)`;
+          }
+          
+          if (heroRef.current) {
+            heroRef.current.style.transform = `translate3d(0, ${scrollY * 0.2}px, 0)`;
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    // Start with fewer drops
-    setTimeout(createRainDrop, 500);
-    setTimeout(createRainDrop, 1500);
-
-    const rainInterval = setInterval(() => {
-      if (mounted && drops.length < maxDrops) createRainDrop();
-    }, 3000); // Less frequent
-
-    return () => {
-      mounted = false;
-      clearInterval(rainInterval);
-      drops.forEach(drop => drop.remove());
-    };
-  }, []);
-
-  // ========================================
-  // EFFECTS - Click Ripple Effect
-  // ========================================
-  useEffect(() => {
-    if (reduceAnimations.current || !rainRef.current) return;
-
-    const handleClick = (e) => {
-      if (!rainRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-      const ripple = document.createElement('div');
-      ripple.className = styles.rainDrop;
-      ripple.style.left = `${x}%`;
-      ripple.style.top = `${y}%`;
-      // Consistent click ripple size (200px)
-      ripple.style.setProperty('--ripple-size', '200px');
-
-      rainRef.current.appendChild(ripple);
-
-      setTimeout(() => {
-        if (ripple.parentNode) ripple.remove();
-      }, 2000);
-    };
-
-    const container = containerRef.current;
-    container.addEventListener('click', handleClick);
-
-    return () => {
-      container.removeEventListener('click', handleClick);
-    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // ========================================
@@ -161,24 +86,25 @@ const Home = () => {
   // ========================================
   return (
     <div className={styles.pageWrapper}>
+      {/* Skills Globe Background */}
+      <div className={styles.globeBackground}>
+        <SkillsGlobe />
+      </div>
+
       <div 
         ref={containerRef} 
         className={`${styles.container} ${isVisible ? styles.visible : ''}`}
       >
-        {/* Rain Ripple Effect */}
-        <div ref={rainRef} className={styles.rainContainer} />
-
-        {/* Animated Background */}
-        <div className={styles.backgroundEffects}>
-          <div className={styles.orb1} />
-          <div className={styles.orb2} />
-          <div className={styles.orb3} />
-        </div>
-
         {/* Main Content */}
-        <div className={styles.content}>
+        <div 
+          ref={contentRef}
+          className={styles.content}
+        >
           {/* Hero Section */}
-          <div className={styles.hero}>
+          <div 
+            ref={heroRef}
+            className={styles.hero}
+          >
             <div className={styles.greetingWrapper}>
               <span className={styles.decorLine} />
               <p className={styles.greeting}>{homeData.hero.greeting}</p>

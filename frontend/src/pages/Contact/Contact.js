@@ -12,7 +12,7 @@ import '../../styles/Theme.css';
 /* ============================================================================
  * CONTACT PAGE
  * ============================================================================
- * Engaging contact page with rain ripple effect
+ * Engaging contact page with interactive elements
  * Full-page layout with interactive cards
  * ============================================================================
  */

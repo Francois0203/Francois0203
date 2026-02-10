@@ -11,7 +11,7 @@
  */
 .container {
   min-height: 100vh;
-  padding: var(--spacing-3xl) var(--spacing-lg);
+  padding: var(--spacing-2xl) var(--spacing-md);
   max-width: 1200px;
   margin: 0 auto;
   opacity: 0;

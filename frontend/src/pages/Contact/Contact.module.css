@@ -1,7 +1,7 @@
 /* ============================================================================
- * CONTACT PAGE STYLES - ENHANCED VERSION
+ * CONTACT PAGE STYLES
  * ============================================================================
- * Full-page contact layout with rain ripple effect
+ * Full-page contact layout with interactive elements
  * ============================================================================
  */
 
@@ -11,7 +11,7 @@
  */
 .container {
   min-height: 100vh;
-  padding: var(--spacing-3xl) var(--spacing-lg);
+  padding: var(--spacing-2xl) var(--spacing-md);
   width: 100%;
   max-width: 100vw;
   position: relative;
@@ -26,88 +26,6 @@
 .container.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* ========================================
- * RAIN RIPPLE EFFECT
- * ========================================
- */
-.rainContainer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.fallingDrop {
-  position: absolute;
-  top: -10px;
-  width: 2px;
-  height: 30px;
-  background: linear-gradient(to bottom, transparent, var(--accent-1));
-  opacity: 0;
-  animation: fall 0.8s ease-in forwards;
-}
-
-@keyframes fall {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  10% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(var(--end-y));
-  }
-}
-
-.rainDrop {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--accent-1);
-  border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%);
-  animation: ripple 2s ease-out forwards;
-  box-shadow: 0 0 10px var(--accent-1),
-              0 0 20px var(--accent-1),
-              0 0 30px var(--accent-1),
-              inset 0 0 10px var(--accent-1);
-}
-
-@keyframes ripple {
-  0% {
-    width: 10px;
-    height: 10px;
-    border-width: 2px;
-    opacity: 0.8;
-    box-shadow: 0 0 15px var(--accent-1),
-                0 0 30px var(--accent-1),
-                0 0 45px var(--accent-1),
-                inset 0 0 15px var(--accent-1);
-  }
-  50% {
-    border-width: 1.5px;
-    opacity: 0.4;
-    box-shadow: 0 0 20px var(--accent-1),
-                0 0 40px var(--accent-1),
-                0 0 60px var(--accent-1),
-                inset 0 0 20px var(--accent-1);
-  }
-  100% {
-    width: var(--ripple-size, 300px);
-    height: var(--ripple-size, 300px);
-    border-width: 0.5px;
-    opacity: 0;
-    box-shadow: 0 0 25px var(--accent-1),
-                0 0 50px var(--accent-1),
-                0 0 75px var(--accent-1),
-                inset 0 0 25px var(--accent-1);
-  }
 }
 
 /* ========================================

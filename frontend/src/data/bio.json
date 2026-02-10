@@ -71,5 +71,22 @@
     "Frameworks & Technologies": ["React", "Node.js", "Docker", "Kubernetes", "Nginx", "SQL", "PostgreSQL"],
     "Professional Skills": ["Team Leadership", "Project Management", "Full-Stack Development", "System Architecture"]
   },
+  "technicalSkills": [
+    { "name": "React", "icon": "FaReact", "color": "#61DAFB", "category": "Frontend" },
+    { "name": "Python", "icon": "FaPython", "color": "#3776AB", "category": "Language" },
+    { "name": "JavaScript", "icon": "FaJs", "color": "#F7DF1E", "category": "Language" },
+    { "name": "Node.js", "icon": "FaNodeJs", "color": "#339933", "category": "Backend" },
+    { "name": "Docker", "icon": "FaDocker", "color": "#2496ED", "category": "DevOps" },
+    { "name": "Git", "icon": "FaGitAlt", "color": "#F05032", "category": "Tools" },
+    { "name": "PostgreSQL", "icon": "SiPostgresql", "color": "#4169E1", "category": "Database" },
+    { "name": "HTML5", "icon": "FaHtml5", "color": "#E34F26", "category": "Frontend" },
+    { "name": "CSS3", "icon": "FaCss3Alt", "color": "#1572B6", "category": "Frontend" },
+    { "name": "Kubernetes", "icon": "SiKubernetes", "color": "#326CE5", "category": "DevOps" },
+    { "name": "Linux", "icon": "FaLinux", "color": "#FCC624", "category": "OS" },
+    { "name": "Nginx", "icon": "SiNginx", "color": "#009639", "category": "Server" },
+    { "name": "R", "icon": "SiR", "color": "#276DC3", "category": "Language" },
+    { "name": "Database", "icon": "FaDatabase", "color": "#FF6B6B", "category": "Database" },
+    { "name": "Server", "icon": "FaServer", "color": "#4ECDC4", "category": "Infrastructure" }
+  ],
   "hobbies": ["Gym", "Squash", "Guitar", "8 Ball Pool", "Hiking", "Personal Projects", "Web Development"]
 }

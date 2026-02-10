@@ -1,7 +1,7 @@
 /* ============================================================================
- * HOME PAGE STYLES - PROFESSIONAL & WHOLESOME
+ * HOME PAGE STYLES - PROFESSIONAL & EXCITING
  * ============================================================================
- * Clean, modern design that tells a story
+ * Unified design with global effects, enhanced hero section
  * Optimized for all devices with smooth animations
  * ============================================================================
  */
@@ -13,6 +13,44 @@
 .pageWrapper {
   width: 100%;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* ========================================
+ * GLOBE BACKGROUND
+ * ========================================
+ */
+.globeBackground {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1800px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: all;
+}
+
+@media (max-width: 1440px) {
+  .globeBackground {
+    max-width: 1400px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .globeBackground {
+    max-width: 1000px;
+  }
+}
+
+@media (max-width: 768px) {
+  .globeBackground {
+    max-width: 700px;
+  }
 }
 
 /* ========================================
@@ -26,7 +64,7 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  padding: var(--spacing-3xl) var(--spacing-lg);
+  padding: var(--spacing-2xl) var(--spacing-md);
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
@@ -35,149 +73,6 @@
 .container.visible {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* ========================================
- * BACKGROUND EFFECTS - CSS Only
- * ========================================
- */
-.rainContainer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.fallingDrop {
-  position: absolute;
-  top: -10px;
-  width: 2px;
-  height: 30px;
-  background: linear-gradient(to bottom, transparent, var(--accent-1));
-  opacity: 0;
-  animation: fall 0.8s ease-in forwards;
-}
-
-@keyframes fall {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  10% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(var(--end-y));
-  }
-}
-
-.rainDrop {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border: 2px solid var(--accent-1);
-  border-radius: 50%;
-  opacity: 0;
-  transform: translate(-50%, -50%);
-  animation: ripple 2s ease-out forwards;
-  box-shadow: 0 0 10px var(--accent-1),
-              0 0 20px var(--accent-1),
-              0 0 30px var(--accent-1),
-              inset 0 0 10px var(--accent-1);
-}
-
-@keyframes ripple {
-  0% {
-    width: 10px;
-    height: 10px;
-    border-width: 3px;
-    opacity: 0.8;
-    box-shadow: 0 0 15px var(--accent-1),
-                0 0 30px var(--accent-1),
-                0 0 45px var(--accent-1),
-                inset 0 0 15px var(--accent-1);
-  }
-  50% {
-    border-width: 2px;
-    opacity: 0.5;
-    box-shadow: 0 0 20px var(--accent-1),
-                0 0 40px var(--accent-1),
-                0 0 60px var(--accent-1),
-                inset 0 0 20px var(--accent-1);
-  }
-  100% {
-    width: var(--ripple-size, 200px);
-    height: var(--ripple-size, 200px);
-    border-width: 1.5px;
-    opacity: 0;
-    box-shadow: 0 0 25px var(--accent-1),
-                0 0 50px var(--accent-1),
-                0 0 75px var(--accent-1),
-                inset 0 0 25px var(--accent-1);
-  }
-}
-
-.backgroundEffects {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.orb1,
-.orb2,
-.orb3 {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  will-change: transform;
-}
-
-.orb1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--accent-1), transparent);
-  top: -150px;
-  left: -150px;
-  animation: orbFloat1 20s ease-in-out infinite;
-}
-
-.orb2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, var(--accent-2), transparent);
-  bottom: -100px;
-  right: -100px;
-  animation: orbFloat2 25s ease-in-out infinite;
-}
-
-.orb3 {
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, var(--accent-3), transparent);
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: orbFloat3 30s ease-in-out infinite;
-}
-
-@keyframes orbFloat1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(80px, -60px) scale(1.1); }
-}
-
-@keyframes orbFloat2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-60px, 80px) scale(0.9); }
-}
-
-@keyframes orbFloat3 {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.2); }
 }
 
 /* ========================================
@@ -190,14 +85,19 @@
   max-width: 1000px;
   width: 100%;
   text-align: center;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 /* ========================================
- * HERO SECTION
+ * HERO SECTION - Enhanced & Professional
  * ========================================
  */
 .hero {
   margin-bottom: var(--spacing-3xl);
+  position: relative;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
 }
 
 .greetingWrapper {
@@ -211,8 +111,20 @@
 
 .decorLine {
   height: 2px;
-  width: 50px;
+  width: 60px;
   background: linear-gradient(90deg, transparent, var(--accent-1), transparent);
+  animation: lineExpand 0.8s ease 0.2s both;
+}
+
+@keyframes lineExpand {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 60px;
+    opacity: 1;
+  }
 }
 
 .greeting {
@@ -220,39 +132,64 @@
   color: var(--accent-1);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px var(--accent-1-background);
 }
 
 .name {
-  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-size: clamp(3rem, 10vw, 5.5rem);
   font-weight: 900;
   color: var(--primary-text-color);
   margin-bottom: var(--spacing-lg);
   line-height: 1.1;
-  animation: fadeInUp 0.6s ease 0.2s both;
-  background: linear-gradient(135deg, var(--primary-text-color) 0%, var(--accent-1) 100%);
+  animation: fadeInUp 0.6s ease 0.2s both, nameGlow 3s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--primary-text-color) 0%, var(--accent-1) 50%, var(--accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  background-size: 200% 200%;
+  position: relative;
+}
+
+@keyframes nameGlow {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 20px var(--accent-1-background));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 30px var(--accent-2-background));
+  }
 }
 
 .tagline {
-  font-size: clamp(1rem, 3vw, 1.25rem);
-  font-weight: 600;
-  color: var(--accent-1);
+  font-size: clamp(1rem, 3vw, 1.35rem);
+  font-weight: 700;
+  color: var(--accent-2);
   margin-bottom: var(--spacing-xl);
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  animation: fadeInUp 0.6s ease 0.3s both;
+  animation: fadeInUp 0.6s ease 0.3s both, pulse 2s ease-in-out infinite;
+  text-shadow: 0 0 10px var(--accent-2-background);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
 }
 
 .description {
-  font-size: var(--font-size-lg);
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
   color: var(--secondary-text-color);
-  max-width: 650px;
+  max-width: 700px;
   margin: 0 auto var(--spacing-2xl);
-  line-height: 1.7;
+  line-height: 1.8;
   animation: fadeInUp 0.6s ease 0.4s both;
+  font-weight: 500;
 }
 
 @keyframes fadeInDown {
@@ -283,7 +220,7 @@
 }
 
 /* ========================================
- * CALL TO ACTION
+ * CALL TO ACTION - Enhanced
  * ========================================
  */
 .ctaContainer {
@@ -307,29 +244,61 @@
   cursor: pointer;
   border: 2px solid;
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.button:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .primaryButton {
   background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
   border-color: transparent;
   color: white;
+  animation: buttonGlow 3s ease-in-out infinite;
+}
+
+@keyframes buttonGlow {
+  0%, 100% {
+    box-shadow: 0 4px 20px var(--accent-1-background), 0 0 40px var(--accent-1-background);
+  }
+  50% {
+    box-shadow: 0 6px 30px var(--accent-2-background), 0 0 60px var(--accent-2-background);
+  }
 }
 
 .primaryButton:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-xl), 0 10px 40px var(--accent-1-background);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 40px var(--accent-1-background), 0 0 80px var(--accent-1-background);
 }
 
 .secondaryButton {
   background: transparent;
   border-color: var(--accent-1);
   color: var(--accent-1);
+  backdrop-filter: blur(10px);
 }
 
 .secondaryButton:hover {
   background: var(--accent-1-background);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 30px var(--accent-1-background);
+  border-color: var(--accent-2);
 }
 
 /* ========================================
@@ -475,10 +444,7 @@
   .description,
   .ctaContainer,
   .scrollIndicator,
-  .scrollArrow span,
-  .orb1,
-  .orb2,
-  .orb3 {
+  .scrollArrow span {
     animation: none !important;
     transition: none !important;
   }
@@ -488,21 +454,38 @@
     transform: none;
   }
 
+  .content,
+  .name {
+    transform: none !important;
+  }
+
   .primaryButton:hover,
   .secondaryButton:hover {
-    transform: none;
+    transform: none !important;
   }
 }
 
 /* ========================================
- * MEMORY LANE SECTION - ALTERNATING TIMELINE
+ * MEMORY LANE SECTION - Integrated Design
  * ========================================
  */
 .memoryLaneSection {
   width: 100%;
-  background: linear-gradient(180deg, var(--background-0) 0%, var(--background-1) 50%, var(--background-0) 100%);
-  padding: var(--spacing-5xl) 0;
+  background: transparent;
+  padding: var(--spacing-6xl) 0;
   position: relative;
+  margin-top: var(--spacing-4xl);
+}
+
+.memoryLaneSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(180deg, transparent, var(--accent-1));
 }
 
 .memoryLaneContainer {
@@ -515,6 +498,7 @@
   text-align: center;
   margin-bottom: var(--spacing-5xl);
   position: relative;
+  animation: fadeInUp 0.8s ease both;
 }
 
 .sectionDivider {
@@ -549,6 +533,7 @@
   border-radius: 50%;
   animation: dotPulse 2s ease-in-out infinite;
   position: relative;
+  box-shadow: 0 0 20px var(--accent-1-background);
 }
 
 .dividerDot::after {
@@ -582,19 +567,24 @@
 }
 
 .memoryLaneTitle {
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800;
   color: var(--primary-text-color);
   margin-bottom: var(--spacing-md);
   line-height: 1.2;
+  background: linear-gradient(135deg, var(--primary-text-color) 0%, var(--accent-1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .memoryLaneSubtitle {
-  font-size: var(--font-size-lg);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: var(--secondary-text-color);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
+  font-weight: 500;
 }
 
 /* Timeline */
@@ -605,6 +595,38 @@
   gap: var(--spacing-5xl);
 }
 
+/* Timeline Vertical Line */
+.memoryTimeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    var(--accent-1) 10%,
+    var(--accent-2) 50%,
+    var(--accent-1) 90%,
+    transparent 100%
+  );
+  transform: translateX(-50%);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 20px var(--accent-1-background);
+  animation: timelineGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes timelineGlow {
+  from {
+    opacity: 0.6;
+    box-shadow: 0 0 20px var(--accent-1-background);
+  }
+  to {
+    opacity: 1;
+    box-shadow: 0 0 40px var(--accent-1-background), 0 0 60px var(--accent-1-background);
+  }
+}
+
 /* Memory Item - Alternating Layout */
 .memoryItem {
   display: grid;
@@ -613,6 +635,72 @@
   align-items: center;
   position: relative;
   animation: fadeInLeft 0.8s ease both;
+}
+
+/* Timeline Node - Connection Point */
+.memoryItem::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  border-radius: 50%;
+  border: 5px solid var(--background-0);
+  box-shadow: 0 0 0 4px var(--accent-1-background),
+              0 0 30px var(--accent-1);
+  z-index: 5;
+  animation: timelineNodePulse 2s ease-in-out infinite;
+}
+
+@keyframes timelineNodePulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 0 4px var(--accent-1-background),
+                0 0 30px var(--accent-1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 0 8px var(--accent-1-background),
+                0 0 40px var(--accent-1),
+                0 0 60px var(--accent-1);
+  }
+}
+
+/* Timeline Connector Line from Node to Content */
+.memoryItem::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(var(--spacing-2xl) + 20px);
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-1), transparent);
+  z-index: 4;
+  animation: lineSlideIn 0.8s ease both;
+}
+
+.memoryItem::after {
+  left: 50%;
+  transform: translateX(-24px) translateY(-50%);
+}
+
+.memoryItemReverse::after {
+  left: auto;
+  right: 50%;
+  transform: translateX(24px) translateY(-50%) scaleX(-1);
+}
+
+@keyframes lineSlideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: calc(var(--spacing-2xl) + 20px);
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInLeft {
@@ -824,14 +912,34 @@
     gap: var(--spacing-4xl);
   }
 
+  /* Hide center timeline on mobile, show left-aligned version */
   .memoryTimeline::before {
-    display: none;
+    left: var(--spacing-lg);
+    transform: translateX(0);
+    width: 3px;
   }
 
   .memoryItem,
   .memoryItemReverse {
     grid-template-columns: 1fr;
     gap: var(--spacing-xl);
+    padding-left: calc(var(--spacing-lg) * 3);
+  }
+
+  /* Timeline node on left side for mobile */
+  .memoryItem::before,
+  .memoryItemReverse::before {
+    left: var(--spacing-lg);
+    transform: translate(-50%, 0);
+  }
+
+  /* Timeline connector adjusted for mobile */
+  .memoryItem::after,
+  .memoryItemReverse::after {
+    left: calc(var(--spacing-lg) + 12px);
+    right: auto;
+    width: var(--spacing-xl);
+    transform: translateY(-50%) scaleX(1);
   }
 
   .memoryItem .memoryImageContainer,
@@ -842,16 +950,16 @@
   .memoryItem .memoryTextContainer,
   .memoryItemReverse .memoryTextContainer {
     order: 2;
-    text-align: center;
+    text-align: left;
     padding-left: 0;
     padding-right: 0;
   }
 
   .memoryItem .memoryTitle::after,
   .memoryItemReverse .memoryTitle::after {
-    left: 50%;
+    left: 0;
     right: auto;
-    transform: translateX(-50%);
+    transform: none;
   }
 }
 
@@ -870,6 +978,29 @@
 
   .memoryTimeline {
     gap: var(--spacing-3xl);
+  }
+
+  .memoryItem,
+  .memoryItemReverse {
+    padding-left: calc(var(--spacing-md) * 3);
+  }
+
+  .memoryTimeline::before {
+    left: var(--spacing-md);
+  }
+
+  .memoryItem::before,
+  .memoryItemReverse::before {
+    left: var(--spacing-md);
+    width: 20px;
+    height: 20px;
+    border-width: 4px;
+  }
+
+  .memoryItem::after,
+  .memoryItemReverse::after {
+    left: calc(var(--spacing-md) + 10px);
+    width: var(--spacing-lg);
   }
 
   .memoryNumberBadge {
@@ -894,8 +1025,19 @@
 @media (prefers-reduced-motion: reduce) {
   .memoryItem,
   .memoryItemReverse,
-  .dividerDot {
+  .dividerDot,
+  .memoryItem::before,
+  .memoryItem::after {
     animation: none !important;
+  }
+
+  .memoryTimeline::before {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .memoryItem::before {
+    animation: none;
   }
 
   .memoryImageContainer:hover {

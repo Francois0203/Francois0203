@@ -16,7 +16,7 @@ import { NotFound, Loading } from './pages';
 /* ========================================
  * IMPORTS - Components
  * ======================================== */
-import { NavigationBar, Settings, ToastProvider } from './components';
+import { NavigationBar, Settings, ToastProvider, PageTransition } from './components';
 
 /* ========================================
  * IMPORTS - Hooks
@@ -81,7 +81,7 @@ const LoadingFallback = () => <Loading />;
  */
 const AppLayout = () => {
   // ========================================
-  // HOOKS
+  // HOOKS & REFS
   // ========================================
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
@@ -109,6 +109,13 @@ const AppLayout = () => {
   // ========================================
   return (
     <div className={styles.app}>
+      {/* Global Background Effects */}
+      <div className={styles.backgroundEffects}>
+        <div className={styles.orb1} />
+        <div className={styles.orb2} />
+        <div className={styles.orb3} />
+      </div>
+
       {/* Fixed Navigation Bar - Hovers over content */}
       <NavigationBar
         links={navigationLinks}
@@ -127,7 +134,9 @@ const AppLayout = () => {
       {/* Main Page Content - Full viewport */}
       <div className={styles.pageContent}>
         <Suspense fallback={<LoadingFallback />}>
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </Suspense>
       </div>
     </div>
