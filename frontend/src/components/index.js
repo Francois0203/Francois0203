@@ -8,4 +8,3 @@ export { default as ReduceAnimationsSwitch } from './Reduce Animations Switch';
 export { default as Tooltip } from './Tooltip';
 export { ToastProvider, useToast } from './Toast Notifications/ToastContext';
 export { default as PageTransition } from './Page Transition';
-export { default as SkillsGlobe } from './Skills Globe';

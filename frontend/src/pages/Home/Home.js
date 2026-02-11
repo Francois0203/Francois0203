@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
 
-/* Components */
-import { SkillsGlobe } from '../../components';
-
 /* Data */
 import homeData from '../../data/home.json';
 
@@ -30,43 +27,12 @@ const Home = () => {
   // REFS
   // ========================================
   const containerRef = useRef(null);
-  const contentRef = useRef(null);
-  const heroRef = useRef(null);
 
   // ========================================
   // EFFECTS - Page Mount
   // ========================================
   useEffect(() => {
     setIsVisible(true);
-  }, []);
-
-  // ========================================
-  // EFFECTS - Parallax Scroll (Optimized)
-  // ========================================
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          
-          if (contentRef.current) {
-            contentRef.current.style.transform = `translate3d(0, ${scrollY * 0.3}px, 0)`;
-          }
-          
-          if (heroRef.current) {
-            heroRef.current.style.transform = `translate3d(0, ${scrollY * 0.2}px, 0)`;
-          }
-          
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // ========================================
@@ -86,9 +52,16 @@ const Home = () => {
   // ========================================
   return (
     <div className={styles.pageWrapper}>
-      {/* Skills Globe Background */}
-      <div className={styles.globeBackground}>
-        <SkillsGlobe />
+      {/* Animated Background */}
+      <div className={styles.heroBackground}>
+        <div className={styles.gradientOrb} style={{ '--orb-index': 0 }}></div>
+        <div className={styles.gradientOrb} style={{ '--orb-index': 1 }}></div>
+        <div className={styles.gradientOrb} style={{ '--orb-index': 2 }}></div>
+        <div className={styles.floatingShapes}>
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className={styles.shape} style={{ '--shape-index': i }}></div>
+          ))}
+        </div>
       </div>
 
       <div 
@@ -96,15 +69,9 @@ const Home = () => {
         className={`${styles.container} ${isVisible ? styles.visible : ''}`}
       >
         {/* Main Content */}
-        <div 
-          ref={contentRef}
-          className={styles.content}
-        >
+        <div className={styles.content}>
           {/* Hero Section */}
-          <div 
-            ref={heroRef}
-            className={styles.hero}
-          >
+          <div className={styles.hero}>
             <div className={styles.greetingWrapper}>
               <span className={styles.decorLine} />
               <p className={styles.greeting}>{homeData.hero.greeting}</p>
