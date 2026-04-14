@@ -1,206 +1,62 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  LuCpu,
-  LuTerminal,
-  LuDatabase,
-  LuCode,
-  LuServer,
-  LuGitBranch,
-  LuActivity,
-  LuMenu,
-  LuX
-} from "react-icons/lu";
+import React, { useState, useEffect } from "react";
+
+import DesktopNav from "./DesktopNav";
+import MobileNav  from "./MobileNav";
 
 // ============================================
-// IMPORTS - STYLING
+// BREAKPOINT
 // ============================================
-
-import styles from "./NavigationBar.module.css";
-
-// ============================================
-// CONSTANTS
-// ============================================
-
-// Icon set for navigation links
-const ICONS = [LuCpu, LuTerminal, LuDatabase, LuCode, LuServer, LuGitBranch, LuActivity, LuMenu, LuX];
+// Below this width the mobile nav is rendered.
+const MOBILE_BREAKPOINT = 768;
 
 // ============================================
-// NAVIGATION BAR COMPONENT
+// NAVIGATION BAR
 // ============================================
-// Liquid-glass burger menu navigation
+// Orchestrates desktop vs. mobile navigation.
+// Renders DesktopNav on wide screens and MobileNav
+// on narrow screens, driven by a media query listener.
 
 const NavigationBar = ({
-  links,
-  onNavigate,
-  activeTab = null,
-  burgerSize = 50,
-  className = ""
+  links      = [],
+  onNavigate = () => {},
+  activeTab  = null,
+  burgerSize = 56,
+  className  = "",
 }) => {
   // ----------------------------------------
-  // State & Refs
+  // Breakpoint detection
   // ----------------------------------------
-
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [hoveredLink, setHoveredLink] = useState(null);
-
-  const containerRef = useRef(null);
-
-  // ----------------------------------------
-  // Derived Helpers
-  // ----------------------------------------
-
-  const burgerIconSize = Math.max(18, Math.round(burgerSize * 0.6));
-
-  const isActive = (link, index) => {
-    if (activeTab === null) return false;
-    return activeTab === index || activeTab === link.to;
-  };
-
-  // ----------------------------------------
-  // Event Handlers
-  // ----------------------------------------
-
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-    setHoveredLink(null);
-  };
-
-  const handleLinkClick = (link, index) => {
-    if (link.onClick) link.onClick();
-    if (link.to) onNavigate(link.to, index);
-    closeMenu();
-  };
-
-  // ----------------------------------------
-  // Effects
-  // ----------------------------------------
+  const [isMobile, setIsMobile] = useState(
+    () => window.innerWidth < MOBILE_BREAKPOINT
+  );
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        closeMenu();
-      }
-    };
-
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [menuOpen]);
-
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        closeMenu();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   // ----------------------------------------
   // Render
   // ----------------------------------------
+  if (isMobile) {
+    return (
+      <MobileNav
+        links={links}
+        onNavigate={onNavigate}
+        activeTab={activeTab}
+        triggerSize={burgerSize}
+      />
+    );
+  }
 
   return (
-    <div className={`${styles.navbarContainer} ${className}`} ref={containerRef}>
-      <nav className={styles.navbar} aria-label="Main navigation">
-        
-        {/* Burger Button */}
-        <button
-          className={`${styles.burger} ${menuOpen ? styles.burgerOpen : ""}`}
-          aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={menuOpen}
-          onClick={toggleMenu}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              toggleMenu();
-            }
-          }}
-          style={{
-            width: burgerSize,
-            height: burgerSize,
-            minWidth: burgerSize,
-            minHeight: burgerSize,
-          }}
-        >
-          {menuOpen ? (
-            <LuX size={burgerIconSize} className={styles.burgerIcon} />
-          ) : (
-            <LuMenu size={burgerIconSize} className={styles.burgerIcon} />
-          )}
-        </button>
-
-        {/* Dropdown Menu */}
-        {menuOpen && (
-          <div
-            className={`${styles.menuDropdown} ${styles.menuDropdownOpen}`}
-            role="menu"
-          >
-            <ul className={styles.linkList} role="menubar">
-              {links && links.slice(0, 7).map((link, index) => {
-                const Icon = ICONS[index];
-                const active = isActive(link, index);
-                const hovered = hoveredLink === index;
-
-                return (
-                  <li
-                    key={`nav-${index}`}
-                    className={styles.linkItem}
-                    role="none"
-                    onMouseEnter={() => setHoveredLink(index)}
-                    onMouseLeave={() => setHoveredLink(null)}
-                  >
-                    <div
-                      className={[
-                        styles.link,
-                        hovered ? styles.linkHovered : "",
-                        active ? styles.linkActive : "",
-                      ].join(" ")}
-                      onClick={() => handleLinkClick(link, index)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          handleLinkClick(link, index);
-                        }
-                      }}
-                      role="menuitem"
-                      tabIndex={0}
-                      aria-current={active ? "page" : undefined}
-                      data-index={index}
-                    >
-                      {/* Icon pill */}
-                      <div className={styles.linkIcon}>
-                        <Icon size={20} />
-                      </div>
-
-                      {/* Label */}
-                      <span className={styles.linkLabel}>{link.label}</span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-      </nav>
-
-      {/* Backdrop Overlay - outside nav, below burger */}
-      {menuOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={closeMenu}
-          aria-hidden="true"
-        />
-      )}
-    </div>
+    <DesktopNav
+      links={links}
+      onNavigate={onNavigate}
+      activeTab={activeTab}
+    />
   );
 };
 

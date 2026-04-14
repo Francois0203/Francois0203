@@ -1,68 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BsLightningFill, BsPauseFill } from 'react-icons/bs';
 
 /* Styling */
 import styles from './ReduceAnimationsSwitch.module.css';
-import '../../styles/Theme.css';
+
+/* Shared animation state hook */
+import { useAnimations } from '../../hooks';
 
 /* ============================================================================
  * REDUCE ANIMATIONS SWITCH COMPONENT
  * ============================================================================
- * Toggle switch for enabling/disabling animations
- * Persists preference to localStorage
+ * Premium glassmorphism toggle for enabling / disabling motion across the app.
+ *
+ * reduceAnimations = false (default) → thumb (lightning) on the left,
+ *                                      pause icon shown in the right track area.
+ * reduceAnimations = true            → thumb (pause) on the right,
+ *                                      lightning icon shown in the left track area.
+ *
+ * State & persistence are managed by the useAnimations hook, which sets the
+ * `data-no-animations` attribute on <html> and writes to localStorage.
  * ============================================================================
  */
 
-const STORAGE_KEY = 'reduceAnimations';
-
 const ReduceAnimationsSwitch = () => {
-  // ========================================
-  // STATE MANAGEMENT
-  // ========================================
-  const [enabled, setEnabled] = useState(() => {
-    try {
-      return localStorage.getItem(STORAGE_KEY) === 'true';
-    } catch (e) {
-      return false;
-    }
-  });
+  const { reduceAnimations, toggleAnimations } = useAnimations();
 
-  // ========================================
-  // EFFECTS
-  // ========================================
-  useEffect(() => {
-    const root = document.documentElement;
-    
-    if (enabled) {
-      root.setAttribute('data-no-animations', 'true');
-    } else {
-      root.removeAttribute('data-no-animations');
+  /* Allow Space / Enter to activate like a native button */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleAnimations();
     }
-    
-    try {
-      localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
-    } catch (e) {
-      // Storage error - ignore
-    }
-  }, [enabled]);
+  };
 
-  // ========================================
-  // EVENT HANDLERS
-  // ========================================
-  const toggle = () => setEnabled((prev) => !prev);
-
-  // ========================================
-  // RENDER
-  // ========================================
   return (
     <button
-      className={`${styles.switch} ${enabled ? styles.checked : ''}`}
-      onClick={toggle}
-      role="switch"
-      aria-checked={enabled}
-      aria-label="Reduce Animations"
       type="button"
+      role="switch"
+      aria-checked={reduceAnimations}
+      aria-label={
+        reduceAnimations
+          ? 'Animations reduced — click to enable'
+          : 'Animations enabled — click to reduce'
+      }
+      className={`${styles.track} ${reduceAnimations ? styles.checked : ''}`}
+      onClick={toggleAnimations}
+      onKeyDown={handleKeyDown}
     >
-      <span className={styles.thumb} />
+      {/* Background icon: lightning — fades in on the left when reduce is active */}
+      <span className={`${styles.bgIcon} ${styles.bgIconLeft}`} aria-hidden="true">
+        <BsLightningFill />
+      </span>
+
+      {/* Background icon: pause — fades in on the right when animations are enabled */}
+      <span className={`${styles.bgIcon} ${styles.bgIconRight}`} aria-hidden="true">
+        <BsPauseFill />
+      </span>
+
+      {/* Sliding thumb — shows the icon for the current active state */}
+      <span className={styles.thumb} aria-hidden="true">
+        <span className={styles.thumbIcon}>
+          {reduceAnimations ? <BsPauseFill /> : <BsLightningFill />}
+        </span>
+      </span>
     </button>
   );
 };

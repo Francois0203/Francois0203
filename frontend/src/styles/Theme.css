@@ -51,90 +51,90 @@
     --z-popover: 1060;
     --z-tooltip: 1070;
 
-    /* ==================== PROFESSIONAL COLOR PALETTE ==================== */
+    /* ==================== COLOR PALETTE ==================== */
 
-    /* Light Mode - Clean, Professional Blues & Grays */
-    --primary-text-color-light: #1e293b;         /* Slate 800 - Rich dark for readability */
-    --secondary-text-color-light: #475569;       /* Slate 600 - Secondary text */
-    --tertiary-text-color-light: #64748b;        /* Slate 500 - Muted text */
+    /* — Text: Light Mode — */
+    --primary-text-color-light: #0f1117;         /* Near-black, cool undertone */
+    --secondary-text-color-light: #374151;       /* Gray 700 */
+    --tertiary-text-color-light: #6b7280;        /* Gray 500 */
+    --disabled-color-light: #9ca3af;             /* Gray 400 */
 
-    /* Dark Mode - Soft whites with warmth */
-    --primary-text-color-dark: #f8fafc;          /* Slate 50 - Soft white */
-    --secondary-text-color-dark: #e2e8f0;        /* Slate 200 - Secondary */
-    --tertiary-text-color-dark: #cbd5e1;         /* Slate 300 - Muted */
+    /* — Text: Dark Mode — */
+    --primary-text-color-dark: #f0f2f5;          /* Soft white, barely cool */
+    --secondary-text-color-dark: #c8cdd6;        /* Muted light gray */
+    --tertiary-text-color-dark: #8892a0;         /* Mid gray */
+    --disabled-color-dark: #505a6a;              /* Dim gray */
 
-    --disabled-color-light: #94a3b8;             /* Slate 400 */
-    --disabled-color-dark: #64748b;              /* Slate 500 */
+    /* — Status Colors — */
+    --error-color: #e5484d;                      /* Rose — clear, not harsh */
+    --warning-color: #e79420;                    /* Amber — warm, muted */
+    --success-color: #1a9e70;                    /* Emerald — close to teal family */
+    --info-color: #0d9488;                       /* Teal — unified with accent */
 
-    /* Status Colors - Professional & Accessible */
-    --error-color: #dc2626;                      /* Red 600 */
-    --warning-color: #f59e0b;                    /* Amber 500 */
-    --success-color: #10b981;                    /* Emerald 500 */
-    --info-color: #3b82f6;                       /* Blue 500 */
+    /* — Status Backgrounds: Light Mode — */
+    --success-background-color-light: #edfdf5;   /* Barely green */
+    --warning-background-color-light: #fefce8;   /* Barely amber */
+    --error-background-color-light: #fff1f2;     /* Barely rose */
+    --info-background-color-light: #f0fdfa;      /* Barely teal */
 
-    --success-background-color-light: #d1fae5;   /* Emerald 100 */
-    --warning-background-color-light: #fef3c7;   /* Amber 100 */
-    --error-background-color-light: #fee2e2;     /* Red 100 */
-    --info-background-color-light: #dbeafe;      /* Blue 100 */
+    /* — Status Backgrounds: Dark Mode — */
+    --success-background-color-dark: #022918;    /* Deep emerald */
+    --warning-background-color-dark: #311a00;    /* Deep amber */
+    --error-background-color-dark: #3d0a0f;      /* Deep rose */
+    --info-background-color-dark: #022926;       /* Deep teal */
 
-    --success-background-color-dark: #064e3b;    /* Emerald 900 */
-    --warning-background-color-dark: #78350f;    /* Amber 900 */
-    --error-background-color-dark: #7f1d1d;      /* Red 900 */
-    --info-background-color-dark: #1e3a8a;       /* Blue 900 */
+    /* — Accent: Turquoise (Light Mode) — */
+    --accent-1-light: #0d9488;        /* Teal 600 — primary action */
+    --accent-2-light: #14b8a6;        /* Teal 500 — subtle variation */
+    --accent-3-light: #0f766e;        /* Teal 700 — pressed / deep */
+    --accent-hover-light: #0f766e;    /* Teal 700 — hover state */
 
-    /* Accent Colors - Turquoise / Teal Palette */
-    /* Light Mode Accents */
-    --accent-1-light: #0ea5a4;        /* Teal 500 - Primary brand */
-    --accent-2-light: #06b6d4;        /* Cyan 500 - Secondary brand */
-    --accent-3-light: #14b8a6;        /* Teal 400 - Tertiary accent */
-    --accent-hover-light: #0f766e;    /* Teal 700 - Hover state */
+    /* — Accent: Turquoise (Dark Mode) — */
+    --accent-1-dark: #2dd4bf;         /* Teal 400 — primary on dark */
+    --accent-2-dark: #5eead4;         /* Teal 300 — lighter highlights */
+    --accent-3-dark: #14b8a6;         /* Teal 500 — mid tone */
+    --accent-hover-dark: #5eead4;     /* Teal 300 — hover brightness */
 
-    /* Dark Mode Accents - Brighter for contrast */
-    --accent-1-dark: #5eead4;         /* Teal 300 */
-    --accent-2-dark: #67e8f9;         /* Cyan 300 */
-    --accent-3-dark: #2dd4bf;         /* Teal 400 */
-    --accent-hover-dark: #99f6e4;     /* Teal 200 */
+    /* — Accent RGB (for rgba() usage) — */
+    --accent-1-rgb-light: 13, 148, 136;
+    --accent-2-rgb-light: 20, 184, 166;
+    --accent-3-rgb-light: 15, 118, 110;
 
-    /* Accent RGB values for transparency */
-    --accent-1-rgb-light: 14, 165, 164;
-    --accent-2-rgb-light: 6, 182, 212;
-    --accent-3-rgb-light: 20, 184, 166;
+    --accent-1-rgb-dark: 45, 212, 191;
+    --accent-2-rgb-dark: 94, 234, 212;
+    --accent-3-rgb-dark: 20, 184, 166;
 
-    --accent-1-rgb-dark: 94, 234, 212;
-    --accent-2-rgb-dark: 103, 232, 249;
-    --accent-3-rgb-dark: 45, 212, 191;
+    /* — Accent Backgrounds: Light Mode — */
+    --accent-1-background-light: #f0fdfa;        /* Teal 50 — barely tinted */
+    --accent-2-background-light: #ccfbf1;        /* Teal 100 */
+    --accent-3-background-light: #99f6e4;        /* Teal 200 — stronger tint */
 
-    /* Accent Background Colors */
-    --accent-1-background-light: #ccfbf1;  /* Teal 100 */
-    --accent-2-background-light: #cffafe;  /* Cyan 100 */
-    --accent-3-background-light: #d1fae5;  /* Teal 100 (green-leaning) */
+    /* — Accent Backgrounds: Dark Mode — */
+    --accent-1-background-dark: #022926;         /* Near Teal 950 */
+    --accent-2-background-dark: #0d3d39;         /* Deep teal surface */
+    --accent-3-background-dark: #134e4a;         /* Teal 900 */
 
-    --accent-1-background-dark: #134e4a;   /* Teal 900 */
-    --accent-2-background-dark: #164e63;   /* Cyan 900 */
-    --accent-3-background-dark: #064e3b;   /* Teal 900 (green-leaning) */
+    /* — Backgrounds: Light Mode — */
+    --background-0-light: #f9fafb;               /* Gray 50 — page canvas */
+    --background-1-light: #ffffff;               /* Pure white — primary surface */
+    --background-2-light: #f3f4f6;               /* Gray 100 — elevated surface */
+    --background-3-light: #e9ecf0;               /* Soft medium gray */
+    --background-4-light: #dde1e7;               /* Dividers, subtle cards */
+    --frosted-background-light: rgba(255, 255, 255, 0.85);
+    --border-color-light: #e5e7eb;               /* Gray 200 */
+    --border-color-hover-light: #d1d5db;         /* Gray 300 */
 
-    /* Main Background Colors */
-    /* Light Mode - Clean whites and subtle grays */
-    --background-0-light: #fafafa;               /* Zinc 50 - Softest gray */
-    --background-1-light: #ffffff;               /* Pure white */
-    --background-2-light: #f8fafc;               /* Slate 50 */
-    --background-3-light: #f1f5f9;               /* Slate 100 */
-    --background-4-light: #e2e8f0;               /* Slate 200 */
-    --frosted-background-light: rgba(248, 250, 252, 0.8);
-    --border-color-light: #e2e8f0;               /* Slate 200 */
-    --border-color-hover-light: #cbd5e1;         /* Slate 300 */
+    /* — Backgrounds: Dark Mode — */
+    --background-0-dark: #06080d;                /* Near-black — page canvas */
+    --background-1-dark: #0d1117;                /* Very deep dark — primary surface */
+    --background-2-dark: #161b24;                /* Dark elevated surface */
+    --background-3-dark: #1f2530;                /* Raised surface */
+    --background-4-dark: #2a3140;                /* High-elevation card */
+    --frosted-background-dark: rgba(13, 17, 23, 0.88);
+    --border-color-dark: #1e2531;                /* Subtle dark border */
+    --border-color-hover-dark: #2a3140;          /* Slightly visible */
 
-    /* Dark Mode - Rich, professional darks */
-    --background-0-dark: #020617;                /* Slate 950 */
-    --background-1-dark: #0f172a;                /* Slate 900 */
-    --background-2-dark: #1e293b;                /* Slate 800 */
-    --background-3-dark: #334155;                /* Slate 700 */
-    --background-4-dark: #475569;                /* Slate 600 */
-    --frosted-background-dark: rgba(30, 41, 59, 0.8);
-    --border-color-dark: #334155;                /* Slate 700 */
-    --border-color-hover-dark: #475569;          /* Slate 600 */
-
-    /* Applied Colors (Default Light Mode) */
+    /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);
     --secondary-text-color: var(--secondary-text-color-light);
     --tertiary-text-color: var(--tertiary-text-color-light);
@@ -205,11 +205,11 @@
     --error-background-color: var(--error-background-color-dark);
     --info-background-color: var(--info-background-color-dark);
 
-    /* Dark mode specific shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+    /* Deeper shadows for dark surfaces */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -231,15 +231,14 @@ body {
 html, body, #root {
     height: 100%;
     margin: 0;
-    /* Professional gradient background */
     background: linear-gradient(
         135deg,
         var(--background-1) 0%,
         var(--background-2) 100%
     );
     background-attachment: fixed;
-    /* Smooth color transitions */
     transition: background var(--transition-slow);
+    overflow: overlay;
 }
 
 

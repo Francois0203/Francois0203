@@ -52,13 +52,13 @@ export const ToastProvider = ({ children }) => {
   const toastContainer = (
     <div style={{
       position: "fixed",
-      top: "1.5rem",
-      right: "1.5rem",
+      top: "var(--spacing-lg)",
+      right: "var(--spacing-lg)",
       display: "flex",
       flexDirection: "column",
       alignItems: "flex-end",
-      gap: "0.75rem",
-      pointerEvents: "auto"
+      pointerEvents: "auto",
+      maxWidth: "calc(100vw - 3rem)",
     }}>
       {toasts.map((t) => (
         <ToastNotification

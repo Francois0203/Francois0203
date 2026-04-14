@@ -5,7 +5,6 @@ import { useTooltip } from '../../hooks';
 
 /* Styling */
 import styles from './Tooltip.module.css';
-import '../../styles/Theme.css';
 
 /* ============================================================================
  * TOOLTIP COMPONENT

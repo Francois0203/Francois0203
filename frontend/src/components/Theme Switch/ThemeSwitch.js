@@ -1,45 +1,57 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaSun, FaMoon } from 'react-icons/fa';
-
-/* Styling */
 import styles from './ThemeSwitch.module.css';
-import '../../styles/Theme.css';
 
 /* ============================================================================
  * THEME SWITCH COMPONENT
  * ============================================================================
- * Toggle button for switching between light and dark themes
- * Features animated icon transitions
+ * Premium glassmorphism toggle for switching between light and dark themes.
+ *
+ * Light mode → thumb (sun) on the left,  moon icon shown in the right track area.
+ * Dark mode  → thumb (moon) on the right, sun icon shown in the left track area.
+ *
+ * Props:
+ *   theme        {string}    'light' | 'dark'
+ *   toggleTheme  {function}  Callback to toggle the theme
  * ============================================================================
  */
 
 const ThemeSwitch = ({ theme, toggleTheme }) => {
-  // ========================================
-  // STATE MANAGEMENT
-  // ========================================
-  const [isPressed, setIsPressed] = useState(false);
+  const isDark = theme === 'dark';
 
-  // ========================================
-  // EVENT HANDLERS
-  // ========================================
-  const handlePointerDown = () => setIsPressed(true);
-  const handlePointerUp = () => setIsPressed(false);
+  /* Allow Space / Enter to activate like a native button */
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleTheme();
+    }
+  };
 
-  // ========================================
-  // RENDER
-  // ========================================
   return (
     <button
-      className={`${styles.themeSwitch} ${isPressed ? styles.pressed : ''}`}
-      onClick={toggleTheme}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      aria-label="Toggle theme"
       type="button"
+      role="switch"
+      aria-checked={isDark}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className={`${styles.track} ${isDark ? styles.checked : ''}`}
+      onClick={toggleTheme}
+      onKeyDown={handleKeyDown}
     >
-      <span className={styles.icon} aria-hidden="true">
-        {theme === 'dark' ? <FaSun /> : <FaMoon />}
+      {/* Background icon: sun — fades in on the left when dark mode is active */}
+      <span className={`${styles.bgIcon} ${styles.bgIconLeft}`} aria-hidden="true">
+        <FaSun />
+      </span>
+
+      {/* Background icon: moon — fades in on the right when light mode is active */}
+      <span className={`${styles.bgIcon} ${styles.bgIconRight}`} aria-hidden="true">
+        <FaMoon />
+      </span>
+
+      {/* Sliding thumb — shows the icon for the current active mode */}
+      <span className={styles.thumb} aria-hidden="true">
+        <span className={styles.thumbIcon}>
+          {isDark ? <FaMoon /> : <FaSun />}
+        </span>
       </span>
     </button>
   );

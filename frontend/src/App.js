@@ -16,7 +16,7 @@ import { NotFound, Loading } from './pages';
 /* ========================================
  * IMPORTS - Components
  * ======================================== */
-import { NavigationBar, Settings, ToastProvider, PageTransition } from './components';
+import { NavigationBar, Settings, ToastProvider } from './components';
 
 /* ========================================
  * IMPORTS - Hooks
@@ -61,6 +61,10 @@ const NAVIGATION_PAGES = [
   {
     label: 'Contact',
     to: '/contact'
+  },
+  {
+    label: 'Not Found',
+    to: '/not-found'
   }
 ];
 
@@ -134,9 +138,7 @@ const AppLayout = () => {
       {/* Main Page Content - Full viewport */}
       <div className={styles.pageContent}>
         <Suspense fallback={<LoadingFallback />}>
-          <PageTransition>
-            <Outlet />
-          </PageTransition>
+          <Outlet />
         </Suspense>
       </div>
     </div>
