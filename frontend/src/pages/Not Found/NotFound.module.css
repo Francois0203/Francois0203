@@ -1,109 +1,259 @@
 /* ============================================================================
- * NOT FOUND PAGE STYLES - FUN & INTERACTIVE
+ * NOT FOUND PAGE STYLES
  * ============================================================================
- * Creative, engaging 404 page with smooth animations
+ * Premium liquid glass aesthetic — frosted surfaces, ambient depth,
+ * refined typography, and polished interaction states.
+ *
+ * All colors sourced exclusively from Theme.css custom properties.
  * ============================================================================
  */
 
+
 /* ========================================
- * CONTAINER
+ * PAGE ROOT
  * ========================================
  */
-.container {
+
+.root {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: var(--background-0);
   position: relative;
   overflow: hidden;
-  padding: var(--spacing-xl) var(--spacing-md);
-  background: var(--background-2);
 }
 
+
 /* ========================================
- * ANIMATED BACKGROUND
+ * AMBIENT BACKGROUND ORBS
+ * ========================================
+ * Soft, defocused gradients that give the
+ * frosted card its glass character.
  * ========================================
  */
-.backgroundAnimation {
+
+.orbTopRight,
+.orbBottomLeft {
   position: absolute;
-  inset: 0;
+  border-radius: var(--radius-full);
+  pointer-events: none;
   z-index: 0;
-  overflow: hidden;
 }
 
-.star {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: var(--accent-1);
-  border-radius: 50%;
-  box-shadow: 0 0 10px var(--accent-1);
-  animation: twinkle 3s ease-in-out infinite;
+.orbTopRight {
+  width: clamp(300px, 45vw, 640px);
+  height: clamp(300px, 45vw, 640px);
+  top: -18%;
+  right: -12%;
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--accent-1-rgb), 0.13) 0%,
+    rgba(var(--accent-2-rgb), 0.06) 45%,
+    transparent 70%
+  );
+  filter: blur(48px);
 }
 
-.star:nth-child(1) {
-  top: 20%;
-  left: 20%;
-  animation-delay: 0s;
+.orbBottomLeft {
+  width: clamp(240px, 38vw, 520px);
+  height: clamp(240px, 38vw, 520px);
+  bottom: -12%;
+  left: -8%;
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--accent-2-rgb), 0.09) 0%,
+    rgba(var(--accent-1-rgb), 0.04) 50%,
+    transparent 70%
+  );
+  filter: blur(56px);
 }
 
-.star:nth-child(2) {
-  top: 40%;
-  left: 80%;
-  animation-delay: 0.5s;
-}
-
-.star:nth-child(3) {
-  top: 70%;
-  left: 30%;
-  animation-delay: 1s;
-}
-
-.star:nth-child(4) {
-  top: 80%;
-  left: 70%;
-  animation-delay: 1.5s;
-}
-
-.star:nth-child(5) {
-  top: 30%;
-  left: 50%;
-  animation-delay: 2s;
-}
-
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.5);
-  }
-}
 
 /* ========================================
- * MAIN CARD
+ * FROSTED GLASS CARD
  * ========================================
  */
+
 .card {
   position: relative;
-  z-index: 10;
-  max-width: 600px;
+  z-index: 1;
   width: 100%;
+  max-width: 500px;
   padding: var(--spacing-3xl) var(--spacing-2xl);
-  background: var(--background-1);
-  border: 2px solid var(--border-color);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
+
+  background: var(--frosted-background);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+
+  border: 1px solid var(--border-color);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 0 1px rgba(var(--accent-1-rgb), 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
   text-align: center;
-  animation: slideIn 0.6s ease;
+  animation: cardEntrance 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes slideIn {
+@keyframes cardEntrance {
   from {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(22px) scale(0.978);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ========================================
+ * STATUS BADGE
+ * ========================================
+ */
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  border-radius: var(--radius-full);
+  background: rgba(var(--accent-1-rgb), 0.08);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.20);
+  color: var(--accent-1);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: fadeUp 0.4s 0.10s ease both;
+}
+
+.statusDot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--accent-1);
+  box-shadow: 0 0 6px rgba(var(--accent-1-rgb), 0.70);
+  animation: dotPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 6px rgba(var(--accent-1-rgb), 0.70);
+  }
+  50% {
+    opacity: 0.55;
+    box-shadow: 0 0 10px rgba(var(--accent-1-rgb), 0.25);
+  }
+}
+
+
+/* ========================================
+ * 404 CODE DISPLAY
+ * ========================================
+ */
+
+.codeDisplay {
+  font-size: clamp(5rem, 18vw, 8.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  margin-bottom: var(--spacing-xl);
+
+  background: linear-gradient(
+    138deg,
+    var(--accent-1) 0%,
+    var(--accent-2) 60%,
+    var(--accent-3) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  filter: drop-shadow(0 2px 28px rgba(var(--accent-1-rgb), 0.28));
+  animation: fadeUp 0.4s 0.15s ease both;
+}
+
+
+/* ========================================
+ * HEADING & SUBTEXT
+ * ========================================
+ */
+
+.heading {
+  /* Override global h1 accent color — primary text reads better here */
+  color: var(--primary-text-color) !important;
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  animation: fadeUp 0.4s 0.22s ease both;
+}
+
+.subtext {
+  color: var(--secondary-text-color);
+  font-size: var(--font-size-base);
+  line-height: 1.75;
+  max-width: 38ch;
+  margin: 0 auto;
+  animation: fadeUp 0.4s 0.28s ease both;
+}
+
+
+/* ========================================
+ * DIVIDER
+ * ========================================
+ */
+
+.divider {
+  height: 1px;
+  margin: var(--spacing-xl) 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(var(--accent-1-rgb), 0.22) 30%,
+    rgba(var(--accent-2-rgb), 0.18) 70%,
+    transparent 100%
+  );
+  animation: fadeUp 0.4s 0.32s ease both;
+}
+
+
+/* ========================================
+ * ACTION BUTTONS
+ * ========================================
+ */
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  animation: fadeUp 0.4s 0.38s ease both;
+}
+
+/* Icon sizing inside both button types */
+.actions svg {
+  font-size: 1.15em;
+  flex-shrink: 0;
+}
+
+
+/* ========================================
+ * SHARED FADE-UP KEYFRAMES
+ * ========================================
+ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -111,355 +261,24 @@
   }
 }
 
-/* ========================================
- * ERROR CODE
- * ========================================
- */
-.errorCode {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-xl);
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.3s ease;
-}
-
-.errorCode:hover {
-  transform: scale(1.05);
-}
-
-.errorCode:active {
-  transform: scale(0.95);
-}
-
-.digit {
-  font-size: clamp(4rem, 15vw, 7rem);
-  font-weight: 900;
-  color: var(--accent-1);
-  text-shadow: 0 0 30px var(--accent-1-background);
-  animation: bounce 2s ease-in-out infinite;
-}
-
-.digit:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.digit:nth-child(2) {
-  animation-delay: 0.2s;
-  color: var(--accent-2);
-  text-shadow: 0 0 30px var(--accent-2-background);
-}
-
-.digit:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-/* Glitch Effect */
-.errorCode.glitch .digit {
-  animation: glitchAnimation 0.3s ease;
-}
-
-@keyframes glitchAnimation {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(-5px, 5px);
-  }
-  50% {
-    transform: translate(5px, -5px);
-  }
-  75% {
-    transform: translate(-5px, -5px);
-  }
-}
 
 /* ========================================
- * ICON
+ * RESPONSIVE
  * ========================================
  */
-.iconWrapper {
-  margin-bottom: var(--spacing-lg);
-  animation: float 3s ease-in-out infinite;
-}
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-.sadIcon {
-  font-size: 5rem;
-  color: var(--secondary-text-color);
-  filter: drop-shadow(0 0 20px var(--accent-1-background));
-}
-
-/* ========================================
- * TEXT CONTENT
- * ========================================
- */
-.title {
-  font-size: var(--font-size-3xl);
-  font-weight: 800;
-  color: var(--primary-text-color);
-  margin-bottom: var(--spacing-md);
-}
-
-.message {
-  font-size: var(--font-size-lg);
-  color: var(--secondary-text-color);
-  margin-bottom: var(--spacing-2xl);
-  line-height: 1.6;
-}
-
-/* ========================================
- * SECRET EASTER EGG
- * ========================================
- */
-.secret {
-  padding: var(--spacing-lg);
-  background: linear-gradient(135deg, var(--accent-1-background), var(--accent-2-background));
-  border: 2px solid var(--accent-1);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-xl);
-  animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes popIn {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.secretText {
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--accent-1);
-  margin-bottom: var(--spacing-xs);
-}
-
-.secretSubtext {
-  font-size: var(--font-size-base);
-  color: var(--secondary-text-color);
-}
-
-/* ========================================
- * ACTION BUTTONS
- * ========================================
- */
-.actions {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: var(--spacing-lg);
-}
-
-.button {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-xl);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  border-radius: var(--radius-lg);
-  text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: 2px solid;
-  box-shadow: var(--shadow-sm);
-}
-
-.primaryButton {
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  border-color: transparent;
-  color: white;
-}
-
-.primaryButton:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg), 0 10px 30px var(--accent-1-background);
-}
-
-.secondaryButton {
-  background: transparent;
-  border-color: var(--accent-1);
-  color: var(--accent-1);
-}
-
-.secondaryButton:hover {
-  background: var(--accent-1-background);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
-}
-
-/* ========================================
- * HINT
- * ========================================
- */
-.hint {
-  font-size: var(--font-size-sm);
-  color: var(--tertiary-text-color);
-  font-style: italic;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ========================================
- * FLOATING ELEMENTS
- * ========================================
- */
-.floatingElements {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.floatingIcon {
-  position: absolute;
-  font-size: 2rem;
-  color: var(--accent-1);
-  opacity: 0.15;
-  animation: floatAround 15s ease-in-out infinite;
-}
-
-.floatingIcon:nth-child(1) {
-  top: 10%;
-  left: 10%;
-  animation-delay: 0s;
-}
-
-.floatingIcon:nth-child(2) {
-  top: 60%;
-  left: 85%;
-  animation-delay: 2s;
-}
-
-.floatingIcon:nth-child(3) {
-  top: 80%;
-  left: 15%;
-  animation-delay: 4s;
-}
-
-@keyframes floatAround {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(30px, -30px) rotate(90deg);
-  }
-  50% {
-    transform: translate(-30px, 30px) rotate(180deg);
-  }
-  75% {
-    transform: translate(30px, 30px) rotate(270deg);
-  }
-}
-
-/* ========================================
- * RESPONSIVE DESIGN
- * ========================================
- */
-@media (max-width: 768px) {
+@media (max-width: 520px) {
   .card {
     padding: var(--spacing-2xl) var(--spacing-lg);
   }
 
-  .errorCode {
-    gap: var(--spacing-sm);
-  }
-
-  .digit {
-    font-size: clamp(3rem, 12vw, 5rem);
-  }
-
-  .sadIcon {
-    font-size: 4rem;
-  }
-
-  .title {
-    font-size: var(--font-size-2xl);
-  }
-
-  .message {
-    font-size: var(--font-size-base);
-  }
-
   .actions {
     flex-direction: column;
-    align-items: stretch;
-  }
-
-  .button {
-    justify-content: center;
     width: 100%;
   }
-}
 
-@media (max-width: 480px) {
-  .digit {
-    font-size: clamp(2.5rem, 10vw, 4rem);
-  }
-
-  .sadIcon {
-    font-size: 3rem;
-  }
-
-  .title {
-    font-size: var(--font-size-xl);
-  }
-
-  .secretText {
-    font-size: var(--font-size-lg);
-  }
-}
-
-/* ========================================
- * ACCESSIBILITY
- * ========================================
- */
-@media (prefers-reduced-motion: reduce) {
-  .card,
-  .digit,
-  .iconWrapper,
-  .star,
-  .secret,
-  .hint,
-  .floatingIcon {
-    animation: none !important;
-  }
-
-  .errorCode:hover,
-  .button:hover {
-    transform: none;
-  }
-
-  .card {
-    opacity: 1;
-    transform: none;
+  .actions > * {
+    width: 100%;
+    justify-content: center;
   }
 }

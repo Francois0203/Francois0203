@@ -63,8 +63,8 @@ const NAVIGATION_PAGES = [
     to: '/contact'
   },
   {
-    label: 'Not Found',
-    to: '/not-found'
+    label: 'Loading Demo',
+    to: '/loading'
   }
 ];
 
@@ -166,6 +166,7 @@ const AppContent = () => {
         <Route path="bio" element={<Bio />} />
         <Route path="contact" element={<Contact />} />
         <Route path="projects" element={<Projects />} />
+        <Route path="loading" element={<Loading />} />
         
         {/* 404 Not Found - Catch all unknown routes */}
         <Route path="*" element={<NotFound />} />
