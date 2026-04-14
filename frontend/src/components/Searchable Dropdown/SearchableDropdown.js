@@ -1,207 +1,208 @@
 import React from 'react';
 import Select from 'react-select';
-
-/* Styling */
 import './SearchableDropdown.css';
-import '../../styles/Theme.css';
 
+/* ============================================================================
+ * REACT-SELECT STYLE OVERRIDES
+ * ============================================================================
+ * Only structural layout and direct var() token references live here.
+ * State-based styles that require rgba() composition (hover, focus, selected)
+ * are handled in SearchableDropdown.css via the classNamePrefix selectors,
+ * since rgba(var(--x), alpha) does not resolve in JS inline-style objects.
+ * ============================================================================
+ */
 const customStyles = {
-  control: (base, { isDisabled, isFocused }) => ({
+  control: (base, { isDisabled }) => ({
     ...base,
-    fontSize: 'var(--font-size-base)',
-    minHeight: '2.6em',
-    height: '2.6em',
+    minHeight: '42px',
+    height: 'auto',
     padding: '0',
-    borderRadius: '10px',
-    border: `2px solid ${isFocused ? 'var(--accent-1)' : 'var(--disabled-color)'}`,
-    backgroundColor: 'var(--background-1)',
-    transition: 'background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease',
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border-color)',
+    background: 'var(--frosted-background)',
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)',
     cursor: isDisabled ? 'not-allowed' : 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    boxShadow: isFocused ? '0 0 0 1px var(--accent-1)' : 'none',
-    opacity: isDisabled ? 0.6 : 1,
-    '&:hover': {
-      borderColor: isFocused ? 'var(--accent-1)' : 'var(--accent-1)',
-    },
+    opacity: isDisabled ? 0.55 : 1,
+    fontSize: 'var(--font-size-base)',
+    transition: 'border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease',
+    // Hover + focus states are handled in CSS to allow rgba() composition
   }),
+
   valueContainer: (base) => ({
     ...base,
-    height: '2.6em',
-    padding: '0 0.8em',
+    height: 'auto',
+    minHeight: '42px',
+    padding: '0 var(--spacing-sm) 0 var(--spacing-md)',
     display: 'flex',
     alignItems: 'center',
-    position: 'relative',
-    gap: '0.4rem',
+    flexWrap: 'wrap',
+    gap: 'var(--spacing-xs)',
   }),
+
   input: (base) => ({
     ...base,
     margin: '0',
     padding: '0',
     color: 'var(--primary-text-color)',
-    flex: 1,
-    minWidth: '2px',
-    position: 'relative',
-    zIndex: 2,
   }),
+
   indicatorsContainer: (base) => ({
     ...base,
-    height: '2.6em',
+    minHeight: '42px',
+    alignSelf: 'stretch',
+    display: 'flex',
+    alignItems: 'center',
   }),
+
+  indicatorSeparator: (base, { isDisabled }) => ({
+    ...base,
+    backgroundColor: 'var(--border-color)',
+    marginTop: 'var(--spacing-sm)',
+    marginBottom: 'var(--spacing-sm)',
+    opacity: isDisabled ? 0.5 : 0.6,
+  }),
+
+  dropdownIndicator: (base, { selectProps }) => ({
+    ...base,
+    color: 'var(--secondary-text-color)',
+    padding: '0 var(--spacing-sm)',
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'color 150ms ease, transform 200ms ease',
+    transform: selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+  }),
+
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--secondary-text-color)',
+    padding: '0 var(--spacing-xs)',
+    transition: 'color 150ms ease',
+  }),
+
   menu: (base) => ({
     ...base,
-    background: 'var(--background-1)',
-    border: '2px solid var(--disabled-color)',
-    borderRadius: '8px',
-    marginTop: '0.2rem',
-    zIndex: 20,
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    background: 'var(--frosted-background)',
+    backdropFilter: 'blur(10px) saturate(1.1)',
+    WebkitBackdropFilter: 'blur(10px) saturate(1.1)',
+    border: '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-lg)',
+    boxShadow: 'var(--shadow-md)',
+    marginTop: 'var(--spacing-xs)',
+    zIndex: 'var(--z-dropdown)',
+    overflow: 'hidden',
   }),
+
   menuPortal: (base) => ({
     ...base,
     zIndex: 9999,
   }),
+
   menuList: (base) => ({
     ...base,
-    background: 'var(--background-1)',
-    borderRadius: '8px',
-    padding: '0.2rem 0',
+    background: 'transparent',
+    borderRadius: 'var(--radius-lg)',
+    padding: 'var(--spacing-xs)',
     maxHeight: '300px',
   }),
-  option: (base, state) => ({
+
+  option: (base) => ({
     ...base,
-    backgroundColor: state.isSelected
-      ? 'var(--accent-1)'
-      : state.isFocused
-      ? 'var(--background-3)'
-      : 'inherit',
-    fontWeight: state.isSelected ? 600 : 400,
+    borderRadius: 'var(--radius-sm)',
+    padding: 'var(--spacing-sm) var(--spacing-md)',
     cursor: 'pointer',
-    padding: '0.5em 0.8em',
+    fontSize: 'var(--font-size-sm)',
     color: 'var(--primary-text-color)',
-    transition: 'background-color 0.25s ease, color 0.25s ease',
-    '&:active': {
-      backgroundColor: state.isSelected ? 'var(--accent-1)' : 'var(--background-3)',
-    },
+    transition: 'background-color 120ms ease',
+    // background states handled in CSS
+    background: 'transparent',
   }),
-  singleValue: (base, { isDisabled }) => ({
+
+  singleValue: (base) => ({
     ...base,
     color: 'var(--primary-text-color)',
-    opacity: isDisabled ? 0.6 : 1,
   }),
-  placeholder: (base, { isDisabled }) => ({
+
+  placeholder: (base) => ({
     ...base,
-    color: 'var(--disabled-color)',
+    color: 'var(--tertiary-text-color)',
     position: 'absolute',
-    left: '0.8em',
-    top: '50%',
-    transform: 'translateY(-50%)',
     margin: 0,
     pointerEvents: 'none',
-    zIndex: 1,
-    opacity: isDisabled ? 0.6 : 1,
   }),
-  dropdownIndicator: (base, { isDisabled, isFocused, selectProps }) => ({
-    ...base,
-    color: isFocused ? 'var(--accent-1)' : 'var(--disabled-color)',
-    padding: '0 0.8rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transition: 'color 0.25s ease, transform 0.25s ease',
-    transform: selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-    opacity: isDisabled ? 0.6 : 1,
-    '&:hover': {
-      color: 'var(--accent-1)',
-    },
-  }),
-  indicatorSeparator: (base, { isDisabled }) => ({
-    ...base,
-    backgroundColor: 'var(--disabled-color)',
-    marginTop: '0.5rem',
-    marginBottom: '0.5rem',
-    opacity: isDisabled ? 0.6 : 1,
-  }),
-  clearIndicator: (base, { isDisabled }) => ({
-    ...base,
-    color: 'var(--disabled-color)',
-    padding: '0 0.8rem',
-    transition: 'color 0.25s ease',
-    opacity: isDisabled ? 0.6 : 1,
-    '&:hover': {
-      color: 'var(--accent-1)',
-    },
-  }),
-  // Multi-select styles
+
+  // Multi-select
   multiValue: (base, { isDisabled }) => ({
     ...base,
-    backgroundColor: 'var(--background-3)',
-    borderRadius: '6px',
-    display: 'flex',
-    alignItems: 'center',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--border-color)',
+    background: 'var(--background-3)',
     margin: '0.1rem',
-    opacity: isDisabled ? 0.6 : 1,
+    opacity: isDisabled ? 0.5 : 1,
   }),
-  multiValueLabel: (base, { isDisabled }) => ({
+
+  multiValueLabel: (base) => ({
     ...base,
     color: 'var(--primary-text-color)',
-    padding: '0.2rem 0.4rem',
-    fontSize: '0.9em',
-    opacity: isDisabled ? 0.6 : 1,
+    padding: 'var(--spacing-xs) var(--spacing-sm)',
+    fontSize: 'var(--font-size-xs)',
   }),
-  multiValueRemove: (base, { isDisabled }) => ({
+
+  multiValueRemove: (base) => ({
     ...base,
-    color: 'var(--disabled-color)',
-    borderRadius: '0 6px 6px 0',
-    transition: 'background-color 0.25s ease, color 0.25s ease',
-    opacity: isDisabled ? 0.6 : 1,
-    '&:hover': {
-      backgroundColor: 'var(--accent-1)',
-      color: 'var(--background-1)',
-    },
+    color: 'var(--secondary-text-color)',
+    borderRadius: '0 var(--radius-sm) var(--radius-sm) 0',
+    transition: 'background-color 150ms ease, color 150ms ease',
+    // hover handled in CSS
   }),
-  // Group styles (for grouped options)
+
+  // Grouped options
   group: (base) => ({
     ...base,
-    paddingTop: '0.5rem',
-    paddingBottom: '0.5rem',
+    padding: 'var(--spacing-xs) 0',
   }),
+
   groupHeading: (base) => ({
     ...base,
-    color: 'var(--disabled-color)',
-    fontSize: '0.85em',
-    fontWeight: 600,
+    color: 'var(--tertiary-text-color)',
+    fontSize: 'var(--font-size-xs)',
+    fontWeight: 700,
     textTransform: 'uppercase',
-    padding: '0.5rem 0.8rem',
-    marginBottom: '0.2rem',
+    letterSpacing: '0.06em',
+    padding: 'var(--spacing-xs) var(--spacing-md)',
+    marginBottom: '0',
   }),
-  // Loading and no options messages
-  loadingMessage: (base) => ({
-    ...base,
-    color: 'var(--disabled-color)',
-    padding: '0.8rem',
-  }),
+
   noOptionsMessage: (base) => ({
     ...base,
-    color: 'var(--disabled-color)',
-    padding: '0.8rem',
+    color: 'var(--secondary-text-color)',
+    fontSize: 'var(--font-size-sm)',
+    padding: 'var(--spacing-md)',
   }),
-  // Loading indicator
+
+  loadingMessage: (base) => ({
+    ...base,
+    color: 'var(--secondary-text-color)',
+    fontSize: 'var(--font-size-sm)',
+    padding: 'var(--spacing-md)',
+  }),
+
   loadingIndicator: (base) => ({
     ...base,
     color: 'var(--accent-1)',
   }),
 };
 
-const SearchableDropdown = ({ 
-  options, 
-  value, 
-  onChange, 
-  placeholder, 
+const SearchableDropdown = ({
+  options,
+  value,
+  onChange,
+  placeholder,
   isClearable = true,
   isDisabled = false,
-  components: userComponents = {}, 
-  ...props 
+  components: userComponents = {},
+  ...props
 }) => (
   <Select
     options={options}

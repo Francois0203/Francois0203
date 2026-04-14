@@ -1,484 +1,297 @@
-/* ==================== SETTINGS CONTAINER ==================== */
-.settingsContainer {
-  position: relative;
-  z-index: 1000;
+/* ====================================================
+   SETTINGS MODULE CSS
+   � Liquid glass bubble launcher �
+   All colors strictly from Theme.css variables.
+   ==================================================== */
+
+
+/* ===================== CONTAINER ===================== */
+/*
+  Fixed anchor in the top-right corner.
+  Sized to the trigger button so bubbles can be absolutely
+  positioned relative to the trigger's centre point.
+  overflow: visible lets bubbles extend outside the box.
+*/
+.container {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  /* Sit above the backdrop (--z-modal-backdrop: 1040) */
+  z-index: var(--z-modal);
 }
 
-/* ==================== FLOATING COG BUTTON ==================== */
-.cogButton {
-  position: fixed;
-  top: 10px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  
-  /* Liquid glass effect */
-  background: rgba(255, 255, 255, 0.45);
+
+/* ===================== TRIGGER ===================== */
+/*
+  Main circular glass button.
+  A ::before layer renders the cursor-following glow
+  driven by --glow-x / --glow-y / --glow-show set inline.
+*/
+.trigger {
+  position: relative;
+  border-radius: 50%;
+  border: 1px solid var(--border-color-hover);
+  background: var(--frosted-background);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 14px;
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  overflow: visible;
-  z-index: 1001;
+  transition:
+    border-color 0.28s ease,
+    box-shadow   0.28s ease,
+    transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* No overflow:hidden — lets ::before extend past the border for the rim glow */
+  z-index: 2;
+  padding: 0;
+  outline: none;
 }
 
-[data-theme="dark"] .cogButton {
-  background: rgba(30, 32, 38, 0.5);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.cogButton:hover {
-  transform: translateY(-2px);
-  border-color: var(--accent-1);
-}
-
-.cogButton:active {
-  transform: translateY(0);
-}
-
-.cogButtonActive {
-  border-color: var(--accent-1);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 0 0 2px var(--accent-1-background);
-}
-
-[data-theme="dark"] .cogButtonActive {
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 0 2px var(--accent-1-background);
-}
-
-.cogIcon {
-  font-size: 1.4rem;
-  color: var(--accent-1);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.cogButton:hover .cogIcon {
-  transform: rotate(90deg);
-}
-
-.cogButtonActive .cogIcon {
-  transform: rotate(180deg);
-}
-
-/* ==================== BACKDROP ==================== */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 998;
-  animation: backdropFadeIn 0.3s ease;
-}
-
-@keyframes backdropFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* ==================== SETTINGS PANEL ==================== */
-.settingsPanel {
-  position: fixed;
-  top: 72px;
-  right: 10px;
-  width: 340px;
-  max-width: calc(100vw - 24px);
-  
-  /* Enhanced liquid glass background */
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(32px) saturate(250%);
-  -webkit-backdrop-filter: blur(32px) saturate(250%);
-  
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 
-    0 12px 48px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.4);
-  z-index: 999;
-  overflow: hidden;
-  box-sizing: border-box;
-  
-  /* Initial state for animation */
-  opacity: 0;
-  transform: translateY(-12px) scale(0.95);
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  pointer-events: none;
-}
-
-[data-theme="dark"] .settingsPanel {
-  background: rgba(22, 24, 30, 0.3);
-  backdrop-filter: blur(32px) saturate(250%);
-  -webkit-backdrop-filter: blur(32px) saturate(250%);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 12px 48px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.settingsPanelOpen {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-
-/* ==================== PANEL HEADER ==================== */
-.panelHeader {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 14px;
-}
-
-.panelTitle {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--primary-text-color);
-  margin: 0;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  opacity: 0.5;
-}
-
-/* ==================== SETTINGS CONTENT ==================== */
-.settingsContent {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* ==================== SETTING CARD ==================== */
-.settingCard {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  
-  /* Layered liquid glass for cards */
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(16px) saturate(200%);
-  -webkit-backdrop-filter: blur(16px) saturate(200%);
-  
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  overflow: hidden;
-  box-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-[data-theme="dark"] .settingCard {
-  background: rgba(40, 42, 50, 0.35);
-  backdrop-filter: blur(16px) saturate(200%);
-  -webkit-backdrop-filter: blur(16px) saturate(200%);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.settingCard::before {
+/* Cursor-following glow on the BORDER RING only.
+   Uses the CSS gradient-border trick:
+     - padding-box layer re-paints the frosted fill, masking the interior
+     - border-box layer shows the radial gradient through the transparent border
+   Result: accent colour appears only in the 1.5px border ring, strongest where
+   the cursor is, fading away around the circumference. */
+.trigger::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 12px;
-  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  border-radius: 50%;
+  /* Slightly thicker than the element's 1px border so the glow ring is visible */
+  border: 2px solid transparent;
+  background:
+    /* Mask the interior with the same frosted fill */
+    linear-gradient(var(--frosted-background), var(--frosted-background)) padding-box,
+    /* Gradient border: accent at cursor, transparent elsewhere */
+    radial-gradient(
+      circle at var(--glow-x, 50%) var(--glow-y, 50%),
+      var(--accent-1) 0%,
+      transparent 80%
+    ) border-box;
+  opacity: var(--glow-show, 0);
+  transition: opacity 0.22s ease;
   pointer-events: none;
+  z-index: 0;
 }
 
-.settingCard:hover,
-.settingCardHovered {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(20px) saturate(260%);
-  -webkit-backdrop-filter: blur(20px) saturate(260%);
+/* Inner ambient glow — soft tinted fill inside the button that follows the cursor */
+.trigger::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgba(var(--accent-1-rgb), 0.18) 0%,
+    transparent 65%
+  );
+  opacity: var(--glow-show, 0);
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
+}
+
+.trigger:hover {
   border-color: var(--accent-1);
-  box-shadow: 
+  transform: scale(1.07);
+}
+
+.triggerOpen {
+  border-color: var(--accent-1);
+  box-shadow:
+    var(--shadow-lg),
     0 0 0 3px var(--accent-1-background),
-    0 6px 20px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  transform: translateY(-2px);
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-[data-theme="dark"] .settingCard:hover,
-[data-theme="dark"] .settingCardHovered {
-  background: rgba(50, 52, 62, 0.5);
-  backdrop-filter: blur(20px) saturate(260%);
-  -webkit-backdrop-filter: blur(20px) saturate(260%);
-  box-shadow: 
-    0 0 0 3px var(--accent-1-background),
-    0 6px 20px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-.settingCard:hover::before,
-.settingCardHovered::before {
-  opacity: 1;
-}
-
-/* ==================== SETTING MAIN ==================== */
-.settingMain {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-}
-
-/* ==================== ICON BOX ==================== */
-.settingIconBox {
+.triggerIcon {
   position: relative;
-  width: 38px;
-  height: 38px;
+  z-index: 1;
+  color: var(--accent-1);
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.trigger:hover .triggerIcon {
+  transform: rotate(60deg);
+}
+
+.triggerOpen .triggerIcon {
+  transform: rotate(150deg);
+}
+
+
+/* ===================== BUBBLE ANCHOR ===================== */
+/*
+  Zero-size absolute anchor placed at the trigger's centre
+  (top: 50%; left: 50%). When open it translates to --tx / --ty
+  with a spring easing and per-bubble stagger delay.
+
+  CSS applies the transition of the TARGET state, so:
+    transition on .bubbleAnchor       ? used when CLOSING (fast collapse)
+    transition on .bubbleAnchorOpen   ? used when OPENING (spring out)
+*/
+.bubbleAnchor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transform: translate(-50%, -50%) scale(0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  /* Closing transition */
+  transition:
+    transform 0.28s cubic-bezier(0.4, 0, 1, 1),
+    opacity   0.18s ease-in;
+}
+
+.bubbleAnchorOpen {
+  transform: translate(
+    calc(-50% + var(--tx, 0px)),
+    calc(-50% + var(--ty, 0px))
+  ) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  /* Opening transition � spring with per-bubble stagger */
+  transition:
+    transform 0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity   0.32s ease;
+  transition-delay: var(--delay, 0s);
+}
+
+
+/* ===================== BUBBLE BUTTON ===================== */
+.bubble {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color-hover);
+  background: var(--frosted-background);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  transition:
+    transform    0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.2s  ease,
+    box-shadow   0.2s  ease,
+    background   0.2s  ease;
 }
 
-[data-theme="dark"] .settingIconBox {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Icon colors based on index */
-.settingCard[data-index="0"] .settingIconBox {
-  background: var(--accent-1-background);
-}
-
-.settingCard[data-index="1"] .settingIconBox {
-  background: var(--accent-2-background);
-}
-
-.settingCard[data-index="0"]:hover .settingIconBox,
-.settingCard[data-index="0"].settingCardHovered .settingIconBox {
-  background: var(--accent-1);
+.bubble:hover {
+  transform: scale(1.12) translateY(-3px);
   border-color: var(--accent-1);
-  transform: translateY(-2px) scale(1.08);
-  box-shadow: 0 4px 14px var(--accent-1-background);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 0 2px var(--accent-1-background),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-.settingCard[data-index="1"]:hover .settingIconBox,
-.settingCard[data-index="1"].settingCardHovered .settingIconBox {
-  background: var(--accent-2);
-  border-color: var(--accent-2);
-  transform: translateY(-2px) scale(1.08);
-  box-shadow: 0 4px 14px var(--accent-2-background);
+.bubble:active {
+  transform: scale(0.94);
 }
 
-/* ==================== ICON ==================== */
-.settingIcon {
-  font-size: 1.15rem;
-  transition: color 0.3s ease;
+.bubble:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
 }
 
-.settingCard[data-index="0"] .settingIcon {
+/* Active state � setting is currently ON */
+.bubbleActive {
+  border-color: var(--accent-1);
+  background: var(--accent-1-background);
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1.5px var(--accent-1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.bubbleActive:hover {
+  background: var(--accent-2-background);
+  box-shadow:
+    var(--shadow-xl),
+    0 0 0 2px var(--accent-1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.bubbleIcon {
+  font-size: 1.25rem;
   color: var(--accent-1);
+  display: block;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.settingCard[data-index="1"] .settingIcon {
-  color: var(--accent-2);
+.bubble:hover .bubbleIcon {
+  transform: scale(1.15);
 }
 
-.settingCard[data-index="0"]:hover .settingIcon,
-.settingCard[data-index="0"].settingCardHovered .settingIcon,
-.settingCard[data-index="1"]:hover .settingIcon,
-.settingCard[data-index="1"].settingCardHovered .settingIcon {
-  color: #fff;
-}
 
-/* ==================== LABEL COLUMN ==================== */
-.settingDetails {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.settingTitle {
-  font-size: 0.95rem;
+/* ===================== BUBBLE LABEL ===================== */
+/*
+  Micro frosted-glass pill beneath each bubble.
+*/
+.bubbleLabel {
+  font-size: 0.62rem;
   font-weight: 600;
-  color: var(--primary-text-color);
-  letter-spacing: 0.2px;
-  margin: 0;
-  transition: color 0.3s ease, transform 0.3s ease;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--secondary-text-color);
+  background: var(--frosted-background);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
 }
 
-.settingCard[data-index="0"]:hover .settingTitle,
-.settingCard[data-index="0"].settingCardHovered .settingTitle {
-  color: var(--accent-1);
-  transform: translateX(2px);
+
+/* ===================== BACKDROP ===================== */
+/* With the container now portalled to <body> it lives in the root stacking
+   context alongside the backdrop, so z-index comparison is direct. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  /* Container is z-modal (1050), backdrop sits just below it */
+  z-index: var(--z-modal-backdrop);
+  animation: backdropIn 0.3s ease forwards;
 }
 
-.settingCard[data-index="1"]:hover .settingTitle,
-.settingCard[data-index="1"].settingCardHovered .settingTitle {
-  color: var(--accent-2);
-  transform: translateX(2px);
-}
-
-.settingSubtitle {
-  font-size: 0.74rem;
-  color: var(--primary-text-color);
-  opacity: 0.5;
-  margin: 0;
-  transition: opacity 0.3s ease;
-  line-height: 1.4;
-}
-
-.settingCard:hover .settingSubtitle,
-.settingCardHovered .settingSubtitle {
-  opacity: 0.7;
-}
-
-/* ==================== TOGGLE ACTION ==================== */
-.settingAction {
-  flex-shrink: 0;
-  margin-left: 8px;
-}
-
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 768px) {
-  .cogButton {
-    top: 12px;
-    right: 20px;
-    width: 46px !important;
-    height: 46px !important;
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
   }
-
-  .settingsPanel {
-    width: min(340px, calc(100vw - 32px));
-    max-width: calc(100vw - 32px);
-    top: 70px;
-    right: 16px;
-    padding: 14px;
-  }
-
-  .settingCard {
-    padding: 11px 13px;
-  }
-
-  .settingIconBox {
-    width: 36px;
-    height: 36px;
-  }
-
-  .settingIcon {
-    font-size: 1.08rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .cogButton {
-    top: 6px;
-    right: 12px;
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  .cogIcon {
-    font-size: 1.2rem;
-  }
-
-  .settingsPanel {
-    width: calc(100vw - 16px);
-    max-width: calc(100vw - 16px);
-    right: 8px;
-    left: 8px;
-    top: 58px;
-    padding: 14px;
-    border-radius: 14px;
-  }
-
-  .settingsContent {
-    gap: 7px;
-  }
-
-  .settingCard {
-    padding: 11px 12px;
-    border-radius: 11px;
-  }
-
-  .settingMain {
-    gap: 10px;
-  }
-
-  .settingIconBox {
-    width: 34px;
-    height: 34px;
-  }
-
-  .settingIcon {
-    font-size: 1.02rem;
-  }
-
-  .settingTitle {
-    font-size: 0.9rem;
-  }
-
-  .settingSubtitle {
-    font-size: 0.72rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .settingsPanel {
-    padding: 12px;
-    top: 56px;
-  }
-
-  .settingCard {
-    padding: 10px 11px;
-  }
-
-  .settingMain {
-    gap: 9px;
-  }
-
-  .settingIconBox {
-    width: 32px;
-    height: 32px;
-  }
-
-  .settingIcon {
-    font-size: 0.98rem;
-  }
-
-  .settingTitle {
-    font-size: 0.87rem;
-  }
-
-  .settingSubtitle {
-    font-size: 0.7rem;
+  to {
+    opacity: 1;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 }

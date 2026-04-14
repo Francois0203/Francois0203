@@ -1,92 +1,114 @@
 /* ==================== TOAST WRAPPER ==================== */
 .toastWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toastWrapper.opening {
-  animation: toastSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.toastWrapper.closing {
-  animation: toastSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1);
-  pointer-events: none;
+  width: 100%;
+  margin-bottom: var(--spacing-sm);
+  /* Height collapse transition — triggered by direct DOM style writes in JS */
+  transition:
+    height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    margin-bottom 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==================== TOAST MESSAGE ==================== */
 .toastMessage {
   position: relative;
-  min-width: 320px;
-  max-width: 420px;
-  padding: var(--spacing-md) var(--spacing-xl);
-  padding-right: 3.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  width: 360px;
+  max-width: 100%;
+  padding: var(--spacing-md);
+  padding-right: calc(var(--spacing-md) + 1.75rem + var(--spacing-sm));
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  font-size: var(--font-size-base);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  border: 1px solid;
-  overflow: hidden;
-  transition: transform var(--transition-fast);
-}
-
-@media (max-width: 480px) {
-  .toastMessage {
-    min-width: 280px;
-    max-width: 90vw;
-    padding: var(--spacing-sm) var(--spacing-md);
-    padding-right: 3rem;
-  }
-}
-
-.toastMessage::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-.toastMessage::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 70%
-  );
-  animation: toastShine 3s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-
-@keyframes toastShine {
-  0%, 100% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  }
-  50% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-  }
+  border: 1px solid var(--border-color);
+  background: var(--frosted-background);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  box-shadow: var(--shadow-md);
+  color: var(--primary-text-color);
+  font-size: var(--font-size-sm);
+  transition: box-shadow var(--transition-fast), opacity 200ms ease, transform 200ms ease;
+  box-sizing: border-box;
 }
 
 .toastMessage:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl), 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ==================== ENTER ANIMATION ==================== */
+.toastMessage {
+  animation: toastEnter 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ==================== EXIT (applied by JS to wrapper) ==================== */
+.closing .toastMessage {
+  opacity: 0;
+  transform: translateX(28px);
+  pointer-events: none;
+}
+
+/* ==================== STATUS ACCENT BAR ==================== */
+.toastMessage::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--spacing-sm);
+  bottom: var(--spacing-sm);
+  width: 3px;
+  border-radius: var(--radius-full);
+  background: var(--_toast-accent);
+}
+
+/* ==================== COLOR VARIANTS ==================== */
+.toastMessage.success  { --_toast-accent: var(--success-color); }
+.toastMessage.error    { --_toast-accent: var(--error-color); }
+.toastMessage.warning  { --_toast-accent: var(--warning-color); }
+.toastMessage.info     { --_toast-accent: var(--info-color); }
+
+/* ==================== ICON ==================== */
+.icon {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.1em;
+  color: var(--_toast-accent);
+}
+
+/* ==================== TEXT LAYOUT ==================== */
+.textBlock {
+  flex: 1;
+  min-width: 0;
+  padding-left: var(--spacing-sm);
+}
+
+.toastHeader {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--primary-text-color);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+
+.toastBody {
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  color: var(--secondary-text-color);
+  line-height: 1.55;
+  margin-top: var(--spacing-xs);
+}
+
+.toastHeader + .toastBody {
+  margin-top: var(--spacing-xs);
+}
+
+.toastFooter {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-xs);
+  border-top: 1px solid var(--border-color);
+  font-size: var(--font-size-xs);
+  color: var(--secondary-text-color);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
 }
 
 /* ==================== CLOSE BUTTON ==================== */
@@ -94,338 +116,59 @@
   position: absolute;
   top: var(--spacing-sm);
   right: var(--spacing-sm);
-  background: rgba(0, 0, 0, 0.15);
-  border: none;
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  color: currentColor;
-  transition: all var(--transition-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
-  padding: 0;
   width: 1.75rem;
   height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  border: none;
   border-radius: var(--radius-full);
-  opacity: 0.8;
-  z-index: 3;
-  font-weight: 400;
+  background: transparent;
+  color: var(--secondary-text-color);
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity var(--transition-fast),
+    background-color var(--transition-fast);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 }
 
 .closeButton:hover {
   opacity: 1;
-  background: rgba(0, 0, 0, 0.25);
-  transform: rotate(90deg) scale(1.1);
+  background: rgba(var(--accent-1-rgb), 0.08);
 }
 
 .closeButton:active {
-  transform: rotate(90deg) scale(0.95);
+  opacity: 1;
+  background: rgba(var(--accent-1-rgb), 0.14);
 }
 
-/* ==================== COLOR VARIANTS ==================== */
-.toastMessage.error {
-  background: linear-gradient(
-    135deg,
-    rgba(220, 38, 38, 0.9) 0%,
-    rgba(185, 28, 28, 0.95) 100%
-  );
-  border-color: var(--error-color);
-  color: white;
-}
-
-.toastMessage.error::before {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 100, 100, 0.2) 0%,
-    rgba(255, 0, 0, 0.1) 100%
-  );
-}
-
-.toastMessage.success {
-  background: linear-gradient(
-    135deg,
-    rgba(16, 185, 129, 0.9) 0%,
-    rgba(5, 150, 105, 0.95) 100%
-  );
-  border-color: var(--success-color);
-  color: white;
-}
-
-.toastMessage.success::before {
-  background: linear-gradient(
-    135deg,
-    rgba(100, 255, 100, 0.2) 0%,
-    rgba(50, 205, 50, 0.1) 100%
-  );
-}
-
-.toastMessage.warning {
-  background: linear-gradient(
-    135deg,
-    rgba(245, 158, 11, 0.9) 0%,
-    rgba(217, 119, 6, 0.95) 100%
-  );
-  border-color: var(--warning-color);
-  color: white;
-}
-
-.toastMessage.warning::before {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 100, 0.2) 0%,
-    rgba(255, 215, 0, 0.1) 100%
-  );
-}
-
-.toastMessage.warning .closeButton {
-  color: var(--primary-text-color);
-}
-
-.toastMessage.info {
-  background: linear-gradient(
-    135deg,
-    rgba(59, 130, 246, 0.9) 0%,
-    rgba(37, 99, 235, 0.95) 100%
-  );
-  border-color: var(--info-color);
-  color: white;
-}
-
-.toastMessage.info::before {
-  background: linear-gradient(
-    135deg,
-    rgba(100, 180, 255, 0.2) 0%,
-    rgba(30, 144, 255, 0.1) 100%
-  );
-}
-
-/* ==================== ICON INDICATOR ==================== */
-.toastMessage::after {
-  opacity: 0.15;
-}
-
-.toastMessage.error::after {
-  content: '⚠';
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  font-size: 8rem;
-  opacity: 0.08;
-  animation: none;
-  transform: rotate(-15deg);
-  z-index: 0;
-}
-
-.toastMessage.success::after {
-  content: '✓';
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  font-size: 8rem;
-  opacity: 0.08;
-  animation: none;
-  transform: rotate(-15deg);
-  z-index: 0;
-}
-
-.toastMessage.warning::after {
-  content: '⚡';
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  font-size: 8rem;
-  opacity: 0.08;
-  animation: none;
-  transform: rotate(-15deg);
-  z-index: 0;
-}
-
-.toastMessage.info::after {
-  content: 'ℹ';
-  position: absolute;
-  bottom: -20px;
-  left: -20px;
-  font-size: 8rem;
-  opacity: 0.08;
-  animation: none;
-  transform: rotate(-15deg);
-  z-index: 0;
-}
-
-/* ==================== TEXT LAYOUT ==================== */
-.toastHeader {
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  letter-spacing: -0.01em;
-  position: relative;
-  z-index: 3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.toastBody {
-  font-weight: 500;
-  line-height: 1.6;
-  opacity: 0.95;
-  position: relative;
-  z-index: 3;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.toastFooter {
-  margin-top: 0.75rem;
-  font-size: 0.8rem;
-  opacity: 0.8;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  position: relative;
-  z-index: 3;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  font-family: 'Courier New', monospace;
-}
-
-/* ==================== ANIMATIONS ==================== */
-@keyframes toastSlideIn {
-  0% {
+/* ==================== ENTER ANIMATION ==================== */
+@keyframes toastEnter {
+  from {
     opacity: 0;
-    transform: translateX(500px) rotateY(45deg);
+    transform: translateX(28px);
   }
-  60% {
-    transform: translateX(-20px) rotateY(-5deg);
-  }
-  100% {
+  to {
     opacity: 1;
-    transform: translateX(0) rotateY(0deg);
-  }
-}
-
-@keyframes toastSlideOut {
-  0% {
-    opacity: 1;
-    transform: translateX(0) scale(1) rotateZ(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(500px) scale(0.8) rotateZ(10deg);
-  }
-}
-
-/* ==================== PROGRESS BAR ==================== */
-.toastMessage::before {
-  animation: none;
-}
-
-/* Add a subtle pulse to active toasts */
-@keyframes toastPulse {
-  0%, 100% {
-    box-shadow: 
-      0 15px 50px rgba(0, 0, 0, 0.2),
-      0 5px 15px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-  50% {
-    box-shadow: 
-      0 20px 60px rgba(0, 0, 0, 0.25),
-      0 8px 20px rgba(0, 0, 0, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  }
-}
-
-/* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 768px) {
-  .toastMessage {
-    min-width: 300px;
-    max-width: calc(100vw - 3rem);
-    padding: 1.1rem 1.5rem;
-    padding-right: 3rem;
-  }
-
-  .toastHeader {
-    font-size: 1rem;
-  }
-
-  .toastBody {
-    font-size: 0.9rem;
-  }
-
-  .closeButton {
-    width: 1.75rem;
-    height: 1.75rem;
-    font-size: 1.2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .toastMessage {
-    min-width: 280px;
-    padding: 1rem 1.25rem;
-    padding-right: 2.75rem;
-    border-radius: 12px;
-  }
-
-  .toastHeader {
-    font-size: 0.95rem;
-  }
-
-  .toastBody {
-    font-size: 0.85rem;
-  }
-
-  .toastFooter {
-    font-size: 0.75rem;
-  }
-
-  .closeButton {
-    width: 1.5rem;
-    height: 1.5rem;
-    font-size: 1.1rem;
-  }
-
-  .toastMessage.error::after,
-  .toastMessage.success::after,
-  .toastMessage.warning::after,
-  .toastMessage.info::after {
-    font-size: 6rem;
-    bottom: -15px;
-    left: -15px;
+    transform: translateX(0);
   }
 }
 
 /* ==================== ACCESSIBILITY ==================== */
 @media (prefers-reduced-motion: reduce) {
-  .toastWrapper.opening {
-    animation: toastFadeIn 0.3s ease;
-  }
-
-  .toastWrapper.closing {
-    animation: toastFadeOut 0.3s ease;
-  }
-
-  @keyframes toastFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes toastFadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-
-  .toastMessage::after {
+  .toastMessage {
     animation: none;
   }
-
-  .toastMessage:hover {
-    transform: none;
+  .closing .toastMessage {
+    transition: none;
   }
-
-  .closeButton:hover {
-    transform: none;
-  }
-
-  .closeButton:active {
-    transform: none;
+  .toastWrapper {
+    transition: none;
   }
 }

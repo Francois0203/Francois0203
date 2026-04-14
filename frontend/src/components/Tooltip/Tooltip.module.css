@@ -1,178 +1,98 @@
 /* ==================== TOOLTIP CONTAINER ==================== */
 .tooltip {
   position: fixed;
-  background: var(--background-2);
+  background: var(--frosted-background);
   color: var(--primary-text-color);
-  box-shadow: var(--shadow-lg);
-  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   padding: var(--spacing-sm) var(--spacing-md);
   z-index: var(--z-tooltip);
   pointer-events: none;
   white-space: pre-line;
-  max-width: min(320px, calc(100vw - 24px));
-  min-width: 160px;
-  font-size: var(--font-size-sm);
+  max-width: min(300px, calc(100vw - var(--spacing-lg)));
+  min-width: 120px;
+  font-size: var(--font-size-xs);
   line-height: 1.5;
-  backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
 
   opacity: 0;
-  transform: translateY(8px) scale(0.95);
-  transition: 
-    opacity var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1),
-    transform var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
   will-change: opacity, transform;
 }
 
-/* Enter animation (popup) */
+/* Placement-specific initial (hidden) transforms */
+.tooltip.right  { transform: translateX(-6px) scale(0.97); }
+.tooltip.left   { transform: translateX(6px)  scale(0.97); }
+.tooltip.bottom { transform: translateY(-6px) scale(0.97); }
+.tooltip.top    { transform: translateY(6px)  scale(0.97); }
+
+/* Visible state */
 .tooltip.visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
-  animation: tooltipBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translate(0) scale(1);
 }
 
-@keyframes tooltipBounce {
-  0% {
-    opacity: 0;
-    transform: translateY(10px) scale(0.9);
-  }
-  60% {
-    transform: translateY(-2px) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Exit animation (pop-out) */
+/* Exit state */
 .tooltip.exit {
   opacity: 0;
-  transform: translateY(10px) scale(0.9);
-  transition-duration: 0.2s;
+  transition-duration: 160ms;
 }
-
-/* Placement-specific transforms for initial state */
-.tooltip.right {
-  transform: translateX(-10px) scale(0.9);
-}
-
-.tooltip.left {
-  transform: translateX(10px) scale(0.9);
-}
-
-.tooltip.bottom {
-  transform: translateY(-10px) scale(0.9);
-}
-
-.tooltip.top {
-  transform: translateY(10px) scale(0.9);
-}
-
-/* Placement-specific transforms for visible state */
-.tooltip.right.visible {
-  transform: translateX(0) scale(1);
-}
-
-.tooltip.left.visible {
-  transform: translateX(0) scale(1);
-}
-
-.tooltip.bottom.visible {
-  transform: translateY(0) scale(1);
-}
-
-.tooltip.top.visible {
-  transform: translateY(0) scale(1);
-}
+.tooltip.right.exit  { transform: translateX(-4px) scale(0.98); }
+.tooltip.left.exit   { transform: translateX(4px)  scale(0.98); }
+.tooltip.bottom.exit { transform: translateY(-4px) scale(0.98); }
+.tooltip.top.exit    { transform: translateY(4px)  scale(0.98); }
 
 /* ==================== TOOLTIP CONTENT ==================== */
 .heading {
-  font-weight: 700;
   display: block;
-  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: var(--font-size-xs);
   color: var(--accent-1);
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: 0.01em;
+  margin-bottom: var(--spacing-xs);
 }
 
 .body {
+  display: block;
   font-weight: 400;
-  color: var(--primary-text-color);
-  opacity: 0.9;
-  line-height: 1.6;
+  font-size: var(--font-size-xs);
+  color: var(--secondary-text-color);
+  line-height: 1.55;
 }
 
-/* ==================== TOOLTIP ARROWS ==================== */
+/* ==================== TOOLTIP ARROW ==================== */
 .tooltip::after {
   content: '';
   position: absolute;
-  border: 8px solid transparent;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  border: 6px solid transparent;
 }
 
 .tooltip.top::after {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-top-color: var(--background-2);
+  border-top-color: var(--accent-1);
 }
 
 .tooltip.bottom::after {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-bottom-color: var(--background-2);
+  border-bottom-color: var(--accent-1);
 }
 
 .tooltip.left::after {
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  border-left-color: var(--background-2);
-}
-
-.tooltip.right::after {
-  right: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  border-right-color: var(--background-2);
-}
-
-/* Arrow borders for accent glow */
-.tooltip::before {
-  content: '';
-  position: absolute;
-  border: 9px solid transparent;
-}
-
-.tooltip.top::before {
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-top-color: var(--accent-1);
-}
-
-.tooltip.bottom::before {
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-bottom-color: var(--accent-1);
-}
-
-.tooltip.left::before {
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
   border-left-color: var(--accent-1);
 }
 
-.tooltip.right::before {
+.tooltip.right::after {
   right: 100%;
   top: 50%;
   transform: translateY(-50%);
@@ -185,16 +105,6 @@
   display: inline-flex;
   align-items: center;
   position: relative;
-  transition: all 0.2s ease;
-}
-
-.trigger:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
-}
-
-.trigger:active {
-  transform: translateY(0);
 }
 
 .trigger:focus {
@@ -207,70 +117,16 @@
   outline: none;
 }
 
-/* ==================== DECORATIVE SHINE EFFECT ==================== */
-.tooltip::after {
-  animation: tooltipShine 3s ease-in-out infinite;
-}
-
-@keyframes tooltipShine {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
 /* ==================== RESPONSIVE DESIGN ==================== */
-@media (max-width: 768px) {
-  .tooltip {
-    max-width: min(280px, calc(100vw - 24px));
-    font-size: 0.85rem;
-    padding: 12px 16px;
-  }
-
-  .heading {
-    font-size: 0.95rem;
-    margin-bottom: 6px;
-  }
-
-  .tooltip::after {
-    border-width: 6px;
-  }
-
-  .tooltip::before {
-    border-width: 7px;
-  }
-}
-
 @media (max-width: 480px) {
   .tooltip {
-    max-width: min(240px, calc(100vw - 20px));
-    font-size: 0.8rem;
-    padding: 10px 14px;
-  }
-
-  .heading {
-    font-size: 0.9rem;
+    max-width: min(240px, calc(100vw - var(--spacing-md)));
   }
 }
 
 /* ==================== ACCESSIBILITY ==================== */
 @media (prefers-reduced-motion: reduce) {
   .tooltip {
-    animation: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-  }
-
-  .tooltip.visible {
-    animation: none;
-  }
-
-  .trigger:hover {
-    transform: none;
-  }
-
-  .trigger:active {
-    transform: none;
+    transition: opacity 120ms ease;
   }
 }

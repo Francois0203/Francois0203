@@ -1,66 +1,58 @@
 import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
-
-/* Styling */
 import styles from './ErrorBoundary.module.css';
-import '../../styles/Theme.css';
 
 /* ============================================================================
  * ERROR BOUNDARY COMPONENT
  * ============================================================================
- * Catches JavaScript errors anywhere in the child component tree
- * Features animated background, error details, and recovery options
+ * Catches JavaScript errors anywhere in the child component tree.
+ * Features animated background, error details, and recovery options.
+ *
+ * Props:
+ *   onReset   optional callback invoked by "Reload Page", overriding the
+ *             default window.location.reload(). Useful for demo/test contexts.
  * ============================================================================
  */
 
 class ErrorBoundaryInner extends React.Component {
-  // ========================================
-  // CONSTRUCTOR
-  // ========================================
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
+    this.state = {
+      hasError: false,
       error: null,
-      errorInfo: null
+      errorInfo: null,
+      detailsOpen: false,
     };
   }
 
-  // ========================================
-  // LIFECYCLE METHODS
-  // ========================================
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    this.setState({
-      error,
-      errorInfo
-    });
+    this.setState({ errorInfo });
   }
 
-  // ========================================
-  // EVENT HANDLERS
-  // ========================================
   handleReload = () => {
-    window.location.reload();
+    const { onReset } = this.props;
+    if (onReset) {
+      onReset();
+    } else {
+      window.location.reload();
+    }
   };
 
   handleGoHome = () => {
     window.location.href = '/';
   };
 
-  // ========================================
-  // RENDER
-  // ========================================
   render() {
     if (this.state.hasError) {
       const { theme } = this.props;
 
       return (
         <div className={styles.errorContainer} data-theme={theme}>
-          {/* Background - Animated particles */}
+          {/* Background — Animated particles */}
           <div className={styles.particlesContainer}>
             {[...Array(30)].map((_, i) => (
               <div
@@ -70,7 +62,7 @@ class ErrorBoundaryInner extends React.Component {
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 5}s`,
-                  animationDuration: `${3 + Math.random() * 4}s`
+                  animationDuration: `${3 + Math.random() * 4}s`,
                 }}
               />
             ))}
@@ -78,23 +70,24 @@ class ErrorBoundaryInner extends React.Component {
 
           {/* Glowing orbs */}
           <div className={styles.backgroundEffects}>
-            <div className={styles.glowOrb1}></div>
-            <div className={styles.glowOrb2}></div>
+            <div className={styles.glowOrb1} />
+            <div className={styles.glowOrb2} />
           </div>
 
-          {/* Main Content - Scrollable wrapper */}
+          {/* Main Content — Scrollable wrapper */}
           <div className={styles.contentScroll}>
             <div className={styles.contentWrapper}>
+
               {/* Error Icon */}
-                <div className={styles.iconContainer}>
+              <div className={styles.iconContainer}>
                 <div className={styles.alertCircle}>
                   <div className={styles.alertIcon}>!</div>
                 </div>
-                <div className={styles.pulseRing}></div>
+                <div className={styles.pulseRing} />
               </div>
 
               {/* Error Message */}
-                <div className={styles.messageContainer}>
+              <div className={styles.messageContainer}>
                 <h1 className={styles.title}>Something Went Wrong</h1>
                 <p className={styles.subtitle}>
                   An unexpected error occurred. Try reloading or going home.
@@ -102,47 +95,51 @@ class ErrorBoundaryInner extends React.Component {
               </div>
 
               {/* Action Buttons */}
-                <div className={styles.actionsContainer}>
-                <button 
-                  onClick={this.handleReload} 
-                  className={`${styles.button} ${styles.primaryButton}`}
-                >
-                  <span className={styles.buttonIcon}>↻</span>
-                  Reload Page
+              <div className={styles.actionsContainer}>
+                <button onClick={this.handleGoHome}>
+                  ← Go Home
                 </button>
-                <button 
-                  onClick={this.handleGoHome} 
-                  className={`${styles.button} ${styles.secondaryButton}`}
+                <button
+                  type="button"
+                  onClick={this.handleReload}
                 >
-                  <span className={styles.buttonIcon}>←</span>
-                  Go Home
+                  ↻ Reload Page
                 </button>
               </div>
 
-              {/* Technical Details - Collapsible */}
-                {this.state.error && (
-                <details className={styles.technicalDetails}>
-                  <summary className={styles.detailsSummary}>
+              {/* Technical Details — Collapsible */}
+              {this.state.error && (
+                <div className={styles.technicalDetails}>
+                  <button
+                    type="button"
+                    className={styles.detailsSummary}
+                    onClick={() => this.setState(s => ({ detailsOpen: !s.detailsOpen }))}
+                    aria-expanded={this.state.detailsOpen}
+                  >
+                    <span className={`${styles.detailsChevron} ${this.state.detailsOpen ? styles.detailsChevronOpen : ''}`}>▶</span>
                     View Technical Details
-                  </summary>
-                  <div className={styles.detailsContent}>
-                    <div className={styles.errorBlock}>
-                      <h3 className={styles.errorBlockTitle}>Error Message:</h3>
-                      <pre className={styles.errorText}>
-                        {this.state.error.toString()}
-                      </pre>
-                    </div>
-                    {this.state.errorInfo && (
+                  </button>
+                  {this.state.detailsOpen && (
+                    <div className={styles.detailsContent}>
                       <div className={styles.errorBlock}>
-                        <h3 className={styles.errorBlockTitle}>Component Stack:</h3>
+                        <h3 className={styles.errorBlockTitle}>Error Message:</h3>
                         <pre className={styles.errorText}>
-                          {this.state.errorInfo.componentStack}
+                          {this.state.error.toString()}
                         </pre>
                       </div>
-                    )}
-                  </div>
-                </details>
+                      {this.state.errorInfo && (
+                        <div className={styles.errorBlock}>
+                          <h3 className={styles.errorBlockTitle}>Component Stack:</h3>
+                          <pre className={styles.errorText}>
+                            {this.state.errorInfo.componentStack}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               )}
+
             </div>
           </div>
 
@@ -160,7 +157,7 @@ class ErrorBoundaryInner extends React.Component {
 }
 
 /* ============================================================================
- * WRAPPER COMPONENT - Provides theme context
+ * WRAPPER COMPONENT — Provides theme context to the class component
  * ============================================================================
  */
 const ErrorBoundary = (props) => {
