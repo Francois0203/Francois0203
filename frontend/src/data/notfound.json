@@ -1,0 +1,52 @@
+{
+  "sayings": [
+    {
+      "text": "This page is in a superposition of existing and not existing. You just collapsed the wave function.",
+      "attribution": "Schrödinger's Server"
+    },
+    {
+      "text": "Not all who wander are lost — but this URL definitely is.",
+      "attribution": "A GPS, Ironically"
+    },
+    {
+      "text": "The server checked everywhere. Under the tables, behind the CDN, even cleared the cache. Nothing.",
+      "attribution": "Sys Admin, 2 a.m."
+    },
+    {
+      "text": "This page was like a semicolon in production: briefly there, then suddenly not.",
+      "attribution": "DevOps Team"
+    },
+    {
+      "text": "We asked the database. It returned NULL. We're as surprised as you are.",
+      "attribution": "Query Result"
+    },
+    {
+      "text": "Your destination exists in the git history. That's basically archaeology at this point.",
+      "attribution": "Senior Developer"
+    },
+    {
+      "text": "This page went out for a quick refactor and never came back.",
+      "attribution": "The Office Manager"
+    },
+    {
+      "text": "404: the digital equivalent of opening the fridge, forgetting what you wanted, and closing it again.",
+      "attribution": "Relatable Engineering"
+    },
+    {
+      "text": "The page has gone the way of Internet Explorer — appreciated by some, gone by most.",
+      "attribution": "Browser History"
+    },
+    {
+      "text": "Your URL had excellent ambition. The destination, however, declined to participate.",
+      "attribution": "Product Manager"
+    },
+    {
+      "text": "Life is a journey, not a destination. This URL interpreted that very literally.",
+      "attribution": "Inspirational Poster"
+    },
+    {
+      "text": "Everything is fine. The page is fine. We're all fine. (The page is not fine.)",
+      "attribution": "Status Page"
+    }
+  ]
+}

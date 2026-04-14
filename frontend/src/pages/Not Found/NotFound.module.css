@@ -1,18 +1,14 @@
-/* ============================================================================
+ï»¿/* ============================================================================
  * NOT FOUND PAGE STYLES
  * ============================================================================
- * Premium liquid glass aesthetic — frosted surfaces, ambient depth,
- * refined typography, and polished interaction states.
- *
- * All colors sourced exclusively from Theme.css custom properties.
- * ============================================================================
- */
+ * Glass squares float, rotate, and drift randomly in the background.
+ * Physics driven by JS (translate + rotate). CSS drives border-radius morphing.
+ * Cursor-reactive inner glow and mask punch-out border ring on glass squares.
+ * All colours from Theme.css variables only.
+ * ============================================================================ */
 
 
-/* ========================================
- * PAGE ROOT
- * ========================================
- */
+/* ========== PAGE ROOT ========== */
 
 .root {
   min-height: 100vh;
@@ -26,95 +22,257 @@
 }
 
 
-/* ========================================
- * AMBIENT BACKGROUND ORBS
- * ========================================
- * Soft, defocused gradients that give the
- * frosted card its glass character.
- * ========================================
- */
+/* ========== BLOB FIELD ========== */
 
-.orbTopRight,
-.orbBottomLeft {
+.blobField {
   position: absolute;
-  border-radius: var(--radius-full);
+  inset: 0;
   pointer-events: none;
-  z-index: 0;
+  overflow: hidden;
 }
 
-.orbTopRight {
-  width: clamp(300px, 45vw, 640px);
-  height: clamp(300px, 45vw, 640px);
-  top: -18%;
-  right: -12%;
-  background: radial-gradient(
-    circle at center,
-    rgba(var(--accent-1-rgb), 0.13) 0%,
-    rgba(var(--accent-2-rgb), 0.06) 45%,
-    transparent 70%
-  );
-  filter: blur(48px);
+
+/* ========== AMBIENT GLOW SQUARES ========== */
+
+.ambientSquare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  filter: blur(90px);
+  opacity: 0.28;
+  will-change: transform, border-radius;
+  pointer-events: none;
 }
 
-.orbBottomLeft {
-  width: clamp(240px, 38vw, 520px);
-  height: clamp(240px, 38vw, 520px);
-  bottom: -12%;
-  left: -8%;
-  background: radial-gradient(
-    circle at center,
+.ambient1 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(ellipse at 40% 40%, var(--accent-1), var(--accent-2) 55%, transparent 80%);
+  border-radius: 10%;
+  animation: ambientMorph1 52s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.ambient2 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(ellipse at 60% 60%, var(--accent-2), var(--accent-3) 50%, transparent 80%);
+  border-radius: 20% 8% 20% 8%;
+  animation: ambientMorph2 62s ease-in-out infinite;
+  animation-delay: -32s;
+}
+
+.ambient3 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(ellipse at 50% 50%, var(--accent-3), var(--accent-1) 55%, transparent 80%);
+  border-radius: 8% 20% 8% 20%;
+  animation: ambientMorph3 46s ease-in-out infinite;
+  animation-delay: -18s;
+}
+
+@keyframes ambientMorph1 {
+  0%   { border-radius: 10% 10% 10% 10%; }
+  25%  { border-radius: 28%  8% 24% 12%; }
+  50%  { border-radius: 12% 28%  8% 24%; }
+  75%  { border-radius: 22% 14% 28%  8%; }
+  100% { border-radius: 10% 10% 10% 10%; }
+}
+
+@keyframes ambientMorph2 {
+  0%   { border-radius: 20%  8% 20%  8%; }
+  33%  { border-radius:  8% 26% 10% 28%; }
+  66%  { border-radius: 28% 12% 24%  6%; }
+  100% { border-radius: 20%  8% 20%  8%; }
+}
+
+@keyframes ambientMorph3 {
+  0%   { border-radius:  8% 20%  8% 20%; }
+  50%  { border-radius: 24%  6% 28% 10%; }
+  100% { border-radius:  8% 20%  8% 20%; }
+}
+
+
+/* ========== GLASS LENS SQUARES ========== */
+
+.glassSquare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  --cursor-x: -500px;
+  --cursor-y: -500px;
+  will-change: transform, border-radius;
+  pointer-events: none;
+  background: linear-gradient(
+    160deg,
     rgba(var(--accent-2-rgb), 0.09) 0%,
-    rgba(var(--accent-1-rgb), 0.04) 50%,
+    rgba(var(--accent-1-rgb), 0.05) 50%,
+    rgba(var(--accent-3-rgb), 0.08) 100%
+  );
+}
+
+.glassSquare::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 200px at var(--cursor-x, -500px) var(--cursor-y, -500px),
+    rgba(var(--accent-1-rgb), 0.30) 0%,
+    rgba(var(--accent-1-rgb), 0.10) 45%,
     transparent 70%
   );
-  filter: blur(56px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glassSquare::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(
+    circle 160px at var(--cursor-x, -500px) var(--cursor-y, -500px),
+    rgba(var(--accent-2-rgb), 0.95) 0%,
+    rgba(var(--accent-1-rgb), 0.45) 40%,
+    rgba(var(--accent-1-rgb), 0.10) 65%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.square1 {
+  width: 260px;
+  height: 260px;
+  border-radius: 6%;
+  backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.50),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10);
+  animation: squareMorph1 44s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+.square2 {
+  width: 300px;
+  height: 300px;
+  border-radius: 20% 6% 18% 8%;
+  backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  animation: squareMorph2 52s ease-in-out infinite;
+  animation-delay: -22s;
+}
+
+.square3 {
+  width: 220px;
+  height: 220px;
+  border-radius: 8% 24% 6% 20%;
+  backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
+  -webkit-backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  animation: squareMorph3 38s ease-in-out infinite;
+  animation-delay: -7s;
+}
+
+@keyframes squareMorph1 {
+  0%   { border-radius:  6%  6%  6%  6%; }
+  20%  { border-radius: 20%  6% 18%  8%; }
+  40%  { border-radius:  6% 22%  6% 20%; }
+  60%  { border-radius: 16%  8% 24%  6%; }
+  80%  { border-radius:  8% 18%  6% 22%; }
+  100% { border-radius:  6%  6%  6%  6%; }
+}
+
+@keyframes squareMorph2 {
+  0%   { border-radius: 20%  6% 18%  8%; }
+  25%  { border-radius:  6% 20%  8% 18%; }
+  50%  { border-radius: 24%  8% 20%  6%; }
+  75%  { border-radius:  8% 24%  6% 22%; }
+  100% { border-radius: 20%  6% 18%  8%; }
+}
+
+@keyframes squareMorph3 {
+  0%   { border-radius:  8% 24%  6% 20%; }
+  33%  { border-radius: 22%  6% 24%  8%; }
+  66%  { border-radius:  6% 18% 10% 26%; }
+  100% { border-radius:  8% 24%  6% 20%; }
 }
 
 
-/* ========================================
- * FROSTED GLASS CARD
- * ========================================
- */
+/* ========== FROSTED GLASS CARD ========== */
 
 .card {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   padding: var(--spacing-3xl) var(--spacing-2xl);
   border-radius: var(--radius-xl);
-
-  background: var(--frosted-background);
-  backdrop-filter: blur(28px) saturate(1.4);
-  -webkit-backdrop-filter: blur(28px) saturate(1.4);
-
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.10) 100%
+  );
+  backdrop-filter: blur(48px) saturate(200%) brightness(1.04);
+  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.04);
   border: 1px solid var(--border-color);
   box-shadow:
     var(--shadow-xl),
-    0 0 0 1px rgba(var(--accent-1-rgb), 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
-
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
   text-align: center;
-  animation: cardEntrance 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cardEntrance 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 @keyframes cardEntrance {
   from {
     opacity: 0;
-    transform: translateY(22px) scale(0.978);
+    transform: translateY(28px) scale(0.95);
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    backdrop-filter: blur(48px) saturate(200%);
+    -webkit-backdrop-filter: blur(48px) saturate(200%);
   }
 }
 
 
-/* ========================================
- * STATUS BADGE
- * ========================================
- */
+/* ========== STATUS BADGE ========== */
 
 .statusBadge {
   display: inline-flex;
@@ -144,21 +302,12 @@
 }
 
 @keyframes dotPulse {
-  0%, 100% {
-    opacity: 1;
-    box-shadow: 0 0 6px rgba(var(--accent-1-rgb), 0.70);
-  }
-  50% {
-    opacity: 0.55;
-    box-shadow: 0 0 10px rgba(var(--accent-1-rgb), 0.25);
-  }
+  0%, 100% { opacity: 1;    box-shadow: 0 0  6px rgba(var(--accent-1-rgb), 0.70); }
+  50%       { opacity: 0.55; box-shadow: 0 0 10px rgba(var(--accent-1-rgb), 0.25); }
 }
 
 
-/* ========================================
- * 404 CODE DISPLAY
- * ========================================
- */
+/* ========== 404 CODE DISPLAY ========== */
 
 .codeDisplay {
   font-size: clamp(5rem, 18vw, 8.5rem);
@@ -166,29 +315,18 @@
   line-height: 1;
   letter-spacing: -0.05em;
   margin-bottom: var(--spacing-xl);
-
-  background: linear-gradient(
-    138deg,
-    var(--accent-1) 0%,
-    var(--accent-2) 60%,
-    var(--accent-3) 100%
-  );
+  background: linear-gradient(138deg, var(--accent-1) 0%, var(--accent-2) 60%, var(--accent-3) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-
   filter: drop-shadow(0 2px 28px rgba(var(--accent-1-rgb), 0.28));
   animation: fadeUp 0.4s 0.15s ease both;
 }
 
 
-/* ========================================
- * HEADING & SUBTEXT
- * ========================================
- */
+/* ========== HEADING & SUBTEXT ========== */
 
 .heading {
-  /* Override global h1 accent color — primary text reads better here */
   color: var(--primary-text-color) !important;
   margin-top: 0;
   margin-bottom: var(--spacing-md);
@@ -205,14 +343,12 @@
 }
 
 
-/* ========================================
- * DIVIDER
- * ========================================
- */
+/* ========== DIVIDER ========== */
 
 .divider {
+  width: 100%;
   height: 1px;
-  margin: var(--spacing-xl) 0;
+  margin: var(--spacing-lg) 0;
   background: linear-gradient(
     90deg,
     transparent 0%,
@@ -224,10 +360,57 @@
 }
 
 
-/* ========================================
- * ACTION BUTTONS
- * ========================================
- */
+/* ========== FUNNY SAYING BLOCK ========== */
+
+.sayingBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+  max-width: 420px;
+  margin: 0 auto;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  animation: fadeUp 0.4s 0.35s ease both;
+}
+
+.sayingVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sayingHidden {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.sayingText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.75;
+  color: var(--secondary-text-color);
+  font-style: italic;
+}
+
+.quoteMark {
+  color: var(--accent-1);
+  font-size: 1.15em;
+  font-style: normal;
+  font-weight: 700;
+  opacity: 0.8;
+  margin: 0 1px;
+}
+
+.sayingAttribution {
+  font-size: var(--font-size-xs);
+  font-style: normal;
+  color: var(--tertiary-text-color);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+
+/* ========== ACTION BUTTONS ========== */
 
 .actions {
   display: flex;
@@ -235,41 +418,82 @@
   justify-content: center;
   gap: var(--spacing-md);
   flex-wrap: wrap;
-  animation: fadeUp 0.4s 0.38s ease both;
+  animation: fadeUp 0.4s 0.42s ease both;
 }
 
-/* Icon sizing inside both button types */
 .actions svg {
   font-size: 1.15em;
   flex-shrink: 0;
 }
 
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--secondary-text-color);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
 
-/* ========================================
- * SHARED FADE-UP KEYFRAMES
- * ========================================
- */
+.backButton:hover {
+  color: var(--accent-1);
+  border-color: rgba(var(--accent-1-rgb), 0.40);
+  background: rgba(var(--accent-1-rgb), 0.06);
+}
 
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.backButton:active {
+  opacity: 0.8;
 }
 
 
-/* ========================================
- * RESPONSIVE
- * ========================================
- */
+/* ========== SHARED KEYFRAMES ========== */
 
-@media (max-width: 520px) {
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+
+/* ========== RESPONSIVE ========== */
+
+@media (max-width: 600px) {
   .card {
     padding: var(--spacing-2xl) var(--spacing-lg);
+    border-radius: 22px;
+  }
+
+  .ambientSquare {
+    filter: blur(65px);
+    opacity: 0.38;
+  }
+
+  .glassSquare {
+    opacity: 0.85;
+  }
+
+  /* Scaled ~57% to match JS blobScale=0.57 */
+  .ambient1 { width: 275px; height: 275px; }
+  .ambient2 { width: 215px; height: 215px; }
+  .ambient3 { width: 180px; height: 180px; }
+  .square1  { width: 150px; height: 150px; }
+  .square2  { width: 170px; height: 170px; }
+  .square3  { width: 130px; height: 130px; }
+}
+
+@media (max-width: 400px) {
+  .card {
+    padding: var(--spacing-xl) var(--spacing-md);
   }
 
   .actions {
@@ -281,4 +505,50 @@
     width: 100%;
     justify-content: center;
   }
+
+  /* Scaled ~38% to match JS blobScale=0.38 */
+  .ambient1 { width: 185px; height: 185px; }
+  .ambient2 { width: 145px; height: 145px; }
+  .ambient3 { width: 120px; height: 120px; }
+  .square1  { width: 100px; height: 100px; }
+  .square2  { width: 115px; height: 115px; }
+  .square3  { width:  85px; height:  85px; }
+}
+
+
+/* ========== LIGHT MODE OVERRIDES ========== */
+/*
+ * useTheme sets data-theme on <html>. In CSS Modules, selectors targeting
+ * ancestor elements MUST use :global() or they compile broken.
+ */
+
+:global([data-theme="light"]) .ambientSquare {
+  opacity: 0.52;
+}
+
+:global([data-theme="light"]) .card {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(48px) saturate(180%) brightness(0.98);
+  -webkit-backdrop-filter: blur(48px) saturate(180%) brightness(0.98);
+  border-color: var(--border-color);
+  box-shadow:
+    var(--shadow-xl),
+    inset 0 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+:global([data-theme="light"]) .card::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, transparent 40%);
+}
+
+:global([data-theme="light"]) .square1,
+:global([data-theme="light"]) .square2,
+:global([data-theme="light"]) .square3 {
+  background: rgba(var(--accent-2-rgb), 0.05);
+  backdrop-filter: blur(18px) saturate(140%) brightness(0.97);
+  -webkit-backdrop-filter: blur(18px) saturate(140%) brightness(0.97);
+  border-color: var(--border-color);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
 }
