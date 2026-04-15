@@ -2,32 +2,73 @@
  * BIO PAGE — LIQUID GLASS CV
  * ============================================================================
  * All values from Theme.css general tokens only. No hardcoded colours.
- * glass specular uses rgba(255,255,255,x) or rgba(0,0,0,x) — neutral
- * material properties identical to the rest of the design system.
+ * glass specular uses rgba(255,255,255,x) or rgba(0,0,0,x) only.
  *
- * Four layout tiers, each optimised for how that device is actually used:
+ * Four layout tiers:
  *   Desktop   ≥ 1024px  — side-by-side profile, multi-column grids
- *   Tablet     768–1023px — tighter gutters, image shrinks, grids reduce
- *   Phone      480–767px  — stacked profile, centre-aligned, full-width CTA
+ *   Tablet     768–1023px — tighter gutters, reduced columns
+ *   Phone      480–767px  — stacked centred hero, full-width CTA
  *   Small      < 480px    — minimal padding, compact tiles
  * ============================================================================ */
 
 
-/* ── Entrance animations ──────────────────────────────────────────────────── */
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
 
 @keyframes bioFadeUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
 @keyframes bioSlideIn {
-  from { opacity: 0; transform: translateX(-16px); }
-  to   { opacity: 1; transform: translateX(0);     }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
 }
 
 @keyframes bioPop {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1);    }
+  from {
+    opacity: 0;
+    transform: scale(0.82) translateY(10px);
+    filter: blur(4px);
+  }
+  60% {
+    transform: scale(1.04) translateY(-1px);
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Spring-pop for timeline dot */
+@keyframes dotPop {
+  from { transform: scale(0); opacity: 0; }
+  55%  { transform: scale(1.5); }
+  75%  { transform: scale(0.88); }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* Rule line draws itself left → right */
+@keyframes ruleGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 
@@ -46,10 +87,7 @@
 }
 
 
-/* ============================================================================
- * GLASS SURFACE MIXIN (applied via Sass-free composition)
- * All glass panels share these properties; individual rules add deltas.
- * ============================================================================ */
+/* ── Glass surface base ───────────────────────────────────────────────────── */
 
 .profileCard,
 .section,
@@ -69,24 +107,54 @@
 }
 
 
-/* ── Profile section (entrance wrapper) ──────────────────────────────────── */
+/* ── Profile section wrapper ──────────────────────────────────────────────── */
 
 .profileSection {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
   will-change: transform, opacity;
   opacity: 0;
-  transform: translateY(36px);
+  transform: translateY(40px) scale(0.985);
   transition:
-    opacity   0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity   0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .profileSection.revealed {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   will-change: auto;
+}
+
+/* ── Split-column entrance inside profile card ────────────────────────────── */
+
+.imageCol {
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-18px);
+  transition:
+    opacity   0.7s 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.profileSection.revealed .imageCol {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.infoCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(18px);
+  transition:
+    opacity   0.7s 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.profileSection.revealed .infoCol {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 
@@ -107,15 +175,6 @@
 
 /* ── Profile image ────────────────────────────────────────────────────────── */
 
-.imageCol {
-  flex-shrink: 0;
-}
-
-/*
- * The gradient ring is purely decorative — padding-box trick so the image
- * sits cleanly inside. Border radius matches --radius-xl inset by the 3px
- * padding so image corners align with the ring corners.
- */
 .imageRing {
   width: 220px;
   height: 220px;
@@ -126,6 +185,27 @@
     var(--shadow-lg),
     0 0 0 1px var(--border-color);
   flex-shrink: 0;
+  transition: box-shadow 0.4s ease;
+}
+
+/* Subtle ambient glow pulses in once the profile has landed */
+.profileSection.revealed .imageRing {
+  animation: ringGlow 5s 0.9s ease-in-out infinite;
+}
+
+@keyframes ringGlow {
+  0%, 100% {
+    box-shadow:
+      var(--shadow-lg),
+      0 0 0 1px var(--border-color),
+      0 0 0 rgba(var(--accent-1-rgb), 0);
+  }
+  50% {
+    box-shadow:
+      var(--shadow-lg),
+      0 0 0 1px var(--border-color),
+      0 0 28px rgba(var(--accent-1-rgb), 0.14);
+  }
 }
 
 .profileImage {
@@ -137,16 +217,8 @@
 }
 
 
-/* ── Profile info column ──────────────────────────────────────────────────── */
+/* ── Profile info column text ─────────────────────────────────────────────── */
 
-.infoCol {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Eyebrow label — sits above h1 */
 .eyebrow {
   font-size: var(--font-size-xs);
   font-weight: 700;
@@ -156,7 +228,6 @@
   margin: 0 0 var(--spacing-xs) 0;
 }
 
-/* h1 sizing/colour inherits from Components.css */
 .infoCol h1 {
   margin: 0 0 var(--spacing-xs) 0;
   line-height: 1.05;
@@ -166,7 +237,7 @@
   font-size: var(--font-size-md);
   font-weight: 400;
   color: var(--secondary-text-color);
-  margin: 0 0 var(--spacing-lg) 0;
+  margin: 0 0 var(--spacing-md) 0;
   letter-spacing: 0.01em;
 }
 
@@ -175,6 +246,16 @@
   background: var(--border-color);
   margin-bottom: var(--spacing-lg);
   flex-shrink: 0;
+}
+
+
+/* ── Summary ──────────────────────────────────────────────────────────────── */
+
+.summary {
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  line-height: 1.8;
+  margin: 0 0 var(--spacing-lg) 0;
 }
 
 
@@ -273,39 +354,34 @@
 .socialLink:hover {
   color: var(--accent-1);
   border-color: var(--border-color-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md), 0 4px 12px rgba(var(--accent-1-rgb), 0.12);
   text-decoration: none;
-}
-
-
-/* ── Summary ──────────────────────────────────────────────────────────────── */
-
-.summary {
-  font-size: var(--font-size-sm);
-  color: var(--secondary-text-color);
-  line-height: 1.8;
-  margin: 0 0 var(--spacing-lg) 0;
 }
 
 
 /* ── Shared section card ──────────────────────────────────────────────────── */
 
+/*
+ * Sections enter with a compound transform: up + slight de-scale + blur.
+ * Scale gives a "depth materialises" feel — the panel feels like it emerges
+ * from behind the page rather than flying in from below.
+ */
 .section {
   padding: var(--spacing-xl) var(--spacing-2xl);
   border-radius: var(--radius-xl);
-  /* Entrance — toggled by IntersectionObserver  */
+  position: relative;
   will-change: transform, opacity;
   opacity: 0;
-  transform: translateY(36px);
+  transform: translateY(40px) scale(0.985);
   transition:
-    opacity   0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity   0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .section.revealed {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   will-change: auto;
 }
 
@@ -317,14 +393,25 @@
   align-items: center;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-xl);
+  overflow: hidden;
 }
 
-/* Override Components.css h2 margin so header stays tight */
 .sectionHeader h2 {
   margin: 0;
   white-space: nowrap;
-  font-size: var(--font-size-xl);  /* tighter than full h2 clamp on page */
+  font-size: var(--font-size-xl);
   letter-spacing: -0.018em;
+  /* Slight up-reveal as section parent fades in */
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity   0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section.revealed .sectionHeader h2 {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .sectionIcon {
@@ -333,14 +420,31 @@
   font-size: 1.2rem;
   color: var(--accent-1);
   flex-shrink: 0;
-  opacity: 0.8;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity   0.4s 0.05s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.4s 0.05s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.section.revealed .sectionIcon {
+  opacity: 0.8;
+  transform: scale(1);
+}
+
+/* Rule draws itself in from left */
 .sectionRule {
   flex: 1;
   height: 1px;
   background: var(--border-color);
   min-width: 16px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section.revealed .sectionRule {
+  transform: scaleX(1);
 }
 
 
@@ -353,7 +457,7 @@
   padding-left: var(--spacing-xl);
 }
 
-/* Fade-out vertical rail */
+/* Fade-out gradient rail — also draws in */
 .timeline::before {
   content: '';
   position: absolute;
@@ -367,14 +471,25 @@
     var(--accent-2) 55%,
     transparent
   );
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition:
+    opacity   0.6s 0.3s ease,
+    transform 0.8s 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.revealed .timeline::before {
   opacity: 0.3;
+  transform: scaleY(1);
 }
 
 .timelineItem {
   position: relative;
   margin-bottom: var(--spacing-lg);
-  animation: bioSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: var(--item-delay, 0ms);
+  /* Base delay: 160ms lets the parent section visibly start appearing first */
+  animation: bioSlideIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(160ms + var(--item-delay, 0ms));
   animation-play-state: paused;
   opacity: 0;
 }
@@ -387,21 +502,30 @@
   animation-play-state: running;
 }
 
+/* Dot springs in on its own keyframe */
 .timelineDot {
   position: absolute;
   left: calc(-1 * var(--spacing-xl));
   top: var(--spacing-md);
   width: 9px;
   height: 9px;
-  margin-left: 0px;
   border-radius: 50%;
   background: var(--accent-1);
   outline: 2px solid var(--accent-1);
   outline-offset: 2px;
   z-index: 1;
+  animation: dotPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(200ms + var(--item-delay, 0ms));
+  animation-play-state: paused;
+}
+
+.revealed .timelineDot {
+  animation-play-state: running;
 }
 
 .timelineCard {
+  position: relative;
+  overflow: hidden;
   padding: var(--spacing-lg) var(--spacing-xl);
   border-radius: var(--radius-lg);
   transition:
@@ -409,11 +533,31 @@
     box-shadow   var(--transition-base);
 }
 
+/* Shimmer sweep on hover */
+.timelineCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.65s ease;
+  pointer-events: none;
+}
+
 .timelineCard:hover {
   border-color: var(--border-color-hover);
   box-shadow:
     var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.timelineCard:hover::after {
+  transform: translateX(120%);
 }
 
 .timelineTop {
@@ -429,7 +573,6 @@
   min-width: 0;
 }
 
-/* h3 colour/size from Components.css */
 .timelineMeta h3 {
   margin: 0 0 3px 0;
   font-size: var(--font-size-md);
@@ -481,11 +624,13 @@
 }
 
 .eduCard {
+  position: relative;
+  overflow: hidden;
   padding: var(--spacing-lg) var(--spacing-xl);
   border-radius: var(--radius-lg);
   border-left: 2px solid var(--accent-1);
-  animation: bioFadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: var(--item-delay, 0ms);
+  animation: bioFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(160ms + var(--item-delay, 0ms));
   animation-play-state: paused;
   opacity: 0;
   transition:
@@ -497,11 +642,31 @@
   animation-play-state: running;
 }
 
+/* Shimmer on hover */
+.eduCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.65s ease;
+  pointer-events: none;
+}
+
 .eduCard:hover {
   border-left-color: var(--accent-2);
   box-shadow:
     var(--shadow-lg),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.eduCard:hover::after {
+  transform: translateX(120%);
 }
 
 .eduPeriod {
@@ -517,7 +682,6 @@
   line-height: 1.5;
 }
 
-/* h3 from Components.css */
 .eduCard h3 {
   margin: 0 0 var(--spacing-xs) 0;
   font-size: var(--font-size-base);
@@ -550,10 +714,12 @@
 }
 
 .skillCard {
+  position: relative;
+  overflow: hidden;
   padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
-  animation: bioFadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: var(--item-delay, 0ms);
+  animation: bioFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(160ms + var(--item-delay, 0ms));
   animation-play-state: paused;
   opacity: 0;
   transition:
@@ -565,11 +731,30 @@
   animation-play-state: running;
 }
 
-.skillCard:hover {
-  border-color: var(--border-color-hover);
+.skillCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.65s ease;
+  pointer-events: none;
 }
 
-/* h6 pattern from Components.css — uppercase label above tag list */
+.skillCard:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.skillCard:hover::after {
+  transform: translateX(120%);
+}
+
 .skillCategory {
   font-size: var(--font-size-xs);
   font-weight: 700;
@@ -607,13 +792,15 @@
   background: var(--accent-1-background);
 }
 
-/* ── Section CTA row ──────────────────────────────────────────────────────────────── */
+
+/* ── Section CTA ──────────────────────────────────────────────────────────── */
 
 .sectionCta {
   display: flex;
   justify-content: flex-end;
   margin-bottom: var(--spacing-lg);
 }
+
 
 /* ── Tech icon grid ───────────────────────────────────────────────────────── */
 
@@ -633,8 +820,8 @@
   border-radius: var(--radius-md);
   text-align: center;
   cursor: default;
-  animation: bioPop 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: var(--item-delay, 0ms);
+  animation: bioPop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(200ms + var(--item-delay, 0ms));
   animation-play-state: paused;
   opacity: 0;
   transition:
@@ -649,8 +836,8 @@
 
 .techItem:hover {
   border-color: var(--border-color-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: var(--shadow-md), 0 4px 12px rgba(var(--accent-1-rgb), 0.1);
 }
 
 .techIcon {
@@ -659,6 +846,11 @@
   opacity: 0.8;
   display: block;
   line-height: 1;
+  transition: opacity var(--transition-fast);
+}
+
+.techItem:hover .techIcon {
+  opacity: 1;
 }
 
 .techName {
@@ -671,7 +863,7 @@
 
 
 /* ============================================================================
- * HOBBIES
+ * HOBBIES (data kept, not rendered — styles kept for future use)
  * ============================================================================ */
 
 .hobbyRow {
@@ -687,8 +879,8 @@
   color: var(--secondary-text-color);
   border-radius: var(--radius-full);
   cursor: default;
-  animation: bioFadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: var(--item-delay, 0ms);
+  animation: bioFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(160ms + var(--item-delay, 0ms));
   animation-play-state: paused;
   opacity: 0;
   transition:
@@ -708,8 +900,6 @@
 
 /* ============================================================================
  * RESPONSIVE — TABLET  768px – 1023px
- * Layout stays side-by-side but breathes less.
- * Education & skills drop to 2-column.
  * ============================================================================ */
 
 @media (max-width: 1023px) {
@@ -727,17 +917,14 @@
     height: 180px;
   }
 
-  /* Contact items: single column on narrowing profile info */
   .contactGrid {
     grid-template-columns: 1fr;
   }
 
-  /* Education: 2-column still fits at 768+ */
   .eduGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Skills: 2-column */
   .skillsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -754,9 +941,6 @@
 
 /* ============================================================================
  * RESPONSIVE — PHONE  480px – 767px
- * Profile stacks vertically, becomes a centred "hero card".
- * All text centres. CTA goes full-width.
- * Grids collapse to single column for comfortable scrolling.
  * ============================================================================ */
 
 @media (max-width: 767px) {
@@ -766,13 +950,32 @@
     padding-top: var(--spacing-xl);
   }
 
-  /* ── Profile hero stacks vertically ── */
   .profileCard {
     flex-direction: column;
     align-items: center;
     padding: var(--spacing-xl) var(--spacing-lg);
     gap: var(--spacing-lg);
     text-align: center;
+  }
+
+  /* On mobile the card stacks, so swap to vertical reveal (fade only) */
+  .imageCol {
+    transform: translateY(-12px);
+    transition:
+      opacity   0.7s 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .infoCol {
+    transform: translateY(12px);
+    transition:
+      opacity   0.7s 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .profileSection.revealed .imageCol,
+  .profileSection.revealed .infoCol {
+    transform: translateY(0);
   }
 
   .imageRing {
@@ -791,7 +994,6 @@
     text-align: center;
   }
 
-  /* Contact centred, single column */
   .contactGrid {
     grid-template-columns: 1fr;
     justify-items: center;
@@ -803,7 +1005,6 @@
     justify-content: flex-start;
   }
 
-  /* Remove text clipping on mobile — we have space now */
   .contactItem > span {
     overflow: visible;
     white-space: normal;
@@ -814,7 +1015,6 @@
     justify-content: center;
   }
 
-  /* Actions: column, full-width CTA */
   .actionsRow {
     flex-direction: column;
     align-items: center;
@@ -826,7 +1026,6 @@
     justify-content: center;
   }
 
-  /* Make CursorGlowButton full-width on phone */
   .actionsRow > *:last-child,
   .sectionCta button {
     width: 100%;
@@ -834,22 +1033,18 @@
   }
 
   .summary {
-    padding-top: var(--spacing-md);
     text-align: left;
     font-size: var(--font-size-sm);
   }
 
-  /* Section cards slightly less padded */
   .section {
     padding: var(--spacing-lg);
   }
 
-  /* Section header h2 tighter on phone */
   .sectionHeader h2 {
     font-size: var(--font-size-lg);
   }
 
-  /* Timeline: period badge wraps below badge */
   .timelineTop {
     flex-direction: column;
     gap: var(--spacing-xs);
@@ -859,24 +1054,17 @@
     align-self: flex-start;
   }
 
-  /* All grids single column */
   .eduGrid      { grid-template-columns: 1fr; }
   .skillsGrid   { grid-template-columns: 1fr; }
 
   .techGrid {
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   }
-
-  .hobbyPill {
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: var(--font-size-xs);
-  }
 }
 
 
 /* ============================================================================
  * RESPONSIVE — SMALL PHONE  < 480px
- * Minimal padding, compact everything, no wasted space.
  * ============================================================================ */
 
 @media (max-width: 479px) {
@@ -896,21 +1084,10 @@
     height: 120px;
   }
 
-  .section {
-    padding: var(--spacing-md);
-  }
-
-  .timelineCard {
-    padding: var(--spacing-md);
-  }
-
-  .eduCard {
-    padding: var(--spacing-md);
-  }
-
-  .skillCard {
-    padding: var(--spacing-md);
-  }
+  .section      { padding: var(--spacing-md); }
+  .timelineCard { padding: var(--spacing-md); }
+  .eduCard      { padding: var(--spacing-md); }
+  .skillCard    { padding: var(--spacing-md); }
 
   .techGrid {
     grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
@@ -919,10 +1096,6 @@
 
   .techItem {
     padding: var(--spacing-sm) var(--spacing-xs);
-  }
-
-  .hobbyRow {
-    gap: var(--spacing-xs);
   }
 
   .sectionHeader {
@@ -937,34 +1110,74 @@
 
 @media (prefers-reduced-motion: reduce) {
   .profileSection,
+  .imageCol,
+  .infoCol,
   .section {
-    transition: none;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .sectionHeader h2,
+  .sectionIcon,
+  .sectionRule {
+    transition: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
 
   .timelineItem,
+  .timelineDot,
   .eduCard,
   .skillCard,
   .techItem,
   .hobbyPill {
     animation: none !important;
     opacity: 1 !important;
+    filter: none !important;
+  }
+
+  .timeline::before {
+    transition: none !important;
+    opacity: 0.3 !important;
+    transform: none !important;
+  }
+
+  .profileSection.revealed .imageRing {
+    animation: none !important;
   }
 }
 
 [data-no-animations="true"] .profileSection,
+[data-no-animations="true"] .imageCol,
+[data-no-animations="true"] .infoCol,
 [data-no-animations="true"] .section {
+  transition: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+[data-no-animations="true"] .sectionHeader h2,
+[data-no-animations="true"] .sectionIcon,
+[data-no-animations="true"] .sectionRule {
   transition: none !important;
   opacity: 1 !important;
   transform: none !important;
 }
 
 [data-no-animations="true"] .timelineItem,
+[data-no-animations="true"] .timelineDot,
 [data-no-animations="true"] .eduCard,
 [data-no-animations="true"] .skillCard,
 [data-no-animations="true"] .techItem,
 [data-no-animations="true"] .hobbyPill {
   animation: none !important;
   opacity: 1 !important;
+  filter: none !important;
+}
+
+[data-no-animations="true"] .profileSection.revealed .imageRing {
+  animation: none !important;
 }

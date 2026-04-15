@@ -36,7 +36,7 @@ import styles from './App.module.css';
  */
 const Home = React.lazy(() => import('./pages/Home'));
 const Bio = React.lazy(() => import('./pages/Bio'));
-const Contact = React.lazy(() => import('./pages/Contact'));
+const Connect = React.lazy(() => import('./pages/Connect'));
 const Projects = React.lazy(() => import('./pages/Projects'));
 
 /* ============================================================================
@@ -59,12 +59,8 @@ const NAVIGATION_PAGES = [
     to: '/projects'
   },
   {
-    label: 'Contact',
-    to: '/contact'
-  },
-  {
-    label: 'Loading Demo',
-    to: '/loading'
+    label: 'Connect',
+    to: '/connect'
   }
 ];
 
@@ -164,7 +160,7 @@ const AppContent = () => {
         {/* Page Routes */}
         <Route index element={<Home />} />
         <Route path="bio" element={<Bio />} />
-        <Route path="contact" element={<Contact />} />
+        <Route path="connect" element={<Connect />} />
         <Route path="projects" element={<Projects />} />
         <Route path="loading" element={<Loading />} />
         

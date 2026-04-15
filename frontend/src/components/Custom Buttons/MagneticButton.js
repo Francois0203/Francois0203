@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './MagneticButton.module.css';
 
 /**
@@ -280,12 +281,15 @@ const MagneticButton = ({
 
     return (
         <>
-            {/* Particle canvas — lives in document flow at fixed position */}
-            <canvas
-                ref={canvasRef}
-                className={styles.particleCanvas}
-                aria-hidden="true"
-            />
+            {/* Particle canvas — portaled to body to escape backdrop-filter stacking contexts */}
+            {createPortal(
+                <canvas
+                    ref={canvasRef}
+                    className={styles.particleCanvas}
+                    aria-hidden="true"
+                />,
+                document.body
+            )}
             <button
                 ref={buttonRef}
                 type={type}

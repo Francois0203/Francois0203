@@ -74,28 +74,28 @@ const Home = () => {
           <div className={styles.hero}>
             <div className={styles.greetingWrapper}>
               <span className={styles.decorLine} />
-              <p className={styles.greeting}>{homeData.hero.greeting}</p>
+              <p className={styles.greeting}>Welcome, I'm</p>
               <span className={styles.decorLine} />
             </div>
             
             <h1 className={styles.name}>
-              {homeData.hero.name}
+              Francois Meiring
             </h1>
             
-            <p className={styles.tagline}>{homeData.hero.tagline}</p>
+            <p className={styles.tagline}>Developer • Researcher • Adventurer</p>
             
-            <p className={styles.description}>{homeData.hero.description}</p>
+            <p className={styles.description}>Passionate about technology, continuous learning, and exploring new horizons. Every challenge is an opportunity to grow.</p>
           </div>
 
           {/* Call to Action */}
           <div className={styles.ctaContainer}>
-            <Link to={homeData.cta.primary.link} className={`${styles.button} ${styles.primaryButton}`}>
+            <Link to="/projects" className={`${styles.button} ${styles.primaryButton}`}>
               <MdRocketLaunch />
-              <span>{homeData.cta.primary.text}</span>
+              <span>Explore My Work</span>
             </Link>
             
-            <Link to={homeData.cta.secondary.link} className={`${styles.button} ${styles.secondaryButton}`}>
-              <span>{homeData.cta.secondary.text}</span>
+            <Link to="/contact" className={`${styles.button} ${styles.secondaryButton}`}>
+              <span>Let's Connect</span>
               <MdArrowForward />
             </Link>
           </div>

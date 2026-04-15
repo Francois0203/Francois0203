@@ -7,7 +7,7 @@ import {
 import {
   FaLinkedin, FaInstagram, FaGithub, FaOrcid,
   FaReact, FaPython, FaJs, FaNodeJs, FaDocker, FaGitAlt,
-  FaHtml5, FaCss3Alt, FaLinux, FaDatabase, FaServer,
+  FaHtml5, FaCss3Alt, FaLinux, FaDatabase, FaServer, FaCode,
 } from 'react-icons/fa';
 import { SiPostgresql, SiKubernetes, SiNginx, SiR, SiHackerrank } from 'react-icons/si';
 
@@ -26,12 +26,13 @@ const TECH_ICON_MAP = {
   SiPostgresql, SiKubernetes, SiNginx, SiR,
 };
 
-const SOCIAL_ICONS = {
-  linkedin:   FaLinkedin,
-  github:     FaGithub,
-  instagram:  FaInstagram,
-  orcid:      FaOrcid,
-  hackerrank: SiHackerrank,
+const SOCIAL_ICON_MAP = {
+  FaLinkedin,
+  FaGithub,
+  FaInstagram,
+  FaOrcid,
+  SiHackerrank,
+  FaCode,
 };
 
 /* ============================================================================
@@ -84,7 +85,7 @@ const Bio = () => {
   const [expRef,     expVisible]     = useReveal();
   const [eduRef,     eduVisible]     = useReveal();
   const [skillsRef,  skillsVisible]  = useReveal();
-  const [hobbiesRef, hobbiesVisible] = useReveal();
+
 
   useEffect(() => {
     const t = setTimeout(() => setProfileVisible(true), 80);
@@ -156,16 +157,16 @@ const Bio = () => {
             {/* Social links + CTA */}
             <div className={styles.actionsRow}>
               <div className={styles.socialRow}>
-                {Object.entries(bioData.socialLinks).map(([platform, url]) => {
-                  const Icon = SOCIAL_ICONS[platform];
+                {bioData.socialLinks.map((social) => {
+                  const Icon = SOCIAL_ICON_MAP[social.icon];
                   return (
                     <a
-                      key={platform}
-                      href={url}
+                      key={social.key}
+                      href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.socialLink}
-                      aria-label={platform.charAt(0).toUpperCase() + platform.slice(1)}
+                      aria-label={social.platform}
                     >
                       {Icon && <Icon aria-hidden="true" />}
                     </a>
@@ -285,24 +286,7 @@ const Bio = () => {
         </div>
       </section>
 
-      {/* ── Hobbies ───────────────────────────────────────────────────────── */}
-      <section
-        ref={hobbiesRef}
-        className={`${styles.section} ${hobbiesVisible ? styles.revealed : ''}`}
-      >
-        <SectionHeader title="Interests & Hobbies" />
-        <div className={styles.hobbyRow}>
-          {bioData.hobbies.map((hobby, i) => (
-            <span
-              key={hobby}
-              className={styles.hobbyPill}
-              style={{ '--item-delay': `${i * 70}ms` }}
-            >
-              {hobby}
-            </span>
-          ))}
-        </div>
-      </section>
+
 
     </div>
   );

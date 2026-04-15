@@ -1,20 +1,4 @@
 {
-  "hero": {
-    "greeting": "Welcome, I'm",
-    "name": "Francois Meiring",
-    "tagline": "Developer • Researcher • Adventurer",
-    "description": "Passionate about technology, continuous learning, and exploring new horizons. Every challenge is an opportunity to grow."
-  },
-  "cta": {
-    "primary": {
-      "text": "Explore My Work",
-      "link": "/projects"
-    },
-    "secondary": {
-      "text": "Let's Connect",
-      "link": "/contact"
-    }
-  },
   "memoryLane": {
     "title": "A Glimpse Into Who I Am",
     "subtitle": "Interests and values that shape me",
