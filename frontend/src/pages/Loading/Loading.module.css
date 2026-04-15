@@ -412,9 +412,12 @@
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 600px) {
   .glassCard {
-    padding: var(--spacing-2xl) var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-lg);
     border-radius: 22px;
     gap: var(--spacing-lg);
+    width: 72vw;
+    min-width: 240px;
+    max-width: 340px;
   }
 
   .ambientBlob {
@@ -427,18 +430,21 @@
   }
 
   /* Smaller blobs on mobile — physics engine still drives position */
-  .ambient1 { width: 320px; height: 300px; }
-  .ambient2 { width: 260px; height: 340px; }
-  .ambient3 { width: 210px; height: 210px; }
-  .glass1   { width: 185px; height: 210px; }
-  .glass2   { width: 220px; height: 165px; }
-  .glass3   { width: 140px; height: 150px; }
+  .ambient1 { width: 430px; height: 400px; }
+  .ambient2 { width: 350px; height: 460px; }
+  .ambient3 { width: 285px; height: 285px; }
+  .glass1   { width: 250px; height: 285px; }
+  .glass2   { width: 295px; height: 220px; }
+  .glass3   { width: 190px; height: 200px; }
 }
 
 @media (max-width: 400px) {
   .glassCard {
-    padding: var(--spacing-xl) var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-md);
     border-radius: 18px;
+    width: 76vw;
+    min-width: 210px;
+    max-width: 290px;
   }
 
   .dot {
@@ -450,12 +456,12 @@
     gap: 8px;
   }
 
-  .ambient1 { width: 200px; height: 190px; }
-  .ambient2 { width: 175px; height: 230px; }
-  .ambient3 { width: 145px; height: 145px; }
-  .glass1   { width: 130px; height: 150px; }
-  .glass2   { width: 155px; height: 120px; }
-  .glass3   { width: 105px; height: 115px; }
+  .ambient1 { width: 270px; height: 255px; }
+  .ambient2 { width: 235px; height: 310px; }
+  .ambient3 { width: 195px; height: 195px; }
+  .glass1   { width: 175px; height: 200px; }
+  .glass2   { width: 210px; height: 160px; }
+  .glass3   { width: 140px; height: 155px; }
 }
 
 /* ==================== LIGHT MODE OVERRIDES ==================== */

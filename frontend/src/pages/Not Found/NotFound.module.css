@@ -469,8 +469,10 @@
 
 @media (max-width: 600px) {
   .card {
-    padding: var(--spacing-2xl) var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-md);
     border-radius: 22px;
+    width: 74vw;
+    max-width: 360px;
   }
 
   .ambientSquare {
@@ -483,17 +485,19 @@
   }
 
   /* Scaled ~57% to match JS blobScale=0.57 */
-  .ambient1 { width: 275px; height: 275px; }
-  .ambient2 { width: 215px; height: 215px; }
-  .ambient3 { width: 180px; height: 180px; }
-  .square1  { width: 150px; height: 150px; }
-  .square2  { width: 170px; height: 170px; }
-  .square3  { width: 130px; height: 130px; }
+  .ambient1 { width: 370px; height: 370px; }
+  .ambient2 { width: 290px; height: 290px; }
+  .ambient3 { width: 245px; height: 245px; }
+  .square1  { width: 200px; height: 200px; }
+  .square2  { width: 230px; height: 230px; }
+  .square3  { width: 175px; height: 175px; }
 }
 
 @media (max-width: 400px) {
   .card {
-    padding: var(--spacing-xl) var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-sm);
+    width: 80vw;
+    max-width: 300px;
   }
 
   .actions {
@@ -507,12 +511,12 @@
   }
 
   /* Scaled ~38% to match JS blobScale=0.38 */
-  .ambient1 { width: 185px; height: 185px; }
-  .ambient2 { width: 145px; height: 145px; }
-  .ambient3 { width: 120px; height: 120px; }
-  .square1  { width: 100px; height: 100px; }
-  .square2  { width: 115px; height: 115px; }
-  .square3  { width:  85px; height:  85px; }
+  .ambient1 { width: 250px; height: 250px; }
+  .ambient2 { width: 195px; height: 195px; }
+  .ambient3 { width: 160px; height: 160px; }
+  .square1  { width: 135px; height: 135px; }
+  .square2  { width: 155px; height: 155px; }
+  .square3  { width: 115px; height: 115px; }
 }
 
 

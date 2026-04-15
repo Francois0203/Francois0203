@@ -1,7 +1,8 @@
 {
+  "summary": "Full-stack developer and computer scientist with a strong foundation in software engineering, distributed systems, and modern web technologies. Currently pursuing an MSc in Computer Science at North-West University while contributing to real-world enterprise software. I care deeply about building things that are technically robust and genuinely well-crafted — from system architecture to polished user interfaces. Outside of work, you'll find me at the gym, on the squash court, or working through a guitar piece.",
   "personalInfo": {
     "name": "Francois Meiring",
-    "title": "Full Stack Developer & Computer Science Researcher",
+    "title": "Junior Software Developer",
     "dateOfBirth": "2 March 2002",
     "location": "Irene, Centurion",
     "driversLicense": "Code B",
@@ -17,14 +18,22 @@
     "linkedin": "https://www.linkedin.com/in/francois-meiring",
     "github": "https://github.com/Francois0203",
     "instagram": "https://www.instagram.com/francois0203/",
-    "orcid": "https://orcid.org/0009-0004-7605-0618"
+    "orcid": "https://orcid.org/0009-0004-7605-0618",
+    "hackerrank": "https://www.hackerrank.com/profile/francoismeiring"
   },
   "experiences": [
     {
-      "title": "Full Stack Developer",
+      "title": "Junior Software Developer",
+      "company": "Shareforce (Pty) Ltd",
+      "location": "39 Melrose Boulevard, Melrose Arch, Johannesburg",
+      "period": "May 2026 - Present",
+      "description": "As a Junior Software Developer at Shareforce, I contribute to building and maintaining web applications using Python and Django. My role involves writing clean, efficient code, developing backend features, and supporting the implementation of RESTful APIs. I collaborate with team members to debug issues, improve application performance, and ensure code quality through testing and reviews, while continuously learning and applying best practices in software development."
+    },
+    {
+      "title": "Full Stack Software Developer",
       "company": "Aquatico Scientific",
       "location": "Route 21 Business Park, Centurion",
-      "period": "2024 - Present",
+      "period": "January 2025 - April 2026",
       "description": "Leading the complete ground-up rebuild of the company's enterprise system architecture. Architecting and developing a comprehensive full-stack solution using React for the frontend and Node.js for the backend, deployed on production servers using Nginx and orchestrated with Kubernetes. The system encompasses multiple integrated modules including laboratory information management, project coordination, and business operations management."
     },
     {
@@ -88,5 +97,5 @@
     { "name": "Database", "icon": "FaDatabase", "color": "#FF6B6B", "category": "Database" },
     { "name": "Server", "icon": "FaServer", "color": "#4ECDC4", "category": "Infrastructure" }
   ],
-  "hobbies": ["Gym", "Squash", "Guitar", "8 Ball Pool", "Hiking", "Personal Projects", "Web Development"]
+  "hobbies": ["Gym", "Squash", "Guitar", "8 Ball Pool", "Hiking", "Web Development"]
 }

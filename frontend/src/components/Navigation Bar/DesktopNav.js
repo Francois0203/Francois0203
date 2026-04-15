@@ -38,6 +38,8 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
       x: ((e.clientX - r.left) / r.width)  * 100,
       y: ((e.clientY - r.top)  / r.height) * 100,
     });
+    // Re-enable glow if a click-triggered navigation caused a spurious mouseleave
+    setHovered(true);
   }, []);
 
   // ----------------------------------------------------------
