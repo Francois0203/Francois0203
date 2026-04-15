@@ -1,7 +1,7 @@
 ﻿/* ============================================================================
  * CONNECT PAGE STYLES
  * ============================================================================
- * Physics-driven rounded triangles (ambient glow + glass lens) in background.
+ * Physics-driven thick arrow blobs (ambient glow + glass lens) in background.
  * Layout: 4-tier responsive (>=1024 / 768-1023 / <768 / <480).
  * All colours from Theme.css variables only.
  * ============================================================================ */
@@ -83,29 +83,26 @@
 }
 
 
-/* ========== GLASS TRIANGLES ========== */
+/* ========== GLASS ARROWS ========== */
 /*
- * Glass surface is identical to NotFound squares — same backdrop-filter,
- * border, box-shadow inset highlights, cursor glow, and mask-punch border ring.
+ * Three thick arrow shapes via clip-path: polygon().
+ * clip-path clips the backdrop-filter region to the arrow silhouette so the
+ * glass blur, colour, and cursor-glow effects all render inside the arrow.
  *
- * Triangle shape via border-radius 8-value syntax (H / V per corner):
- *   top-left, top-right, bottom-right, bottom-left  (horizontal)
- *   / top-left, top-right, bottom-right, bottom-left (vertical)
+ * arrow1 — pointing right  (→)  polygon shaft points right
+ * arrow2 — pointing up     (↑)  polygon shaft points up
+ * arrow3 — pointing down   (↓)  polygon shaft points down
  *
- * tri1 — sharp tip at top-center  (like ▲):  TL and TR horizontal small, BL+BR large
- * tri2 — sharp tip at right       (like ▶):  TL and BL vertical small,   TR+BR large
- * tri3 — sharp tip at bottom      (like ▼):  BL and BR horizontal small, TL+TR large
- *
- * Morph keyframes shift the radii organically — same technique as NotFound squares.
+ * arrowMorph keyframes gently breathe the polygon points for organic movement.
  */
 
-.glassTri {
+.glassArrow {
   position: absolute;
   top: 0;
   left: 0;
   --cursor-x: -500px;
   --cursor-y: -500px;
-  will-change: transform, border-radius;
+  will-change: transform, clip-path;
   pointer-events: none;
   background: linear-gradient(
     160deg,
@@ -115,11 +112,10 @@
   );
 }
 
-.glassTri::before {
+.glassArrow::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
   background: radial-gradient(
     circle 200px at var(--cursor-x, -500px) var(--cursor-y, -500px),
     rgba(var(--accent-1-rgb), 0.30) 0%,
@@ -130,11 +126,10 @@
   z-index: 1;
 }
 
-.glassTri::after {
+.glassArrow::after {
   content: '';
   position: absolute;
   inset: -1px;
-  border-radius: inherit;
   padding: 1px;
   pointer-events: none;
   z-index: 2;
@@ -155,12 +150,11 @@
   mask-composite: exclude;
 }
 
-.tri1 {
+.arrow1 {
   width: 260px;
   height: 260px;
-  /* ▲-like: tip at top — TL+TR corners pinch to near-zero horizontally,
-     BL+BR corners spread wide. Vertical radii keep it tall. */
-  border-radius: 4% 4% 48% 48% / 6% 6% 50% 50%;
+  /* > right-pointing chevron — like an HTML closing tag bracket */
+  clip-path: polygon(0% 2%, 100% 50%, 0% 98%, 0% 74%, 62% 50%, 0% 26%);
   backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
   -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
   border: 1px solid rgba(255, 255, 255, 0.28);
@@ -168,15 +162,15 @@
     var(--shadow-md),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.50),
     inset 0 -1px 0 rgba(255, 255, 255, 0.10);
-  animation: triMorph1 44s ease-in-out infinite;
+  animation: arrowMorph1 44s ease-in-out infinite;
   animation-delay: -11s;
 }
 
-.tri2 {
+.arrow2 {
   width: 300px;
   height: 300px;
-  /* ▶-like: tip at right — TR+BR corners pinch, TL+BL corners spread wide. */
-  border-radius: 48% 4% 4% 48% / 50% 6% 6% 50%;
+  /* ^ up-pointing chevron */
+  clip-path: polygon(2% 100%, 50% 0%, 98% 100%, 74% 100%, 50% 62%, 26% 100%);
   backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
   -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -184,15 +178,15 @@
     var(--shadow-lg),
     inset 0 2px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-  animation: triMorph2 52s ease-in-out infinite;
+  animation: arrowMorph2 52s ease-in-out infinite;
   animation-delay: -22s;
 }
 
-.tri3 {
+.arrow3 {
   width: 220px;
   height: 220px;
-  /* ▼-like: tip at bottom — BL+BR corners pinch, TL+TR corners spread wide. */
-  border-radius: 48% 48% 4% 4% / 50% 50% 6% 6%;
+  /* < left-pointing chevron — like an HTML opening tag bracket */
+  clip-path: polygon(100% 2%, 0% 50%, 100% 98%, 100% 74%, 38% 50%, 100% 26%);
   backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
   -webkit-backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
   border: 1px solid rgba(255, 255, 255, 0.32);
@@ -200,34 +194,33 @@
     var(--shadow-sm),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-  animation: triMorph3 38s ease-in-out infinite;
+  animation: arrowMorph3 38s ease-in-out infinite;
   animation-delay: -7s;
 }
 
-/* Tip corners morph gently 4-8%, base corners breathe 44-54% — same organic
-   rhythm as NotFound's squareMorph keyframes */
-@keyframes triMorph1 {
-  0%   { border-radius:  4%  4% 48% 48% /  6%  6% 50% 50%; }
-  20%  { border-radius:  6%  4% 50% 44% /  8%  4% 54% 46%; }
-  40%  { border-radius:  4%  8% 44% 50% /  4%  8% 46% 54%; }
-  60%  { border-radius:  8%  4% 52% 46% /  6%  6% 48% 52%; }
-  80%  { border-radius:  4%  6% 46% 52% /  8%  4% 52% 48%; }
-  100% { border-radius:  4%  4% 48% 48% /  6%  6% 50% 50%; }
+/* Polygon points breathe slightly on each keyframe for organic movement */
+@keyframes arrowMorph1 {
+  0%   { clip-path: polygon(0% 2%,  100% 50%, 0%  98%, 0%  74%, 62% 50%, 0%  26%); }
+  20%  { clip-path: polygon(0% 2%,  98%  50%, 0%  98%, 0%  76%, 60% 50%, 0%  24%); }
+  40%  { clip-path: polygon(0% 4%,  100% 48%, 0%  96%, 0%  72%, 64% 50%, 0%  28%); }
+  60%  { clip-path: polygon(0% 2%,  99%  51%, 0%  98%, 0%  75%, 61% 50%, 0%  25%); }
+  80%  { clip-path: polygon(0% 3%,  100% 49%, 0%  97%, 0%  73%, 63% 50%, 0%  27%); }
+  100% { clip-path: polygon(0% 2%,  100% 50%, 0%  98%, 0%  74%, 62% 50%, 0%  26%); }
 }
 
-@keyframes triMorph2 {
-  0%   { border-radius: 48%  4%  4% 48% / 50%  6%  6% 50%; }
-  25%  { border-radius: 52%  6%  4% 44% / 54%  8%  4% 46%; }
-  50%  { border-radius: 44%  4%  8% 52% / 46%  4%  8% 54%; }
-  75%  { border-radius: 50%  8%  6% 46% / 52%  6%  8% 48%; }
-  100% { border-radius: 48%  4%  4% 48% / 50%  6%  6% 50%; }
+@keyframes arrowMorph2 {
+  0%   { clip-path: polygon(2%  100%, 50% 0%,  98%  100%, 74%  100%, 50% 62%, 26%  100%); }
+  25%  { clip-path: polygon(2%  100%, 50% 2%,  98%  100%, 76%  100%, 50% 60%, 24%  100%); }
+  50%  { clip-path: polygon(4%  100%, 50% 0%,  96%  100%, 72%  100%, 50% 64%, 28%  100%); }
+  75%  { clip-path: polygon(2%  100%, 51% 1%,  98%  100%, 75%  100%, 50% 61%, 25%  100%); }
+  100% { clip-path: polygon(2%  100%, 50% 0%,  98%  100%, 74%  100%, 50% 62%, 26%  100%); }
 }
 
-@keyframes triMorph3 {
-  0%   { border-radius: 48% 48%  4%  4% / 50% 50%  6%  6%; }
-  33%  { border-radius: 52% 44%  6%  4% / 54% 46%  8%  4%; }
-  66%  { border-radius: 44% 52%  4%  8% / 46% 54%  4%  8%; }
-  100% { border-radius: 48% 48%  4%  4% / 50% 50%  6%  6%; }
+@keyframes arrowMorph3 {
+  0%   { clip-path: polygon(100% 2%,  0%  50%, 100%  98%, 100%  74%, 38% 50%, 100%  26%); }
+  33%  { clip-path: polygon(100% 4%,  0%  48%, 100%  96%, 100%  72%, 40% 50%, 100%  28%); }
+  66%  { clip-path: polygon(100% 2%,  0%  51%, 100%  98%, 100%  76%, 36% 50%, 100%  24%); }
+  100% { clip-path: polygon(100% 2%,  0%  50%, 100%  98%, 100%  74%, 38% 50%, 100%  26%); }
 }
 
 

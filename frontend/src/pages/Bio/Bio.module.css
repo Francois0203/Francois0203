@@ -12,6 +12,292 @@
  * ============================================================================ */
 
 
+
+
+/* ========== ROOT & VISIBILITY ========== */
+
+.root {
+  position: relative;
+  min-height: 100vh;
+}
+
+
+/* ========== BLOB FIELD ========== */
+
+.blobField {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+
+/* ========== AMBIENT ORBS ========== */
+
+.ambientOrb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.22;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.orb1 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(ellipse at 40% 40%, var(--accent-1), var(--accent-2) 55%, transparent 80%);
+  animation: orbDrift1 52s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+.orb2 {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(ellipse at 60% 60%, var(--accent-2), var(--accent-3) 55%, transparent 80%);
+  animation: orbDrift2 64s ease-in-out infinite;
+  animation-delay: -33s;
+}
+
+.orb3 {
+  width: 290px;
+  height: 290px;
+  background: radial-gradient(ellipse at 50% 50%, var(--accent-3), var(--accent-1) 55%, transparent 80%);
+  animation: orbDrift3 44s ease-in-out infinite;
+  animation-delay: -22s;
+}
+
+@keyframes orbDrift1 {
+  0%   { transform: translate(5vw,  10vh); }
+  25%  { transform: translate(68vw,  4vh); }
+  50%  { transform: translate(62vw, 62vh); }
+  75%  { transform: translate(12vw, 68vh); }
+  100% { transform: translate(5vw,  10vh); }
+}
+
+@keyframes orbDrift2 {
+  0%   { transform: translate(74vw, 66vh); }
+  33%  { transform: translate(8vw,  52vh); }
+  66%  { transform: translate(48vw, 12vh); }
+  100% { transform: translate(74vw, 66vh); }
+}
+
+@keyframes orbDrift3 {
+  0%   { transform: translate(44vw, 44vh); }
+  50%  { transform: translate(18vw, 18vh); }
+  100% { transform: translate(44vw, 44vh); }
+}
+
+
+/* ========== GLASS TRIANGLES ========== */
+/*
+ * Identical glass surface technique to Connect page.
+ * tri1 — ▲ tip at top    border-radius: 4% 4% 48% 48% / 6% 6% 50% 50%
+ * tri2 — ▶ tip at right  border-radius: 48% 4% 4% 48% / 50% 6% 6% 50%
+ * tri3 — ▼ tip at bottom border-radius: 48% 48% 4% 4% / 50% 50% 6% 6%
+ */
+
+.glassTri {
+  position: absolute;
+  top: 0;
+  left: 0;
+  --cursor-x: -500px;
+  --cursor-y: -500px;
+  will-change: transform, border-radius;
+  pointer-events: none;
+  background: linear-gradient(
+    160deg,
+    rgba(var(--accent-2-rgb), 0.09) 0%,
+    rgba(var(--accent-1-rgb), 0.05) 50%,
+    rgba(var(--accent-3-rgb), 0.08) 100%
+  );
+}
+
+.glassTri::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 200px at var(--cursor-x, -500px) var(--cursor-y, -500px),
+    rgba(var(--accent-1-rgb), 0.30) 0%,
+    rgba(var(--accent-1-rgb), 0.10) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glassTri::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(
+    circle 160px at var(--cursor-x, -500px) var(--cursor-y, -500px),
+    rgba(var(--accent-2-rgb), 0.95) 0%,
+    rgba(var(--accent-1-rgb), 0.45) 40%,
+    rgba(var(--accent-1-rgb), 0.10) 65%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.tri1 {
+  width: 260px;
+  height: 260px;
+  border-radius: 4% 4% 48% 48% / 6% 6% 50% 50%;
+  backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.50),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10);
+  animation: triMorph1 44s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+.tri2 {
+  width: 300px;
+  height: 300px;
+  border-radius: 48% 4% 4% 48% / 50% 6% 6% 50%;
+  backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  animation: triMorph2 52s ease-in-out infinite;
+  animation-delay: -22s;
+}
+
+.tri3 {
+  width: 220px;
+  height: 220px;
+  border-radius: 48% 48% 4% 4% / 50% 50% 6% 6%;
+  backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
+  -webkit-backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  animation: triMorph3 38s ease-in-out infinite;
+  animation-delay: -7s;
+}
+
+@keyframes triMorph1 {
+  0%   { border-radius:  4%  4% 48% 48% /  6%  6% 50% 50%; }
+  20%  { border-radius:  6%  4% 50% 44% /  8%  4% 54% 46%; }
+  40%  { border-radius:  4%  8% 44% 50% /  4%  8% 46% 54%; }
+  60%  { border-radius:  8%  4% 52% 46% /  6%  6% 48% 52%; }
+  80%  { border-radius:  4%  6% 46% 52% /  8%  4% 52% 48%; }
+  100% { border-radius:  4%  4% 48% 48% /  6%  6% 50% 50%; }
+}
+
+@keyframes triMorph2 {
+  0%   { border-radius: 48%  4%  4% 48% / 50%  6%  6% 50%; }
+  25%  { border-radius: 52%  6%  4% 44% / 54%  8%  4% 46%; }
+  50%  { border-radius: 44%  4%  8% 52% / 46%  4%  8% 54%; }
+  75%  { border-radius: 50%  8%  6% 46% / 52%  6%  8% 48%; }
+  100% { border-radius: 48%  4%  4% 48% / 50%  6%  6% 50%; }
+}
+
+@keyframes triMorph3 {
+  0%   { border-radius: 48% 48%  4%  4% / 50% 50%  6%  6%; }
+  33%  { border-radius: 52% 44%  6%  4% / 54% 46%  8%  4%; }
+  66%  { border-radius: 44% 52%  4%  8% / 46% 54%  4%  8%; }
+  100% { border-radius: 48% 48%  4%  4% / 50% 50%  6%  6%; }
+}
+
+
+/* ========== PAGE CONTENT WRAPPER ========== */
+
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+
+/* ========== LIQUID GLASS CARD (wraps all page content) ========== */
+
+.glassCard {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-width: 0;
+  max-width: 1100px;
+  box-sizing: border-box;
+  padding: var(--spacing-2xl) var(--spacing-2xl);
+  border-radius: var(--radius-xl);
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.10) 100%
+  );
+  backdrop-filter: blur(48px) saturate(200%) brightness(1.04);
+  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.04);
+
+  border: 1px solid var(--border-color);
+  box-shadow:
+    var(--shadow-xl),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    inset 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset -1px 0 0 rgba(255, 255, 255, 0.06);
+
+  animation: cardEntrance 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s;
+}
+
+.glassCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    backdrop-filter: blur(0px) saturate(100%);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    backdrop-filter: blur(48px) saturate(200%);
+    -webkit-backdrop-filter: blur(48px) saturate(200%);
+  }
+}
+
+
 /* ── Keyframes ────────────────────────────────────────────────────────────── */
 
 @keyframes bioFadeUp {
@@ -78,9 +364,7 @@
   --_page-px: var(--spacing-2xl);
   --_section-gap: var(--spacing-xl);
 
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: var(--spacing-3xl) var(--_page-px) var(--spacing-4xl);
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--_section-gap);
@@ -905,7 +1189,10 @@
 @media (max-width: 1023px) {
   .page {
     --_page-px: var(--spacing-xl);
-    padding-top: var(--spacing-2xl);
+  }
+
+  .glassCard {
+    padding: var(--spacing-xl);
   }
 
   .profileCard {
@@ -947,7 +1234,15 @@
   .page {
     --_page-px: var(--spacing-lg);
     --_section-gap: var(--spacing-md);
-    padding-top: var(--spacing-xl);
+  }
+
+  .content {
+    padding: var(--spacing-sm) var(--spacing-sm);
+  }
+
+  .glassCard {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
   }
 
   .profileCard {
@@ -1070,8 +1365,14 @@
 @media (max-width: 479px) {
   .page {
     --_page-px: var(--spacing-md);
-    padding-top: var(--spacing-lg);
-    padding-bottom: var(--spacing-2xl);
+  }
+
+  .content {
+    padding: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .glassCard {
+    padding: var(--spacing-md);
   }
 
   .profileCard {

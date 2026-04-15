@@ -24,18 +24,18 @@ const ICON_MAP = {
   SiHackerrank, FaCode,
 };
 
-/* ── Triangle blob definitions ─────────────────────────────────────────────── */
+/* ── Arrow blob definitions ────────────────────────────────────────────────── */
 /*
- * Glass triangle blob definitions — 3 physics-driven glass lens triangles.
+ * Glass arrow blob definitions — 3 physics-driven thick arrow shapes.
  * r        – half the CSS width (used for boundary clamping & repulsion)
  * sx/sy    – starting position as fraction of viewport
  * vx/vy    – initial velocity in px/s
  * rotSpeed – rotation speed in degrees/second (negative = counter-clockwise)
  */
 const BLOB_DEFS = [
-  { cls: ['glassTri', 'tri1'], r: 130, sx: 0.12, sy: 0.60, vx:  -7, vy:   8, rotSpeed: -6.0 },
-  { cls: ['glassTri', 'tri2'], r: 150, sx: 0.72, sy: 0.18, vx:   9, vy:  -6, rotSpeed:  7.0 },
-  { cls: ['glassTri', 'tri3'], r: 110, sx: 0.50, sy: 0.48, vx:  -9, vy:   5, rotSpeed: -4.5 },
+  { cls: ['glassArrow', 'arrow1'], r: 130, sx: 0.12, sy: 0.60, vx:  -7, vy:   8, rotSpeed: -6.0 },
+  { cls: ['glassArrow', 'arrow2'], r: 150, sx: 0.72, sy: 0.18, vx:   9, vy:  -6, rotSpeed:  7.0 },
+  { cls: ['glassArrow', 'arrow3'], r: 110, sx: 0.50, sy: 0.48, vx:  -9, vy:   5, rotSpeed: -4.5 },
 ];
 
 /* ── IntersectionObserver reveal hook ─────────────────────────────────────── */
