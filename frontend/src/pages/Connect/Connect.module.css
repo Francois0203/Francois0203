@@ -1,7 +1,7 @@
 ﻿/* ============================================================================
  * CONNECT PAGE STYLES
  * ============================================================================
- * Physics-driven thick arrow blobs (ambient glow + glass lens) in background.
+ * Minimal liquid glass background: two large, slow colour washes.
  * Layout: 4-tier responsive (>=1024 / 768-1023 / <768 / <480).
  * All colours from Theme.css variables only.
  * ============================================================================ */
@@ -20,10 +20,7 @@
 
 /* ========== AMBIENT ORBS ========== */
 /*
- * Three soft blurred orbs drift slowly across the background — pure CSS, no
- * physics. Identical technique to the NotFound ambient squares.
- * opacity: 0.22 keeps them subtle in dark mode, but visible enough in light
- * mode to give the glass triangles colour to refract.
+ * Three soft blurred orbs drift slowly — give the glass triangles colour to refract.
  */
 
 .ambientOrb {
@@ -83,26 +80,21 @@
 }
 
 
-/* ========== GLASS ARROWS ========== */
+/* ========== GLASS TRIANGLES ========== */
 /*
- * Three thick arrow shapes via clip-path: polygon().
- * clip-path clips the backdrop-filter region to the arrow silhouette so the
- * glass blur, colour, and cursor-glow effects all render inside the arrow.
- *
- * arrow1 — pointing right  (→)  polygon shaft points right
- * arrow2 — pointing up     (↑)  polygon shaft points up
- * arrow3 — pointing down   (↓)  polygon shaft points down
- *
- * arrowMorph keyframes gently breathe the polygon points for organic movement.
+ * Three physics-driven rounded glass shapes drift and rotate continuously.
+ * tri1 — ▲ tip at top    border-radius: 4% 4% 48% 48% / 6% 6% 50% 50%
+ * tri2 — ▶ tip at right  border-radius: 48% 4% 4% 48% / 50% 6% 6% 50%
+ * tri3 — ▼ tip at bottom border-radius: 48% 48% 4% 4% / 50% 50% 6% 6%
  */
 
-.glassArrow {
+.glassTri {
   position: absolute;
   top: 0;
   left: 0;
   --cursor-x: -500px;
   --cursor-y: -500px;
-  will-change: transform, clip-path;
+  will-change: transform, border-radius;
   pointer-events: none;
   background: linear-gradient(
     160deg,
@@ -112,10 +104,11 @@
   );
 }
 
-.glassArrow::before {
+.glassTri::before {
   content: '';
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: radial-gradient(
     circle 200px at var(--cursor-x, -500px) var(--cursor-y, -500px),
     rgba(var(--accent-1-rgb), 0.30) 0%,
@@ -126,10 +119,11 @@
   z-index: 1;
 }
 
-.glassArrow::after {
+.glassTri::after {
   content: '';
   position: absolute;
   inset: -1px;
+  border-radius: inherit;
   padding: 1px;
   pointer-events: none;
   z-index: 2;
@@ -150,11 +144,10 @@
   mask-composite: exclude;
 }
 
-.arrow1 {
+.tri1 {
   width: 260px;
   height: 260px;
-  /* > right-pointing chevron — like an HTML closing tag bracket */
-  clip-path: polygon(0% 2%, 100% 50%, 0% 98%, 0% 74%, 62% 50%, 0% 26%);
+  border-radius: 4% 4% 48% 48% / 6% 6% 50% 50%;
   backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
   -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
   border: 1px solid rgba(255, 255, 255, 0.28);
@@ -162,15 +155,14 @@
     var(--shadow-md),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.50),
     inset 0 -1px 0 rgba(255, 255, 255, 0.10);
-  animation: arrowMorph1 44s ease-in-out infinite;
+  animation: triMorph1 44s ease-in-out infinite;
   animation-delay: -11s;
 }
 
-.arrow2 {
+.tri2 {
   width: 300px;
   height: 300px;
-  /* ^ up-pointing chevron */
-  clip-path: polygon(2% 100%, 50% 0%, 98% 100%, 74% 100%, 50% 62%, 26% 100%);
+  border-radius: 48% 4% 4% 48% / 50% 6% 6% 50%;
   backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
   -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -178,15 +170,14 @@
     var(--shadow-lg),
     inset 0 2px 0 rgba(255, 255, 255, 0.45),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-  animation: arrowMorph2 52s ease-in-out infinite;
+  animation: triMorph2 52s ease-in-out infinite;
   animation-delay: -22s;
 }
 
-.arrow3 {
+.tri3 {
   width: 220px;
   height: 220px;
-  /* < left-pointing chevron — like an HTML opening tag bracket */
-  clip-path: polygon(100% 2%, 0% 50%, 100% 98%, 100% 74%, 38% 50%, 100% 26%);
+  border-radius: 48% 48% 4% 4% / 50% 50% 6% 6%;
   backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
   -webkit-backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
   border: 1px solid rgba(255, 255, 255, 0.32);
@@ -194,33 +185,32 @@
     var(--shadow-sm),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.55),
     inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-  animation: arrowMorph3 38s ease-in-out infinite;
+  animation: triMorph3 38s ease-in-out infinite;
   animation-delay: -7s;
 }
 
-/* Polygon points breathe slightly on each keyframe for organic movement */
-@keyframes arrowMorph1 {
-  0%   { clip-path: polygon(0% 2%,  100% 50%, 0%  98%, 0%  74%, 62% 50%, 0%  26%); }
-  20%  { clip-path: polygon(0% 2%,  98%  50%, 0%  98%, 0%  76%, 60% 50%, 0%  24%); }
-  40%  { clip-path: polygon(0% 4%,  100% 48%, 0%  96%, 0%  72%, 64% 50%, 0%  28%); }
-  60%  { clip-path: polygon(0% 2%,  99%  51%, 0%  98%, 0%  75%, 61% 50%, 0%  25%); }
-  80%  { clip-path: polygon(0% 3%,  100% 49%, 0%  97%, 0%  73%, 63% 50%, 0%  27%); }
-  100% { clip-path: polygon(0% 2%,  100% 50%, 0%  98%, 0%  74%, 62% 50%, 0%  26%); }
+@keyframes triMorph1 {
+  0%   { border-radius:  4%  4% 48% 48% /  6%  6% 50% 50%; }
+  20%  { border-radius:  6%  4% 50% 44% /  8%  4% 54% 46%; }
+  40%  { border-radius:  4%  8% 44% 50% /  4%  8% 46% 54%; }
+  60%  { border-radius:  8%  4% 52% 46% /  6%  6% 48% 52%; }
+  80%  { border-radius:  4%  6% 46% 52% /  8%  4% 52% 48%; }
+  100% { border-radius:  4%  4% 48% 48% /  6%  6% 50% 50%; }
 }
 
-@keyframes arrowMorph2 {
-  0%   { clip-path: polygon(2%  100%, 50% 0%,  98%  100%, 74%  100%, 50% 62%, 26%  100%); }
-  25%  { clip-path: polygon(2%  100%, 50% 2%,  98%  100%, 76%  100%, 50% 60%, 24%  100%); }
-  50%  { clip-path: polygon(4%  100%, 50% 0%,  96%  100%, 72%  100%, 50% 64%, 28%  100%); }
-  75%  { clip-path: polygon(2%  100%, 51% 1%,  98%  100%, 75%  100%, 50% 61%, 25%  100%); }
-  100% { clip-path: polygon(2%  100%, 50% 0%,  98%  100%, 74%  100%, 50% 62%, 26%  100%); }
+@keyframes triMorph2 {
+  0%   { border-radius: 48%  4%  4% 48% / 50%  6%  6% 50%; }
+  25%  { border-radius: 52%  6%  4% 44% / 54%  8%  4% 46%; }
+  50%  { border-radius: 44%  4%  8% 52% / 46%  4%  8% 54%; }
+  75%  { border-radius: 50%  8%  6% 46% / 52%  6%  8% 48%; }
+  100% { border-radius: 48%  4%  4% 48% / 50%  6%  6% 50%; }
 }
 
-@keyframes arrowMorph3 {
-  0%   { clip-path: polygon(100% 2%,  0%  50%, 100%  98%, 100%  74%, 38% 50%, 100%  26%); }
-  33%  { clip-path: polygon(100% 4%,  0%  48%, 100%  96%, 100%  72%, 40% 50%, 100%  28%); }
-  66%  { clip-path: polygon(100% 2%,  0%  51%, 100%  98%, 100%  76%, 36% 50%, 100%  24%); }
-  100% { clip-path: polygon(100% 2%,  0%  50%, 100%  98%, 100%  74%, 38% 50%, 100%  26%); }
+@keyframes triMorph3 {
+  0%   { border-radius: 48% 48%  4%  4% / 50% 50%  6%  6%; }
+  33%  { border-radius: 52% 44%  6%  4% / 54% 46%  8%  4%; }
+  66%  { border-radius: 44% 52%  4%  8% / 46% 54%  4%  8%; }
+  100% { border-radius: 48% 48%  4%  4% / 50% 50%  6%  6%; }
 }
 
 
@@ -756,12 +746,12 @@ a.methodCard:hover::after {
   }
 
   .glassCard {
-    padding: var(--spacing-md) var(--spacing-2xl);
-    gap: var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    gap: var(--spacing-lg);
   }
 
   .header h1 {
-    margin: 2px 0 4px;
+    margin: 4px 0 6px;
   }
 
   .subtitle {
@@ -769,15 +759,15 @@ a.methodCard:hover::after {
   }
 
   .sectionLabel {
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
   }
 
   .mainGrid {
-    gap: var(--spacing-lg);
+    gap: var(--spacing-xl);
   }
 
   .contactList {
-    gap: 6px;
+    gap: var(--spacing-sm);
   }
 
   .methodCard {
@@ -791,7 +781,7 @@ a.methodCard:hover::after {
   }
 
   .socialGrid {
-    gap: 6px;
+    gap: var(--spacing-sm);
   }
 
   .socialCard {
@@ -799,8 +789,8 @@ a.methodCard:hover::after {
   }
 
   .donationCard {
-    padding: var(--spacing-md) var(--spacing-xl);
-    gap: var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    gap: var(--spacing-lg);
   }
 
   .donationIconWrap {

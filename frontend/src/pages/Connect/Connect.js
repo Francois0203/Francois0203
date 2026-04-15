@@ -24,18 +24,11 @@ const ICON_MAP = {
   SiHackerrank, FaCode,
 };
 
-/* ── Arrow blob definitions ────────────────────────────────────────────────── */
-/*
- * Glass arrow blob definitions — 3 physics-driven thick arrow shapes.
- * r        – half the CSS width (used for boundary clamping & repulsion)
- * sx/sy    – starting position as fraction of viewport
- * vx/vy    – initial velocity in px/s
- * rotSpeed – rotation speed in degrees/second (negative = counter-clockwise)
- */
+/* ── Triangle blob definitions ─────────────────────────────────────────────── */
 const BLOB_DEFS = [
-  { cls: ['glassArrow', 'arrow1'], r: 130, sx: 0.12, sy: 0.60, vx:  -7, vy:   8, rotSpeed: -6.0 },
-  { cls: ['glassArrow', 'arrow2'], r: 150, sx: 0.72, sy: 0.18, vx:   9, vy:  -6, rotSpeed:  7.0 },
-  { cls: ['glassArrow', 'arrow3'], r: 110, sx: 0.50, sy: 0.48, vx:  -9, vy:   5, rotSpeed: -4.5 },
+  { cls: ['glassTri', 'tri1'], r: 130, sx: 0.12, sy: 0.60, vx:  -7, vy:   8, rotSpeed: -6.0 },
+  { cls: ['glassTri', 'tri2'], r: 150, sx: 0.72, sy: 0.18, vx:   9, vy:  -6, rotSpeed:  7.0 },
+  { cls: ['glassTri', 'tri3'], r: 110, sx: 0.50, sy: 0.48, vx:  -9, vy:   5, rotSpeed: -4.5 },
 ];
 
 /* ── IntersectionObserver reveal hook ─────────────────────────────────────── */
@@ -76,7 +69,7 @@ const Connect = () => {
     return () => clearTimeout(t);
   }, []);
 
-  /* ── Triangle physics (same engine as NotFound/Loading) ── */
+  /* ── Triangle physics ── */
   useEffect(() => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -206,11 +199,9 @@ const Connect = () => {
     >
       {/* ── Triangle blob field ── */}
       <div className={styles.blobField} aria-hidden="true">
-        {/* Ambient colour orbs — CSS-only drift, give the glass triangles colour to refract */}
         <div className={`${styles.ambientOrb} ${styles.orb1}`} />
         <div className={`${styles.ambientOrb} ${styles.orb2}`} />
         <div className={`${styles.ambientOrb} ${styles.orb3}`} />
-        {/* Glass triangles — physics-driven */}
         {BLOB_DEFS.map((def, i) => (
           <div
             key={i}
