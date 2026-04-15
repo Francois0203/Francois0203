@@ -15,7 +15,6 @@ import bioData    from '../../data/bio.json';
 import styles     from './Bio.module.css';
 import ProfileImg from '../../Images/Profile.jpeg';
 import { CursorGlowButton } from '../../components';
-import '../../styles/Theme.css';
 
 // ─── ICON MAPS ─────────────────────────────────────────────────────────────────────
 const TECH_ICON_MAP = {

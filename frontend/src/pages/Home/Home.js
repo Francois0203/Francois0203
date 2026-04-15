@@ -7,7 +7,6 @@ import homeData from '../../data/home.json';
 
 /* Styling */
 import styles from './Home.module.css';
-import '../../styles/Theme.css';
 
 /* ============================================================================
  * HOME PAGE - OPTIMIZED

@@ -6,7 +6,6 @@ import { SiHackerrank } from 'react-icons/si';
 import bioData from '../../data/bio.json';
 import styles from './Connect.module.css';
 import { MagneticButton } from '../../components';
-import '../../styles/Theme.css';
 
 // ─── ICON MAP ───────────────────────────────────────────────────────────────
 const ICON_MAP = {

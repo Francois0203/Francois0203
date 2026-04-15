@@ -5,7 +5,6 @@ import { MdHome, MdArrowBack } from 'react-icons/md';
 import { GhostButton } from '../../components';
 import sayingsData from '../../data/notfound.json';
 import styles from './NotFound.module.css';
-import '../../styles/Theme.css';
 
 const SAYINGS = sayingsData.sayings;
 

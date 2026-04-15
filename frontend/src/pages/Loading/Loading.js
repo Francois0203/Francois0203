@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import versesData from '../../data/verses.json';
 import styles from './Loading.module.css';
-import '../../styles/Theme.css';
 
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────────
 const BIBLE_VERSES = versesData.verses;

@@ -9,7 +9,6 @@ import projectsData from '../../data/projects.json';
 
 /* Styling */
 import styles from './Projects.module.css';
-import '../../styles/Theme.css';
 
 /* ============================================================================
  * PROJECTS PAGE

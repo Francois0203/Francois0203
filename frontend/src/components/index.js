@@ -11,3 +11,4 @@ export { default as ReduceAnimationsSwitch } from './Reduce Animations Switch';
 export { default as Tooltip } from './Tooltip';
 export { ToastProvider, useToast } from './Toast Notifications/ToastContext';
 export { default as PasswordInput } from './Password Input';
+export { default as ImageCarousel } from './Image Carousel';
