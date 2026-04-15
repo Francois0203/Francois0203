@@ -1,4 +1,5 @@
-/* ===================== Input Container & Required Asterisk ==================== */
+/* ─── INPUT CONTAINER ───────────────────────────────────────────────────────── */
+/* Appends a red * for required fields via :has(); hides it once the field is valid. */
 .input-container {
     position: relative;
     display: flex;

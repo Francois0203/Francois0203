@@ -1,18 +1,9 @@
 import React from 'react';
-
-/* Hooks */
 import { useTooltip } from '../../hooks';
-
-/* Styling */
 import styles from './Tooltip.module.css';
 
-/* ============================================================================
- * TOOLTIP COMPONENT
- * ============================================================================
- * Reusable tooltip with heading and content
- * Uses useTooltip hook for positioning and visibility
- * ============================================================================
- */
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
+// Optional heading + body tooltip, positioned and portalled via useTooltip.
 
 const Tooltip = ({
   children,
@@ -25,7 +16,6 @@ const Tooltip = ({
 
   return (
     <>
-      {/* Trigger element */}
       <span
         {...triggerProps}
         className={`${styles.trigger} ${className}`}
@@ -33,15 +23,9 @@ const Tooltip = ({
       >
         {children}
       </span>
-
-      {/* Tooltip box */}
       <TooltipPortal>
-        {heading && (
-          <span className={styles.heading}>{heading}</span>
-        )}
-        {content && (
-          <span className={styles.body}>{content}</span>
-        )}
+        {heading && <span className={styles.heading}>{heading}</span>}
+        {content && <span className={styles.body}>{content}</span>}
       </TooltipPortal>
     </>
   );

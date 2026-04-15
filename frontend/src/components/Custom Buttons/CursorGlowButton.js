@@ -1,33 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './CursorGlowButton.module.css';
 
-/**
- * CursorGlowButton
- *
- * A "liquid glass" cursor-reactive button. Light flows across the surface
- * and subtly illuminates the border as the cursor moves.
- *
- * Layer stack (back → front):
- *   0. .glow span      — multi-layer radial glow, inset: -12px (bleeds past border)
- *   1. Glass base      — frosted background + backdrop-filter
- *   2. ::before        — reactive gradient border (CSS mask technique)
- *   3. ::after         — static diagonal glass sheen
- *   4. .content span   — text / children, always on top
- *
- * Cursor tracking uses requestAnimationFrame + linear interpolation for
- * smooth, fluid movement with no jitter.
- *
- * Props:
- *   children   — button label / content
- *   onClick    — click handler
- *   disabled   — disables the button
- *   type       — button type attribute (default: 'button')
- *   className  — additional class names
- *   ...rest    — any other native button attributes
- */
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+// Liquid-glass cursor-reactive button. Glow tracks cursor via RAF + lerp.
+// Layer stack: .glow → glass base → ::before (reactive border) → ::after (sheen) → .content
 
 const LERP = 0.13;
 const lerp = (a, b, t) => a + (b - a) * t;
+
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
 
 const CursorGlowButton = ({
     children,
@@ -37,12 +18,14 @@ const CursorGlowButton = ({
     className = '',
     ...rest
 }) => {
-    const buttonRef = useRef(null);
-    const rafRef    = useRef(null);
-    const targetRef  = useRef({ x: 0, y: 0 });
-    const currentRef = useRef({ x: 0, y: 0 });
+    const buttonRef    = useRef(null);
+    const rafRef       = useRef(null);
+    const targetRef    = useRef({ x: 0, y: 0 });
+    const currentRef   = useRef({ x: 0, y: 0 });
     const isHoveredRef = useRef(false);
     const [isHovered, setIsHovered] = useState(false);
+
+    // ─── GLOW TRACKING ────────────────────────────────────────────────────────
 
     const applyPosition = useCallback((x, y) => {
         buttonRef.current?.style.setProperty('--glow-x', `${x}px`);
@@ -54,17 +37,12 @@ const CursorGlowButton = ({
         const cy = lerp(currentRef.current.y, targetRef.current.y, LERP);
         currentRef.current = { x: cx, y: cy };
         applyPosition(cx, cy);
-        if (isHoveredRef.current) {
-            rafRef.current = requestAnimationFrame(animate);
-        }
+        if (isHoveredRef.current) rafRef.current = requestAnimationFrame(animate);
     }, [applyPosition]);
 
     const handleMouseMove = useCallback((e) => {
         const rect = e.currentTarget.getBoundingClientRect();
-        targetRef.current = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
-        };
+        targetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }, []);
 
     const handleMouseEnter = useCallback((e) => {
@@ -72,9 +50,9 @@ const CursorGlowButton = ({
         setIsHovered(true);
         if (buttonRef.current) {
             const rect = buttonRef.current.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            // Snap to entry point — no initial teleport lag
+            const x    = e.clientX - rect.left;
+            const y    = e.clientY - rect.top;
+            // Snap to entry point — prevents initial teleport lag
             currentRef.current = { x, y };
             targetRef.current  = { x, y };
             applyPosition(x, y);
@@ -89,7 +67,11 @@ const CursorGlowButton = ({
         cancelAnimationFrame(rafRef.current);
     }, []);
 
+    // ─── CLEANUP ──────────────────────────────────────────────────────────────
+
     useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
+    // ─── RENDER ───────────────────────────────────────────────────────────────
 
     return (
         <button
@@ -104,7 +86,6 @@ const CursorGlowButton = ({
             style={{ '--glow-opacity': isHovered ? '1' : '0' }}
             {...rest}
         >
-            {/* Outer bleed + surface glow — extends past button boundary */}
             <span className={styles.glow} aria-hidden="true" />
             <span className={styles.content}>{children}</span>
         </button>

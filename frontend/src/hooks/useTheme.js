@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 
-/* ============================================================================
- * THEME HOOK
- * ============================================================================
- * Reads theme from localStorage (userSessionInfo.prefersColorScheme).
- * Falls back to the OS preference if no stored value exists.
- * Applies data-theme attribute to <html> and persists the choice.
- * ============================================================================
- */
-
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'userSessionInfo';
 const THEME_FIELD = 'prefersColorScheme';
 
+// ─── INITIAL VALUE ────────────────────────────────────────────────────────────
+// Reads stored theme; falls back to OS prefers-color-scheme.
 export const getInitialTheme = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -28,10 +22,12 @@ export const getInitialTheme = () => {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
+// ─── HOOK ────────────────────────────────────────────────────────────────────
+// Manages light/dark state — syncs DOM attribute and persists to storage.
 export const useTheme = () => {
   const [theme, setTheme] = useState(getInitialTheme);
 
-  /* Apply theme to DOM and persist */
+  // ─── DOM SYNC ─────────────────────────────────────────────────────────────
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
 
@@ -45,7 +41,8 @@ export const useTheme = () => {
     }
   }, [theme]);
 
-  /* Mirror OS preference changes when user has no stored preference */
+  // ─── OS PREFERENCE LISTENER ─────────────────────────────────────────────────
+  // Only auto-switches when the user has no explicit stored preference.
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
     if (!mq) return;

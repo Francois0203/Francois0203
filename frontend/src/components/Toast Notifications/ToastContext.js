@@ -2,44 +2,36 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { createPortal } from "react-dom";
 import ToastNotification from "./ToastNotification";
 
-/* ============================================================================
- * TOAST CONTEXT
- * ============================================================================
- * Provider for toast notifications system
- * Uses React portals to render toasts at document body level
- * ============================================================================
- */
-
+// ─── CONTEXT ────────────────────────────────────────────────────────────────
 const ToastContext = createContext();
 
 export const useToast = () => useContext(ToastContext);
 
+// ─── PROVIDER ───────────────────────────────────────────────────────────────
+// Portals toast stack to a dedicated DOM node so z-index is never trapped.
 export const ToastProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts]         = useState([]);
   const [portalRoot, setPortalRoot] = useState(null);
   const idCounterRef = useRef(0);
 
+  // ─── PORTAL ROOT ─────────────────────────────────────────────────────────
+  // Create (or reuse) a fixed overlay node at the top of <body>.
   useEffect(() => {
     let div = document.getElementById("toast-portal-root");
-    
     if (!div) {
       div = document.createElement("div");
       div.id = "toast-portal-root";
       div.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999999999 !important;";
       document.body.appendChild(div);
     }
-    
     setPortalRoot(div);
-
-    return () => {
-      // Don't remove on cleanup to maintain DOM position
-    };
   }, []);
 
+  // ─── TOAST CONTROLS ────────────────────────────────────────────────────────
   const showToast = useCallback((type, title, message, errorCode) => {
     const id = ++idCounterRef.current;
     setToasts((prev) => [...prev, { id, type, title, message, errorCode }]);
-
+    // Auto-dismiss after 5 s visible + ~0.7 s fade
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 5700);
@@ -49,16 +41,17 @@ export const ToastProvider = ({ children }) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  // ─── RENDER ───────────────────────────────────────────────────────────────
   const toastContainer = (
     <div style={{
-      position: "fixed",
-      top: "var(--spacing-lg)",
-      right: "var(--spacing-lg)",
-      display: "flex",
+      position:      "fixed",
+      top:           "var(--spacing-lg)",
+      right:         "var(--spacing-lg)",
+      display:       "flex",
       flexDirection: "column",
-      alignItems: "flex-end",
+      alignItems:    "flex-end",
       pointerEvents: "auto",
-      maxWidth: "calc(100vw - 3rem)",
+      maxWidth:      "calc(100vw - 3rem)",
     }}>
       {toasts.map((t) => (
         <ToastNotification

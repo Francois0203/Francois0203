@@ -1,5 +1,5 @@
 :root {
-    /* ==================== GENERAL SETTINGS ==================== */
+    /* ─── GENERAL SETTINGS ──────────────────────────────────────────────────── */
     /* Font Sizes - Responsive Typography */
     --font-size-xs: 0.875rem;     /* 14px */
     --font-size-sm: 0.9375rem;    /* 15px */
@@ -51,7 +51,7 @@
     --z-popover: 1060;
     --z-tooltip: 1070;
 
-    /* ==================== COLOR PALETTE ==================== */
+    /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
 
     /* — Text: Light Mode — */
     --primary-text-color-light: #0f1117;         /* Near-black, cool undertone */
@@ -169,9 +169,8 @@
 }
 
 
-/* ==================== THEME OVERRIDES ==================== */
+/* ─── THEME OVERRIDES ───────────────────────────────────────────────────────── */
 
-/* Dark Theme */
 [data-theme="dark"] {
     --primary-text-color: var(--primary-text-color-dark);
     --secondary-text-color: var(--secondary-text-color-dark);
@@ -213,7 +212,7 @@
 }
 
 
-/* ===================== Page & Page Content ==================== */
+/* ─── PAGE & BODY ───────────────────────────────────────────────────────────── */
 html {
     /* Smooth scrolling for better UX */
     scroll-behavior: smooth;
@@ -242,8 +241,8 @@ html, body, #root {
 }
 
 
-/* ==================== RESPONSIVE BREAKPOINTS ==================== */
-/* Mobile First Approach */
+/* ─── RESPONSIVE BREAKPOINTS ────────────────────────────────────────────────── */
+/* Mobile first */
 
 /* Extra small devices (phones, less than 576px) */
 /* Default styles apply here */

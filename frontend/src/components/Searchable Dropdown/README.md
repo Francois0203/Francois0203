@@ -1,43 +1,43 @@
-# Searchable Select
+# Searchable Dropdown
 
-A customizable searchable dropdown component built on react-select with theme integration.
+React-Select wrapper styled with CSS custom property tokens to match the app theme.
 
 ## Features
 
-- Searchable dropdown with filtering
-- Custom styling matching the app theme
-- Support for single and multi-select
-- Keyboard navigation
-- Responsive design
-- Integration with CSS custom properties
+- Searchable with filtering
+- Single and multi-select modes
+- Custom styles aligned to `Theme.css` variables via JS style overrides
+- State-based styles (hover, focus, selected) in `SearchableDropdown.css`
+- Menu portalled to `<body>` for correct stacking
+- Keyboard navigation built in
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `options` | `array` | - | Array of option objects with `value` and `label` |
-| `value` | `object|array` | - | Currently selected value(s) |
-| `onChange` | `function` | - | Callback when selection changes |
-| `placeholder` | `string` | `'Select...'` | Placeholder text |
-| `isMulti` | `boolean` | `false` | Whether multiple selections are allowed |
-| `isDisabled` | `boolean` | `false` | Whether the select is disabled |
+|---|---|---|---|
+| `options` | `array` | — | `[{ value, label }]` option objects |
+| `value` | `object \| array` | — | Currently selected value(s) |
+| `onChange` | `function` | — | Called on selection change |
+| `placeholder` | `string` | — | Input placeholder text |
+| `isClearable` | `boolean` | `true` | Show clear button |
+| `isDisabled` | `boolean` | `false` | Disables the control |
+| `components` | `object` | `{}` | Override react-select sub-components |
 
 ## Usage
 
 ```jsx
-import SearchableSelect from './components/Searchable Select';
+import SearchableDropdown from './components/Searchable Dropdown';
 
 const options = [
-  { value: 'apple', label: 'Apple' },
-  { value: 'banana', label: 'Banana' },
-  { value: 'cherry', label: 'Cherry' }
+  { value: 'a', label: 'Apple' },
+  { value: 'b', label: 'Banana' },
 ];
 
 function MyForm() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <SearchableSelect
+    <SearchableDropdown
       options={options}
       value={selected}
       onChange={setSelected}

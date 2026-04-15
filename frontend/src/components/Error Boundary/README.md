@@ -1,21 +1,21 @@
 # Error Boundary
 
-A React error boundary component that gracefully handles JavaScript errors in the component tree, preventing the entire application from crashing.
+Catches JavaScript errors anywhere in the child component tree, preventing app crashes. Displays an animated error UI with recovery options.
 
 ## Features
 
-- Catches and logs JavaScript errors in child components
-- Displays a user-friendly error UI with recovery options
-- Supports custom error logging and reset callbacks
-- Includes navigation buttons for home and retry actions
+- Catches render, lifecycle, and constructor errors in the subtree
+- Animated fallback UI — particles, glow orbs, alert icon
+- Collapsible technical details (error message + component stack)
+- Reload and Go Home recovery buttons
+- `data-theme` applied for full theme integration
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `onError` | `function` | - | Optional callback function called when an error occurs, receives `(error, errorInfo)` |
-| `onReset` | `function` | - | Optional callback function called when the error boundary is reset |
-| `children` | `ReactNode` | - | The child components to wrap with error boundary protection |
+|---|---|---|---|
+| `children` | `ReactNode` | — | The component tree to protect |
+| `onReset` | `function` | `window.location.reload()` | Override the Reload action |
 
 ## Usage
 
@@ -24,12 +24,13 @@ import ErrorBoundary from './components/Error Boundary';
 
 function App() {
   return (
-    <ErrorBoundary
-      onError={(error, errorInfo) => console.error('Custom error logging:', error)}
-      onReset={() => console.log('Error boundary reset')}
-    >
+    <ErrorBoundary onReset={() => resetAppState()}>
       <YourComponent />
     </ErrorBoundary>
   );
 }
 ```
+
+## Architecture
+
+`ErrorBoundaryInner` is a class component (required by React's error boundary API). `ErrorBoundary` is a thin function wrapper that injects the current `theme` value via `useTheme`, since hooks cannot run inside class components.

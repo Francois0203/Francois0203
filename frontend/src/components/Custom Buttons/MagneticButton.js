@@ -2,69 +2,44 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './MagneticButton.module.css';
 
-/**
- * MagneticButton
- *
- * A premium magnetic button with cursor-proximity particle effect.
- *
- * Interaction layers:
- *   1. Proximity field  — window-level mousemove listener detects cursor
- *      distance to the button. When within PROXIMITY_RADIUS (px), particles
- *      spawn and drift inward. No hover required.
- *   2. Magnetic pull    — once hovered, the button body translates toward
- *      the cursor (±8px X, ±5px Y). RAF + lerp keeps movement fluid.
- *   3. Spring back      — on mouse leave, a slow cubic-bezier eases the
- *      button back to origin, simulating magnetic release.
- *   4. Surface sheen    — static radial highlight from above, always visible.
- *
- * Particle design:
- *   - 6 particles per burst, re-seeded each proximity entry
- *   - Each particle: 2–3px dot, random angle & radius, drifts inward
- *   - Drawn on a Canvas that sits behind the button (pointer-events: none)
- *   - Canvas is sized to PROXIMITY_RADIUS × 2 and centered on the button
- *   - No DOM nodes per particle — single canvas, RAF draw loop
- */
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+// Magnetic button with cursor-proximity particle effect.
+// Interaction layers: proximity particles → magnetic pull on hover → spring-back on leave.
+// Particle canvas portalled to <body> to escape backdrop-filter stacking contexts.
 
-const PROXIMITY_RADIUS = 110; // px from button centre to start particles
-const PARTICLE_COUNT   = 6;
-const LERP_FACTOR      = 0.10; // magnetic pull smoothing (lower = smoother)
+const PROXIMITY_RADIUS = 110; // px from button center — particles activate below this
+const PARTICLE_COUNT   = 6;   // initial burst per proximity entry
+const LERP_FACTOR      = 0.10; // magnetic pull smoothing
 
 const lerp = (a, b, t) => a + (b - a) * t;
 
-// ---------------------------------------------------------------------------
-// Particle factory
-// ---------------------------------------------------------------------------
+// ─── PARTICLE FACTORY ─────────────────────────────────────────────────────────
+// Spawns near the cursor with wide scatter; drifts toward a random interior
+// point with an orbital wobble for organic, non-linear motion.
 const createParticle = (btnRect, spawnX, spawnY) => {
-    // Spawn at the cursor with a wide random spread so particles
-    // scatter in all directions rather than converging as a single stream
     const angle  = Math.random() * Math.PI * 2;
     const radius = 4 + Math.random() * 22; // 4–26px scatter from cursor
     return {
-        // World coords — starts near cursor, drifts toward button centre
+        // Starts near cursor, drifts toward a random interior offset
         x: spawnX + Math.cos(angle) * radius,
         y: spawnY + Math.sin(angle) * radius,
-        // Each particle gets its own lerp target offset from the button centre
-        // so they arrive at slightly different points, not a single dot pile-up
+        // Per-particle target offset — prevents pile-up at a single point
         targetOffsetX: (Math.random() - 0.5) * (btnRect.width  * 0.6),
         targetOffsetY: (Math.random() - 0.5) * (btnRect.height * 0.6),
-        size:    1.2 + Math.random() * 1.6,   // 1.2–2.8px
-        opacity: 0,
-        maxOpacity: 0.30 + Math.random() * 0.30,
-        // Each particle gets a different speed — staggered drift
-        speed:   0.008 + Math.random() * 0.016,
-        // Subtle independent drift angle that slowly rotates — organic feel
-        driftAngle: Math.random() * Math.PI * 2,
-        driftSpeed: (Math.random() - 0.5) * 0.04,
-        driftRadius: 2 + Math.random() * 5,    // px of orbital wobble
-        phase:   'fadein',
-        life:    0,
-        maxLife: 70 + Math.floor(Math.random() * 80), // frames
+        size:        1.2 + Math.random() * 1.6,
+        opacity:     0,
+        maxOpacity:  0.30 + Math.random() * 0.30,
+        speed:       0.008 + Math.random() * 0.016, // staggered drift
+        driftAngle:  Math.random() * Math.PI * 2,
+        driftSpeed:  (Math.random() - 0.5) * 0.04,
+        driftRadius: 2 + Math.random() * 5,         // px orbital wobble
+        phase:       'fadein',
+        life:        0,
+        maxLife:     70 + Math.floor(Math.random() * 80),
     };
 };
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
 const MagneticButton = ({
     children,
     onClick,
@@ -73,20 +48,21 @@ const MagneticButton = ({
     className = '',
     ...rest
 }) => {
-    const buttonRef  = useRef(null);
-    const canvasRef  = useRef(null);
-    const rafMagRef  = useRef(null);
-    const rafPrtRef  = useRef(null);
-    const particles  = useRef([]);
-    const magCurrent = useRef({ x: 0, y: 0 });
-    const magTarget  = useRef({ x: 0, y: 0 });
-    const isNearRef    = useRef(false);
-    const isHoverRef   = useRef(false);
+    const buttonRef     = useRef(null);
+    const canvasRef     = useRef(null);
+    const rafMagRef     = useRef(null);
+    const rafPrtRef     = useRef(null);
+    const particles     = useRef([]);
+    const magCurrent    = useRef({ x: 0, y: 0 });
+    const magTarget     = useRef({ x: 0, y: 0 });
+    const isNearRef     = useRef(false);
+    const isHoverRef    = useRef(false);
     const frameCountRef = useRef(0);
     const cursorPosRef  = useRef({ x: 0, y: 0 });
     const [isHovered, setIsHovered] = useState(false);
 
-    // ── Canvas size = proximity diameter, centred on button ────────────────
+    // ─── CANVAS SIZING ──────────────────────────────────────────────────────────
+    // Canvas = proximity diameter; centred on the button in page coordinates.
     const positionCanvas = useCallback(() => {
         const canvas = canvasRef.current;
         const btn    = buttonRef.current;
@@ -101,7 +77,7 @@ const MagneticButton = ({
         canvas.style.top  = `${rect.top  + scrollY + rect.height / 2 - PROXIMITY_RADIUS}px`;
     }, []);
 
-    // ── Particle draw loop ──────────────────────────────────────────────────
+    // ─── PARTICLE DRAW LOOP ─────────────────────────────────────────────────────────
     const drawParticles = useCallback(() => {
         const canvas = canvasRef.current;
         const btn    = buttonRef.current;
@@ -115,7 +91,7 @@ const MagneticButton = ({
 
         ctx.clearRect(0, 0, d, d);
 
-        // Continuously trickle new particles while cursor is in proximity
+        // Trickle new particles while cursor is in proximity
         frameCountRef.current++;
         if (isNearRef.current && frameCountRef.current % 30 === 0) {
             particles.current.push(createParticle(rect, cursorPosRef.current.x, cursorPosRef.current.y));
@@ -130,8 +106,7 @@ const MagneticButton = ({
         particles.current = particles.current.filter((p) => {
             p.life++;
 
-            // Drift toward particle's own target offset within the button,
-            // plus a slow orbital wobble for organic, non-linear motion
+            // Drift toward personal target offset + slow orbital wobble
             p.driftAngle += p.driftSpeed;
             const targetX = cx + p.targetOffsetX + Math.cos(p.driftAngle) * p.driftRadius;
             const targetY = cy + p.targetOffsetY + Math.sin(p.driftAngle) * p.driftRadius;
@@ -149,17 +124,15 @@ const MagneticButton = ({
                 if (p.opacity <= 0) return false; // remove
             }
 
-            // Convert world → canvas-local
+            // Convert world → canvas-local coords
             const px = (p.x - cx) + lx;
             const py = (p.y - cy) + ly;
 
-            // Gentle radial glow
+            // Read accent colour from CSS custom property (set once per proximity entry)
+            const rgb  = canvas.dataset.accentRgb || '45, 212, 191';
             const grad = ctx.createRadialGradient(px, py, 0, px, py, p.size * 2.5);
-            // Use CSS variable colour split — approximated with a known teal
-            // We read the computed value once at draw time via a data attribute
-            const rgb = canvas.dataset.accentRgb || '45, 212, 191';
-            grad.addColorStop(0,   `rgba(${rgb}, ${p.opacity})`);
-            grad.addColorStop(1,   `rgba(${rgb}, 0)`);
+            grad.addColorStop(0, `rgba(${rgb}, ${p.opacity})`);
+            grad.addColorStop(1, `rgba(${rgb}, 0)`);
 
             ctx.beginPath();
             ctx.arc(px, py, p.size * 2.5, 0, Math.PI * 2);
@@ -177,7 +150,7 @@ const MagneticButton = ({
         }
     }, []);
 
-    // ── Magnetic RAF loop ───────────────────────────────────────────────────
+    // ─── MAGNETIC RAF LOOP ─────────────────────────────────────────────────────────
     const animateMag = useCallback(() => {
         const btn = buttonRef.current;
         if (!btn) return;
@@ -186,12 +159,11 @@ const MagneticButton = ({
         magCurrent.current = { x: cx, y: cy };
         btn.style.setProperty('--mag-x', `${cx}px`);
         btn.style.setProperty('--mag-y', `${cy}px`);
-        if (isHoverRef.current) {
-            rafMagRef.current = requestAnimationFrame(animateMag);
-        }
+        if (isHoverRef.current) rafMagRef.current = requestAnimationFrame(animateMag);
     }, []);
 
-    // ── Window-level proximity listener ────────────────────────────────────
+    // ─── PROXIMITY LISTENER ───────────────────────────────────────────────────────
+    // Window-level — detects cursor entering/leaving the proximity field.
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -219,7 +191,7 @@ const MagneticButton = ({
             isNearRef.current = dist < PROXIMITY_RADIUS;
 
             if (isNearRef.current && !wasNear) {
-                // Entered proximity — seed burst at cursor position
+                // Entered proximity — seed initial burst at cursor
                 positionCanvas();
                 syncAccentRgb();
                 for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -228,8 +200,7 @@ const MagneticButton = ({
                 cancelAnimationFrame(rafPrtRef.current);
                 rafPrtRef.current = requestAnimationFrame(drawParticles);
             } else if (!isNearRef.current && wasNear) {
-                // Left proximity — let existing particles fade, schedule more
-                // fadeouts are handled by the draw loop naturally
+                // Left proximity — existing particles fade out naturally
             }
         };
 
@@ -248,7 +219,7 @@ const MagneticButton = ({
         const nx = (e.clientX - rect.left) / rect.width  - 0.5;
         const ny = (e.clientY - rect.top)  / rect.height - 0.5;
         magTarget.current = { x: nx * 16, y: ny * 10 }; // ±8px X, ±5px Y
-        // Track cursor position for reactive glass border
+        // Track cursor for reactive glass border glow
         btn.style.setProperty('--glow-x', `${e.clientX - rect.left}px`);
         btn.style.setProperty('--glow-y', `${e.clientY - rect.top}px`);
     }, []);
@@ -266,19 +237,19 @@ const MagneticButton = ({
         setIsHovered(false);
         buttonRef.current?.style.setProperty('--glow-opacity', '0');
         magTarget.current  = { x: 0, y: 0 };
-        // Let the CSS transition handle the spring-back
+        // CSS transition handles spring-back; reset synchronously
         cancelAnimationFrame(rafMagRef.current);
         magCurrent.current = { x: 0, y: 0 };
         buttonRef.current?.style.setProperty('--mag-x', '0px');
         buttonRef.current?.style.setProperty('--mag-y', '0px');
     }, []);
 
-    // ── Cleanup ─────────────────────────────────────────────────────────────
+    // ─── CLEANUP ──────────────────────────────────────────────────────────────
     useEffect(() => () => {
         cancelAnimationFrame(rafMagRef.current);
         cancelAnimationFrame(rafPrtRef.current);
     }, []);
-
+    // ─── RENDER ───────────────────────────────────────────────────────────────
     return (
         <>
             {/* Particle canvas — portaled to body to escape backdrop-filter stacking contexts */}
@@ -301,9 +272,7 @@ const MagneticButton = ({
                 onMouseLeave={handleMouseLeave}
                 {...rest}
             >
-                {/* Static overhead sheen — surface depth */}
-                <span className={styles.sheen} aria-hidden="true" />
-                {/* Accent cursor glow — light flowing across the glass surface */}
+                <span className={styles.sheen}       aria-hidden="true" />
                 <span className={styles.surfaceGlow} aria-hidden="true" />
                 <span className={styles.content}>{children}</span>
             </button>

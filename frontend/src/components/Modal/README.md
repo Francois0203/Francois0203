@@ -1,23 +1,23 @@
 # Modal
 
-A flexible modal dialog component with overlay, keyboard navigation, and customizable content.
+Liquid-glass modal dialog with full accessibility support — focus trapping, scroll lock, keyboard navigation.
 
 ## Features
 
-- Click-outside-to-close functionality
-- ESC key support for closing
-- Customizable title and content
-- Accessible with proper ARIA labels
-- Smooth overlay transitions
+- Focus trapped inside dialog while open; restored to opener on close
+- Scroll locked on `<body>` with scrollbar-width compensation
+- Escape closes; backdrop click closes; Tab wraps at both ends
+- Optional title renders a labelled `<header>`
+- `aria-modal`, `role="dialog"`, `aria-labelledby` wired up correctly
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `open` | `boolean` | - | Controls whether the modal is visible |
-| `onClose` | `function` | - | Callback function called when the modal should close |
-| `children` | `ReactNode` | - | The content to display inside the modal |
-| `title` | `string` | - | Optional title text displayed at the top of the modal |
+|---|---|---|---|
+| `open` | `boolean` | — | Controls visibility |
+| `onClose` | `function` | — | Called when the modal should close |
+| `children` | `ReactNode` | — | Modal body content |
+| `title` | `string` | — | Optional heading text |
 
 ## Usage
 
@@ -25,17 +25,13 @@ A flexible modal dialog component with overlay, keyboard navigation, and customi
 import Modal from './components/Modal';
 
 function MyComponent() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>Open Modal</button>
-      <Modal 
-        open={isOpen} 
-        onClose={() => setIsOpen(false)}
-        title="My Modal"
-      >
-        <p>This is the modal content.</p>
+      <button onClick={() => setOpen(true)}>Open</button>
+      <Modal open={open} onClose={() => setOpen(false)} title="My Modal">
+        <p>Modal content here.</p>
       </Modal>
     </>
   );

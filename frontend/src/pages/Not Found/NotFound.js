@@ -1,12 +1,3 @@
-/* ============================================================================
- * NOT FOUND PAGE
- * ============================================================================
- * Premium 404 page — liquid glass aesthetic with physics-driven glass squares,
- * rotating and drifting randomly in the background. Funny sayings cycle in the
- * card. Same physics engine and cursor-glow technique as the Loading page.
- * ============================================================================
- */
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdHome, MdArrowBack } from 'react-icons/md';
@@ -18,16 +9,8 @@ import '../../styles/Theme.css';
 
 const SAYINGS = sayingsData.sayings;
 
-/*
- * Square blob definitions.
- *  r        – half the CSS width (used for boundary clamping & repulsion)
- *  sx/sy    – starting position as fraction of viewport
- *  vx/vy    – initial velocity in px/s
- *  rotSpeed – rotation speed in degrees/second (negative = counter-clockwise)
- *
- * Indices 0-2 are ambient glow squares (blurred, background layer).
- * Indices 3-5 are glass lens squares (backdrop-filter, cursor-reactive).
- */
+// ─── BLOB DEFS ───────────────────────────────────────────────────────────────────
+// Indices 0–2: ambient glow. Indices 3–5: glass squares (cursor-reactive).
 const BLOB_DEFS = [
   { cls: [styles.ambientSquare, styles.ambient1], r: 240, sx: 0.05, sy: 0.05, vx:  10, vy:   6, rotSpeed:  3.5 },
   { cls: [styles.ambientSquare, styles.ambient2], r: 190, sx: 0.70, sy: 0.65, vx:  -8, vy:  -5, rotSpeed: -4.0 },
@@ -37,6 +20,7 @@ const BLOB_DEFS = [
   { cls: [styles.glassSquare,   styles.square3],  r: 110, sx: 0.50, sy: 0.48, vx:  -9, vy:   5, rotSpeed: -4.5 },
 ];
 
+// ─── COMPONENT ───────────────────────────────────────────────────────────────────
 const NotFound = () => {
   const navigate = useNavigate();
   const [currentSaying, setCurrentSaying] = useState(0);
@@ -54,7 +38,7 @@ const NotFound = () => {
     else navigate('/');
   };
 
-  /* ── Saying cycling ── */
+  // ─── SAYING CYCLING ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const interval = setInterval(() => {
       setSayingVisible(false);
@@ -67,7 +51,7 @@ const NotFound = () => {
     return () => clearInterval(interval);
   }, []);
 
-  /* ── Square blob physics ── */
+  // ─── BLOB PHYSICS ──────────────────────────────────────────────────────────────
   useEffect(() => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -89,7 +73,7 @@ const NotFound = () => {
       };
     });
 
-    /* Pin initial positions so there is no flash from 0,0 */
+    // Pin positions immediately — prevents flash from 0,0
     blobs.forEach((b, i) => {
       const el = blobRefs.current[i];
       if (el) el.style.transform = `translate(${b.x}px, ${b.y}px) rotate(${b.angle}deg)`;
@@ -97,7 +81,7 @@ const NotFound = () => {
 
     physicsRef.current = { blobs, vw, vh, lastTime: null };
 
-    /* ── Animation loop ── */
+    // ─── ANIMATION LOOP ────────────────────────────────────────────────────────────
     const tick = (timestamp) => {
       const state = physicsRef.current;
       if (!state) return;
@@ -110,7 +94,7 @@ const NotFound = () => {
       const MAX_SPEED = 18;
       const DAMPING   = 0.999;
 
-      /* Step 1 – integrate position, velocity, and rotation */
+      // Step 1 – integrate
       bs.forEach(b => {
         b.x     += b.vx       * dt;
         b.y     += b.vy       * dt;
@@ -119,7 +103,7 @@ const NotFound = () => {
         b.angle += b.rotSpeed * dt;
       });
 
-      /* Step 2 – soft pair repulsion */
+      // Step 2 – soft pair repulsion
       for (let i = 0; i < bs.length; i++) {
         for (let j = i + 1; j < bs.length; j++) {
           const a = bs[i], b = bs[j];
@@ -136,7 +120,7 @@ const NotFound = () => {
         }
       }
 
-      /* Step 3 – soft push + hard clamp to viewport */
+      // Step 3 – soft push + hard clamp to viewport
       bs.forEach(b => {
         const size     = b.r * 2;
         const softZone = b.r * 0.30;
@@ -160,7 +144,7 @@ const NotFound = () => {
         }
       });
 
-      /* Step 4 – write transform + cursor vars to DOM */
+      // Step 4 – write transform + cursor vars to DOM
       const mouse = mouseRef.current;
       bs.forEach((b, i) => {
         const el = blobRefs.current[i];
@@ -177,7 +161,7 @@ const NotFound = () => {
 
     rafRef.current = requestAnimationFrame(tick);
 
-    /* ── Periodic random nudges ── */
+    // ─── RANDOM NUDGES ────────────────────────────────────────────────────────────
     const scheduleNudge = () => {
       nudgeTimer.current = setTimeout(() => {
         const bs = physicsRef.current?.blobs;

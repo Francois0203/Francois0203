@@ -1,34 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-/* Data */
 import versesData from '../../data/verses.json';
-
-/* Styling */
 import styles from './Loading.module.css';
 import '../../styles/Theme.css';
 
-/* ============================================================================
- * LOADING PAGE
- * ============================================================================
- * Premium liquid glass loading screen.
- * Blobs are driven by a JS physics engine:
- *   – slow, continuous random drift
- *   – soft repulsion keeps them from overlapping
- *   – periodic random nudges prevent any repeating pattern
- * CSS handles only visual morphing (border-radius) independently per blob.
- * ============================================================================
- */
-
+// ─── CONSTANTS ───────────────────────────────────────────────────────────────────
 const BIBLE_VERSES = versesData.verses;
 const DOT_COUNT = 4;
 
-/*
- * Blob definitions
- *  r   – collision radius in px (approximate)
- *  sx  – starting X as fraction of viewport width
- *  sy  – starting Y as fraction of viewport height
- *  vx/vy – initial velocity in px/s
- */
+// ─── BLOB DEFS ───────────────────────────────────────────────────────────────────
+// Physics shape: r = collision radius, sx/sy = start position, vx/vy = velocity.
 const BLOB_DEFS = [
   { cls: [styles.ambientBlob, styles.ambient1], r: 270, sx: 0.10, sy: 0.12, vx:  13, vy:   8 },
   { cls: [styles.ambientBlob, styles.ambient2], r: 240, sx: 0.65, sy: 0.62, vx: -10, vy:  -7 },
@@ -52,7 +33,7 @@ const Loading = ({
   /* Global mouse position — updated via onMouseMove on the wrapper */
   const mouseRef    = useRef({ x: -1000, y: -1000 });
 
-  /* ── Verse cycling ── */
+  // ─── VERSE CYCLING ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!showVerse) return;
     const interval = setInterval(() => {
@@ -66,7 +47,7 @@ const Loading = ({
     return () => clearInterval(interval);
   }, [showVerse]);
 
-  /* ── Blob physics ── */
+  // ─── BLOB PHYSICS ──────────────────────────────────────────────────────────────
   useEffect(() => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -87,7 +68,7 @@ const Loading = ({
       };
     });
 
-    /* Pin initial positions immediately so there is no flash from 0,0 */
+    // Pin positions immediately — prevents flash from 0,0
     blobs.forEach((b, i) => {
       const el = blobRefs.current[i];
       if (el) el.style.transform = `translate(${b.x}px, ${b.y}px)`;
@@ -95,7 +76,7 @@ const Loading = ({
 
     physicsRef.current = { blobs, vw, vh, lastTime: null };
 
-    /* ── Animation loop ── */
+    // ─── ANIMATION LOOP ────────────────────────────────────────────────────────────
     const tick = (timestamp) => {
       const state = physicsRef.current;
       if (!state) return;
@@ -108,7 +89,7 @@ const Loading = ({
       const MAX_SPEED = 20; // px/s — deliberately slow
       const DAMPING   = 0.999;
 
-      /* Step 1 – integrate */
+      // Step 1 – integrate
       bs.forEach(b => {
         b.x += b.vx * dt;
         b.y += b.vy * dt;
@@ -116,7 +97,7 @@ const Loading = ({
         b.vy *= DAMPING;
       });
 
-      /* Step 2 – soft pair repulsion (prevent blobs overlapping) */
+      // Step 2 – soft pair repulsion
       for (let i = 0; i < bs.length; i++) {
         for (let j = i + 1; j < bs.length; j++) {
           const a  = bs[i];
@@ -136,9 +117,7 @@ const Loading = ({
         }
       }
 
-      /* Step 3 – hard boundary: blobs must stay fully within the viewport.
-       * A soft push starts when the blob is within 30% of its radius from
-       * any edge, then a hard clamp guarantees it never escapes. */
+      // Step 3 – soft push + hard clamp to viewport
       bs.forEach(b => {
         const size      = b.r * 2;
         const softZone  = b.r * 0.30;
@@ -153,14 +132,14 @@ const Loading = ({
         b.x = Math.max(0, Math.min(vw - size, b.x));
         b.y = Math.max(0, Math.min(vh - size, b.y));
 
-        /* Speed cap */
+        // Speed cap
         const speed = Math.hypot(b.vx, b.vy);
         if (speed > MAX_SPEED) {
           b.vx = (b.vx / speed) * MAX_SPEED;
           b.vy = (b.vy / speed) * MAX_SPEED;
         }
 
-        /* Minimum drift — so blobs never fully stop */
+        // Minimum drift
         if (speed < 2) {
           const angle = Math.random() * Math.PI * 2;
           b.vx += Math.cos(angle) * 4;
@@ -168,9 +147,7 @@ const Loading = ({
         }
       });
 
-      /* Step 4 – write positions to DOM (GPU-composited transform only).
-       * Glass blobs (i >= 3) also receive the cursor position relative to
-       * the blob's own origin, powering the cursor-reactive glow in CSS. */
+      // Step 4 – write transform + cursor vars to DOM
       const mouse = mouseRef.current;
       bs.forEach((b, i) => {
         const el = blobRefs.current[i];
@@ -187,12 +164,11 @@ const Loading = ({
 
     rafRef.current = requestAnimationFrame(tick);
 
-    /* ── Periodic random nudges — keeps movement feeling non-repeating ── */
+    // ─── RANDOM NUDGES ────────────────────────────────────────────────────────────
     const scheduleNudge = () => {
       nudgeTimer.current = setTimeout(() => {
         const bs = physicsRef.current?.blobs;
         if (bs) {
-          /* Pick 2–3 random blobs and give them a random kick */
           const count = 2 + Math.floor(Math.random() * 2);
           [...Array(bs.length).keys()]
             .sort(() => Math.random() - 0.5)

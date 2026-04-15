@@ -2,16 +2,12 @@ import React from 'react';
 import Select from 'react-select';
 import './SearchableDropdown.css';
 
-/* ============================================================================
- * REACT-SELECT STYLE OVERRIDES
- * ============================================================================
- * Only structural layout and direct var() token references live here.
- * State-based styles that require rgba() composition (hover, focus, selected)
- * are handled in SearchableDropdown.css via the classNamePrefix selectors,
- * since rgba(var(--x), alpha) does not resolve in JS inline-style objects.
- * ============================================================================
- */
+// ─── STYLES ─────────────────────────────────────────────────────────────────
+// Structural layout + CSS token references only.
+// State-based styles (hover, focus, selected) live in SearchableDropdown.css
+// via classNamePrefix selectors — rgba(var(--x), alpha) doesn’t resolve in JS.
 const customStyles = {
+  // ── Control (input wrapper) ──────────────────────────────────────────────────────────
   control: (base, { isDisabled }) => ({
     ...base,
     minHeight: '42px',
@@ -48,6 +44,7 @@ const customStyles = {
     color: 'var(--primary-text-color)',
   }),
 
+  // ── Indicators ────────────────────────────────────────────────────────────────
   indicatorsContainer: (base) => ({
     ...base,
     minHeight: '42px',
@@ -81,6 +78,7 @@ const customStyles = {
     transition: 'color 150ms ease',
   }),
 
+  // ── Dropdown menu ─────────────────────────────────────────────────────────────
   menu: (base) => ({
     ...base,
     background: 'var(--frosted-background)',
@@ -110,15 +108,15 @@ const customStyles = {
   option: (base) => ({
     ...base,
     borderRadius: 'var(--radius-sm)',
-    padding: 'var(--spacing-sm) var(--spacing-md)',
-    cursor: 'pointer',
-    fontSize: 'var(--font-size-sm)',
-    color: 'var(--primary-text-color)',
-    transition: 'background-color 120ms ease',
-    // background states handled in CSS
-    background: 'transparent',
+    padding:      'var(--spacing-sm) var(--spacing-md)',
+    cursor:       'pointer',
+    fontSize:     'var(--font-size-sm)',
+    color:        'var(--primary-text-color)',
+    transition:   'background-color 120ms ease',
+    background:   'transparent', // hover/selected states handled in CSS
   }),
 
+  // ── Values ─────────────────────────────────────────────────────────────────
   singleValue: (base) => ({
     ...base,
     color: 'var(--primary-text-color)',
@@ -132,7 +130,7 @@ const customStyles = {
     pointerEvents: 'none',
   }),
 
-  // Multi-select
+  // ── Multi-select tags ───────────────────────────────────────────────────────────
   multiValue: (base, { isDisabled }) => ({
     ...base,
     borderRadius: 'var(--radius-sm)',
@@ -151,13 +149,13 @@ const customStyles = {
 
   multiValueRemove: (base) => ({
     ...base,
-    color: 'var(--secondary-text-color)',
+    color:        'var(--secondary-text-color)',
     borderRadius: '0 var(--radius-sm) var(--radius-sm) 0',
-    transition: 'background-color 150ms ease, color 150ms ease',
+    transition:   'background-color 150ms ease, color 150ms ease',
     // hover handled in CSS
   }),
 
-  // Grouped options
+  // ── Groups ───────────────────────────────────────────────────────────────────
   group: (base) => ({
     ...base,
     padding: 'var(--spacing-xs) 0',
@@ -174,6 +172,7 @@ const customStyles = {
     marginBottom: '0',
   }),
 
+  // ── Empty / loading states ───────────────────────────────────────────────────────
   noOptionsMessage: (base) => ({
     ...base,
     color: 'var(--secondary-text-color)',
@@ -194,13 +193,15 @@ const customStyles = {
   }),
 };
 
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
+
 const SearchableDropdown = ({
   options,
   value,
   onChange,
   placeholder,
   isClearable = true,
-  isDisabled = false,
+  isDisabled  = false,
   components: userComponents = {},
   ...props
 }) => (

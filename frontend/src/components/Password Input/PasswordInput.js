@@ -2,17 +2,8 @@ import React, { useState } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import styles from './PasswordInput.module.css';
 
-/* ── Component ───────────────────────────────────────────────────────────── */
-/**
- * PasswordInput
- *
- * A styled password field with a show/hide eye-toggle button.
- *
- * Props (beyond standard <input> props forwarded to the underlying input):
- *   label      {string}   – visible label text (optional)
- *   id         {string}   – links <label> to <input> via htmlFor / id
- *   wrapperClassName {string} – extra class for the outer container
- */
+// \u2500\u2500\u2500 COMPONENT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// Password field with show/hide eye-toggle. Forwards all native input props.
 const PasswordInput = ({
   label,
   id,
@@ -24,9 +15,7 @@ const PasswordInput = ({
 
   return (
     <div className={`${styles.inputPasswordContainer}${wrapperClassName ? ` ${wrapperClassName}` : ''}`}>
-      {label && (
-        <label htmlFor={id}>{label}</label>
-      )}
+      {label && <label htmlFor={id}>{label}</label>}
       <div className={styles.inputEyeWrapper}>
         <input
           {...inputProps}

@@ -1,102 +1,49 @@
 # Loading
 
-A spectacular Christian-themed loading component featuring divine animations, rotating Bible verses, and heavenly visual effects. Perfect for spiritual applications and faith-based experiences.
+Fullscreen liquid glass loading screen. Six physics-driven blobs drift and repel each other continuously across the viewport. Cycles through Bible verses while loading.
 
-## ✨ Features
+---
 
-- **Central Cross Animation**: Rotating cross with golden halo and divine light rays
-- **Floating Christian Symbols**: Praying hands, dove, angel wings, Bible, holy oak, and prayer icons orbiting around
-- **Rotating Bible Verses**: Inspirational verses that cycle every 3 seconds
-- **Heavenly Particles**: Floating particles creating an ethereal atmosphere
-- **Ambient Light Effects**: Subtle glowing orbs for spiritual ambiance
-- **Progress Indicator**: Animated progress bar with flowing effects
-- **Multiple Sizes**: Small, medium, and large variants
-- **Responsive Design**: Optimized for all screen sizes
-- **Glassmorphism**: Modern backdrop blur effects
-- **Theme Integration**: Uses Theme.css variables for consistent styling
-
-## 🎨 Christian Symbolism
-
-The loading component incorporates meaningful Christian symbols:
-- ✝ **Cross**: Central symbol of faith with rotating halo
-- 🙏 **Praying Hands**: Represents prayer and devotion
-- 🕊️ **Dove**: Symbol of the Holy Spirit and peace
-- 👼 **Angel Wings**: Heavenly messengers and divine presence
-- 📖 **Bible**: The Word of God
-- 🌳 **Holy Oak**: Spiritual strength and endurance
-- 🤲 **Prayer**: Direct communication with God
-
-## 📖 Bible Verses
-
-Automatically cycles through inspirational verses:
-- "Wait for the LORD; be strong and take heart and wait for the LORD." (Psalm 27:14)
-- "Be still before the LORD and wait patiently for him." (Psalm 37:7)
-- "The LORD is good to those whose hope is in him, to the one who seeks him." (Lamentations 3:25)
-- "But those who hope in the LORD will renew their strength." (Isaiah 40:31)
-- "Trust in the LORD with all your heart and lean not on your own understanding." (Proverbs 3:5)
-
-## 🎯 Props
+## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `message` | `string` | `'Loading...'` | The main loading message text |
-| `showVerse` | `boolean` | `true` | Whether to display rotating Bible verses |
-| `size` | `string` | `'medium'` | Size variant: `'small'`, `'medium'`, `'large'` |
-| `variant` | `string` | `'default'` | Visual variant (for future expansion) |
+|---|---|---|---|
+| `message` | `string` | `'Loading'` | Text shown above the dot row |
+| `showVerse` | `boolean` | `true` | Whether to display the cycling verse block |
 
-## 💡 Usage Examples
+---
 
-### Basic Usage
+## Background Physics
+
+Six blobs (3 ambient glow + 3 glass) driven by a JS physics engine:
+- Continuous drift with velocity damping (`DAMPING: 0.999`, `MAX_SPEED: 20 px/s`)
+- Soft pair repulsion — prevents overlap without hard collisions
+- Hard viewport clamp — blobs never escape the screen
+- Minimum drift — blobs never come to a full stop
+- Periodic nudges every 2.2–5.4 s — prevents repeating patterns
+- Glass blobs (indices 3–5) track cursor via `--cursor-x` / `--cursor-y` CSS vars
+
+Blob sizes scale down on mobile (`< 400 px`: 38%, `< 600 px`: 57%).
+
+---
+
+## Verse Cycling
+
+Verses sourced from `src/data/verses.json`. Cycles every 7 seconds with a 500 ms cross-fade.
+
+---
+
+## Usage
+
 ```jsx
-import Loading from './components/Loading';
+import Loading from './pages/Loading';
 
-function MyComponent({ isLoading }) {
-  if (isLoading) {
-    return <Loading message="Connecting to heaven..." />;
-  }
+// With verse
+<Loading message="Loading" />
 
-  return <div>Divine content loaded!</div>;
-}
+// Without verse
+<Loading message="Please wait" showVerse={false} />
 ```
 
-### With Custom Message and Size
-```jsx
-<Loading
-  message="Seeking God's wisdom..."
-  size="large"
-  showVerse={true}
-/>
-```
-
-### Minimal Loading (No Verses)
-```jsx
-<Loading
-  message="Loading..."
-  showVerse={false}
-  size="small"
-/>
-```
-
-## 🎨 Styling
-
-The component uses CSS modules and integrates seamlessly with your Theme.css system:
-- `--accent-1`, `--accent-2`: For cross and symbol colors
-- `--warning-color`: For halo and divine light effects
-- `--primary-text-color`: For text and verses
-- `--background-1`, `--background-2`: For glassmorphism backgrounds
-
-## 📱 Responsive Design
-
-- **Desktop**: Full heavenly experience with all animations
-- **Tablet**: Optimized symbol spacing and text sizes
-- **Mobile**: Compact design maintaining spiritual essence
-
-## 🙏 Spiritual Experience
-
-This loading component transforms waiting time into a moment of spiritual reflection, featuring:
-- Meditative animations that encourage patience
-- Biblical encouragement during loading states
-- Visual reminders of faith and divine presence
-- Peaceful, non-intrusive design that soothes rather than agitates
 
 Perfect for Christian applications, devotionals, Bible study apps, and faith-based experiences!

@@ -3,33 +3,19 @@ import { useLocation } from "react-router-dom";
 
 import styles from "./DesktopNav.module.css";
 
-// ============================================================
-// DESKTOP NAVIGATION
-// ============================================================
-// A floating glass-capsule bar positioned at the top-center of
-// the viewport.  The border ring lights up based on cursor
-// position (gradient-border trick) and the entire capsule emits
-// a soft ambient glow that follows the cursor.
+// \u2500\u2500\u2500 COMPONENT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// Floating glass-capsule nav bar. Border rim + ambient glow follow the cursor.
 
 const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
-  // ----------------------------------------------------------
-  // Refs
-  // ----------------------------------------------------------
   const capsuleRef = useRef(null);
 
-  // ----------------------------------------------------------
-  // State
-  // ----------------------------------------------------------
-  const [glowPos, setGlowPos]       = useState({ x: 50, y: 50 });
-  const [hovered, setHovered]       = useState(false);
+  const [glowPos,    setGlowPos]    = useState({ x: 50, y: 50 });
+  const [hovered,    setHovered]    = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
-  // ----------------------------------------------------------
-  // Active detection — router-driven, falls back to activeTab prop
-  // ----------------------------------------------------------
-  // ----------------------------------------------------------
-  // Cursor tracking — drives the border rim glow
-  // ----------------------------------------------------------
+  // \u2500\u2500\u2500 CURSOR TRACKING \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // Drives border rim glow via CSS custom properties.
+
   const handleMouseMove = useCallback((e) => {
     const el = capsuleRef.current;
     if (!el) return;
@@ -38,29 +24,26 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
       x: ((e.clientX - r.left) / r.width)  * 100,
       y: ((e.clientY - r.top)  / r.height) * 100,
     });
-    // Re-enable glow if a click-triggered navigation caused a spurious mouseleave
+    // Re-enable glow after navigation may have triggered a spurious mouseleave
     setHovered(true);
   }, []);
 
-  // ----------------------------------------------------------
-  // Active detection — router-driven, falls back to activeTab prop
-  // ----------------------------------------------------------
+  // \u2500\u2500\u2500 ACTIVE DETECTION \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // Router-driven; falls back to the activeTab prop index.
+
   const { pathname } = useLocation();
 
   const isActive = (link, index) => {
-    // 1. Match by current pathname (exact for root, startsWith for others)
     if (link.to) {
       if (link.to === "/") return pathname === "/";
       return pathname.startsWith(link.to);
     }
-    // 2. Fallback: prop-based match
     if (activeTab === null) return false;
     return activeTab === index;
   };
 
-  // ----------------------------------------------------------
-  // Render
-  // ----------------------------------------------------------
+  // \u2500\u2500\u2500 RENDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
   return (
     <nav
       ref={capsuleRef}
@@ -75,12 +58,9 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => { setHovered(false); setHoveredIdx(null); }}
     >
-      {/* Ambient glow layer (fills the capsule interior) */}
+      {/* Ambient glow fills the capsule interior */}
       <div className={styles.ambientGlow} aria-hidden="true" />
 
-      {/* Border rim glow — painted via ::before pseudo in CSS */}
-
-      {/* Navigation links */}
       <ul className={styles.linkList}>
         {links.map((link, index) => {
           const active  = isActive(link, index);
@@ -103,14 +83,9 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
                 onMouseLeave={() => setHoveredIdx(null)}
                 aria-current={active ? "page" : undefined}
               >
-                {/* Hover/active fill layer */}
                 <span className={styles.navLinkFill} aria-hidden="true" />
                 <span className={styles.navLinkLabel}>{link.label}</span>
-
-                {/* Active indicator dot */}
-                {active && (
-                  <span className={styles.activeDot} aria-hidden="true" />
-                )}
+                {active && <span className={styles.activeDot} aria-hidden="true" />}
               </button>
             </li>
           );

@@ -1,50 +1,40 @@
 # Hooks
 
-This directory contains custom React hooks used throughout the Core-UI library for managing application state and side effects.
+Custom React hooks for managing global application state and side effects.
+
+---
 
 ## useAnimations
 
-A hook for managing animation preferences globally across the application.
+Manages the reduce-animations preference globally.
 
-**Features:**
-- Persists animation preference in localStorage
-- Sets data attribute on document root for CSS targeting
-- Provides toggle functionality
+- Reads from `localStorage` (`userSessionInfo.reduceAnimations`); falls back to `prefers-reduced-motion`
+- Toggles `data-no-animations` on `<html>` for CSS targeting
+- Auto-mirrors OS preference changes when no explicit user choice is stored
 
-**Returns:** `{ animationsEnabled, toggleAnimations, setAnimationsEnabled }`
+**Returns:** `{ reduceAnimations, toggleAnimations }`
+
+---
 
 ## useTheme
 
-A hook for managing application theme preferences (light/dark mode).
+Manages the light/dark theme globally.
 
-**Features:**
-- Automatic system preference detection
-- Persists theme choice in localStorage
-- Sets data attribute on document root
+- Reads from `localStorage` (`userSessionInfo.prefersColorScheme`); falls back to `prefers-color-scheme`
+- Sets `data-theme` on `<html>` with every change
+- Auto-mirrors OS preference changes when no explicit user choice is stored
 
 **Returns:** `{ theme, toggleTheme, setTheme }`
 
+---
+
 ## useTooltip
 
-A hook for managing tooltip positioning and visibility.
+Manages tooltip visibility, animated entry/exit, and viewport-aware placement.
 
-**Features:**
-- Automatic tooltip positioning
-- Support for multiple placement options
-- Smooth animations
-- Portal rendering for proper z-index
+- Auto-resolves placement: right → left → bottom → top, clamped with 12 px margin
+- Portals the tooltip to `<body>` for correct z-index stacking
+- Smooth CSS class-based enter/exit animations (220 ms exit delay)
+- Repositions on `resize` and `scroll` while visible
 
-**Returns:** `{ triggerProps, TooltipPortal }`
-
-## useAPIService
-
-A comprehensive hook for making API calls with standardized error handling and loading states.
-
-**Features:**
-- Support for all HTTP methods
-- Named parameter substitution in URLs
-- User-friendly error messages
-- Loading state management
-- Request timeout configuration
-
-**Returns:** `{ request, isLoading, error, clearError }`
+**Returns:** `{ triggerProps, TooltipPortal, isVisible, placement }`

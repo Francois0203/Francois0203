@@ -2,25 +2,17 @@ import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import styles from './ErrorBoundary.module.css';
 
-/* ============================================================================
- * ERROR BOUNDARY COMPONENT
- * ============================================================================
- * Catches JavaScript errors anywhere in the child component tree.
- * Features animated background, error details, and recovery options.
- *
- * Props:
- *   onReset   optional callback invoked by "Reload Page", overriding the
- *             default window.location.reload(). Useful for demo/test contexts.
- * ============================================================================
- */
+// ─── ERROR BOUNDARY INNER ─────────────────────────────────────────────────────────
+// Class component — required by React's error boundary API.
+// Catches render, lifecycle, and constructor errors in the subtree.
 
 class ErrorBoundaryInner extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hasError: false,
-      error: null,
-      errorInfo: null,
+      hasError:    false,
+      error:       null,
+      errorInfo:   null,
       detailsOpen: false,
     };
   }
@@ -35,11 +27,8 @@ class ErrorBoundaryInner extends React.Component {
 
   handleReload = () => {
     const { onReset } = this.props;
-    if (onReset) {
-      onReset();
-    } else {
-      window.location.reload();
-    }
+    if (onReset) onReset();
+    else window.location.reload();
   };
 
   handleGoHome = () => {
@@ -52,7 +41,7 @@ class ErrorBoundaryInner extends React.Component {
 
       return (
         <div className={styles.errorContainer} data-theme={theme}>
-          {/* Background — Animated particles */}
+          {/* Animated background particles */}
           <div className={styles.particlesContainer}>
             {[...Array(30)].map((_, i) => (
               <div
@@ -68,17 +57,17 @@ class ErrorBoundaryInner extends React.Component {
             ))}
           </div>
 
-          {/* Glowing orbs */}
+          {/* Ambient glow orbs */}
           <div className={styles.backgroundEffects}>
             <div className={styles.glowOrb1} />
             <div className={styles.glowOrb2} />
           </div>
 
-          {/* Main Content — Scrollable wrapper */}
+          {/* Main content — scrollable */}
           <div className={styles.contentScroll}>
             <div className={styles.contentWrapper}>
 
-              {/* Error Icon */}
+              {/* Alert icon */}
               <div className={styles.iconContainer}>
                 <div className={styles.alertCircle}>
                   <div className={styles.alertIcon}>!</div>
@@ -86,7 +75,7 @@ class ErrorBoundaryInner extends React.Component {
                 <div className={styles.pulseRing} />
               </div>
 
-              {/* Error Message */}
+              {/* Error message */}
               <div className={styles.messageContainer}>
                 <h1 className={styles.title}>Something Went Wrong</h1>
                 <p className={styles.subtitle}>
@@ -94,7 +83,7 @@ class ErrorBoundaryInner extends React.Component {
                 </p>
               </div>
 
-              {/* Action Buttons */}
+              {/* Recovery actions */}
               <div className={styles.actionsContainer}>
                 <button onClick={this.handleGoHome}>
                   ← Go Home
@@ -107,7 +96,7 @@ class ErrorBoundaryInner extends React.Component {
                 </button>
               </div>
 
-              {/* Technical Details — Collapsible */}
+              {/* Collapsible technical details */}
               {this.state.error && (
                 <div className={styles.technicalDetails}>
                   <button
@@ -143,7 +132,7 @@ class ErrorBoundaryInner extends React.Component {
             </div>
           </div>
 
-          {/* Corner Decorations */}
+          {/* Corner decorations */}
           <div className={styles.cornerDeco} style={{ top: '20px', left: '20px' }}>✦</div>
           <div className={styles.cornerDeco} style={{ top: '20px', right: '20px' }}>✦</div>
           <div className={styles.cornerDeco} style={{ bottom: '20px', left: '20px' }}>✦</div>
@@ -156,10 +145,8 @@ class ErrorBoundaryInner extends React.Component {
   }
 }
 
-/* ============================================================================
- * WRAPPER COMPONENT — Provides theme context to the class component
- * ============================================================================
- */
+// ─── WRAPPER ────────────────────────────────────────────────────────────────
+// Provides theme context to the class component (hooks can't run inside classes).
 const ErrorBoundary = (props) => {
   const { theme } = useTheme();
   return <ErrorBoundaryInner {...props} theme={theme} />;

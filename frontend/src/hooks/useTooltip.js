@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 
 import styles from '../components/Tooltip/Tooltip.module.css';
 
+// ─── HOOK ────────────────────────────────────────────────────────────────────
+// Manages tooltip visibility, animated entry/exit, and viewport-aware placement.
 export const useTooltip = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimatingIn, setIsAnimatingIn] = useState(false);
@@ -12,6 +14,8 @@ export const useTooltip = () => {
   const triggerRef = useRef(null);
   const tooltipRef = useRef(null);
 
+  // ─── POSITION CALCULATION ─────────────────────────────────────────────────
+  // Tries right → left → bottom → top; clamps to viewport with 12px margin.
   const calculatePosition = useCallback((triggerElement) => {
     if (!triggerElement || !tooltipRef.current) return;
 
@@ -53,6 +57,7 @@ export const useTooltip = () => {
     setPlacement(finalPlacement);
   }, []);
 
+  // ─── SHOW / HIDE ───────────────────────────────────────────────────────────
   const showTooltip = useCallback(() => {
     setIsExiting(false);
     setIsVisible(true);
@@ -72,6 +77,7 @@ export const useTooltip = () => {
     }, 220);
   }, []);
 
+  // ─── REPOSITION EFFECTS ─────────────────────────────────────────────────────
   useEffect(() => {
     if (isVisible && triggerRef.current && tooltipRef.current) {
       const frame = requestAnimationFrame(() => {
@@ -93,6 +99,7 @@ export const useTooltip = () => {
     }
   }, [isVisible, calculatePosition]);
 
+  // ─── TRIGGER PROPS ──────────────────────────────────────────────────────────
   const triggerProps = {
     ref: triggerRef,
     onMouseEnter: showTooltip,
@@ -101,6 +108,8 @@ export const useTooltip = () => {
     onBlur: hideTooltip,
   };
 
+  // ─── PORTAL ──────────────────────────────────────────────────────────────────
+  // Hidden at (0,0) until first position is calculated to avoid flash.
   const TooltipPortal = ({ children }) => {
     if (!isVisible && !isExiting) return null;
 

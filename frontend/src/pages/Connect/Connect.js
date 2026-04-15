@@ -1,12 +1,3 @@
-/* ============================================================================
- * CONNECT PAGE
- * ============================================================================
- * Premium liquid glass connect page.
- * Background: physics-driven rounded triangles drift and rotate continuously.
- * Layout adapts across four device tiers (desktop / tablet / phone / small).
- * MagneticButton used for the support studies CTA.
- * ============================================================================ */
-
 import React, { useEffect, useRef, useState } from 'react';
 import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart, FaCode } from 'react-icons/fa';
@@ -17,21 +8,22 @@ import styles from './Connect.module.css';
 import { MagneticButton } from '../../components';
 import '../../styles/Theme.css';
 
-/* ── Icon maps ──────────────────────────────────────────────────────────────── */
+// ─── ICON MAP ───────────────────────────────────────────────────────────────
 const ICON_MAP = {
   MdEmail, MdPhone, MdLocationOn,
   FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart,
   SiHackerrank, FaCode,
 };
 
-/* ── Triangle blob definitions ─────────────────────────────────────────────── */
+// ─── BLOB DEFS ──────────────────────────────────────────────────────────────
 const BLOB_DEFS = [
   { cls: ['glassTri', 'tri1'], r: 130, sx: 0.12, sy: 0.60, vx:  -7, vy:   8, rotSpeed: -6.0 },
   { cls: ['glassTri', 'tri2'], r: 150, sx: 0.72, sy: 0.18, vx:   9, vy:  -6, rotSpeed:  7.0 },
   { cls: ['glassTri', 'tri3'], r: 110, sx: 0.50, sy: 0.48, vx:  -9, vy:   5, rotSpeed: -4.5 },
 ];
 
-/* ── IntersectionObserver reveal hook ─────────────────────────────────────── */
+// ─── REVEAL HOOK ────────────────────────────────────────────────────────────
+// Flips `visible` once the element enters the viewport; disconnects after.
 const useReveal = (threshold = 0.08) => {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -48,9 +40,8 @@ const useReveal = (threshold = 0.08) => {
   return [ref, visible];
 };
 
-/* ============================================================================
- * CONNECT PAGE COMPONENT
- * ============================================================================ */
+// ─── COMPONENT ───────────────────────────────────────────────────────────────────
+// Physics-driven connect page with floating glass triangles and reveal animations.
 const Connect = () => {
   const [pageVisible, setPageVisible]   = useState(false);
   const [socialRef,   socialVisible]    = useReveal();
@@ -63,13 +54,13 @@ const Connect = () => {
   const nudgeTimer = useRef(null);
   const mouseRef   = useRef({ x: -1000, y: -1000 });
 
-  /* Mount fade-in */
+  // Mount fade-in
   useEffect(() => {
     const t = setTimeout(() => setPageVisible(true), 60);
     return () => clearTimeout(t);
   }, []);
 
-  /* ── Triangle physics ── */
+  // ─── BLOB PHYSICS ──────────────────────────────────────────────────────────────
   useEffect(() => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;

@@ -7,9 +7,7 @@ import { useAnimations } from '../../hooks';
 
 import styles from "./Settings.module.css";
 
-// ============================================================
-// BUBBLE CONFIGURATION
-// ============================================================
+// ─── BUBBLE CONFIGURATION ──────────────────────────────────────────────────────────
 // tx / ty: translation from trigger center (px) when open.
 // Designed for a top-right fixed anchor → bubbles fan down-left.
 const BUBBLES = [
@@ -17,10 +15,8 @@ const BUBBLES = [
   { id: 'animations', label: 'Motion', tx: -22, ty: 90,  delay: '0.06s'  },
 ];
 
-// ============================================================
-// TRIGGER BUTTON
-// ============================================================
-// Circular glass button with a cursor-following glow when closed.
+// ─── TRIGGER BUTTON ───────────────────────────────────────────────────────────────
+// Circular glass cog button with cursor-following glow when closed.
 
 const TriggerButton = ({ isOpen, onClick, size }) => {
   const ref = useRef(null);
@@ -46,7 +42,7 @@ const TriggerButton = ({ isOpen, onClick, size }) => {
       style={{
         width:  size,
         height: size,
-        /* CSS custom properties consumed by the ::before glow layer */
+        // CSS custom properties consumed by the ::before glow layer
         '--glow-x':    `${glowPos.x}%`,
         '--glow-y':    `${glowPos.y}%`,
         '--glow-show': (!isOpen && hovered) ? '1' : '0',
@@ -63,12 +59,8 @@ const TriggerButton = ({ isOpen, onClick, size }) => {
   );
 };
 
-// ============================================================
-// SETTING BUBBLES
-// ============================================================
-// Each setting is a self-contained circular button that directly
-// applies its action on click. Pair them explicitly so each can
-// own its own state (theme vs. animations).
+// ─── SETTING BUBBLES ───────────────────────────────────────────────────────────────
+// Self-contained bubbles — each owns its state and applies its action directly.
 
 const ThemeBubble = ({ cfg, isOpen, theme, toggleTheme }) => {
   const isDark = theme === 'dark';
@@ -118,9 +110,8 @@ const AnimationsBubble = ({ cfg, isOpen }) => {
   );
 };
 
-// ============================================================
-// SETTINGS — ROOT COMPONENT
-// ============================================================
+// ─── SETTINGS ROOT ───────────────────────────────────────────────────────────────
+// Portalled to <body> — avoids the App wrapper's stacking context (position:fixed + z-index).
 
 const Settings = ({ theme, toggleTheme, cogSize = 52, className = '' }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -128,6 +119,8 @@ const Settings = ({ theme, toggleTheme, cogSize = 52, className = '' }) => {
 
   const toggle = () => setMenuOpen(prev => !prev);
   const close  = useCallback(() => setMenuOpen(false), []);
+
+  // ─── CLOSE HANDLERS ───────────────────────────────────────────────────────
 
   // Close when clicking outside the container
   useEffect(() => {
@@ -148,31 +141,19 @@ const Settings = ({ theme, toggleTheme, cogSize = 52, className = '' }) => {
     return () => document.removeEventListener('keydown', handler);
   }, [close]);
 
+  // ─── RENDER ───────────────────────────────────────────────────────────────
+  // Backdrop is a sibling of the container (not a child) — direct z-index comparison:
+  // container (z:1050) > backdrop (z:1040) > page content.
+
   const [themeCfg, animCfg] = BUBBLES;
 
-  /*
-   * Portal the entire container to <body> so it lives in the root stacking
-   * context. Without this, the App's .themeSwitch wrapper (position:fixed +
-   * z-index:1021) creates a local stacking context that traps Settings below
-   * the portalled backdrop (z-index:1040).
-   */
-  /*
-   * The backdrop MUST be a sibling of .container, not a child.
-   * .container is position:fixed which creates its own stacking context —
-   * any child z-index is scoped inside it, so a backdrop child at z:1040
-   * would paint over the bubbles at z:1 within that same context.
-   * Rendering both at the body level makes z-index comparison direct:
-   *   container z:1050  >  backdrop z:1040  >  page content.
-   */
   return createPortal(
     <>
-      {/* Backdrop sits BELOW the container in z-index, but above page content */}
       {menuOpen && (
         <div className={styles.backdrop} onClick={close} aria-hidden="true" />
       )}
-
       <div className={`${styles.container} ${className}`} ref={containerRef}>
-        {/* Bubbles rendered before trigger so trigger is on top in DOM order */}
+        {/* Bubbles rendered before trigger so trigger sits on top in DOM order */}
         <ThemeBubble      cfg={themeCfg} isOpen={menuOpen} theme={theme} toggleTheme={toggleTheme} />
         <AnimationsBubble cfg={animCfg}  isOpen={menuOpen} />
         <TriggerButton isOpen={menuOpen} onClick={toggle} size={cogSize} />

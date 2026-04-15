@@ -1,23 +1,22 @@
 # Tooltip
 
-A flexible tooltip component with portal rendering and customizable positioning.
+Portal-based tooltip with optional heading and body content. Positioning and visibility are handled by the `useTooltip` hook.
 
 ## Features
 
-- Portal-based rendering for proper z-index handling
-- Custom hook integration for positioning logic
-- Support for heading and body content
-- Accessible trigger elements
-- Smooth hover interactions
+- Portal rendering for correct z-index at any DOM depth
+- Separate heading and content slots
+- Smooth hover interactions via `useTooltip`
+- Passes through all native `<span>` attributes to the trigger
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | - | The trigger element for the tooltip |
-| `content` | `string` | - | The main tooltip content |
-| `heading` | `string` | - | Optional heading text for the tooltip |
-| `className` | `string` | `''` | Additional CSS classes for the trigger |
+|---|---|---|---|
+| `children` | `ReactNode` | — | The trigger element |
+| `content` | `string` | — | Main tooltip body text |
+| `heading` | `string` | — | Optional bold heading |
+| `className` | `string` | `''` | Extra class on the trigger span |
 
 ## Usage
 
@@ -26,10 +25,7 @@ import Tooltip from './components/Tooltip';
 
 function HelpButton() {
   return (
-    <Tooltip 
-      heading="Help"
-      content="Click here for assistance"
-    >
+    <Tooltip heading="Help" content="Click here for assistance">
       <button>?</button>
     </Tooltip>
   );

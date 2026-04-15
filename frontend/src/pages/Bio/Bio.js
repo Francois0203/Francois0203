@@ -17,9 +17,7 @@ import ProfileImg from '../../Images/Profile.jpeg';
 import { CursorGlowButton } from '../../components';
 import '../../styles/Theme.css';
 
-/* ============================================================================
- * ICON MAPS
- * ============================================================================ */
+// ─── ICON MAPS ─────────────────────────────────────────────────────────────────────
 const TECH_ICON_MAP = {
   FaReact, FaPython, FaJs, FaNodeJs, FaDocker, FaGitAlt,
   FaHtml5, FaCss3Alt, FaLinux, FaDatabase, FaServer,
@@ -35,11 +33,8 @@ const SOCIAL_ICON_MAP = {
   FaCode,
 };
 
-/* ============================================================================
- * INTERSECTION-OBSERVER REVEAL HOOK
- * Watches an element; flips `visible` to true once it enters the viewport.
- * Disconnects immediately after — no re-triggers on scroll back.
- * ============================================================================ */
+// ─── REVEAL HOOK ──────────────────────────────────────────────────────────────────
+// Flips `visible` once the element enters the viewport; disconnects after.
 const useReveal = (threshold = 0.08) => {
   const ref     = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -63,9 +58,7 @@ const useReveal = (threshold = 0.08) => {
   return [ref, visible];
 };
 
-/* ============================================================================
- * SECTION HEADER — shared across all content sections
- * ============================================================================ */
+// ─── SECTION HEADER ───────────────────────────────────────────────────────────────
 const SectionHeader = ({ icon, title }) => (
   <div className={styles.sectionHeader}>
     {icon && <span className={styles.sectionIcon} aria-hidden="true">{icon}</span>}
@@ -74,9 +67,7 @@ const SectionHeader = ({ icon, title }) => (
   </div>
 );
 
-/* ============================================================================
- * BIO PAGE
- * ============================================================================ */
+// ─── COMPONENT ───────────────────────────────────────────────────────────────────
 const Bio = () => {
   const navigate = useNavigate();
 
@@ -112,197 +103,196 @@ const Bio = () => {
         <div className={styles.glassCard}>
           <div className={styles.page}>
 
-      {/* ── Profile ───────────────────────────────────────────────────────── */}
-      <section className={`${styles.profileSection} ${profileVisible ? styles.revealed : ''}`}>
-        <div className={styles.profileCard}>
+            {/* ── Profile ───────────────────────────────────────────────────────── */}
+            <section className={`${styles.profileSection} ${profileVisible ? styles.revealed : ''}`}>
+              <div className={styles.profileCard}>
 
-          {/* Image */}
-          <div className={styles.imageCol}>
-            <div className={styles.imageRing}>
-              <img
-                src={ProfileImg}
-                alt={bioData.personalInfo.name}
-                className={styles.profileImage}
-              />
-            </div>
-          </div>
+                {/* Image */}
+                <div className={styles.imageCol}>
+                  <div className={styles.imageRing}>
+                    <img
+                      src={ProfileImg}
+                      alt={bioData.personalInfo.name}
+                      className={styles.profileImage}
+                    />
+                  </div>
+                </div>
 
-          {/* Info */}
-          <div className={styles.infoCol}>
-            <h1>{bioData.personalInfo.name}</h1>
-            <p className={styles.profileTitle}>{bioData.personalInfo.title}</p>
+                {/* Info */}
+                <div className={styles.infoCol}>
+                  <h1>{bioData.personalInfo.name}</h1>
+                  <p className={styles.profileTitle}>{bioData.personalInfo.title}</p>
 
-            {/* Summary */}
-            {bioData.summary && (
-              <p className={styles.summary}>{bioData.summary}</p>
-            )}
+                  {/* Summary */}
+                  {bioData.summary && (
+                    <p className={styles.summary}>{bioData.summary}</p>
+                  )}
 
-            <div className={styles.divider} />
+                  <div className={styles.divider} />
 
-            {/* Contact grid */}
-            <div className={styles.contactGrid}>
-              <a href={`mailto:${bioData.contact.email}`} className={styles.contactItem}>
-                <MdEmail className={styles.contactIcon} aria-hidden="true" />
-                <span>{bioData.contact.email}</span>
-              </a>
-              <a
-                href={`tel:${bioData.contact.phone.replace(/\s/g, '')}`}
-                className={styles.contactItem}
-              >
-                <MdPhone className={styles.contactIcon} aria-hidden="true" />
-                <span>{bioData.contact.phone}</span>
-              </a>
-              <div className={styles.contactItem}>
-                <MdLocationOn className={styles.contactIcon} aria-hidden="true" />
-                <span>{bioData.personalInfo.location}</span>
-              </div>
-              <div className={styles.contactItem}>
-                <MdCalendarToday className={styles.contactIcon} aria-hidden="true" />
-                <span>{bioData.personalInfo.dateOfBirth}</span>
-              </div>
-            </div>
-
-            {/* Metadata pills */}
-            <div className={styles.metaRow}>
-              {bioData.personalInfo.languages.map((lang) => (
-                <span key={lang} className={styles.metaPill}>{lang}</span>
-              ))}
-              <span className={styles.metaPill}>{bioData.personalInfo.driversLicense}</span>
-              <span className={styles.metaPill}>{bioData.personalInfo.faith}</span>
-            </div>
-
-            {/* Social links + CTA */}
-            <div className={styles.actionsRow}>
-              <div className={styles.socialRow}>
-                {bioData.socialLinks.map((social) => {
-                  const Icon = SOCIAL_ICON_MAP[social.icon];
-                  return (
-                    <a
-                      key={social.key}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.socialLink}
-                      aria-label={social.platform}
-                    >
-                      {Icon && <Icon aria-hidden="true" />}
+                  {/* Contact grid */}
+                  <div className={styles.contactGrid}>
+                    <a href={`mailto:${bioData.contact.email}`} className={styles.contactItem}>
+                      <MdEmail className={styles.contactIcon} aria-hidden="true" />
+                      <span>{bioData.contact.email}</span>
                     </a>
+                    <a
+                      href={`tel:${bioData.contact.phone.replace(/\s/g, '')}`}
+                      className={styles.contactItem}
+                    >
+                      <MdPhone className={styles.contactIcon} aria-hidden="true" />
+                      <span>{bioData.contact.phone}</span>
+                    </a>
+                    <div className={styles.contactItem}>
+                      <MdLocationOn className={styles.contactIcon} aria-hidden="true" />
+                      <span>{bioData.personalInfo.location}</span>
+                    </div>
+                    <div className={styles.contactItem}>
+                      <MdCalendarToday className={styles.contactIcon} aria-hidden="true" />
+                      <span>{bioData.personalInfo.dateOfBirth}</span>
+                    </div>
+                  </div>
+
+                  {/* Metadata pills */}
+                  <div className={styles.metaRow}>
+                    {bioData.personalInfo.languages.map((lang) => (
+                      <span key={lang} className={styles.metaPill}>{lang}</span>
+                    ))}
+                    <span className={styles.metaPill}>{bioData.personalInfo.driversLicense}</span>
+                    <span className={styles.metaPill}>{bioData.personalInfo.faith}</span>
+                  </div>
+
+                  {/* Social links + CTA */}
+                  <div className={styles.actionsRow}>
+                    <div className={styles.socialRow}>
+                      {bioData.socialLinks.map((social) => {
+                        const Icon = SOCIAL_ICON_MAP[social.icon];
+                        return (
+                          <a
+                            key={social.key}
+                            href={social.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.socialLink}
+                            aria-label={social.platform}
+                          >
+                            {Icon && <Icon aria-hidden="true" />}
+                          </a>
+                        );
+                      })}
+                    </div>
+                    <CursorGlowButton onClick={() => navigate('/contact')}>
+                      Get in Touch
+                    </CursorGlowButton>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* ── Experience ────────────────────────────────────────────────────── */}
+            <section
+              ref={expRef}
+              className={`${styles.section} ${expVisible ? styles.revealed : ''}`}
+            >
+              <SectionHeader icon={<MdWorkOutline />} title="Professional Experience" />
+              <div className={styles.timeline}>
+                {bioData.experiences.map((exp, i) => (
+                  <div
+                    key={i}
+                    className={styles.timelineItem}
+                    style={{ '--item-delay': `${i * 90}ms` }}
+                  >
+                    <div className={styles.timelineDot} aria-hidden="true" />
+                    <div className={styles.timelineCard}>
+                      <div className={styles.timelineTop}>
+                        <div className={styles.timelineMeta}>
+                          <h3>{exp.title}</h3>
+                          <p className={styles.timelineCompany}>{exp.company}</p>
+                          {exp.location && (
+                            <p className={styles.timelineLocation}>{exp.location}</p>
+                          )}
+                        </div>
+                        <span className={styles.periodBadge}>{exp.period}</span>
+                      </div>
+                      <p className={styles.timelineDesc}>{exp.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Education ─────────────────────────────────────────────────────── */}
+            <section
+              ref={eduRef}
+              className={`${styles.section} ${eduVisible ? styles.revealed : ''}`}
+            >
+              <SectionHeader icon={<MdSchool />} title="Education" />
+              <div className={styles.eduGrid}>
+                {bioData.education.map((edu, i) => (
+                  <div
+                    key={i}
+                    className={styles.eduCard}
+                    style={{ '--item-delay': `${i * 90}ms` }}
+                  >
+                    <span className={styles.eduPeriod}>{edu.period}</span>
+                    <h3>{edu.degree}</h3>
+                    <p className={styles.eduInstitution}>{edu.institution}</p>
+                    <p className={styles.eduDetails}>{edu.details}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Skills & Technologies ─────────────────────────────────────────── */}
+            <section
+              ref={skillsRef}
+              className={`${styles.section} ${skillsVisible ? styles.revealed : ''}`}
+            >
+              <SectionHeader icon={<MdCode />} title="Skills & Technologies" />
+
+              {/* Categorised skill lists */}
+              <div className={styles.skillsGrid}>
+                {Object.entries(bioData.skills).map(([category, items], i) => (
+                  <div
+                    key={category}
+                    className={styles.skillCard}
+                    style={{ '--item-delay': `${i * 90}ms` }}
+                  >
+                    <h3 className={styles.skillCategory}>{category}</h3>
+                    <div className={styles.tagRow}>
+                      {items.map((item) => (
+                        <span key={item} className={styles.skillTag}>{item}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Projects CTA */}
+              <div className={styles.sectionCta}>
+                <CursorGlowButton onClick={() => navigate('/projects')}>
+                  View My Projects
+                </CursorGlowButton>
+              </div>
+
+              {/* Technical icon grid */}
+              <div className={styles.techGrid}>
+                {bioData.technicalSkills.map((tech, i) => {
+                  const Icon = TECH_ICON_MAP[tech.icon];
+                  return (
+                    <div
+                      key={tech.name}
+                      className={styles.techItem}
+                      style={{ '--item-delay': `${i * 35}ms` }}
+                    >
+                      {Icon && <Icon className={styles.techIcon} aria-hidden="true" />}
+                      <span className={styles.techName}>{tech.name}</span>
+                    </div>
                   );
                 })}
               </div>
-              <CursorGlowButton onClick={() => navigate('/contact')}>
-                Get in Touch
-              </CursorGlowButton>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ── Experience ────────────────────────────────────────────────────── */}
-      <section
-        ref={expRef}
-        className={`${styles.section} ${expVisible ? styles.revealed : ''}`}
-      >
-        <SectionHeader icon={<MdWorkOutline />} title="Professional Experience" />
-        <div className={styles.timeline}>
-          {bioData.experiences.map((exp, i) => (
-            <div
-              key={i}
-              className={styles.timelineItem}
-              style={{ '--item-delay': `${i * 90}ms` }}
-            >
-              <div className={styles.timelineDot} aria-hidden="true" />
-              <div className={styles.timelineCard}>
-                <div className={styles.timelineTop}>
-                  <div className={styles.timelineMeta}>
-                    <h3>{exp.title}</h3>
-                    <p className={styles.timelineCompany}>{exp.company}</p>
-                    {exp.location && (
-                      <p className={styles.timelineLocation}>{exp.location}</p>
-                    )}
-                  </div>
-                  <span className={styles.periodBadge}>{exp.period}</span>
-                </div>
-                <p className={styles.timelineDesc}>{exp.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Education ─────────────────────────────────────────────────────── */}
-      <section
-        ref={eduRef}
-        className={`${styles.section} ${eduVisible ? styles.revealed : ''}`}
-      >
-        <SectionHeader icon={<MdSchool />} title="Education" />
-        <div className={styles.eduGrid}>
-          {bioData.education.map((edu, i) => (
-            <div
-              key={i}
-              className={styles.eduCard}
-              style={{ '--item-delay': `${i * 90}ms` }}
-            >
-              <span className={styles.eduPeriod}>{edu.period}</span>
-              <h3>{edu.degree}</h3>
-              <p className={styles.eduInstitution}>{edu.institution}</p>
-              <p className={styles.eduDetails}>{edu.details}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Skills & Technologies ─────────────────────────────────────────── */}
-      <section
-        ref={skillsRef}
-        className={`${styles.section} ${skillsVisible ? styles.revealed : ''}`}
-      >
-        <SectionHeader icon={<MdCode />} title="Skills & Technologies" />
-
-        {/* Categorised skill lists */}
-        <div className={styles.skillsGrid}>
-          {Object.entries(bioData.skills).map(([category, items], i) => (
-            <div
-              key={category}
-              className={styles.skillCard}
-              style={{ '--item-delay': `${i * 90}ms` }}
-            >
-              <h3 className={styles.skillCategory}>{category}</h3>
-              <div className={styles.tagRow}>
-                {items.map((item) => (
-                  <span key={item} className={styles.skillTag}>{item}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Projects CTA */}
-        <div className={styles.sectionCta}>
-          <CursorGlowButton onClick={() => navigate('/projects')}>
-            View My Projects
-          </CursorGlowButton>
-        </div>
-
-        {/* Technical icon grid */}
-        <div className={styles.techGrid}>
-          {bioData.technicalSkills.map((tech, i) => {
-            const Icon = TECH_ICON_MAP[tech.icon];
-            return (
-              <div
-                key={tech.name}
-                className={styles.techItem}
-                style={{ '--item-delay': `${i * 35}ms` }}
-              >
-                {Icon && <Icon className={styles.techIcon} aria-hidden="true" />}
-                <span className={styles.techName}>{tech.name}</span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
+            </section>
           </div>
         </div>
       </div>

@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 
-const STORAGE_KEY   = 'userSessionInfo';
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const STORAGE_KEY      = 'userSessionInfo';
 const ANIMATIONS_FIELD = 'reduceAnimations';
 
+// ─── INITIAL VALUE ────────────────────────────────────────────────────────────
+// Reads stored preference; falls back to OS prefers-reduced-motion.
 export const getInitialAnimations = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -19,9 +22,12 @@ export const getInitialAnimations = () => {
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 };
 
+// ─── HOOK ────────────────────────────────────────────────────────────────────
+// Manages reduce-animations state — syncs DOM attribute and persists to storage.
 export const useAnimations = () => {
   const [reduceAnimations, setReduceAnimations] = useState(getInitialAnimations);
 
+  // ─── DOM SYNC ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const root = document.documentElement;
 
@@ -41,6 +47,8 @@ export const useAnimations = () => {
     }
   }, [reduceAnimations]);
 
+  // ─── OS PREFERENCE LISTENER ─────────────────────────────────────────────────
+  // Only auto-switches when the user has no explicit stored preference.
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     if (!mq) return;

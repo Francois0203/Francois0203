@@ -1,47 +1,57 @@
 # Toast Notifications
 
-A temporary notification component that displays messages with auto-dismiss and manual close functionality.
+Animated toast notification system with auto-dismiss, manual close, and portal rendering.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `ToastContext.js` | Context + provider; portal-renders the toast stack |
+| `ToastNotification.js` | Individual toast card with close animation |
+| `ToastContainer.js` | Standalone container for use outside of the provider |
 
 ## Features
 
-- Auto-dismiss after 3 seconds
-- Multiple notification types (info, success, warning, error)
-- Smooth slide-in/slide-out animations
-- Close button for manual dismissal
-- Support for error codes
-- Optimized with React.memo for performance
+- Four types: `success`, `error`, `warning`, `info`
+- Auto-dismisses after 3 s; animated height collapse on close
+- Manual close button
+- Portalled to a dedicated fixed overlay node — z-index never trapped
+- `React.memo` with custom comparator prevents unnecessary renders
+- Optional `errorCode` field
 
-## Props
+## ToastNotification Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `string|number` | - | Unique identifier for the toast |
-| `type` | `string` | `'info'` | Type of notification ('info', 'success', 'warning', 'error') |
-| `title` | `string` | - | Title text for the notification |
-| `message` | `string` | - | Main message content |
-| `errorCode` | `string|number` | - | Optional error code to display |
-| `onClose` | `function` | - | Callback when the toast should be closed |
+|---|---|---|---|
+| `id` | `string \| number` | — | Unique identifier |
+| `type` | `string` | `'info'` | `'success'` \| `'error'` \| `'warning'` \| `'info'` |
+| `title` | `string` | — | Bold heading text |
+| `message` | `string` | — | Body text |
+| `errorCode` | `string \| number` | — | Displayed as `Code: <value>` |
+| `onClose` | `function` | — | Called with `id` when dismissed |
 
 ## Usage
 
 ```jsx
-import ToastNotification from './components/Toast Notifications/ToastNotification';
+import { ToastProvider, useToast } from './components/Toast Notifications/ToastContext';
 
-function NotificationContainer({ toasts, removeToast }) {
+// Wrap your app
+function App() {
   return (
-    <div className="toast-container">
-      {toasts.map(toast => (
-        <ToastNotification
-          key={toast.id}
-          id={toast.id}
-          type={toast.type}
-          title={toast.title}
-          message={toast.message}
-          errorCode={toast.errorCode}
-          onClose={removeToast}
-        />
-      ))}
-    </div>
+    <ToastProvider>
+      <YourApp />
+    </ToastProvider>
+  );
+}
+
+// Use anywhere inside the provider
+function SomeComponent() {
+  const { showToast } = useToast();
+
+  return (
+    <button onClick={() => showToast('success', 'Saved!', 'Your changes were saved.')}>
+      Save
+    </button>
   );
 }
 ```

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import styles from './Modal.module.css';
 
-/* CSS selectors covering all natively focusable elements. */
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const FOCUSABLE_SELECTORS = [
   'a[href]',
   'button:not([disabled])',
@@ -11,18 +11,8 @@ const FOCUSABLE_SELECTORS = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(', ');
 
-/* ============================================================================
- * MODAL COMPONENT
- * ============================================================================
- * Liquid-glass modal dialog with full accessibility support.
- *
- * Props:
- *   open     {boolean}          Whether the modal is visible.
- *   onClose  {() => void}       Called when the modal should close.
- *   title    {string}           Optional heading rendered in the header.
- *   children {React.ReactNode}  Modal body content.
- * ============================================================================
- */
+// ─── COMPONENT ────────────────────────────────────────────────────────────────
+// Liquid-glass modal dialog. Traps focus, locks scroll, restores focus on close.
 const Modal = ({ open, onClose, children, title }) => {
   const dialogRef = useRef(null);
   const previousFocusRef = useRef(null);
@@ -91,9 +81,9 @@ const Modal = ({ open, onClose, children, title }) => {
   if (!open) return null;
 
   return (
-    /* Backdrop — dims and blurs the page behind the modal */
+    /* Backdrop — dims and blurs the page */
     <div className={styles.backdrop} onClick={handleBackdropClick}>
-      {/* Dialog — the glass panel */}
+      {/* Dialog — glass panel */}
       <div
         ref={dialogRef}
         className={styles.dialog}
@@ -103,7 +93,7 @@ const Modal = ({ open, onClose, children, title }) => {
         tabIndex={-1}
         onKeyDown={handleKeyDown}
       >
-        {/* Close (X) button — only dismiss affordance inside the modal */}
+        {/* Close button — only dismiss affordance inside the modal */}
         <button
           className={styles.closeButton}
           onClick={onClose}
@@ -123,14 +113,14 @@ const Modal = ({ open, onClose, children, title }) => {
           </svg>
         </button>
 
-        {/* Header (rendered only when a title is provided) */}
+        {/* Header, rendered only when a title is provided */}
         {title && (
           <header className={styles.header}>
             <h2 id="modal-title" className={styles.title}>{title}</h2>
           </header>
         )}
 
-        {/* Body — scrolls independently if content overflows */}
+        {/* Body — scrolls independently on overflow */}
         <div className={styles.body}>
           {children}
         </div>
