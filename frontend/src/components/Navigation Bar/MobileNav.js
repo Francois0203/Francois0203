@@ -221,14 +221,16 @@ const MobileNav = ({ links = [], onNavigate, activeTab = null, triggerSize = 64 
 
   // ─── TOUCH SETUP ──────────────────────────────────────────────────────────
   // Attach as non-passive so preventDefault() blocks pull-to-refresh.
+  // Only attach when the menu is open — otherwise the non-passive listener
+  // prevents page scrolling when the user swipes near the nav trigger.
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    if (!el || !isOpen) return;
     const handler = (e) => onTouchMoveRef.current(e);
     el.addEventListener("touchmove", handler, { passive: false });
     return () => el.removeEventListener("touchmove", handler);
-  }, [onTouchMoveRef]);
+  }, [onTouchMoveRef, isOpen]);
 
   // ─── CLOSE HANDLERS ───────────────────────────────────────────────────────
 

@@ -268,28 +268,35 @@ const Bio = () => {
                 ))}
               </div>
 
+              {/* Full-width divider */}
+              <div className={styles.techDivider} aria-hidden="true" />
+
+              {/* Technical icon marquee — scrolls right → left continuously */}
+              <div className={styles.techMarqueeWrapper} aria-label="Technical skills">
+                <div className={styles.techTrack}>
+                  {/* Render twice for a seamless infinite loop */}
+                  {[...bioData.technicalSkills, ...bioData.technicalSkills].map((tech, i) => {
+                    const Icon = TECH_ICON_MAP[tech.icon];
+                    return (
+                      <div
+                        key={`${tech.name}-${i}`}
+                        className={styles.techItem}
+                        style={{ '--wave-i': i % bioData.technicalSkills.length }}
+                        aria-hidden={i >= bioData.technicalSkills.length ? 'true' : undefined}
+                      >
+                        {Icon && <Icon className={styles.techIcon} aria-hidden="true" />}
+                        <span className={styles.techName}>{tech.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Projects CTA */}
               <div className={styles.sectionCta}>
                 <CursorGlowButton onClick={() => navigate('/projects')}>
                   View My Projects
                 </CursorGlowButton>
-              </div>
-
-              {/* Technical icon grid */}
-              <div className={styles.techGrid}>
-                {bioData.technicalSkills.map((tech, i) => {
-                  const Icon = TECH_ICON_MAP[tech.icon];
-                  return (
-                    <div
-                      key={tech.name}
-                      className={styles.techItem}
-                      style={{ '--item-delay': `${i * 35}ms` }}
-                    >
-                      {Icon && <Icon className={styles.techIcon} aria-hidden="true" />}
-                      <span className={styles.techName}>{tech.name}</span>
-                    </div>
-                  );
-                })}
               </div>
             </section>
           </div>
