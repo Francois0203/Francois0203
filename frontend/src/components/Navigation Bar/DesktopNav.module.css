@@ -40,6 +40,13 @@
   transition:
     border-color 0.3s ease,
     box-shadow   0.35s ease;
+
+  cursor: grab;
+  touch-action: none;
+}
+
+.capsuleDragging {
+  cursor: grabbing;
 }
 
 /* Rim glow — border-box gradient driven by --glow-x / --glow-y */
@@ -97,11 +104,57 @@
 }
 
 /* ----------------------------------------------------------------
+   LIQUID GLASS PILL
+   Absolutely positioned sibling of .linkList inside the capsule.
+   Slides to cover whichever link is active using a spring transition.
+   ---------------------------------------------------------------- */
+.liquidPill {
+  position: absolute;
+  border-radius: var(--radius-full);
+
+  /* Accent-tinted frosted glass — adapts to light/dark theme automatically */
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-1-rgb), 0.22) 0%,
+    rgba(var(--accent-1-rgb), 0.08) 100%
+  );
+  backdrop-filter: blur(8px) saturate(160%);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+
+  /* Accent-tinted rim */
+  border: 1px solid rgba(var(--accent-1-rgb), 0.35);
+
+  /* Depth: accent glow shadow + inner top highlight */
+  box-shadow:
+    0 2px 12px rgba(var(--accent-1-rgb), 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.50),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+
+  /* Spring slide — overshoot gives the liquid "slosh" feel */
+  transition:
+    left    0.46s cubic-bezier(0.34, 1.56, 0.64, 1),
+    width   0.40s cubic-bezier(0.34, 1.56, 0.64, 1),
+    top     0.40s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.22s ease;
+
+  /* Purely visual — drag is handled on the capsule nav element */
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Drop positional transitions while dragging so the pill follows instantly */
+.liquidPillDragging {
+  transition:
+    width   0.12s ease,
+    opacity 0.22s ease;
+}
+
+/* ----------------------------------------------------------------
    LINK LIST
    ---------------------------------------------------------------- */
 .linkList {
   position: relative;
-  z-index: 1;
+  z-index: 3; /* must sit above the pill (z-index: 2) so labels are always readable */
   list-style: none;
   margin: 0;
   padding: 0;
@@ -143,23 +196,7 @@
   --_btn-glow:         transparent;
   --_btn-shadow:       none;
 
-  /* Drive child transitions */
-  transition:
-    color     0.25s ease,
-    transform 0.3s  cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.25s ease;
-}
-
-/* -- Fill layer (the soft hover background) ------------------- */
-.navLinkFill {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-full);
-  background: var(--accent-1-background);
-  opacity: 0;
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  z-index: -1;
+  transition: color 0.25s ease;
 }
 
 /* -- Label ---------------------------------------------------- */
@@ -169,49 +206,20 @@
   transition: color 0.22s ease;
 }
 
-/* -- Active indicator dot ------------------------------------- */
-.activeDot {
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent-1);
-  opacity: 0.9;
-  transition: opacity 0.22s ease;
-}
 
-/* ----------------------------------------------------------------
-   HOVER STATE
-   ---------------------------------------------------------------- */
-.navLink:hover,
-.navLinkHovered {
-  color: var(--primary-text-color);
-  transform: translateY(-1px);
-  /* Prevent the global button:hover box-shadow glow from appearing */
+/* Suppress any global button:hover glow */
+.navLink:hover {
   box-shadow: none;
-}
-
-.navLink:hover .navLinkFill,
-.navLinkHovered .navLinkFill {
-  opacity: 1;
 }
 
 /* ----------------------------------------------------------------
    ACTIVE STATE
+   The liquid pill provides the visual background; only text styling
+   is needed here.
    ---------------------------------------------------------------- */
 .navLinkActive {
   color: var(--accent-1);
   font-weight: 600;
-  /* Inset ring gives an unmistakable active indicator on the pill shape */
-  box-shadow: inset 0 0 0 1.5px var(--accent-1);
-}
-
-.navLinkActive .navLinkFill {
-  /* Fully opaque tinted fill makes the active pill clearly distinct */
-  opacity: 1;
 }
 
 /* ----------------------------------------------------------------
@@ -226,7 +234,5 @@
    PRESSED STATE
    ---------------------------------------------------------------- */
 .navLink:active {
-  transform: scale(0.96);
-  /* Also cancel the global button:active translateY */
   box-shadow: none;
 }
