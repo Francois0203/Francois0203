@@ -1,0 +1,590 @@
+/* ============================================================================
+ * CONNECT — MOBILE  (< 768 px)
+ * Scrollable column layout. Colours from Theme.css variables only.
+ * ============================================================================ */
+
+
+/* ── Root ──────────────────────────────────────────────────────────────────── */
+
+.root {
+  position: relative;
+  min-height: 100vh;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ready {
+  opacity: 1;
+}
+
+
+/* ── Fixed blob field ──────────────────────────────────────────────────────── */
+
+.blobField {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.ambientOrb {
+  position: absolute;
+  top: 0; left: 0;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.orb1 {
+  width: 280px; height: 280px;
+  background: radial-gradient(ellipse at 40% 40%, var(--accent-1), var(--accent-2) 55%, transparent 80%);
+  animation: orbDrift1 52s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+.orb2 {
+  width: 220px; height: 220px;
+  background: radial-gradient(ellipse at 60% 60%, var(--accent-2), var(--accent-3) 50%, transparent 80%);
+  animation: orbDrift2 64s ease-in-out infinite;
+  animation-delay: -33s;
+}
+
+@keyframes orbDrift1 {
+  0%   { transform: translate(-5vw,  8vh); }
+  25%  { transform: translate(60vw,  4vh); }
+  50%  { transform: translate(55vw, 65vh); }
+  75%  { transform: translate(5vw,  72vh); }
+  100% { transform: translate(-5vw,  8vh); }
+}
+
+@keyframes orbDrift2 {
+  0%   { transform: translate(70vw, 60vh); }
+  33%  { transform: translate(4vw,  50vh); }
+  66%  { transform: translate(45vw, 10vh); }
+  100% { transform: translate(70vw, 60vh); }
+}
+
+
+/* ── Glass triangles (smaller than desktop) ────────────────────────────────── */
+
+.glassTri {
+  position: absolute;
+  top: 0; left: 0;
+  will-change: transform, border-radius;
+  pointer-events: none;
+  background: linear-gradient(
+    160deg,
+    rgba(var(--accent-2-rgb), 0.08) 0%,
+    rgba(var(--accent-1-rgb), 0.04) 50%,
+    rgba(var(--accent-3-rgb), 0.07) 100%
+  );
+}
+
+.glassTri::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.45) 0%,
+    rgba(255,255,255,0.10) 50%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.tri1 {
+  width: 140px; height: 140px;
+  border-radius: 4% 4% 48% 48% / 6% 6% 50% 50%;
+  backdrop-filter: blur(14px) saturate(150%) brightness(1.06);
+  -webkit-backdrop-filter: blur(14px) saturate(150%) brightness(1.06);
+  border: 1px solid rgba(255,255,255,0.24);
+  box-shadow: var(--shadow-sm), inset 0 1.5px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(255,255,255,0.08);
+  animation: triMorph1 44s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+.tri2 {
+  width: 170px; height: 170px;
+  border-radius: 48% 4% 4% 48% / 50% 6% 6% 50%;
+  backdrop-filter: blur(18px) saturate(170%) brightness(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(170%) brightness(1.05);
+  border: 1px solid rgba(255,255,255,0.20);
+  box-shadow: var(--shadow-md), inset 0 2px 0 rgba(255,255,255,0.40), inset 0 -1px 0 rgba(255,255,255,0.06);
+  animation: triMorph2 52s ease-in-out infinite;
+  animation-delay: -22s;
+}
+
+.tri3 {
+  width: 120px; height: 120px;
+  border-radius: 48% 48% 4% 4% / 50% 50% 6% 6%;
+  backdrop-filter: blur(12px) saturate(140%) brightness(1.07);
+  -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(1.07);
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow: var(--shadow-sm), inset 0 1.5px 0 rgba(255,255,255,0.50), inset 0 -1px 0 rgba(255,255,255,0.06);
+  animation: triMorph3 38s ease-in-out infinite;
+  animation-delay: -7s;
+}
+
+@keyframes triMorph1 {
+  0%,100% { border-radius: 4%  4%  48% 48% / 6%  6%  50% 50%; }
+  33%      { border-radius: 6%  4%  50% 44% / 8%  4%  54% 46%; }
+  66%      { border-radius: 4%  8%  44% 50% / 4%  8%  46% 54%; }
+}
+
+@keyframes triMorph2 {
+  0%,100% { border-radius: 48% 4%  4%  48% / 50% 6%  6%  50%; }
+  33%      { border-radius: 52% 6%  4%  44% / 54% 8%  4%  46%; }
+  66%      { border-radius: 44% 4%  8%  52% / 46% 4%  8%  54%; }
+}
+
+@keyframes triMorph3 {
+  0%,100% { border-radius: 48% 48% 4%  4%  / 50% 50% 6%  6%;  }
+  33%      { border-radius: 52% 44% 6%  4%  / 54% 46% 8%  4%;  }
+  66%      { border-radius: 44% 52% 4%  8%  / 46% 54% 4%  8%;  }
+}
+
+
+/* ── Content wrapper ───────────────────────────────────────────────────────── */
+
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-2xl);
+}
+
+
+/* ── Page column ───────────────────────────────────────────────────────────── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  animation: fadeUp 0.6s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin: 0;
+}
+
+.heading {
+  margin: 0 !important;
+  line-height: 1.1 !important;
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  line-height: 1.75;
+  margin: 0;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+
+/* ── Section label ─────────────────────────────────────────────────────────── */
+
+.sectionLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+  margin: 0 0 var(--spacing-md);
+}
+
+
+/* ── Contact section ───────────────────────────────────────────────────────── */
+
+.contactSection {
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.6s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.methodCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: var(--primary-text-color);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.10) 0%,
+    rgba(255,255,255,0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.18);
+
+  animation: slideInLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(0.3s + var(--enter-i, 0) * 70ms);
+
+  transition:
+    border-color var(--transition-base),
+    box-shadow   var(--transition-base),
+    transform    var(--transition-base);
+}
+
+a.methodCard { cursor: pointer; }
+
+a.methodCard:active {
+  border-color: rgba(var(--accent-1-rgb), 0.45);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.22);
+  transform: scale(0.98);
+}
+
+.methodCard.primary {
+  border-color: rgba(var(--accent-1-rgb), 0.28);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.22), 0 0 18px rgba(var(--accent-1-rgb), 0.08);
+}
+
+.methodCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.10) 50%, transparent 70%);
+  transform: translateX(-110%);
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.methodIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-1-rgb), 0.18) 0%,
+    rgba(var(--accent-2-rgb), 0.10) 100%
+  );
+  border: 1px solid rgba(var(--accent-1-rgb), 0.20);
+  color: var(--accent-1);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.methodBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.methodLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.methodValue {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--primary-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* ── Social section ────────────────────────────────────────────────────────── */
+
+.socialSection {
+  display: flex;
+  flex-direction: column;
+  animation: fadeUp 0.6s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.socialCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-xs);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.10) 0%,
+    rgba(255,255,255,0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.18);
+
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(0.4s + var(--enter-i, 0) * 50ms);
+
+  transition:
+    border-color var(--transition-base),
+    box-shadow   var(--transition-base),
+    transform    var(--transition-base);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.socialCard:active {
+  border-color: var(--brand-color, var(--accent-1));
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    0 0 16px color-mix(in srgb, var(--brand-color, var(--accent-1)) 25%, transparent);
+  transform: scale(0.96);
+  text-decoration: none;
+}
+
+.socialIconWrap {
+  font-size: 1.5rem;
+  color: var(--brand-color, var(--accent-1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.socialName {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--secondary-text-color);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+
+/* ── Donation card ─────────────────────────────────────────────────────────── */
+
+.donationCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.11) 0%,
+    rgba(255,255,255,0.05) 50%,
+    rgba(255,255,255,0.09) 100%
+  );
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid var(--border-color);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1.5px 0 rgba(255,255,255,0.28),
+    inset 0 -1px   0 rgba(255,255,255,0.06);
+
+  animation: fadeUp 0.65s 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.donationCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.donationTop {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.donationIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-1-rgb), 0.20) 0%,
+    rgba(var(--accent-2-rgb), 0.12) 100%
+  );
+  border: 1px solid rgba(var(--accent-1-rgb), 0.25);
+  color: var(--accent-1);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.donationBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.donationTitle {
+  font-size: var(--font-size-base) !important;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-xs) 0 !important;
+}
+
+.donationMessage {
+  font-size: var(--font-size-xs);
+  color: var(--secondary-text-color);
+  line-height: 1.65;
+  margin: 0;
+}
+
+
+/* ── Status bar ────────────────────────────────────────────────────────────── */
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  width: fit-content;
+  align-self: center;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.10) 0%,
+    rgba(255,255,255,0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.18);
+
+  animation: fadeUp 0.6s 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tertiary-text-color);
+  flex-shrink: 0;
+}
+
+.statusBar.open .statusDot {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34,197,94,0.65);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 6px rgba(34,197,94,0.65); transform: scale(1);    }
+  50%      { box-shadow: 0 0 14px rgba(34,197,94,0.90); transform: scale(1.18); }
+}
+
+.statusText {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--secondary-text-color);
+}
+
+
+/* ── Small phone (≤ 479 px) ────────────────────────────────────────────────── */
+
+@media (max-width: 479px) {
+  .content { padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl); }
+
+  .socialGrid { grid-template-columns: repeat(3, 1fr); gap: var(--spacing-xs); }
+
+  .socialIconWrap { font-size: 1.3rem; }
+
+  .methodIcon { width: 36px; height: 36px; font-size: 1rem; }
+
+  .donationCard { padding: var(--spacing-lg) var(--spacing-md); }
+}
+
+
+/* ── Reduced motion ────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .root           { opacity: 1 !important; transition: none !important; }
+  .header,
+  .contactSection,
+  .socialSection,
+  .donationCard,
+  .statusBar      { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .methodCard     { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .socialCard     { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .glassTri, .ambientOrb { animation: none !important; }
+  .statusBar.open .statusDot { animation: none !important; }
+}
+
+[data-no-animations="true"] .header,
+[data-no-animations="true"] .contactSection,
+[data-no-animations="true"] .socialSection,
+[data-no-animations="true"] .donationCard,
+[data-no-animations="true"] .statusBar,
+[data-no-animations="true"] .methodCard,
+[data-no-animations="true"] .socialCard {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
