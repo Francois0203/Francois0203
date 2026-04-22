@@ -54,15 +54,9 @@ const SectionHeader = ({ icon, title }) => (
 
 const DesktopBio = () => {
   const navigate = useNavigate();
-  const [profileVisible, setProfileVisible] = useState(false);
   const [expRef,    expVisible]    = useReveal();
   const [eduRef,    eduVisible]    = useReveal();
   const [skillsRef, skillsVisible] = useReveal();
-
-  useEffect(() => {
-    const t = setTimeout(() => setProfileVisible(true), 100);
-    return () => clearTimeout(t);
-  }, []);
 
   return (
     <div className={styles.root}>
@@ -75,7 +69,7 @@ const DesktopBio = () => {
           <div className={styles.page}>
 
             {/* ── PROFILE ─────────────────────────────────────────────────────── */}
-            <section className={`${styles.profileSection} ${profileVisible ? styles.revealed : ''}`}>
+            <section className={`${styles.profileSection} ${styles.revealed}`}>
 
               {/* Split-panel card: identity left | info right */}
               <div className={styles.profileCard}>

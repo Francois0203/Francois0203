@@ -25,6 +25,12 @@ class ErrorBoundaryInner extends React.Component {
     this.setState({ errorInfo });
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: null, errorInfo: null, detailsOpen: false });
+    }
+  }
+
   handleReload = () => {
     const { onReset } = this.props;
     if (onReset) onReset();

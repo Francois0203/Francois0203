@@ -192,14 +192,8 @@ ProjectCard.displayName = 'ProjectCard';
  * ============================================================================
  */
 const Projects = () => {
-  const [isVisible, setIsVisible] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
   return (
-    <div className={`${styles.container} ${isVisible ? styles.visible : ''}`}>
+    <div className={`${styles.container} ${styles.visible}`}>
       {/* Page Header */}
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Projects</h1>

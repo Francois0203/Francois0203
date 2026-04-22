@@ -1169,29 +1169,13 @@ hr {
 
 /* ─── SCROLLBAR ─────────────────────────────────────────────────────────── */
 
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent-1) transparent;
+html {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-*::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-*::-webkit-scrollbar-track {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-*::-webkit-scrollbar-thumb {
-    background-color: var(--accent-1);
-    border-radius: var(--radius-full);
-}
-
-*::-webkit-scrollbar-corner {
-    background: transparent;
+html::-webkit-scrollbar {
+    display: none;
 }
 
 

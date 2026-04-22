@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart, FaCode } from 'react-icons/fa';
 import { SiHackerrank } from 'react-icons/si';
@@ -20,17 +20,10 @@ const BLOB_DEFS = [
 ];
 
 const MobileConnect = () => {
-  const [ready, setReady] = useState(false);
-
   const blobRefs   = useRef([]);
   const physicsRef = useRef(null);
   const rafRef     = useRef(null);
   const nudgeTimer = useRef(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 60);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     const vw = window.innerWidth;
@@ -122,7 +115,7 @@ const MobileConnect = () => {
   const { contactPage, socialLinks } = bioData;
 
   return (
-    <div className={`${styles.root} ${ready ? styles.ready : ''}`}>
+    <div className={`${styles.root} ${styles.ready}`}>
       {/* Blobs */}
       <div className={styles.blobField} aria-hidden="true">
         <div className={`${styles.ambientOrb} ${styles.orb1}`} />

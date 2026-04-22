@@ -5,8 +5,8 @@
  * ============================================================================
  */
 
-import React, { Suspense, useCallback, useMemo } from 'react';
-import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
+import React, { Suspense, useCallback, useMemo, useEffect } from 'react';
+import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
 
 /* ========================================
  * IMPORTS - Pages
@@ -65,6 +65,21 @@ const NAVIGATION_PAGES = [
 ];
 
 /* ============================================================================
+ * SCROLL TO TOP
+ * ============================================================================
+ * Resets window scroll position to the top on every route change.
+ * ============================================================================
+ */
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
+/* ============================================================================
+
  * LOADING FALLBACK COMPONENT
  * ============================================================================
  * Displayed while lazy-loaded components are being fetched
@@ -154,20 +169,23 @@ const MemoizedAppLayout = React.memo(AppLayout);
  */
 const AppContent = () => {
   return (
-    <Routes>
-      {/* Main Layout Route */}
-      <Route path="/" element={<MemoizedAppLayout />}>
-        {/* Page Routes */}
-        <Route index element={<Home />} />
-        <Route path="bio" element={<Bio />} />
-        <Route path="connect" element={<Connect />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="loading" element={<Loading />} />
-        
-        {/* 404 Not Found - Catch all unknown routes */}
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Main Layout Route */}
+        <Route path="/" element={<MemoizedAppLayout />}>
+          {/* Page Routes */}
+          <Route index element={<Home />} />
+          <Route path="bio" element={<Bio />} />
+          <Route path="connect" element={<Connect />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="loading" element={<Loading />} />
+          
+          {/* 404 Not Found - Catch all unknown routes */}
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </>
   );
 };
 

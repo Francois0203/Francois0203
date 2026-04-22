@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart, FaCode } from 'react-icons/fa';
 import { SiHackerrank } from 'react-icons/si';
@@ -20,18 +20,11 @@ const BLOB_DEFS = [
 ];
 
 const DesktopConnect = () => {
-  const [ready, setReady] = useState(false);
-
   const blobRefs   = useRef([]);
   const physicsRef = useRef(null);
   const rafRef     = useRef(null);
   const nudgeTimer = useRef(null);
   const mouseRef   = useRef({ x: -1000, y: -1000 });
-
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 60);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     const vw = window.innerWidth;
@@ -146,7 +139,7 @@ const DesktopConnect = () => {
 
   return (
     <div
-      className={`${styles.root} ${ready ? styles.ready : ''}`}
+      className={`${styles.root} ${styles.ready}`}
       onMouseMove={e => { mouseRef.current = { x: e.clientX, y: e.clientY }; }}
     >
       {/* Blobs */}

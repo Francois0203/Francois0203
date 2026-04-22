@@ -19,7 +19,7 @@ function ErrorBoundaryWrapper({ children }) {
       fallbackPath="/"
       navigate={navigate}
       onGoHome={() => navigate('/')}
-      key={location.pathname}
+      resetKey={location.pathname}
     >
       {children}
     </ErrorBoundary>

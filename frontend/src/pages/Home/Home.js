@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
 
@@ -20,19 +20,10 @@ const Home = () => {
   // ========================================
   // STATE MANAGEMENT
   // ========================================
-  const [isVisible, setIsVisible] = useState(false);
-  
   // ========================================
   // REFS
   // ========================================
   const containerRef = useRef(null);
-
-  // ========================================
-  // EFFECTS - Page Mount
-  // ========================================
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   // ========================================
   // HELPER FUNCTION - Dynamic Image Import
@@ -65,7 +56,7 @@ const Home = () => {
 
       <div 
         ref={containerRef} 
-        className={`${styles.container} ${isVisible ? styles.visible : ''}`}
+        className={`${styles.container} ${styles.visible}`}
       >
         {/* Main Content */}
         <div className={styles.content}>
