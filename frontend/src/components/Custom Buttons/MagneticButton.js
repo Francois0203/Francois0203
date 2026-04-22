@@ -7,9 +7,9 @@ import styles from './MagneticButton.module.css';
 // Interaction layers: proximity particles → magnetic pull on hover → spring-back on leave.
 // Particle canvas portalled to <body> to escape backdrop-filter stacking contexts.
 
-const PROXIMITY_RADIUS = 110; // px from button center — particles activate below this
-const PARTICLE_COUNT   = 6;   // initial burst per proximity entry
-const LERP_FACTOR      = 0.10; // magnetic pull smoothing
+const PROXIMITY_RADIUS = 140; // px from button center — particles activate below this
+const PARTICLE_COUNT   = 4;   // initial burst per proximity entry
+const LERP_FACTOR      = 0.14; // magnetic pull smoothing
 
 const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -17,25 +17,25 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // Spawns near the cursor with wide scatter; drifts toward a random interior
 // point with an orbital wobble for organic, non-linear motion.
 const createParticle = (btnRect, spawnX, spawnY) => {
+    // Spawn tightly around the cursor position
     const angle  = Math.random() * Math.PI * 2;
-    const radius = 4 + Math.random() * 22; // 4–26px scatter from cursor
+    const radius = 4 + Math.random() * 28;
     return {
-        // Starts near cursor, drifts toward a random interior offset
         x: spawnX + Math.cos(angle) * radius,
         y: spawnY + Math.sin(angle) * radius,
-        // Per-particle target offset — prevents pile-up at a single point
-        targetOffsetX: (Math.random() - 0.5) * (btnRect.width  * 0.6),
-        targetOffsetY: (Math.random() - 0.5) * (btnRect.height * 0.6),
-        size:        1.2 + Math.random() * 1.6,
+        // Target: a point near the button centre with minor scatter
+        targetOffsetX: (Math.random() - 0.5) * (btnRect.width  * 0.5),
+        targetOffsetY: (Math.random() - 0.5) * (btnRect.height * 0.5),
+        size:        1.8 + Math.random() * 1.8,  // controls line length (halfLen = size * 5)
         opacity:     0,
-        maxOpacity:  0.30 + Math.random() * 0.30,
-        speed:       0.008 + Math.random() * 0.016, // staggered drift
+        maxOpacity:  0.18 + Math.random() * 0.22,
+        speed:       0.0025 + Math.random() * 0.004, // slow drift
         driftAngle:  Math.random() * Math.PI * 2,
-        driftSpeed:  (Math.random() - 0.5) * 0.04,
-        driftRadius: 2 + Math.random() * 5,         // px orbital wobble
+        driftSpeed:  (Math.random() - 0.5) * 0.018,
+        driftRadius: 2 + Math.random() * 4,
         phase:       'fadein',
         life:        0,
-        maxLife:     70 + Math.floor(Math.random() * 80),
+        maxLife:     150 + Math.floor(Math.random() * 130),
     };
 };
 
@@ -93,7 +93,7 @@ const MagneticButton = ({
 
         // Trickle new particles while cursor is in proximity
         frameCountRef.current++;
-        if (isNearRef.current && frameCountRef.current % 30 === 0) {
+        if (isNearRef.current && frameCountRef.current % 28 === 0) {
             particles.current.push(createParticle(rect, cursorPosRef.current.x, cursorPosRef.current.y));
         }
 
@@ -113,14 +113,14 @@ const MagneticButton = ({
             p.x = lerp(p.x, targetX, p.speed);
             p.y = lerp(p.y, targetY, p.speed);
 
-            // Fade lifecycle
+            // Fade lifecycle — slow fade in/out
             if (p.phase === 'fadein') {
-                p.opacity = Math.min(p.maxOpacity, p.opacity + 0.025);
+                p.opacity = Math.min(p.maxOpacity, p.opacity + 0.012);
                 if (p.opacity >= p.maxOpacity) p.phase = 'hold';
             } else if (p.phase === 'hold') {
-                if (p.life > p.maxLife * 0.6) p.phase = 'fadeout';
+                if (p.life > p.maxLife * 0.65) p.phase = 'fadeout';
             } else {
-                p.opacity = Math.max(0, p.opacity - 0.018);
+                p.opacity = Math.max(0, p.opacity - 0.008);
                 if (p.opacity <= 0) return false; // remove
             }
 
@@ -128,16 +128,39 @@ const MagneticButton = ({
             const px = (p.x - cx) + lx;
             const py = (p.y - cy) + ly;
 
-            // Read accent colour from CSS custom property (set once per proximity entry)
-            const rgb  = canvas.dataset.accentRgb || '45, 212, 191';
-            const grad = ctx.createRadialGradient(px, py, 0, px, py, p.size * 2.5);
-            grad.addColorStop(0, `rgba(${rgb}, ${p.opacity})`);
-            grad.addColorStop(1, `rgba(${rgb}, 0)`);
+            // Read accent colour from CSS custom property
+            const rgb = canvas.dataset.accentRgb || '45, 212, 191';
+
+            // ── Flowing line stroke ───────────────────────────────────────
+            // Direction of travel: from particle toward button centre.
+            // Asymmetric gradient: transparent tail → bright tip (facing button).
+            const toCx = lx - px;
+            const toCy = ly - py;
+            const dist = Math.hypot(toCx, toCy) || 1;
+            const ndx  = toCx / dist;
+            const ndy  = toCy / dist;
+
+            // Short segment — tail behind, tip toward button
+            const tailLen = p.size * 5;
+            const tipLen  = p.size * 2;
+            const tx = px - ndx * tailLen; // tail (away from button)
+            const ty = py - ndy * tailLen;
+            const hx = px + ndx * tipLen;  // tip (toward button)
+            const hy = py + ndy * tipLen;
+
+            const lineGrad = ctx.createLinearGradient(tx, ty, hx, hy);
+            lineGrad.addColorStop(0,    `rgba(${rgb}, 0)`);
+            lineGrad.addColorStop(0.55, `rgba(${rgb}, ${p.opacity * 0.5})`);
+            lineGrad.addColorStop(0.85, `rgba(${rgb}, ${p.opacity})`);
+            lineGrad.addColorStop(1,    `rgba(${rgb}, ${p.opacity * 0.6})`);
 
             ctx.beginPath();
-            ctx.arc(px, py, p.size * 2.5, 0, Math.PI * 2);
-            ctx.fillStyle = grad;
-            ctx.fill();
+            ctx.moveTo(tx, ty);
+            ctx.lineTo(hx, hy);
+            ctx.strokeStyle = lineGrad;
+            ctx.lineWidth   = Math.max(1.0, p.size * 0.7);
+            ctx.lineCap     = 'round';
+            ctx.stroke();
 
             anyAlive = true;
             return true;
@@ -218,7 +241,7 @@ const MagneticButton = ({
         const rect = btn.getBoundingClientRect();
         const nx = (e.clientX - rect.left) / rect.width  - 0.5;
         const ny = (e.clientY - rect.top)  / rect.height - 0.5;
-        magTarget.current = { x: nx * 16, y: ny * 10 }; // ±8px X, ±5px Y
+        magTarget.current = { x: nx * 40, y: ny * 28 }; // stronger magnetic pull
         // Track cursor for reactive glass border glow
         btn.style.setProperty('--glow-x', `${e.clientX - rect.left}px`);
         btn.style.setProperty('--glow-y', `${e.clientY - rect.top}px`);
