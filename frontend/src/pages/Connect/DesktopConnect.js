@@ -142,7 +142,7 @@ const DesktopConnect = () => {
       className={`${styles.root} ${styles.ready}`}
       onMouseMove={e => { mouseRef.current = { x: e.clientX, y: e.clientY }; }}
     >
-      {/* Blobs */}
+      {/* Background */}
       <div className={styles.blobField} aria-hidden="true">
         <div className={`${styles.ambientOrb} ${styles.orb1}`} />
         <div className={`${styles.ambientOrb} ${styles.orb2}`} />
@@ -160,16 +160,27 @@ const DesktopConnect = () => {
       <div className={styles.content}>
         <div className={styles.layout}>
 
-          {/* LEFT column — intro + contact */}
-          <div className={styles.leftCol}>
-            <header className={styles.header}>
+          {/* ── Hero panel — intro + availability ── */}
+          <div className={styles.heroPanel}>
+            <div className={styles.heroCopy}>
               <p className={styles.eyebrow}>Let's work together</p>
               <h1 className={styles.heading}>{contactPage.heading.title}</h1>
               <p className={styles.subtitle}>{contactPage.heading.subtitle}</p>
-            </header>
+            </div>
+            {contactPage.availability && (
+              <div className={`${styles.statusBar} ${styles[contactPage.availability.status]}`}>
+                <span className={styles.statusDot} aria-hidden="true" />
+                <span className={styles.statusText}>{contactPage.availability.message}</span>
+              </div>
+            )}
+          </div>
 
-            <section className={styles.contactSection} aria-label="Direct contact">
-              <p className={styles.sectionLabel}>Direct Contact</p>
+          {/* ── Main two-column grid ── */}
+          <div className={styles.mainGrid}>
+
+            {/* Left panel — direct contact */}
+            <section className={styles.contactPanel} aria-label="Direct contact">
+              <p className={styles.panelLabel}>Direct Contact</p>
               <div className={styles.contactList}>
                 {contactPage.contactMethods.map((method, i) => {
                   const Icon = ICON_MAP[method.icon];
@@ -206,60 +217,54 @@ const DesktopConnect = () => {
               </div>
             </section>
 
-            {/* Availability status */}
-            {contactPage.availability && (
-              <div className={`${styles.statusBar} ${styles[contactPage.availability.status]}`}>
-                <span className={styles.statusDot} aria-hidden="true" />
-                <span className={styles.statusText}>{contactPage.availability.message}</span>
-              </div>
-            )}
-          </div>
+            {/* Right stack — social + donation */}
+            <div className={styles.rightStack}>
 
-          {/* RIGHT column — social + donation */}
-          <div className={styles.rightCol}>
-            <section className={styles.socialSection} aria-label="Social links">
-              <p className={styles.sectionLabel}>Find me on</p>
-              <div className={styles.socialGrid}>
-                {socialLinks.map((social, i) => {
-                  const Icon = ICON_MAP[social.icon];
-                  return (
-                    <a
-                      key={social.key}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.socialCard}
-                      style={{ '--brand-color': social.color, '--enter-i': i }}
-                      aria-label={social.platform}
-                    >
-                      <span className={styles.socialIconWrap} aria-hidden="true">
-                        {Icon && <Icon />}
-                      </span>
-                      <span className={styles.socialName}>{social.platform}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </section>
-
-            {contactPage.donation?.enabled && (
-              <section className={styles.donationCard} aria-label="Support">
-                <span className={styles.donationIcon} aria-hidden="true">
-                  <FaHeart />
-                </span>
-                <div className={styles.donationBody}>
-                  <h2 className={styles.donationTitle}>{contactPage.donation.title}</h2>
-                  <p className={styles.donationMessage}>{contactPage.donation.message}</p>
-                </div>
-                <div className={styles.donationCta}>
-                  <MagneticButton
-                    onClick={() => window.open(contactPage.donation.link, '_blank', 'noopener,noreferrer')}
-                  >
-                    {contactPage.donation.buttonText}
-                  </MagneticButton>
+              <section className={styles.socialPanel} aria-label="Social links">
+                <p className={styles.panelLabel}>Find Me Online</p>
+                <div className={styles.socialGrid}>
+                  {socialLinks.map((social, i) => {
+                    const Icon = ICON_MAP[social.icon];
+                    return (
+                      <a
+                        key={social.key}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.socialCard}
+                        style={{ '--brand-color': social.color, '--enter-i': i }}
+                        aria-label={social.platform}
+                      >
+                        <span className={styles.socialIconWrap} aria-hidden="true">
+                          {Icon && <Icon />}
+                        </span>
+                        <span className={styles.socialName}>{social.platform}</span>
+                      </a>
+                    );
+                  })}
                 </div>
               </section>
-            )}
+
+              {contactPage.donation?.enabled && (
+                <section className={styles.donationCard} aria-label="Support">
+                  <span className={styles.donationIcon} aria-hidden="true">
+                    <FaHeart />
+                  </span>
+                  <div className={styles.donationBody}>
+                    <h2 className={styles.donationTitle}>{contactPage.donation.title}</h2>
+                    <p className={styles.donationMessage}>{contactPage.donation.message}</p>
+                  </div>
+                  <div className={styles.donationCta}>
+                    <MagneticButton
+                      onClick={() => window.open(contactPage.donation.link, '_blank', 'noopener,noreferrer')}
+                    >
+                      {contactPage.donation.buttonText}
+                    </MagneticButton>
+                  </div>
+                </section>
+              )}
+
+            </div>
           </div>
 
         </div>

@@ -140,9 +140,9 @@ const MobileConnect = () => {
             <p className={styles.subtitle}>{contactPage.heading.subtitle}</p>
           </header>
 
-          {/* Contact methods */}
-          <section className={styles.contactSection} aria-label="Direct contact">
-            <p className={styles.sectionLabel}>Direct Contact</p>
+          {/* Contact panel */}
+          <section className={styles.contactPanel} aria-label="Direct contact">
+            <p className={styles.panelLabel}>Direct Contact</p>
             <div className={styles.contactList}>
               {contactPage.contactMethods.map((method, i) => {
                 const Icon = ICON_MAP[method.icon];
@@ -179,9 +179,9 @@ const MobileConnect = () => {
             </div>
           </section>
 
-          {/* Social links */}
-          <section className={styles.socialSection} aria-label="Social links">
-            <p className={styles.sectionLabel}>Find me on</p>
+          {/* Social panel */}
+          <section className={styles.socialPanel} aria-label="Social links">
+            <p className={styles.panelLabel}>Find Me Online</p>
             <div className={styles.socialGrid}>
               {socialLinks.map((social, i) => {
                 const Icon = ICON_MAP[social.icon];

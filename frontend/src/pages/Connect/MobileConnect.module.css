@@ -210,23 +210,38 @@
 }
 
 
-/* ── Section label ─────────────────────────────────────────────────────────── */
+/* ── Panel label ──────────────────────────────────────────────────────────── */
 
-.sectionLabel {
+.panelLabel {
   font-size: var(--font-size-xs);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--tertiary-text-color);
-  margin: 0 0 var(--spacing-md);
+  margin: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 
-/* ── Contact section ───────────────────────────────────────────────────────── */
+/* ── Contact panel ────────────────────────────────────────────────────────── */
 
-.contactSection {
+.contactPanel {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.10) 0%,
+    rgba(255,255,255,0.04) 100%
+  );
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md), inset 0 1.5px 0 rgba(255,255,255,0.22);
 }
 
 .contactList {
@@ -334,11 +349,24 @@ a.methodCard:active {
 }
 
 
-/* ── Social section ────────────────────────────────────────────────────────── */
+/* ── Social panel ───────────────────────────────────────────────────────────── */
 
-.socialSection {
+.socialPanel {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.10) 0%,
+    rgba(255,255,255,0.04) 100%
+  );
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md), inset 0 1.5px 0 rgba(255,255,255,0.22);
 }
 
 .socialGrid {
@@ -553,8 +581,8 @@ a.methodCard:active {
 @media (prefers-reduced-motion: reduce) {
   .root           { opacity: 1 !important; transition: none !important; }
   .header,
-  .contactSection,
-  .socialSection,
+  .contactPanel,
+  .socialPanel,
   .donationCard,
   .statusBar      { animation: none !important; opacity: 1 !important; transform: none !important; }
   .methodCard     { animation: none !important; opacity: 1 !important; transform: none !important; }
@@ -564,8 +592,8 @@ a.methodCard:active {
 }
 
 [data-no-animations="true"] .header,
-[data-no-animations="true"] .contactSection,
-[data-no-animations="true"] .socialSection,
+[data-no-animations="true"] .contactPanel,
+[data-no-animations="true"] .socialPanel,
 [data-no-animations="true"] .donationCard,
 [data-no-animations="true"] .statusBar,
 [data-no-animations="true"] .methodCard,
