@@ -11,10 +11,91 @@ import {
 } from 'react-icons/fa';
 import { SiPostgresql, SiKubernetes, SiNginx, SiR, SiHackerrank } from 'react-icons/si';
 
-import bioData    from '../../data/bio.json';
-import styles     from './MobileBio.module.css';
-import ProfileImg from '../../Images/Profile.jpeg';
+import styles           from './MobileBio.module.css';
+import ProfileImg       from '../../Images/Profile.jpeg';
 import { CursorGlowButton } from '../../components';
+
+const bioData = {
+  summary: 'Full-stack developer and computer scientist with a strong foundation in software engineering, distributed systems, and modern web technologies. Currently pursuing an MSc in Computer Science at North-West University while contributing to real-world enterprise software. I care deeply about building things that are technically robust and genuinely well-crafted — from system architecture to polished user interfaces. Outside of work, you\'ll find me at the gym, on the squash court, or working through a guitar piece.',
+  personalInfo: {
+    name: 'Francois Meiring',
+    title: 'Junior Software Developer',
+    dateOfBirth: '2 March 2002',
+    location: 'Irene, Centurion',
+    driversLicense: 'Code B',
+    gender: 'Male',
+    languages: ['Afrikaans', 'English'],
+    faith: 'Christian',
+  },
+  contact: {
+    email: 'francoismeiring0203@gmail.com',
+    phone: '+27 65 131 0546',
+  },
+  socialLinks: [
+    { platform: 'LinkedIn',    key: 'linkedin',    url: 'https://www.linkedin.com/in/francois-meiring',       icon: 'FaLinkedin',   color: '#0077B5' },
+    { platform: 'GitHub',      key: 'github',      url: 'https://github.com/Francois0203',                    icon: 'FaGithub',     color: '#6e40c9' },
+    { platform: 'Instagram',   key: 'instagram',   url: 'https://www.instagram.com/francois0203/',            icon: 'FaInstagram',  color: '#E4405F' },
+    { platform: 'ORCID',       key: 'orcid',       url: 'https://orcid.org/0009-0004-7605-0618',              icon: 'FaOrcid',      color: '#A6CE39' },
+    { platform: 'HackerRank',  key: 'hackerrank',  url: 'https://www.hackerrank.com/profile/francoismeiring', icon: 'SiHackerrank', color: '#00EA64' },
+    { platform: 'Codewars',    key: 'codewars',    url: 'https://www.codewars.com/users/CriminalShrimp',      icon: 'FaCode',       color: '#FF7F50' },
+  ],
+  experiences: [
+    {
+      title: 'Junior Software Developer',
+      company: 'Shareforce (Pty) Ltd',
+      location: '39 Melrose Boulevard, Melrose Arch, Johannesburg',
+      period: 'May 2026 - Present',
+      description: 'As a Junior Software Developer at Shareforce, I contribute to building and maintaining web applications using Python and Django. My role involves writing clean, efficient code, developing backend features, and supporting the implementation of RESTful APIs. I collaborate with team members to debug issues, improve application performance, and ensure code quality through testing and reviews, while continuously learning and applying best practices in software development.',
+    },
+    {
+      title: 'Full Stack Software Developer',
+      company: 'Aquatico Scientific',
+      location: 'Route 21 Business Park, Centurion',
+      period: 'January 2025 - April 2026',
+      description: 'Leading the complete ground-up rebuild of the company\'s enterprise system architecture. Architecting and developing a comprehensive full-stack solution using React for the frontend and Node.js for the backend, deployed on production servers using Nginx and orchestrated with Kubernetes. The system encompasses multiple integrated modules including laboratory information management, project coordination, and business operations management.',
+    },
+    {
+      title: 'Shop Assistant',
+      company: 'Western Rackets',
+      period: 'During Matric Year',
+      description: 'Part-time retail position focused on customer service and sales, developing interpersonal communication skills and professional workplace etiquette.',
+    },
+    {
+      title: 'Waiter',
+      company: 'Bean Tree, Krugersdorp',
+      period: 'During Matric Year',
+      description: 'Food service position emphasizing customer satisfaction, multitasking, and effective communication in a fast-paced environment.',
+    },
+  ],
+  education: [
+    { degree: 'MSc. Computer Science',              institution: 'North-West University, Potchefstroom', period: '2026 - Present', details: 'Research-focused master\'s degree with emphasis on astronomical data processing and distributed computing systems.'                                                          },
+    { degree: 'BSc. Hons. Computer Science',        institution: 'North-West University, Potchefstroom', period: '2024',           details: 'Honours degree specializing in advanced software engineering and computational research methodologies.'                                                                        },
+    { degree: 'BSc. Computer Science & Statistics', institution: 'North-West University, Potchefstroom', period: '2021 - 2023',    details: 'Dual-major undergraduate degree combining computational theory with statistical analysis and data science fundamentals.'                                                       },
+    { degree: 'National Senior Certificate (Matric)',institution: 'Hoërskool Noordheuwel',               period: 'Completed',      details: 'Subjects: Physics, Afrikaans Home Language, English First Additional Language, Mathematics, Information Technology, Computer Applications Technology.' },
+  ],
+  skills: {
+    'Programming Languages':       ['Python', 'JavaScript', 'R', 'HTML/CSS', 'SAS'],
+    'Frameworks & Technologies':   ['React', 'Node.js', 'Docker', 'Kubernetes', 'Nginx', 'SQL', 'PostgreSQL'],
+    'Professional Skills':         ['Team Leadership', 'Project Management', 'Full-Stack Development', 'System Architecture'],
+  },
+  technicalSkills: [
+    { name: 'React',       icon: 'FaReact',      color: '#61DAFB', category: 'Frontend'       },
+    { name: 'Python',      icon: 'FaPython',     color: '#3776AB', category: 'Language'       },
+    { name: 'JavaScript',  icon: 'FaJs',         color: '#F7DF1E', category: 'Language'       },
+    { name: 'Node.js',     icon: 'FaNodeJs',     color: '#339933', category: 'Backend'        },
+    { name: 'Docker',      icon: 'FaDocker',     color: '#2496ED', category: 'DevOps'         },
+    { name: 'Git',         icon: 'FaGitAlt',     color: '#F05032', category: 'Tools'          },
+    { name: 'PostgreSQL',  icon: 'SiPostgresql', color: '#4169E1', category: 'Database'       },
+    { name: 'HTML5',       icon: 'FaHtml5',      color: '#E34F26', category: 'Frontend'       },
+    { name: 'CSS3',        icon: 'FaCss3Alt',    color: '#1572B6', category: 'Frontend'       },
+    { name: 'Kubernetes',  icon: 'SiKubernetes', color: '#326CE5', category: 'DevOps'         },
+    { name: 'Linux',       icon: 'FaLinux',      color: '#FCC624', category: 'OS'             },
+    { name: 'Nginx',       icon: 'SiNginx',      color: '#009639', category: 'Server'         },
+    { name: 'R',           icon: 'SiR',          color: '#276DC3', category: 'Language'       },
+    { name: 'Database',    icon: 'FaDatabase',   color: '#FF6B6B', category: 'Database'       },
+    { name: 'Server',      icon: 'FaServer',     color: '#4ECDC4', category: 'Infrastructure' },
+  ],
+};
 
 const TECH_ICON_MAP = {
   FaReact, FaPython, FaJs, FaNodeJs, FaDocker, FaGitAlt,

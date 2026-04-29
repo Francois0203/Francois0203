@@ -102,21 +102,21 @@
 
 .contentWrapper {
   position: relative;
-  z-index: 10;
+  z-index: var(--z-sticky);
   max-width: 700px;
   width: 100%;
-  padding: 3rem 2.5rem;
+  padding: var(--spacing-4xl) var(--spacing-3xl);
   background: var(--background-1);
   border: 2px solid var(--error-color);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl), 0 0 100px var(--accent-1-background);
   animation: contentSlideIn 0.8s ease-out;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: var(--spacing-3xl);
   box-sizing: border-box;
-  max-height: calc(100vh - 4rem);
+  max-height: calc(100vh - var(--spacing-4xl));
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -210,15 +210,15 @@
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: var(--font-size-4xl);
   font-weight: 700;
   color: var(--error-color);
-  margin: 0 0 1rem;
+  margin: 0 0 var(--spacing-md);
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  font-size: 1.125rem;
+  font-size: var(--font-size-md);
   color: var(--disabled-color);
   margin: 0;
   line-height: 1.6;
@@ -228,7 +228,7 @@
 .actionsContainer {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
   width: 100%;
   max-width: 500px;
   animation: fadeInUp 0.8s ease-out 0.4s both;
@@ -244,7 +244,7 @@
 
 .detailsSummary {
   width: 100%;
-  padding: 0.875rem 1.25rem;
+  padding: var(--spacing-sm) var(--spacing-lg);
   background: var(--background-3);
   border: 1px solid var(--accent-3);
   border-radius: var(--radius-md);
@@ -253,7 +253,7 @@
   color: var(--accent-1);
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: var(--spacing-sm);
   transition: background var(--transition-base), border-color var(--transition-base);
   user-select: none;
   text-align: left;
@@ -271,7 +271,7 @@
 }
 
 .detailsChevron {
-  font-size: 0.6rem;
+  font-size: var(--font-size-xs);
   transition: transform var(--transition-base);
   flex-shrink: 0;
 }
@@ -281,7 +281,7 @@
 }
 
 .detailsContent {
-  padding: 1.75rem 1.5rem 1.5rem;
+  padding: var(--spacing-2xl) var(--spacing-xl) var(--spacing-xl);
   background: var(--background-2);
   border: 1px solid var(--accent-3);
   border-top: none;
@@ -289,7 +289,7 @@
   border-bottom-right-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--spacing-xl);
   animation: detailsExpand 0.2s ease-out;
 }
 
@@ -307,11 +307,11 @@
 .errorBlock {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: var(--spacing-sm);
 }
 
 .errorBlockTitle {
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   color: var(--tertiary-text-color);
   margin: 0;
@@ -320,12 +320,12 @@
 }
 
 .errorText {
-  padding: 0.875rem 1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
   background: var(--error-background-color);
   border: 1px solid var(--border-color);
   border-left: 3px solid var(--error-color);
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-size: var(--font-size-xs);
   font-family: 'Courier New', monospace;
   color: var(--primary-text-color);
   white-space: pre-wrap;
@@ -366,8 +366,8 @@
   }
 
   .contentWrapper {
-    padding: 2rem 1.75rem;
-    gap: 1.5rem;
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+    gap: var(--spacing-xl);
   }
 
   .iconContainer {
@@ -381,15 +381,15 @@
   }
 
   .alertIcon {
-    font-size: 2.5rem;
+    font-size: var(--font-size-3xl);
   }
 
   .title {
-    font-size: 2rem;
+    font-size: var(--font-size-3xl);
   }
 
   .subtitle {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .actionsContainer {
@@ -403,8 +403,8 @@
   }
 
   .contentWrapper {
-    padding: 1.5rem 1.25rem;
-    gap: 1.25rem;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    gap: var(--spacing-lg);
     border-radius: var(--radius-xl);
   }
 
@@ -419,19 +419,19 @@
   }
 
   .alertIcon {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .subtitle {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
   }
 
   .cornerDeco {
-    font-size: 1.5rem;
+    font-size: var(--font-size-2xl);
   }
 
   .glowOrb1,
@@ -475,7 +475,7 @@
 
 .errorIcon {
   font-size: var(--font-size-lg);
-  color: #ffffff;
+  color: #ffffff; /* white icon on colored error background — intentional constant */
   line-height: 1;
   font-style: normal;
 }
@@ -561,7 +561,7 @@
   margin: 0;
   padding: var(--spacing-md);
   font-family: 'Courier New', Courier, monospace;
-  font-size: 0.8rem;
+  font-size: var(--font-size-xs);
   color: var(--tertiary-text-color);
   background: var(--background-2);
   white-space: pre-wrap;

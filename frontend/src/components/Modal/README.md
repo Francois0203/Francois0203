@@ -9,11 +9,12 @@ Liquid-glass modal dialog with full accessibility support — focus trapping, sc
 - Escape closes; backdrop click closes; Tab wraps at both ends
 - Optional title renders a labelled `<header>`
 - `aria-modal`, `role="dialog"`, `aria-labelledby` wired up correctly
+- Mobile (≤ 480 px): snaps to bottom of screen as a bottom sheet, slides up on entry
 
 ## Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+|------|------|---------|-------------|
 | `open` | `boolean` | — | Controls visibility |
 | `onClose` | `function` | — | Called when the modal should close |
 | `children` | `ReactNode` | — | Modal body content |
@@ -22,7 +23,7 @@ Liquid-glass modal dialog with full accessibility support — focus trapping, sc
 ## Usage
 
 ```jsx
-import Modal from './components/Modal';
+import { Modal } from '../../components';
 
 function MyComponent() {
   const [open, setOpen] = useState(false);
@@ -37,3 +38,10 @@ function MyComponent() {
   );
 }
 ```
+
+## Notes
+
+- Respects `prefers-reduced-motion` — entry/exit animations are disabled.
+- The backdrop scrim is `rgba(0, 0, 0, 0.45)` — intentionally neutral, not an accent color.
+- Body scrollbar width is compensated on open to prevent layout shift.
+- `max-height` is capped at `85dvh` (desktop) / `92vh` (mobile); body content scrolls independently.

@@ -3,12 +3,65 @@ import { FaReact, FaGithub, FaNpm, FaRocket, FaCogs, FaPalette, FaCode, FaPython
 import { MdAutoAwesome, MdCached, MdRadio, MdScience, MdSpeed, MdExpandMore, MdExpandLess } from 'react-icons/md';
 import { AiOutlineDeploymentUnit } from 'react-icons/ai';
 import { SiNumpy, SiPytest } from 'react-icons/si';
-
-/* Data */
-import projectsData from '../../data/projects.json';
-
-/* Styling */
 import styles from './Projects.module.css';
+
+const projectsData = [
+  {
+    title: 'Francois0203 Portfolio Website',
+    subtitle: 'Modern React-Based Personal Portfolio & Professional Showcase',
+    description: 'A professionally designed personal portfolio website built with React, showcasing projects, skills, and experience through an interactive, responsive interface. Features a modern design system with theme switching, animated components, and optimized performance. The site demonstrates full-stack development capabilities, responsive design principles, and attention to user experience across all device types.',
+    techStack: [
+      { name: 'React',        icon: 'FaReact',                 color: '#61DAFB' },
+      { name: 'JavaScript',   icon: 'FaCode',                  color: '#F7DF1E' },
+      { name: 'CSS Modules',  icon: 'FaPalette',               color: '#1572B6' },
+      { name: 'React Router', icon: 'FaCogs',                  color: '#CA4245' },
+      { name: 'GitHub Pages', icon: 'AiOutlineDeploymentUnit', color: '#222222' },
+    ],
+    features: [
+      { title: 'Responsive Design System',   icon: 'FaPalette',    description: 'Fully responsive layout that adapts seamlessly to desktop, tablet, and mobile devices. Features a comprehensive theme system with light/dark mode switching and CSS custom properties for consistent styling across all components.'                                                                                            },
+      { title: 'Interactive Components',     icon: 'MdAutoAwesome', description: 'Custom-built reusable React components including navigation, modals, tooltips, toast notifications, and form elements. Features smooth animations, ripple effects, and particle systems that adapt to device capabilities and user preferences.'                                                                              },
+      { title: 'Performance Optimized',      icon: 'MdSpeed',       description: 'Optimized for fast load times and smooth interactions with lazy loading, code splitting, and efficient rendering. Animations automatically reduce on mobile devices and respect user\'s motion preferences for accessibility.'                                                                                                },
+      { title: 'GitHub Pages Deployment',    icon: 'FaRocket',      description: 'Automated deployment pipeline using GitHub Actions, enabling seamless updates and continuous delivery. Hosted on GitHub Pages with custom domain support and HTTPS enforcement.'                                                                                                                                            },
+    ],
+    summary: 'A modern, professionally-designed portfolio website showcasing technical skills, projects, and experience through an engaging, responsive interface.',
+    highlights: [
+      'Designed and implemented complete UI/UX with modern design principles and accessibility in mind',
+      'Built reusable component library with consistent theming and responsive layouts',
+      'Implemented performance optimizations including lazy loading and reduced animations for mobile devices',
+      'Configured automated deployment pipeline for continuous delivery',
+      'Created interactive animations and effects that enhance user experience without compromising performance',
+    ],
+    links: [{ label: 'View Repository', url: 'https://github.com/Francois0203', icon: 'FaGithub' }],
+  },
+  {
+    title: 'Telescope Correlator',
+    subtitle: 'Production-Ready FX Correlator for Radio Telescope Arrays',
+    description: 'A professional-grade telescope correlator implementing the FX architecture for processing radio telescope data. This system processes voltage streams from radio telescope antenna arrays and produces visibility data suitable for astronomical image synthesis. Designed for both development (simulation) and production (real telescope) operation modes, it represents a complete signal processing pipeline for radio astronomy applications.',
+    techStack: [
+      { name: 'Python',            icon: 'FaPython', color: '#3776AB' },
+      { name: 'NumPy',             icon: 'SiNumpy',  color: '#013243' },
+      { name: 'Docker',            icon: 'FaDocker', color: '#2496ED' },
+      { name: 'pytest',            icon: 'SiPytest', color: '#0A9EDC' },
+      { name: 'Signal Processing', icon: 'MdRadio',  color: '#FF6B6B' },
+      { name: 'Radio Astronomy',   icon: 'MdScience',color: '#4ECDC4' },
+    ],
+    features: [
+      { title: 'FX Correlator Architecture', icon: 'MdRadio',   description: 'Implements the industry-standard FX correlation pipeline with F-Engine for channelization via windowed FFT (time to frequency domain conversion), X-Engine for cross-correlation and integration between antenna pairs, and geometric delay compensation accounting for array geometry and source position. Processes complex voltage data through the complete correlation pipeline.'                                                                                                                                                   },
+      { title: 'Dual Operation Modes',        icon: 'MdSpeed',  description: 'Features separate development and production modes. Development mode provides simulated telescope data for algorithm testing, validation, and learning without hardware. Production mode handles live network streaming (TCP/UDP protocols) and file processing from real telescope arrays with comprehensive monitoring, quality checks, and calibration support.'                                                                                                                                                                   },
+      { title: 'Network Data Streaming',      icon: 'MdCached', description: 'Real-time processing of telescope data streams via TCP/UDP protocols with configurable buffer management, timeout handling, and quality monitoring. Supports live correlation of data from antenna arrays with automatic stream recovery and comprehensive error handling for production astronomical observations.'                                                                                                                                                                                                              },
+      { title: 'Comprehensive Testing',       icon: 'SiPytest', description: 'Includes 33 automated tests covering all components: F-Engine channelization accuracy, X-Engine correlation fidelity, geometric delay compensation precision, and end-to-end pipeline validation. Features accuracy validation against analytical solutions ensuring mathematical correctness without requiring physical telescope hardware.'                                                                                                                                                                                    },
+    ],
+    highlights: [
+      'Implemented complete FX correlation pipeline with sub-picosecond delay precision and FFT accuracy validation against analytical solutions',
+      'Designed dual-mode architecture separating development simulations from production telescope operations with safety features and validation',
+      'Built containerized deployment using Docker for reproducible execution across Windows, Linux, and macOS platforms',
+      'Developed comprehensive CLI with interactive shells for development and production modes, providing intuitive workflow management',
+      'Created 33-test validation suite covering unit tests for each processing stage and integration tests for end-to-end pipeline verification',
+      'Implemented real-time network streaming with TCP/UDP support, configurable buffering, and production-grade monitoring and logging',
+    ],
+    links: [{ label: 'View Repository', url: 'https://github.com/Francois0203/Telescope-Correlator', icon: 'FaGithub' }],
+  },
+];
 
 /* ============================================================================
  * PROJECTS PAGE

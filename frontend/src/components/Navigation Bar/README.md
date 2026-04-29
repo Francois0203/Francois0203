@@ -84,7 +84,7 @@ Labels matched case-insensitively; supply `icon` prop to override.
 ## Usage
 
 ```jsx
-import NavigationBar from './components/Navigation Bar';
+import { NavigationBar } from '../../components';
 
 const navLinks = [
   { label: 'Home',     to: '/'        },

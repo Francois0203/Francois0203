@@ -26,7 +26,7 @@ React-Select wrapper styled with CSS custom property tokens to match the app the
 ## Usage
 
 ```jsx
-import SearchableDropdown from './components/Searchable Dropdown';
+import { SearchableDropdown } from '../../components';
 
 const options = [
   { value: 'a', label: 'Apple' },

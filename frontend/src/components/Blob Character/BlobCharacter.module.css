@@ -1,0 +1,231 @@
+/* ── Blob body ───────────────────────────────────────────────────────────── */
+
+.blob {
+    --blob-size: 150px;
+
+    position: relative;
+    width:  var(--blob-size);
+    height: var(--blob-size);
+    isolation: isolate;
+
+    /* Glass surface — matches Not Found floating squares */
+    background: linear-gradient(
+        148deg,
+        rgba(var(--accent-2-rgb), 0.09) 0%,
+        rgba(var(--accent-1-rgb), 0.05) 48%,
+        rgba(var(--accent-3-rgb), 0.08) 100%
+    );
+    backdrop-filter: blur(20px) saturate(160%) brightness(1.06);
+    -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(1.06);
+
+    /* Initial organic shape — morphed by keyframes */
+    border-radius: 62% 38% 34% 66% / 58% 32% 68% 42%;
+
+    /* Glass border */
+    border: 1px solid rgba(255, 255, 255, 0.28);
+
+    /* Inset edge catches matching glass squares */
+    box-shadow:
+        var(--shadow-md),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.50),
+        inset 0 -1px  0 rgba(255, 255, 255, 0.10);
+
+    /* Both animations target different CSS properties — no conflict */
+    animation:
+        blobMorph 13s ease-in-out infinite,
+        blobFloat  7s ease-in-out infinite;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    cursor: default;
+}
+
+/* ── Reactive border glow (mask punch-out — only the 1px ring is visible) ── */
+
+.blob::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    z-index: 2;
+
+    background: radial-gradient(
+        circle 90px at var(--glow-x, 50%) var(--glow-y, 50%),
+        rgba(var(--accent-2-rgb), 0.95) 0%,
+        rgba(var(--accent-1-rgb), 0.45) 40%,
+        rgba(var(--accent-1-rgb), 0.10) 65%,
+        transparent 100%
+    );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+
+    opacity: var(--glow-opacity, 0);
+    transition: opacity 220ms ease;
+    will-change: opacity;
+}
+
+/* ── Organic morphing ────────────────────────────────────────────────────── */
+
+@keyframes blobMorph {
+    0%   { border-radius: 62% 38% 34% 66% / 58% 32% 68% 42%; }
+    16%  { border-radius: 44% 56% 56% 44% / 50% 60% 40% 50%; }
+    33%  { border-radius: 56% 44% 46% 54% / 36% 64% 36% 64%; }
+    50%  { border-radius: 36% 64% 62% 38% / 64% 36% 66% 34%; }
+    66%  { border-radius: 50% 50% 38% 62% / 52% 46% 54% 48%; }
+    83%  { border-radius: 40% 60% 52% 48% / 42% 56% 44% 58%; }
+    100% { border-radius: 62% 38% 34% 66% / 58% 32% 68% 42%; }
+}
+
+/* ── Gentle float ────────────────────────────────────────────────────────── */
+
+@keyframes blobFloat {
+    0%,  100% { transform: translateY(0);     }
+    38%        { transform: translateY(-11px); }
+    72%        { transform: translateY(-5px);  }
+}
+
+/* ── Primary sheen — diagonal specular highlight ─────────────────────────── */
+
+.sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+
+    background: linear-gradient(
+        132deg,
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(255, 255, 255, 0.10) 30%,
+        transparent 52%
+    );
+}
+
+/* ── Cursor surface glow ─────────────────────────────────────────────────── */
+
+.surfaceGlow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+
+    background: radial-gradient(
+        circle 65px at var(--glow-x, 50%) var(--glow-y, 50%),
+        rgba(var(--accent-1-rgb), 0.30) 0%,
+        rgba(var(--accent-1-rgb), 0.10) 45%,
+        transparent 70%
+    );
+
+    opacity: var(--glow-opacity, 0);
+    transition: opacity 220ms ease;
+    will-change: opacity;
+}
+
+/* ── Rim light — bottom-right edge catch ─────────────────────────────────── */
+
+.rimLight {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+
+    background: radial-gradient(
+        ellipse 55% 35% at 80% 88%,
+        rgba(255, 255, 255, 0.14) 0%,
+        transparent 70%
+    );
+}
+
+/* ── Eyes row ────────────────────────────────────────────────────────────── */
+
+.eyes {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 16px;
+    margin-top: -10px; /* sit in the upper half of the blob */
+}
+
+/* ── Eye socket ──────────────────────────────────────────────────────────── */
+
+.eye {
+    width:  40px;
+    height: 40px;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.70);
+
+    box-shadow:
+        0  3px 10px rgba(0, 0, 0, 0.20),
+        0  1px  4px rgba(0, 0, 0, 0.14),
+        inset 0 1px 4px rgba(0, 0, 0, 0.08);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* ── Pupil ───────────────────────────────────────────────────────────────── */
+
+.pupil {
+    width:  17px;
+    height: 17px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    will-change: transform;
+
+    /* Depth gradient — slightly lighter in the centre where light hits */
+    background: radial-gradient(
+        circle at 38% 36%,
+        #3e3e50 0%,
+        #18181f 45%,
+        #0c0c12 100%
+    );
+
+    /* Tiny iris ring */
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Primary highlight — large bright dot ───────────────────────────────── */
+
+.highlight {
+    position: absolute;
+    width:  6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    top:  2px;
+    left: 3px;
+    pointer-events: none;
+}
+
+/* ── Secondary highlight — tiny accent dot ──────────────────────────────── */
+
+.highlightSmall {
+    position: absolute;
+    width:  3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.50);
+    bottom: 3px;
+    right:  3px;
+    pointer-events: none;
+}
+

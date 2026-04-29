@@ -1,12 +1,19 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MdRocketLaunch, MdArrowForward } from 'react-icons/md';
-
-/* Data */
-import homeData from '../../data/home.json';
-
-/* Styling */
 import styles from './Home.module.css';
+
+const MEMORY_LANE = {
+  title: 'A Glimpse Into Who I Am',
+  subtitle: 'Interests and values that shape me',
+  memories: [
+    { number: 1, title: 'Love for Guitar',           description: 'Playing guitar shows my creative side. I enjoy using music to relax, express feelings, and think in new ways.',                                                                    image: 'Playing Guitar.jpg'      },
+    { number: 2, title: 'Valuing Close Relationships', description: 'I care a lot about the people close to me. Strong relationships keep me supported, grounded, and motivated.',                                                                     image: 'Family Graduation.jpg'   },
+    { number: 3, title: 'Adventurous Side',            description: 'I enjoy adventures and new experiences. Exploring helps me learn, grow, and stay curious about the world.',                                                                       image: 'St. Lucia Adventure.jpg' },
+    { number: 4, title: 'Interest in Modeling',        description: 'Modeling reflects my confidence and willingness to be seen. It pushes me to present myself well and try new things.',                                                             image: 'Modeling.jpg'            },
+    { number: 5, title: 'Appreciating My Relationship', description: 'My relationship means a lot to me. Being a caring and loving partner helps me grow, communicate better, and value trust and respect.',                                          image: 'Relationship.jpg'        },
+  ],
+};
 
 /* ============================================================================
  * HOME PAGE - OPTIMIZED
@@ -106,12 +113,12 @@ const Home = () => {
               <span className={styles.dividerDot} />
               <span className={styles.dividerLine} />
             </div>
-            <h2 className={styles.memoryLaneTitle}>{homeData.memoryLane.title}</h2>
-            <p className={styles.memoryLaneSubtitle}>{homeData.memoryLane.subtitle}</p>
+            <h2 className={styles.memoryLaneTitle}>{MEMORY_LANE.title}</h2>
+            <p className={styles.memoryLaneSubtitle}>{MEMORY_LANE.subtitle}</p>
           </div>
-          
+
           <div className={styles.memoryTimeline}>
-            {homeData.memoryLane.memories.map((memory, index) => (
+            {MEMORY_LANE.memories.map((memory, index) => (
               <div 
                 key={memory.number} 
                 className={`${styles.memoryItem} ${memory.number % 2 === 0 ? styles.memoryItemReverse : ''}`}

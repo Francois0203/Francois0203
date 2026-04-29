@@ -3,9 +3,40 @@ import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import { FaLinkedin, FaGithub, FaInstagram, FaOrcid, FaHeart, FaCode } from 'react-icons/fa';
 import { SiHackerrank } from 'react-icons/si';
 
-import bioData from '../../data/bio.json';
-import styles  from './MobileConnect.module.css';
+import styles            from './MobileConnect.module.css';
 import { MagneticButton } from '../../components';
+
+const contactPage = {
+  heading: {
+    title: 'Let\'s Connect',
+    subtitle: 'Feel free to reach out for collaborations, opportunities, or just to say hello!',
+  },
+  contactMethods: [
+    { type: 'email',    label: 'Email',    value: 'francoismeiring0203@gmail.com', link: 'mailto:francoismeiring0203@gmail.com', icon: 'MdEmail',     primary: true  },
+    { type: 'phone',    label: 'Phone',    value: '+27 65 131 0546',               link: 'tel:+27651310546',                     icon: 'MdPhone',     primary: true  },
+    { type: 'location', label: 'Location', value: 'Irene, Centurion, South Africa',                                              icon: 'MdLocationOn',primary: false },
+  ],
+  donation: {
+    enabled: true,
+    title: 'Support My Studies',
+    message: 'If you\'d like to help me continue my education and learning journey, you can donate here. Any support means a lot to me!',
+    link: 'https://pos.snapscan.io/qr/JOkZ6v6j',
+    buttonText: 'Support My Studies 📚',
+  },
+  availability: {
+    status: 'open',
+    message: 'Currently available for freelance projects and part-time opportunities',
+  },
+};
+
+const socialLinks = [
+  { platform: 'LinkedIn',   key: 'linkedin',   url: 'https://www.linkedin.com/in/francois-meiring',       icon: 'FaLinkedin',   color: '#0077B5' },
+  { platform: 'GitHub',     key: 'github',     url: 'https://github.com/Francois0203',                    icon: 'FaGithub',     color: '#6e40c9' },
+  { platform: 'Instagram',  key: 'instagram',  url: 'https://www.instagram.com/francois0203/',            icon: 'FaInstagram',  color: '#E4405F' },
+  { platform: 'ORCID',      key: 'orcid',      url: 'https://orcid.org/0009-0004-7605-0618',              icon: 'FaOrcid',      color: '#A6CE39' },
+  { platform: 'HackerRank', key: 'hackerrank', url: 'https://www.hackerrank.com/profile/francoismeiring', icon: 'SiHackerrank', color: '#00EA64' },
+  { platform: 'Codewars',   key: 'codewars',   url: 'https://www.codewars.com/users/CriminalShrimp',      icon: 'FaCode',       color: '#FF7F50' },
+];
 
 const ICON_MAP = {
   MdEmail, MdPhone, MdLocationOn,
@@ -111,8 +142,6 @@ const MobileConnect = () => {
       physicsRef.current = null;
     };
   }, []);
-
-  const { contactPage, socialLinks } = bioData;
 
   return (
     <div className={`${styles.root} ${styles.ready}`}>

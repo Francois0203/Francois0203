@@ -1,0 +1,218 @@
+/* ============================================================================
+ * CUSTOM CURSOR — liquid glass arrow, no tail
+ * ============================================================================
+ * Shape: clean right-triangle, tip at (3, 3).
+ *   • Left edge  — vertical, straight down
+ *   • Hypotenuse — 45° diagonal from tip to bottom-right
+ *   • Base       — nearly horizontal along the bottom
+ *
+ * Glass layers (all clipped to the triangle automatically):
+ *   base fill + backdrop-filter → the frosted glass body
+ *   ::before                    → top-left specular catch (bright edge)
+ *   ::after                     → bottom-right rim light
+ *   .sheen                      → diagonal highlight sweep
+ *
+ * Border: SVG <polygon> stroke — unaffected by clip-path, perfectly sharp.
+ * ============================================================================ */
+
+
+/* ── Hide system cursor globally ─────────────────────────────────────────── */
+
+:global(body.custom-cursor-active),
+:global(body.custom-cursor-active *) {
+    cursor: none !important;
+}
+
+
+/* ── Wrapper ─────────────────────────────────────────────────────────────── */
+
+.cursorWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    z-index: 99999;
+    will-change: transform;
+
+    /* Squash & stretch radiates from the tip */
+    transform-origin: 3px 3px;
+
+    /* Dark mode: shadow that grounds the bright glass shape */
+    filter:
+        drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35))
+        drop-shadow(0 1px 3px  rgba(0, 0, 0, 0.20));
+
+    transition:
+        opacity 200ms ease,
+        filter  220ms ease;
+}
+
+.cursorWrapper.isPointer {
+    filter:
+        drop-shadow(0 4px 14px rgba(0, 0, 0, 0.42))
+        drop-shadow(0 1px 4px  rgba(0, 0, 0, 0.24));
+}
+
+
+/* ── Arrow — dark mode: bright frosted white glass ───────────────────────── */
+
+.cursorArrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+
+    /*
+     * No-tail triangle — tip at (3,3).
+     *
+     *   (3,3) ──────────── (27,27)
+     *     │               /
+     *     │             /   45° hypotenuse
+     *     │           /
+     *   (3,27) ──────
+     *
+     * ::before and ::after are clipped to this same shape automatically.
+     */
+    clip-path: polygon(3px 3px, 3px 27px, 27px 27px);
+
+    /* Bright frosted glass — clearly visible on dark backgrounds */
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.52) 0%,
+        rgba(255, 255, 255, 0.22) 50%,
+        rgba(255, 255, 255, 0.42) 100%
+    );
+
+    backdrop-filter: blur(20px) saturate(180%) brightness(1.22);
+    -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.22);
+}
+
+/* ── Top-left edge catch — the brightest specular point ─────────────────── */
+
+.cursorArrow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+
+    /* Bright line along the left + top edges */
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.70) 0%, transparent 6px),
+        linear-gradient(90deg,  rgba(255, 255, 255, 0.55) 0%, transparent 6px);
+}
+
+/* ── Bottom-right rim light ──────────────────────────────────────────────── */
+
+.cursorArrow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+
+    background: radial-gradient(
+        ellipse 60% 40% at 80% 80%,
+        rgba(255, 255, 255, 0.20) 0%,
+        transparent 70%
+    );
+}
+
+
+/* ── Diagonal specular sweep ─────────────────────────────────────────────── */
+
+.sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+
+    background: linear-gradient(
+        132deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.18) 35%,
+        transparent 60%
+    );
+}
+
+
+/* ── SVG border — sharp, unclipped stroke tracing the triangle ───────────── */
+
+.cursorBorder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    z-index: 4;
+    overflow: visible;
+
+    fill: none;
+    /* Dark mode: crisp white border — like light catching real glass */
+    stroke: rgba(255, 255, 255, 0.82);
+    stroke-width: 1;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+
+/* ============================================================================
+ * LIGHT MODE — dark smoky glass, visible against bright backgrounds
+ * ============================================================================ */
+
+:global([data-theme="light"]) .cursorWrapper {
+    filter:
+        drop-shadow(0 3px 12px rgba(0, 0, 0, 0.40))
+        drop-shadow(0 1px 4px  rgba(0, 0, 0, 0.22));
+}
+
+:global([data-theme="light"]) .cursorWrapper.isPointer {
+    filter:
+        drop-shadow(0 4px 16px rgba(0, 0, 0, 0.48))
+        drop-shadow(0 1px 5px  rgba(0, 0, 0, 0.26));
+}
+
+/* Dark charcoal glass fill */
+:global([data-theme="light"]) .cursorArrow {
+    background: linear-gradient(
+        135deg,
+        rgba(18, 18, 32, 0.58) 0%,
+        rgba(18, 18, 32, 0.30) 50%,
+        rgba(18, 18, 32, 0.48) 100%
+    );
+    backdrop-filter: blur(20px) saturate(160%) brightness(0.72);
+    -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(0.72);
+}
+
+/* Glass still catches light at its edges even when dark */
+:global([data-theme="light"]) .cursorArrow::before {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, transparent 6px),
+        linear-gradient(90deg,  rgba(255, 255, 255, 0.28) 0%, transparent 6px);
+}
+
+:global([data-theme="light"]) .cursorArrow::after {
+    background: radial-gradient(
+        ellipse 60% 40% at 80% 80%,
+        rgba(255, 255, 255, 0.12) 0%,
+        transparent 70%
+    );
+}
+
+:global([data-theme="light"]) .sheen {
+    background: linear-gradient(
+        132deg,
+        rgba(255, 255, 255, 0.30) 0%,
+        rgba(255, 255, 255, 0.08) 35%,
+        transparent 60%
+    );
+}
+
+/* White edge catch on dark glass looks like real glass */
+:global([data-theme="light"]) .cursorBorder {
+    stroke: rgba(255, 255, 255, 0.50);
+}

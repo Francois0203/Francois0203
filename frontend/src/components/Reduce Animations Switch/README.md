@@ -31,7 +31,7 @@ None — self-contained, state managed by `useAnimations`.
 ## Usage
 
 ```jsx
-import ReduceAnimationsSwitch from './components/Reduce Animations Switch';
+import { ReduceAnimationsSwitch } from '../../components';
 
 function SettingsPanel() {
   return <ReduceAnimationsSwitch />;

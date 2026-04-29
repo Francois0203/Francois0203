@@ -13,14 +13,15 @@ Catches JavaScript errors anywhere in the child component tree, preventing app c
 ## Props
 
 | Prop | Type | Default | Description |
-|---|---|---|---|
+|------|------|---------|-------------|
 | `children` | `ReactNode` | — | The component tree to protect |
 | `onReset` | `function` | `window.location.reload()` | Override the Reload action |
+| `resetKey` | `any` | — | Change this value to programmatically clear the error state |
 
 ## Usage
 
 ```jsx
-import ErrorBoundary from './components/Error Boundary';
+import { ErrorBoundary } from '../../components';
 
 function App() {
   return (

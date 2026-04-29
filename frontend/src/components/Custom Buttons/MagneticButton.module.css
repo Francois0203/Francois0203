@@ -15,7 +15,7 @@
 .particleCanvas {
     position: fixed;
     pointer-events: none;
-    z-index: 9998; /* Must sit above page content (z-index 2) but below modals */
+    z-index: calc(var(--z-modal-backdrop) - 2); /* Must sit above page content but below modals */
     /* Canvas is sized and positioned by JS. Kept out of layout flow. */
     /* No border-radius needed — canvas pixels handle their own clipping. */
 }

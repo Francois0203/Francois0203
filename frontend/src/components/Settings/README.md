@@ -22,8 +22,8 @@ Floating settings panel with a circular glass cog trigger. Opens a radial arc of
 ## Usage
 
 ```jsx
-import Settings from './components/Settings';
-import { useTheme } from './hooks';
+import { Settings } from '../../components';
+import { useTheme } from '../../hooks';
 
 function App() {
   const { theme, toggleTheme } = useTheme();

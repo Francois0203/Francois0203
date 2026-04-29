@@ -16,12 +16,12 @@ import { NotFound, Loading } from './pages';
 /* ========================================
  * IMPORTS - Components
  * ======================================== */
-import { NavigationBar, Settings, ToastProvider } from './components';
+import { NavigationBar, Settings, ToastProvider, CustomCursor } from './components';
 
 /* ========================================
  * IMPORTS - Hooks
  * ======================================== */
-import { useTheme } from './hooks';
+import { useTheme, useIsDesktop } from './hooks';
 
 /* ========================================
  * IMPORTS - Styling
@@ -200,14 +200,15 @@ const App = () => {
   // ========================================
   // INITIALIZATION
   // ========================================
-  // Initialize theme at root level for global application
   useTheme();
+  const isDesktop = useIsDesktop();
 
   // ========================================
   // RENDER
   // ========================================
   return (
     <ToastProvider>
+      {isDesktop && <CustomCursor />}
       <AppContent />
     </ToastProvider>
   );

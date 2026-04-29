@@ -33,7 +33,7 @@ Animated toast notification system with auto-dismiss, manual close, and portal r
 ## Usage
 
 ```jsx
-import { ToastProvider, useToast } from './components/Toast Notifications/ToastContext';
+import { ToastProvider, useToast } from '../../components/Toast Notifications/ToastContext';
 
 // Wrap your app
 function App() {

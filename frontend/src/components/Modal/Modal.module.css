@@ -157,7 +157,7 @@
 .closeButton:hover {
   background: var(--error-color);
   border-color: var(--error-color);
-  color: var(--background-1-light, #ffffff);
+  color: #ffffff;
   transform: rotate(90deg);
 }
 

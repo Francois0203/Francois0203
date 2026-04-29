@@ -1,0 +1,268 @@
+{
+  "personal": {
+    "name": "Francois Meiring",
+    "title": "Junior Software Developer",
+    "tagline": "Developer • Researcher • Adventurer",
+    "description": "Passionate about technology, continuous learning, and exploring new horizons. Every challenge is an opportunity to grow.",
+    "summary": "Full-stack developer and computer scientist with a strong foundation in software engineering, distributed systems, and modern web technologies. Currently pursuing an MSc in Computer Science at North-West University while contributing to real-world enterprise software. I care deeply about building things that are technically robust and genuinely well-crafted — from system architecture to polished user interfaces. Outside of work, you'll find me at the gym, on the squash court, or working through a guitar piece.",
+    "dateOfBirth": "2 March 2002",
+    "location": "Irene, Centurion, South Africa",
+    "gender": "Male",
+    "driversLicense": "Code B",
+    "languages": ["Afrikaans", "English"],
+    "faith": "Christian"
+  },
+
+  "contact": {
+    "email": "francoismeiring0203@gmail.com",
+    "phone": "+27 65 131 0546",
+    "location": "Irene, Centurion, South Africa",
+    "availability": {
+      "status": "open",
+      "message": "Currently available for freelance projects and part-time opportunities"
+    }
+  },
+
+  "social": [
+    {
+      "platform": "LinkedIn",
+      "key": "linkedin",
+      "url": "https://www.linkedin.com/in/francois-meiring",
+      "color": "#0077B5"
+    },
+    {
+      "platform": "GitHub",
+      "key": "github",
+      "url": "https://github.com/Francois0203",
+      "color": "#6e40c9"
+    },
+    {
+      "platform": "Instagram",
+      "key": "instagram",
+      "url": "https://www.instagram.com/francois0203/",
+      "color": "#E4405F"
+    },
+    {
+      "platform": "ORCID",
+      "key": "orcid",
+      "url": "https://orcid.org/0009-0004-7605-0618",
+      "color": "#A6CE39"
+    },
+    {
+      "platform": "HackerRank",
+      "key": "hackerrank",
+      "url": "https://www.hackerrank.com/profile/francoismeiring",
+      "color": "#00EA64"
+    },
+    {
+      "platform": "Codewars",
+      "key": "codewars",
+      "url": "https://www.codewars.com/users/CriminalShrimp",
+      "color": "#FF7F50"
+    }
+  ],
+
+  "donation": {
+    "enabled": true,
+    "title": "Support My Studies",
+    "message": "If you'd like to help me continue my education and learning journey, you can donate here. Any support means a lot to me!",
+    "link": "https://pos.snapscan.io/qr/JOkZ6v6j",
+    "buttonText": "Support My Studies 📚"
+  },
+
+  "experience": [
+    {
+      "title": "Junior Software Developer",
+      "company": "Shareforce (Pty) Ltd",
+      "location": "39 Melrose Boulevard, Melrose Arch, Johannesburg",
+      "period": "May 2026 - Present",
+      "description": "As a Junior Software Developer at Shareforce, I contribute to building and maintaining web applications using Python and Django. My role involves writing clean, efficient code, developing backend features, and supporting the implementation of RESTful APIs. I collaborate with team members to debug issues, improve application performance, and ensure code quality through testing and reviews, while continuously learning and applying best practices in software development."
+    },
+    {
+      "title": "Full Stack Software Developer",
+      "company": "Aquatico Scientific",
+      "location": "Route 21 Business Park, Centurion",
+      "period": "January 2025 - April 2026",
+      "description": "Leading the complete ground-up rebuild of the company's enterprise system architecture. Architecting and developing a comprehensive full-stack solution using React for the frontend and Node.js for the backend, deployed on production servers using Nginx and orchestrated with Kubernetes. The system encompasses multiple integrated modules including laboratory information management, project coordination, and business operations management."
+    },
+    {
+      "title": "Shop Assistant",
+      "company": "Western Rackets",
+      "period": "During Matric Year",
+      "description": "Part-time retail position focused on customer service and sales, developing interpersonal communication skills and professional workplace etiquette."
+    },
+    {
+      "title": "Waiter",
+      "company": "Bean Tree, Krugersdorp",
+      "period": "During Matric Year",
+      "description": "Food service position emphasising customer satisfaction, multitasking, and effective communication in a fast-paced environment."
+    }
+  ],
+
+  "education": [
+    {
+      "degree": "MSc. Computer Science",
+      "institution": "North-West University, Potchefstroom",
+      "period": "2026 - Present",
+      "details": "Research-focused master's degree with emphasis on astronomical data processing and distributed computing systems."
+    },
+    {
+      "degree": "BSc. Hons. Computer Science",
+      "institution": "North-West University, Potchefstroom",
+      "period": "2024",
+      "details": "Honours degree specialising in advanced software engineering and computational research methodologies."
+    },
+    {
+      "degree": "BSc. Computer Science & Statistics",
+      "institution": "North-West University, Potchefstroom",
+      "period": "2021 - 2023",
+      "details": "Dual-major undergraduate degree combining computational theory with statistical analysis and data science fundamentals."
+    },
+    {
+      "degree": "National Senior Certificate (Matric)",
+      "institution": "Hoërskool Noordheuwel",
+      "period": "Completed",
+      "details": "Subjects: Physics, Afrikaans Home Language, English First Additional Language, Mathematics, Information Technology, Computer Applications Technology."
+    }
+  ],
+
+  "skills": {
+    "grouped": {
+      "Programming Languages": ["Python", "JavaScript", "R", "HTML/CSS", "SAS"],
+      "Frameworks & Technologies": ["React", "Node.js", "Docker", "Kubernetes", "Nginx", "SQL", "PostgreSQL"],
+      "Professional Skills": ["Team Leadership", "Project Management", "Full-Stack Development", "System Architecture"]
+    },
+    "technical": [
+      { "name": "React",      "icon": "FaReact",      "color": "#61DAFB", "category": "Frontend"       },
+      { "name": "Python",     "icon": "FaPython",     "color": "#3776AB", "category": "Language"       },
+      { "name": "JavaScript", "icon": "FaJs",         "color": "#F7DF1E", "category": "Language"       },
+      { "name": "Node.js",    "icon": "FaNodeJs",     "color": "#339933", "category": "Backend"        },
+      { "name": "Docker",     "icon": "FaDocker",     "color": "#2496ED", "category": "DevOps"         },
+      { "name": "Git",        "icon": "FaGitAlt",     "color": "#F05032", "category": "Tools"          },
+      { "name": "PostgreSQL", "icon": "SiPostgresql", "color": "#4169E1", "category": "Database"       },
+      { "name": "HTML5",      "icon": "FaHtml5",      "color": "#E34F26", "category": "Frontend"       },
+      { "name": "CSS3",       "icon": "FaCss3Alt",    "color": "#1572B6", "category": "Frontend"       },
+      { "name": "Kubernetes", "icon": "SiKubernetes", "color": "#326CE5", "category": "DevOps"         },
+      { "name": "Linux",      "icon": "FaLinux",      "color": "#FCC624", "category": "OS"             },
+      { "name": "Nginx",      "icon": "SiNginx",      "color": "#009639", "category": "Server"         },
+      { "name": "R",          "icon": "SiR",          "color": "#276DC3", "category": "Language"       },
+      { "name": "Database",   "icon": "FaDatabase",   "color": "#FF6B6B", "category": "Database"       },
+      { "name": "Server",     "icon": "FaServer",     "color": "#4ECDC4", "category": "Infrastructure" }
+    ]
+  },
+
+  "projects": [
+    {
+      "title": "Francois0203 Portfolio Website",
+      "subtitle": "Modern React-Based Personal Portfolio & Professional Showcase",
+      "description": "A professionally designed personal portfolio website built with React, showcasing projects, skills, and experience through an interactive, responsive interface. Features a modern design system with theme switching, animated components, and optimized performance. The site demonstrates full-stack development capabilities, responsive design principles, and attention to user experience across all device types.",
+      "summary": "A modern, professionally-designed portfolio website showcasing technical skills, projects, and experience through an engaging, responsive interface.",
+      "techStack": [
+        { "name": "React",        "color": "#61DAFB" },
+        { "name": "JavaScript",   "color": "#F7DF1E" },
+        { "name": "CSS Modules",  "color": "#1572B6" },
+        { "name": "React Router", "color": "#CA4245" },
+        { "name": "GitHub Pages", "color": "#222222" }
+      ],
+      "features": [
+        {
+          "title": "Responsive Design System",
+          "description": "Fully responsive layout that adapts seamlessly to desktop, tablet, and mobile devices. Features a comprehensive theme system with light/dark mode switching and CSS custom properties for consistent styling across all components."
+        },
+        {
+          "title": "Interactive Components",
+          "description": "Custom-built reusable React components including navigation, modals, tooltips, toast notifications, and form elements. Features smooth animations, ripple effects, and particle systems that adapt to device capabilities and user preferences."
+        },
+        {
+          "title": "Performance Optimized",
+          "description": "Optimized for fast load times and smooth interactions with lazy loading, code splitting, and efficient rendering. Animations automatically reduce on mobile devices and respect user's motion preferences for accessibility."
+        },
+        {
+          "title": "GitHub Pages Deployment",
+          "description": "Automated deployment pipeline using GitHub Actions, enabling seamless updates and continuous delivery. Hosted on GitHub Pages with custom domain support and HTTPS enforcement."
+        }
+      ],
+      "highlights": [
+        "Designed and implemented complete UI/UX with modern design principles and accessibility in mind",
+        "Built reusable component library with consistent theming and responsive layouts",
+        "Implemented performance optimizations including lazy loading and reduced animations for mobile devices",
+        "Configured automated deployment pipeline for continuous delivery",
+        "Created interactive animations and effects that enhance user experience without compromising performance"
+      ],
+      "links": [
+        { "label": "View Repository", "url": "https://github.com/Francois0203" }
+      ]
+    },
+    {
+      "title": "Telescope Correlator",
+      "subtitle": "Production-Ready FX Correlator for Radio Telescope Arrays",
+      "description": "A professional-grade telescope correlator implementing the FX architecture for processing radio telescope data. This system processes voltage streams from radio telescope antenna arrays and produces visibility data suitable for astronomical image synthesis. Designed for both development (simulation) and production (real telescope) operation modes, it represents a complete signal processing pipeline for radio astronomy applications.",
+      "summary": null,
+      "techStack": [
+        { "name": "Python",            "color": "#3776AB" },
+        { "name": "NumPy",             "color": "#013243" },
+        { "name": "Docker",            "color": "#2496ED" },
+        { "name": "pytest",            "color": "#0A9EDC" },
+        { "name": "Signal Processing", "color": "#FF6B6B" },
+        { "name": "Radio Astronomy",   "color": "#4ECDC4" }
+      ],
+      "features": [
+        {
+          "title": "FX Correlator Architecture",
+          "description": "Implements the industry-standard FX correlation pipeline with F-Engine for channelisation via windowed FFT, X-Engine for cross-correlation and integration between antenna pairs, and geometric delay compensation accounting for array geometry and source position."
+        },
+        {
+          "title": "Dual Operation Modes",
+          "description": "Features separate development and production modes. Development mode provides simulated telescope data for algorithm testing and validation. Production mode handles live network streaming (TCP/UDP) and file processing from real telescope arrays with monitoring, quality checks, and calibration support."
+        },
+        {
+          "title": "Network Data Streaming",
+          "description": "Real-time processing of telescope data streams via TCP/UDP protocols with configurable buffer management, timeout handling, and quality monitoring. Supports live correlation of data from antenna arrays with automatic stream recovery and comprehensive error handling."
+        },
+        {
+          "title": "Comprehensive Testing",
+          "description": "Includes 33 automated tests covering all components: F-Engine channelisation accuracy, X-Engine correlation fidelity, geometric delay compensation precision, and end-to-end pipeline validation."
+        }
+      ],
+      "highlights": [
+        "Implemented complete FX correlation pipeline with sub-picosecond delay precision and FFT accuracy validation",
+        "Designed dual-mode architecture separating development simulations from production telescope operations",
+        "Built containerised deployment using Docker for reproducible execution across Windows, Linux, and macOS",
+        "Developed comprehensive CLI with interactive shells for development and production modes",
+        "Created 33-test validation suite covering unit tests and integration tests for end-to-end pipeline verification",
+        "Implemented real-time network streaming with TCP/UDP support, configurable buffering, and production-grade monitoring"
+      ],
+      "links": [
+        { "label": "View Repository", "url": "https://github.com/Francois0203/Telescope-Correlator" }
+      ]
+    }
+  ],
+
+  "interests": [
+    {
+      "title": "Love for Guitar",
+      "description": "Playing guitar shows my creative side. I enjoy using music to relax, express feelings, and think in new ways.",
+      "image": "Playing Guitar.jpg"
+    },
+    {
+      "title": "Valuing Close Relationships",
+      "description": "I care a lot about the people close to me. Strong relationships keep me supported, grounded, and motivated.",
+      "image": "Family Graduation.jpg"
+    },
+    {
+      "title": "Adventurous Side",
+      "description": "I enjoy adventures and new experiences. Exploring helps me learn, grow, and stay curious about the world.",
+      "image": "St. Lucia Adventure.jpg"
+    },
+    {
+      "title": "Interest in Modeling",
+      "description": "Modeling reflects my confidence and willingness to be seen. It pushes me to present myself well and try new things.",
+      "image": "Modeling.jpg"
+    },
+    {
+      "title": "Appreciating My Relationship",
+      "description": "My relationship means a lot to me. Being a caring and loving partner helps me grow, communicate better, and value trust and respect.",
+      "image": "Relationship.jpg"
+    }
+  ]
+}

@@ -19,8 +19,8 @@ Glassmorphism toggle for switching between light and dark themes.
 ## Usage
 
 ```jsx
-import ThemeSwitch from './components/Theme Switch';
-import { useTheme } from './hooks';
+import { ThemeSwitch } from '../../components';
+import { useTheme } from '../../hooks';
 
 function Header() {
   const { theme, toggleTheme } = useTheme();
