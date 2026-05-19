@@ -1,5 +1,3 @@
-export { default as BlobCharacter } from './Blob Character';
-export { default as CustomCursor } from './Custom Cursor';
 export { default as ErrorBoundary } from './Error Boundary';
 export { default as CursorGlowButton } from './Custom Buttons/CursorGlowButton';
 export { default as MagneticButton } from './Custom Buttons/MagneticButton';

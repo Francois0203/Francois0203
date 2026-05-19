@@ -16,12 +16,12 @@ import { NotFound, Loading } from './pages';
 /* ========================================
  * IMPORTS - Components
  * ======================================== */
-import { NavigationBar, Settings, ToastProvider, CustomCursor } from './components';
+import { NavigationBar, Settings, ToastProvider } from './components';
 
 /* ========================================
  * IMPORTS - Hooks
  * ======================================== */
-import { useTheme, useIsDesktop } from './hooks';
+import { useTheme } from './hooks';
 
 /* ========================================
  * IMPORTS - Styling
@@ -34,10 +34,10 @@ import styles from './App.module.css';
  * Pages are lazy loaded to improve initial bundle size and performance
  * ============================================================================
  */
-const Home = React.lazy(() => import('./pages/Home'));
-const Bio = React.lazy(() => import('./pages/Bio'));
-const Connect = React.lazy(() => import('./pages/Connect'));
-const Projects = React.lazy(() => import('./pages/Projects'));
+// const Home = React.lazy(() => import('./pages/Home'));
+// const Bio = React.lazy(() => import('./pages/Bio'));
+// const Connect = React.lazy(() => import('./pages/Connect'));
+// const Projects = React.lazy(() => import('./pages/Projects'));
 
 /* ============================================================================
  * NAVIGATION STRUCTURE
@@ -175,11 +175,11 @@ const AppContent = () => {
         {/* Main Layout Route */}
         <Route path="/" element={<MemoizedAppLayout />}>
           {/* Page Routes */}
-          <Route index element={<Home />} />
+          {/* <Route index element={<Home />} />
           <Route path="bio" element={<Bio />} />
           <Route path="connect" element={<Connect />} />
           <Route path="projects" element={<Projects />} />
-          <Route path="loading" element={<Loading />} />
+          <Route path="loading" element={<Loading />} /> */}
           
           {/* 404 Not Found - Catch all unknown routes */}
           <Route path="*" element={<NotFound />} />
@@ -201,14 +201,12 @@ const App = () => {
   // INITIALIZATION
   // ========================================
   useTheme();
-  const isDesktop = useIsDesktop();
 
   // ========================================
   // RENDER
   // ========================================
   return (
     <ToastProvider>
-      {isDesktop && <CustomCursor />}
       <AppContent />
     </ToastProvider>
   );

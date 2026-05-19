@@ -1,10 +1,10 @@
 {
   "personal": {
     "name": "Francois Meiring",
-    "title": "Junior Software Developer",
-    "tagline": "Developer • Researcher • Adventurer",
-    "description": "Passionate about technology, continuous learning, and exploring new horizons. Every challenge is an opportunity to grow.",
-    "summary": "Full-stack developer and computer scientist with a strong foundation in software engineering, distributed systems, and modern web technologies. Currently pursuing an MSc in Computer Science at North-West University while contributing to real-world enterprise software. I care deeply about building things that are technically robust and genuinely well-crafted — from system architecture to polished user interfaces. Outside of work, you'll find me at the gym, on the squash court, or working through a guitar piece.",
+    "title": "Data Scientist & Software Developer",
+    "tagline": "Data Scientist • Researcher • Developer",
+    "description": "Passionate about turning data into insight, building robust systems, and continuously pushing the boundaries of what I know.",
+    "summary": "Computer scientist and aspiring data scientist with a dual background in statistics and software engineering. Currently pursuing an MSc in Computer Science at North-West University, with research focused on astronomical data processing and distributed computing. My undergraduate degree in Computer Science and Statistics gave me a strong analytical foundation, which I complement with hands-on production experience building full-stack systems. I am drawn to roles where rigorous statistical thinking and engineering capability work together — whether that is building data pipelines, developing models, or extracting meaning from complex datasets. Outside of work, you will find me at the gym, on the squash court, or working through a guitar piece.",
     "dateOfBirth": "2 March 2002",
     "location": "Irene, Centurion, South Africa",
     "gender": "Male",
@@ -19,7 +19,7 @@
     "location": "Irene, Centurion, South Africa",
     "availability": {
       "status": "open",
-      "message": "Currently available for freelance projects and part-time opportunities"
+      "message": "Open to data science, data analysis, and research opportunities"
     }
   },
 
@@ -76,14 +76,14 @@
       "company": "Shareforce (Pty) Ltd",
       "location": "39 Melrose Boulevard, Melrose Arch, Johannesburg",
       "period": "May 2026 - Present",
-      "description": "As a Junior Software Developer at Shareforce, I contribute to building and maintaining web applications using Python and Django. My role involves writing clean, efficient code, developing backend features, and supporting the implementation of RESTful APIs. I collaborate with team members to debug issues, improve application performance, and ensure code quality through testing and reviews, while continuously learning and applying best practices in software development."
+      "description": "As a Junior Software Developer at Shareforce, I work within a structured team comprising senior, intermediate, and junior developers to maintain and enhance the company's main enterprise system. My responsibilities include resolving bugs, implementing improvements, and collaborating closely with experienced colleagues. Working alongside more senior developers has given me exposure to professional software practices and accelerated my growth as an engineer."
     },
     {
       "title": "Full Stack Software Developer",
       "company": "Aquatico Scientific",
-      "location": "Route 21 Business Park, Centurion",
+      "location": "Centurion, South Africa",
       "period": "January 2025 - April 2026",
-      "description": "Leading the complete ground-up rebuild of the company's enterprise system architecture. Architecting and developing a comprehensive full-stack solution using React for the frontend and Node.js for the backend, deployed on production servers using Nginx and orchestrated with Kubernetes. The system encompasses multiple integrated modules including laboratory information management, project coordination, and business operations management."
+      "description": "Built the company's enterprise systems from the ground up as one of two junior developers on the project. Designed and developed an Environmental Management System (EMS), a partial Laboratory Information Management System (LIMS), and a project management system. The full-stack solution used React for the frontend and Node.js for the backend, with PostgreSQL as the primary database and Redis for caching. Object storage was handled via MinIO, while all source code and CI/CD pipelines were managed through GitHub. The stack was containerised with Docker and orchestrated using Kubernetes for production deployment."
     },
     {
       "title": "Shop Assistant",
@@ -128,9 +128,9 @@
 
   "skills": {
     "grouped": {
-      "Programming Languages": ["Python", "JavaScript", "R", "HTML/CSS", "SAS"],
-      "Frameworks & Technologies": ["React", "Node.js", "Docker", "Kubernetes", "Nginx", "SQL", "PostgreSQL"],
-      "Professional Skills": ["Team Leadership", "Project Management", "Full-Stack Development", "System Architecture"]
+      "Data & Analytics": ["Python", "R", "SQL", "SAS", "Statistical Modelling", "Data Visualisation", "Machine Learning", "NumPy"],
+      "Development & Infrastructure": ["JavaScript", "React", "Node.js", "Docker", "Kubernetes", "Nginx", "PostgreSQL", "Redis", "MinIO", "GitHub CI/CD"],
+      "Professional Skills": ["Research", "Data Analysis", "Statistical Thinking", "Full-Stack Development", "System Architecture", "Team Collaboration"]
     },
     "technical": [
       { "name": "React",      "icon": "FaReact",      "color": "#61DAFB", "category": "Frontend"       },
@@ -147,7 +147,9 @@
       { "name": "Nginx",      "icon": "SiNginx",      "color": "#009639", "category": "Server"         },
       { "name": "R",          "icon": "SiR",          "color": "#276DC3", "category": "Language"       },
       { "name": "Database",   "icon": "FaDatabase",   "color": "#FF6B6B", "category": "Database"       },
-      { "name": "Server",     "icon": "FaServer",     "color": "#4ECDC4", "category": "Infrastructure" }
+      { "name": "Server",     "icon": "FaServer",     "color": "#4ECDC4", "category": "Infrastructure" },
+      { "name": "Redis",      "icon": "SiRedis",      "color": "#DC382D", "category": "Database"       },
+      { "name": "MinIO",      "icon": "SiMinio",      "color": "#C72E49", "category": "Infrastructure" }
     ]
   },
 
@@ -239,30 +241,15 @@
   ],
 
   "interests": [
-    {
-      "title": "Love for Guitar",
-      "description": "Playing guitar shows my creative side. I enjoy using music to relax, express feelings, and think in new ways.",
-      "image": "Playing Guitar.jpg"
-    },
-    {
-      "title": "Valuing Close Relationships",
-      "description": "I care a lot about the people close to me. Strong relationships keep me supported, grounded, and motivated.",
-      "image": "Family Graduation.jpg"
-    },
-    {
-      "title": "Adventurous Side",
-      "description": "I enjoy adventures and new experiences. Exploring helps me learn, grow, and stay curious about the world.",
-      "image": "St. Lucia Adventure.jpg"
-    },
-    {
-      "title": "Interest in Modeling",
-      "description": "Modeling reflects my confidence and willingness to be seen. It pushes me to present myself well and try new things.",
-      "image": "Modeling.jpg"
-    },
-    {
-      "title": "Appreciating My Relationship",
-      "description": "My relationship means a lot to me. Being a caring and loving partner helps me grow, communicate better, and value trust and respect.",
-      "image": "Relationship.jpg"
-    }
+    { "title": "Data Analysis & Visualisation" },
+    { "title": "Statistical Modelling & Research" },
+    { "title": "Machine Learning" },
+    { "title": "Astronomical Data Processing" },
+    { "title": "Open Source Contribution" },
+    { "title": "Love for Guitar",           "image": "Playing Guitar.jpg"       },
+    { "title": "Valuing Close Relationships","image": "Family Graduation.jpg"    },
+    { "title": "Adventurous Side",          "image": "St. Lucia Adventure.jpg"  },
+    { "title": "Interest in Modeling",      "image": "Modeling.jpg"             },
+    { "title": "Appreciating My Relationship","image": "Relationship.jpg"       }
   ]
 }
