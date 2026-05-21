@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import { NotFound, Loading, Connect } from './pages';
+import { NotFound, Loading, Connect, Projects } from './pages';
 import { NavigationBar, Settings, ToastProvider } from './components';
 import { useTheme } from './hooks';
 import styles from './App.module.css';
@@ -58,6 +58,7 @@ const AppContent = () => (
     <Routes>
       <Route path="/" element={<AppLayout />}>
         <Route path="connect"  element={<Connect />} />
+        <Route path="projects" element={<Projects />} />
         <Route path="loading"  element={<Loading />} />
         <Route path="*"        element={<NotFound />} />
       </Route>

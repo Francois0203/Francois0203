@@ -82,7 +82,7 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
-    match /{col}/{doc} where col in ['experience','education','projects'] {
+    match /{col}/{doc} where col in ['experience','education','projects','githubProjects'] {
       allow read: if true;
       allow write: if false;
     }

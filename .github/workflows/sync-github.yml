@@ -1,0 +1,41 @@
+name: Sync GitHub Projects to Firestore
+
+on:
+  # Run every hour
+  schedule:
+    - cron: '0 * * * *'
+  # Allow manual trigger from the Actions tab
+  workflow_dispatch:
+  # Also auto-sync whenever the deploy workflow finishes successfully
+  workflow_run:
+    workflows: ["Deploy to Firebase Hosting"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # Skip if triggered by a failed deploy
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install script dependencies
+        run: npm install
+        working-directory: scripts
+
+      - name: Sync GitHub projects → Firestore
+        run: node syncGitHubProjects.mjs
+        working-directory: scripts
+        env:
+          GH_PAT:                   ${{ secrets.GH_PAT }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaYoutube, FaEnvelope, FaGlobe, FaFacebook, FaHeart } from 'react-icons/fa';
 import { SiOrcid, SiHackerrank, SiCodewars } from 'react-icons/si';
 import { MdArrowOutward } from 'react-icons/md';

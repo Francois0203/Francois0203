@@ -1,0 +1,209 @@
+/* Styles for react-markdown output inside the README modal */
+
+.body {
+  color: var(--primary-text-color);
+  font-size: var(--font-size-base);
+  line-height: 1.75;
+}
+
+/* ── Headings ─────────────────────────────────────────────────────────────── */
+
+.body :global(h1) { display: none; }   /* shown as modal title already */
+
+.body :global(h2) {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--accent-1);
+  margin: var(--spacing-xl) 0 var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  border-bottom: 1px solid var(--border-color);
+  line-height: 1.3;
+}
+
+.body :global(h3) {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--accent-2);
+  margin: var(--spacing-lg) 0 var(--spacing-xs);
+}
+
+.body :global(h4),
+.body :global(h5),
+.body :global(h6) {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--secondary-text-color);
+  margin: var(--spacing-md) 0 var(--spacing-xs);
+}
+
+/* ── Paragraph & text ─────────────────────────────────────────────────────── */
+
+.body :global(p) {
+  margin: var(--spacing-sm) 0;
+  color: var(--primary-text-color);
+  line-height: 1.75;
+}
+
+/* ── Links ────────────────────────────────────────────────────────────────── */
+
+.body :global(a) {
+  color: var(--accent-1);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color var(--transition-fast);
+}
+
+.body :global(a:hover) { color: var(--accent-hover); }
+
+/* ── Lists ────────────────────────────────────────────────────────────────── */
+
+.body :global(ul),
+.body :global(ol) {
+  padding-left: var(--spacing-xl);
+  margin: var(--spacing-sm) 0;
+}
+
+.body :global(li) {
+  margin: var(--spacing-xs) 0;
+  line-height: 1.7;
+  color: var(--primary-text-color);
+}
+
+.body :global(li::marker) { color: var(--accent-1); }
+
+/* GitHub-flavored task list checkboxes */
+.body :global(li input[type="checkbox"]) {
+  accent-color: var(--accent-1);
+  margin-right: var(--spacing-xs);
+  cursor: default;
+}
+
+/* ── Code: inline ─────────────────────────────────────────────────────────── */
+
+.body :global(code) {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.875em;
+  background: rgba(var(--accent-1-rgb), 0.08);
+  color: var(--accent-1);
+  padding: 0.15em 0.45em;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.15);
+}
+
+/* ── Code: block ──────────────────────────────────────────────────────────── */
+
+.body :global(pre) {
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  overflow-x: auto;
+  margin: var(--spacing-md) 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.body :global(pre code) {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  color: var(--primary-text-color);
+}
+
+/* ── Blockquote ───────────────────────────────────────────────────────────── */
+
+.body :global(blockquote) {
+  border-left: 2px solid var(--accent-1);
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  color: var(--secondary-text-color);
+  background: rgba(var(--accent-1-rgb), 0.04);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+}
+
+.body :global(blockquote p) { margin: 0; }
+
+/* ── Table ────────────────────────────────────────────────────────────────── */
+
+.body :global(table) {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: var(--spacing-md) 0;
+  background: var(--frosted-background);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+}
+
+.body :global(th) {
+  background: rgba(var(--accent-1-rgb), 0.05);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  font-weight: 700;
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.body :global(td) {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid rgba(var(--accent-1-rgb), 0.05);
+  color: var(--primary-text-color);
+}
+
+.body :global(tbody tr:last-child td) { border-bottom: none; }
+
+.body :global(tbody tr:hover td) {
+  background: rgba(var(--accent-1-rgb), 0.04);
+}
+
+/* ── Images ───────────────────────────────────────────────────────────────── */
+
+.body :global(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  display: inline-block;
+}
+
+/* Badges / shields (small inline images) — don't add border-radius */
+.body :global(p img[src*="shields.io"]),
+.body :global(p img[src*="badge"]),
+.body :global(p img[alt*="badge"]),
+.body :global(p img[alt*="Badge"]) {
+  border-radius: 3px;
+  vertical-align: middle;
+  margin: 2px;
+  display: inline-block;
+}
+
+/* Badge row: paragraph that contains only images / image-links */
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: var(--spacing-sm) 0;
+}
+
+/* ── HR ───────────────────────────────────────────────────────────────────── */
+
+.body :global(hr) {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-color) 20%,
+    var(--border-color) 80%,
+    transparent
+  );
+  margin: var(--spacing-lg) 0;
+}
