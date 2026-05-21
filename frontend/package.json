@@ -21,6 +21,7 @@
     "env-cmd": "^10.1.0"
   },
   "scripts": {
+    "seed": "node scripts/seedFirestore.mjs",
     "start": "react-scripts start",
     "dev": "npm install && cross-env BROWSER=none react-scripts start",
     "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-
+import { useState, useEffect } from 'react';
+import { useBlobPhysics } from '../../hooks';
 import styles from './Loading.module.css';
 
 const BIBLE_VERSES = [
@@ -9,7 +9,7 @@ const BIBLE_VERSES = [
   { verse: 'But those who hope in the LORD will renew their strength.',                                                                                       reference: 'Isaiah 40:31'     },
   { verse: 'Trust in the LORD with all your heart and lean not on your own understanding.',                                                                   reference: 'Proverbs 3:5'     },
   { verse: 'For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you.',                                               reference: 'Jeremiah 29:11'   },
-  { verse: 'The LORD is my light and my salvation—whom shall I fear?',                                                                                        reference: 'Psalm 27:1'       },
+  { verse: 'The LORD is my light and my salvation — whom shall I fear?',                                                                                      reference: 'Psalm 27:1'       },
   { verse: 'Cast all your anxiety on him because he cares for you.',                                                                                          reference: '1 Peter 5:7'      },
   { verse: 'Be still, and know that I am God.',                                                                                                               reference: 'Psalm 46:10'      },
   { verse: 'The LORD will fight for you; you need only to be still.',                                                                                         reference: 'Exodus 14:14'     },
@@ -18,229 +18,67 @@ const BIBLE_VERSES = [
   { verse: 'The LORD is near to all who call on him, to all who call on him in truth.',                                                                       reference: 'Psalm 145:18'     },
   { verse: 'Do not be anxious about anything, but in every situation, by prayer and petition, present your requests to God.',                                 reference: 'Philippians 4:6'  },
   { verse: 'I can do all things through Christ who strengthens me.',                                                                                          reference: 'Philippians 4:13' },
-  { verse: 'I am the way, the truth, and the life',                                                                                                           reference: 'John 14:6'        },
-  { verse: 'Even though I walk through the darkest valley, I will fear no evil',                                                                             reference: 'Psalm 23:4'       },
-  { verse: 'Your word is a lamp for my feet, a light on my path',                                                                                            reference: 'Psalm 119:105'    },
-  { verse: 'The Lord is my shepherd; I shall not want',                                                                                                       reference: 'Psalm 23:1'       },
-  { verse: 'For God so loved the world that he gave his one and only Son',                                                                                    reference: 'John 3:16'        },
-  { verse: 'Come to me, all you who are weary and burdened, and I will give you rest',                                                                        reference: 'Matthew 11:28'    },
-  { verse: 'Seek first his kingdom and his righteousness',                                                                                                    reference: 'Matthew 6:33'     },
+  { verse: 'I am the way, the truth, and the life.',                                                                                                          reference: 'John 14:6'        },
+  { verse: 'Even though I walk through the darkest valley, I will fear no evil.',                                                                             reference: 'Psalm 23:4'       },
+  { verse: 'Your word is a lamp for my feet, a light on my path.',                                                                                            reference: 'Psalm 119:105'    },
+  { verse: 'The Lord is my shepherd; I shall not want.',                                                                                                      reference: 'Psalm 23:1'       },
+  { verse: 'For God so loved the world that he gave his one and only Son.',                                                                                   reference: 'John 3:16'        },
+  { verse: 'Come to me, all you who are weary and burdened, and I will give you rest.',                                                                       reference: 'Matthew 11:28'    },
+  { verse: 'Seek first his kingdom and his righteousness.',                                                                                                    reference: 'Matthew 6:33'     },
 ];
+
+const BLOB_DEFS = [
+  { r: 270, sx: 0.10, sy: 0.12, vx:  13, vy:   8 },
+  { r: 240, sx: 0.65, sy: 0.62, vx: -10, vy:  -7 },
+  { r: 200, sx: 0.46, sy: 0.34, vx:   8, vy: -11 },
+  { r: 170, sx: 0.16, sy: 0.20, vx:  -8, vy:  10 },
+  { r: 185, sx: 0.68, sy: 0.58, vx:  10, vy:  -8 },
+  { r: 135, sx: 0.56, sy: 0.15, vx: -11, vy:   7 },
+];
+
+const BLOB_CLASSES = [
+  [styles.ambientBlob, styles.ambient1],
+  [styles.ambientBlob, styles.ambient2],
+  [styles.ambientBlob, styles.ambient3],
+  [styles.glassBlob,   styles.glass1  ],
+  [styles.glassBlob,   styles.glass2  ],
+  [styles.glassBlob,   styles.glass3  ],
+];
+
 const DOT_COUNT = 4;
 
-// ─── BLOB DEFS ───────────────────────────────────────────────────────────────────
-// Physics shape: r = collision radius, sx/sy = start position, vx/vy = velocity.
-const BLOB_DEFS = [
-  { cls: [styles.ambientBlob, styles.ambient1], r: 270, sx: 0.10, sy: 0.12, vx:  13, vy:   8 },
-  { cls: [styles.ambientBlob, styles.ambient2], r: 240, sx: 0.65, sy: 0.62, vx: -10, vy:  -7 },
-  { cls: [styles.ambientBlob, styles.ambient3], r: 200, sx: 0.46, sy: 0.34, vx:   8, vy: -11 },
-  { cls: [styles.glassBlob,   styles.glass1],   r: 170, sx: 0.16, sy: 0.20, vx:  -8, vy:  10 },
-  { cls: [styles.glassBlob,   styles.glass2],   r: 185, sx: 0.68, sy: 0.58, vx:  10, vy:  -8 },
-  { cls: [styles.glassBlob,   styles.glass3],   r: 135, sx: 0.56, sy: 0.15, vx: -11, vy:   7 },
-];
-
-const Loading = ({
-  message = 'Loading',
-  showVerse = true
-}) => {
+const Loading = ({ message = 'Loading', showVerse = true }) => {
   const [currentVerse, setCurrentVerse] = useState(0);
   const [verseVisible, setVerseVisible] = useState(true);
+  const { blobRefs, onMouseMove } = useBlobPhysics(BLOB_DEFS);
 
-  const blobRefs    = useRef([]);
-  const physicsRef  = useRef(null);
-  const rafRef      = useRef(null);
-  const nudgeTimer  = useRef(null);
-  /* Global mouse position — updated via onMouseMove on the wrapper */
-  const mouseRef    = useRef({ x: -1000, y: -1000 });
-
-  // ─── VERSE CYCLING ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!showVerse) return;
+    let swapTimeout;
     const interval = setInterval(() => {
       setVerseVisible(false);
-      const swap = setTimeout(() => {
+      swapTimeout = setTimeout(() => {
         setCurrentVerse(prev => (prev + 1) % BIBLE_VERSES.length);
         setVerseVisible(true);
       }, 500);
-      return () => clearTimeout(swap);
     }, 7000);
-    return () => clearInterval(interval);
+    return () => { clearInterval(interval); clearTimeout(swapTimeout); };
   }, [showVerse]);
 
-  // ─── BLOB PHYSICS ──────────────────────────────────────────────────────────────
-  useEffect(() => {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    /* Scale collision radii to match the smaller CSS sizes on mobile */
-    const blobScale = vw < 400 ? 0.38 : vw < 600 ? 0.57 : 1.0;
-
-    const blobs = BLOB_DEFS.map((def, i) => {
-      const r    = def.r * blobScale;
-      const size = r * 2;
-      return {
-        id: i,
-        x:  Math.max(0, Math.min(vw - size, def.sx * vw)),
-        y:  Math.max(0, Math.min(vh - size, def.sy * vh)),
-        vx: def.vx,
-        vy: def.vy,
-        r,
-      };
-    });
-
-    // Pin positions immediately — prevents flash from 0,0
-    blobs.forEach((b, i) => {
-      const el = blobRefs.current[i];
-      if (el) el.style.transform = `translate(${b.x}px, ${b.y}px)`;
-    });
-
-    physicsRef.current = { blobs, vw, vh, lastTime: null };
-
-    // ─── ANIMATION LOOP ────────────────────────────────────────────────────────────
-    const tick = (timestamp) => {
-      const state = physicsRef.current;
-      if (!state) return;
-
-      if (!state.lastTime) state.lastTime = timestamp;
-      const dt = Math.min((timestamp - state.lastTime) / 1000, 0.05); // cap at 50 ms
-      state.lastTime = timestamp;
-
-      const { blobs: bs } = state;
-      const MAX_SPEED = 20; // px/s — deliberately slow
-      const DAMPING   = 0.999;
-
-      // Step 1 – integrate
-      bs.forEach(b => {
-        b.x += b.vx * dt;
-        b.y += b.vy * dt;
-        b.vx *= DAMPING;
-        b.vy *= DAMPING;
-      });
-
-      // Step 2 – soft pair repulsion
-      for (let i = 0; i < bs.length; i++) {
-        for (let j = i + 1; j < bs.length; j++) {
-          const a  = bs[i];
-          const b  = bs[j];
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const dist    = Math.hypot(dx, dy) || 1;
-          const minDist = (a.r + b.r) * 0.80; // allow a tiny soft overlap
-
-          if (dist < minDist) {
-            const overlap = (minDist - dist) / dist;
-            const fx = dx * overlap * 0.016;
-            const fy = dy * overlap * 0.016;
-            a.vx -= fx;  a.vy -= fy;
-            b.vx += fx;  b.vy += fy;
-          }
-        }
-      }
-
-      // Step 3 – soft push + hard clamp to viewport
-      bs.forEach(b => {
-        const size      = b.r * 2;
-        const softZone  = b.r * 0.30;
-        const pushForce = 0.50;
-
-        if (b.x < softZone)              b.vx += pushForce;
-        if (b.x > vw - size - softZone)  b.vx -= pushForce;
-        if (b.y < softZone)              b.vy += pushForce;
-        if (b.y > vh - size - softZone)  b.vy -= pushForce;
-
-        /* Hard clamp — guarantees no blob ever leaves the viewport */
-        b.x = Math.max(0, Math.min(vw - size, b.x));
-        b.y = Math.max(0, Math.min(vh - size, b.y));
-
-        // Speed cap
-        const speed = Math.hypot(b.vx, b.vy);
-        if (speed > MAX_SPEED) {
-          b.vx = (b.vx / speed) * MAX_SPEED;
-          b.vy = (b.vy / speed) * MAX_SPEED;
-        }
-
-        // Minimum drift
-        if (speed < 2) {
-          const angle = Math.random() * Math.PI * 2;
-          b.vx += Math.cos(angle) * 4;
-          b.vy += Math.sin(angle) * 4;
-        }
-      });
-
-      // Step 4 – write transform + cursor vars to DOM
-      const mouse = mouseRef.current;
-      bs.forEach((b, i) => {
-        const el = blobRefs.current[i];
-        if (!el) return;
-        el.style.transform = `translate(${b.x}px, ${b.y}px)`;
-        if (i >= 3) {
-          el.style.setProperty('--cursor-x', `${mouse.x - b.x}px`);
-          el.style.setProperty('--cursor-y', `${mouse.y - b.y}px`);
-        }
-      });
-
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-
-    // ─── RANDOM NUDGES ────────────────────────────────────────────────────────────
-    const scheduleNudge = () => {
-      nudgeTimer.current = setTimeout(() => {
-        const bs = physicsRef.current?.blobs;
-        if (bs) {
-          const count = 2 + Math.floor(Math.random() * 2);
-          [...Array(bs.length).keys()]
-            .sort(() => Math.random() - 0.5)
-            .slice(0, count)
-            .forEach(idx => {
-              const angle    = Math.random() * Math.PI * 2;
-              const strength = 9 + Math.random() * 13;
-              bs[idx].vx += Math.cos(angle) * strength;
-              bs[idx].vy += Math.sin(angle) * strength;
-            });
-        }
-        scheduleNudge();
-      }, 2200 + Math.random() * 3200);
-    };
-    scheduleNudge();
-
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      clearTimeout(nudgeTimer.current);
-      physicsRef.current = null;
-    };
-  }, []);
-
   return (
-    <div
-      className={styles.wrapper}
-      onMouseMove={e => { mouseRef.current = { x: e.clientX, y: e.clientY }; }}
-    >
-
-      {/* ── Blob field ── */}
+    <div className={styles.wrapper} onMouseMove={onMouseMove}>
       <div className={styles.blobField} aria-hidden="true">
-        {BLOB_DEFS.map((def, i) => (
-          <div
-            key={i}
-            ref={el => { blobRefs.current[i] = el; }}
-            className={def.cls.join(' ')}
-          />
+        {BLOB_DEFS.map((_, i) => (
+          <div key={i} ref={el => { blobRefs.current[i] = el; }} className={BLOB_CLASSES[i].join(' ')} />
         ))}
       </div>
 
-      {/* ── Frosted glass card ── */}
       <div className={styles.glassCard}>
-
         <p className={styles.message}>{message}</p>
 
         <div className={styles.dotsRow} role="status" aria-label="Loading">
           {Array.from({ length: DOT_COUNT }).map((_, i) => (
-            <span
-              key={i}
-              className={styles.dot}
-              style={{ animationDelay: `${i * 0.4}s` }}
-            />
+            <span key={i} className={styles.dot} style={{ animationDelay: `${i * 0.4}s` }} />
           ))}
         </div>
 
@@ -252,12 +90,9 @@ const Loading = ({
               {BIBLE_VERSES[currentVerse].verse}
               <span className={styles.quoteMark}>&rdquo;</span>
             </p>
-            <cite className={styles.verseRef}>
-              — {BIBLE_VERSES[currentVerse].reference}
-            </cite>
+            <cite className={styles.verseRef}>— {BIBLE_VERSES[currentVerse].reference}</cite>
           </div>
         )}
-
       </div>
     </div>
   );

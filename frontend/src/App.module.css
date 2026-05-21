@@ -1,14 +1,6 @@
-/* ============================================================================
- * APP LAYOUT STYLES
- * ============================================================================
- * Main application container with proper component positioning
- * ============================================================================
- */
+/* App layout — structural positioning only.
+ * Colors, backgrounds, and visual effects live in styles/Components.css. */
 
-/* ========================================
- * MAIN APP CONTAINER
- * ========================================
- */
 .app {
   position: relative;
   min-height: 100vh;
@@ -17,80 +9,11 @@
   flex-direction: column;
 }
 
-/* ========================================
- * GLOBAL BACKGROUND EFFECTS
- * ======================================== */
-.backgroundEffects {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.orb1,
-.orb2,
-.orb3 {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.15;
-  will-change: transform;
-}
-
-.orb1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--accent-1), transparent);
-  top: -150px;
-  left: -150px;
-  animation: orbFloat1 20s ease-in-out infinite;
-}
-
-.orb2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, var(--accent-2), transparent);
-  bottom: -100px;
-  right: -100px;
-  animation: orbFloat2 25s ease-in-out infinite;
-}
-
-.orb3 {
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, var(--accent-3), transparent);
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: orbFloat3 30s ease-in-out infinite;
-}
-
-@keyframes orbFloat1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(80px, -60px) scale(1.1); }
-}
-
-@keyframes orbFloat2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-60px, 80px) scale(0.9); }
-}
-
-@keyframes orbFloat3 {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.2); }
-}
-
-/* ========================================
- * NAVIGATION BAR - Centered at top
- * ========================================
- */
 .navigationBar {
   position: fixed;
   top: 0.5rem;
   left: 0.5rem;
   z-index: var(--z-sticky);
-  background: transparent;
   pointer-events: none;
 }
 
@@ -98,10 +21,6 @@
   pointer-events: auto;
 }
 
-/* ========================================
- * SETTINGS - Top right corner
- * ========================================
- */
 .themeSwitch {
   position: fixed;
   top: 0.5rem;
@@ -109,38 +28,20 @@
   z-index: calc(var(--z-sticky) + 1);
 }
 
-/* ========================================
- * PAGE CONTENT - Main content area
- * ========================================
- */
 .pageContent {
   flex: 1;
   width: 100%;
-  max-width: 100vw;
-  margin-top: 0;
-  padding: 0;
-  box-sizing: border-box;
   position: relative;
   z-index: 2;
+  animation: pageEnter 0.22s ease-out both;
 }
 
-/* ========================================
- * RESPONSIVE ADJUSTMENTS
- * ========================================
- */
-
-/* Tablet */
-@media (max-width: 768px) {
-  .themeSwitch {
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-  }
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
-/* Mobile */
 @media (max-width: 480px) {
-  .themeSwitch {
-    top: var(--spacing-xs);
-    right: var(--spacing-xs);
-  }
+  .navigationBar { top: var(--spacing-xs); left: var(--spacing-xs); }
+  .themeSwitch   { top: var(--spacing-xs); right: var(--spacing-xs); }
 }

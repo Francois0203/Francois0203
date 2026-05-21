@@ -91,3 +91,8 @@ logs/
 # -----------------
 .npmrc
 *.tgz
+
+# -----------------
+# Data (lives in Firestore)
+# -----------------
+frontend/src/data.json

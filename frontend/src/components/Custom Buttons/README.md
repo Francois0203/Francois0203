@@ -71,7 +71,7 @@ import { LightWaveButton } from '../../components';
 
 ## MagneticButton
 
-A solid accent-colored button that magnetically follows the cursor within a proximity radius and spawns particle effects in that zone. Most visually prominent of the three — use for primary CTAs.
+A solid accent-colored button that magnetically follows the cursor using RAF + lerp. Most visually prominent of the three — use for primary CTAs.
 
 ### Props
 
@@ -79,7 +79,7 @@ A solid accent-colored button that magnetically follows the cursor within a prox
 |------|------|---------|-------------|
 | `children` | `ReactNode` | — | Button label or content |
 | `onClick` | `function` | — | Click handler |
-| `disabled` | `boolean` | `false` | Disables magnetic pull, particles, and dims the button |
+| `disabled` | `boolean` | `false` | Disables magnetic pull and dims the button |
 | `type` | `string` | `'button'` | Native button `type` attribute |
 | `className` | `string` | `''` | Additional class names merged onto the root `<button>` |
 
@@ -96,8 +96,8 @@ import { MagneticButton } from '../../components';
 ### Notes
 
 - Magnetic transform is applied via `--mag-x` / `--mag-y` CSS custom properties — no React state updates during mouse move.
-- The particle canvas is portalled to `<body>` to escape any `backdrop-filter` stacking contexts.
-- Proximity detection radius is 140 px from the button center; particles activate when the cursor enters this zone.
-- Canvas z-index sits below modals but above page content.
-- Both the magnetic RAF loop and the particle draw loop clean up on unmount.
+- Inner content has a 1.4× parallax offset via `--inner-x` / `--inner-y` for depth.
+- No cursor glow or particle effects — kept intentionally minimal.
+- On cursor leave the button springs back with a 480 ms cubic-bezier ease; on hover it tightens to 90 ms for responsive tracking.
+- Cleans up the RAF loop on unmount.
 - `disabled` disables the transform and filter entirely via CSS.

@@ -4,94 +4,84 @@
 </p>
 
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1100&color=00CED1&center=true&vCenter=true&width=650&lines=Data+Scientist+%7C+Full-Stack+Engineer+%7C+Radio+Astronomy;Building+Scalable+Scientific+Systems;Python+%7C+React+%7C+PostgreSQL+%7C+Kubernetes" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&pause=1100&color=00CED1&center=true&vCenter=true&width=650&lines=Data+Scientist+%7C+Software+Developer+%7C+Researcher;Statistical+Modelling+%7C+Machine+Learning+%7C+Python;React+%7C+Node.js+%7C+PostgreSQL+%7C+Kubernetes" />
 </p>
 
 ---
 
-## 🌊 About Me
+## About Me
 
-I build **data-driven systems** where **science meets software engineering** — from radio astronomy instrumentation to enterprise-grade platforms.
+Computer scientist and aspiring data scientist with a dual background in **statistics and software engineering**. I bring strong analytical foundations from my BSc in Computer Science & Statistics alongside hands-on production experience building full-stack systems. Currently pursuing an MSc in Computer Science focused on astronomical data processing.
 
 I care about:
-- Clean system design  
-- Scientific computing  
-- Scalable backend architecture  
-- Turning complex data into insight  
+- Statistical modelling and data-driven insight
+- Scientific computing and research engineering
+- Clean, maintainable system architecture
+- Building things that are technically robust and genuinely useful
 
 ---
 
-## 🎯 Current Work
+## Current Work
 
-### 🛰 Radio Astronomy Researcher  
-**North-West University — Radio Astronomy Lab**
+### Software Developer — Shareforce
+Maintaining and enhancing the company's main enterprise system within a structured team of senior, intermediate, and junior developers.
 
-- Developing a **digital correlator** for a 4-element interferometer  
-- Working with **signal processing & scientific Python pipelines**  
-- Designing systems for **radio telescope data acquisition**
-
----
-
-### 🧩 Full-Stack Engineer — Aquatico
-
-Rebuilding an enterprise-grade management platform:
-
-- LIMS (Lab Information Management System)  
-- EMS (Enterprise Management System)  
-- Fleet, Projects, Finance & Reporting modules  
-
-**Tech Stack:**  
-`React · PostgreSQL · Kubernetes · NGINX · Node.js`
+### MSc Computer Science — North-West University
+Research focused on **astronomical data processing** and distributed computing systems.
 
 ---
 
-## 🚀 Experience Highlights
+## Previous Experience
 
-### 🧠 Project Lead — Radio Telescope Control System
-- Designed CLI-based telescope control software  
-- Led system architecture and early-stage infrastructure  
-- Built foundation used by future research cohorts  
+### Full Stack Software Developer — Aquatico Scientific *(Jan 2025 – Apr 2026)*
 
-### 🛠 Engineering Work
-- Full-stack development across scientific + enterprise systems  
-- Data pipelines, APIs, and system integration  
+Built the company's enterprise systems from the ground up as one of two junior developers:
 
----
+- **EMS** — Environmental Management System
+- **LIMS** — Laboratory Information Management System (partial)
+- **Project Management** system
 
-## 🎓 Education
-
-**MSc Computer Science (In Progress)**  
-North-West University  
-• Research: Python-based correlator for radio interferometry  
-
-**BSc Honours Computer Science**  
-North-West University  
-
-**BSc Computer Science & Statistics**  
-North-West University  
+**Stack:** `React · Node.js · PostgreSQL · Redis · MinIO · Docker · Kubernetes · GitHub CI/CD`
 
 ---
 
-## 🛠 Technical Skills
+## Education
 
-### Languages
+**MSc Computer Science** *(2026 – present)*
+North-West University — Research: astronomical data processing
+
+**BSc Honours Computer Science** *(2024)*
+North-West University
+
+**BSc Computer Science & Statistics** *(2021 – 2023)*
+North-West University — Dual-major combining computational theory with statistical analysis
+
+---
+
+## Technical Skills
+
+### Data & Analytics
 <p>
-  <img src="https://skillicons.dev/icons?i=python,js,ts,sql,r" />
+  <img src="https://skillicons.dev/icons?i=python,r,postgres" />
 </p>
 
-### Frontend
+`Statistical Modelling · Machine Learning · Data Visualisation · SQL · SAS · NumPy`
+
+### Frontend & Backend
 <p>
-  <img src="https://skillicons.dev/icons?i=react,html,css" />
+  <img src="https://skillicons.dev/icons?i=react,js,nodejs,html,css" />
 </p>
 
-### Backend & Systems
+### Infrastructure & DevOps
 <p>
-  <img src="https://skillicons.dev/icons?i=nodejs,postgres,kubernetes,docker,nginx" />
+  <img src="https://skillicons.dev/icons?i=docker,kubernetes,nginx,firebase,git" />
 </p>
+
+`Redis · MinIO · GitHub Actions CI/CD`
 
 ---
 
-## 📊 GitHub Stats
+## GitHub Stats
 
 <p align="center">
   <img width="48%" src="https://github-readme-stats.vercel.app/api?username=Francois0203&show_icons=true&theme=tokyonight&hide_border=true" />
@@ -104,11 +94,11 @@ North-West University
 
 ---
 
-## 🌐 Connect With Me
+## Connect
 
 <p align="center">
-  <a href="https://francois0203.github.io/Francois0203/">
-    <img src="https://img.shields.io/badge/Portfolio-00CED1?style=for-the-badge&logo=firefox&logoColor=white"/>
+  <a href="https://francois-portfolio.web.app/">
+    <img src="https://img.shields.io/badge/Portfolio-00CED1?style=for-the-badge&logo=firebase&logoColor=white"/>
   </a>
   <a href="https://www.linkedin.com/in/francois-meiring-944a45202">
     <img src="https://img.shields.io/badge/LinkedIn-00B7C2?style=for-the-badge&logo=linkedin&logoColor=white"/>
@@ -123,7 +113,8 @@ North-West University
 
 ---
 
-## ⚡ Focus
+## Focus
 
 ```text
-Data Science · Scientific Computing · Full-Stack Systems · Research Engineering
+Data Science · Statistical Modelling · Scientific Computing · Full-Stack Engineering
+```

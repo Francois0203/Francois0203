@@ -1,7 +1,7 @@
 export { default as ErrorBoundary } from './Error Boundary';
 export { default as CursorGlowButton } from './Custom Buttons/CursorGlowButton';
 export { default as MagneticButton } from './Custom Buttons/MagneticButton';
-export { default as GhostButton } from './Custom Buttons/LightWaveButton';
+export { default as LightWaveButton } from './Custom Buttons/LightWaveButton';
 export { default as Modal } from './Modal';
 export { default as NavigationBar } from './Navigation Bar';
 export { default as SearchableDropdown } from './Searchable Dropdown';

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import styles from './MagneticButton.module.css';
 
 const LERP_FACTOR = 0.18;
@@ -17,9 +17,8 @@ const MagneticButton = ({
     const current    = useRef({ x: 0, y: 0 });
     const target     = useRef({ x: 0, y: 0 });
     const isHoverRef = useRef(false);
-    const [isHovered, setIsHovered] = useState(false);
 
-    const animateMag = useCallback(() => {
+    const animate = useCallback(() => {
         const btn = buttonRef.current;
         if (!btn) return;
         const cx = lerp(current.current.x, target.current.x, LERP_FACTOR);
@@ -27,10 +26,9 @@ const MagneticButton = ({
         current.current = { x: cx, y: cy };
         btn.style.setProperty('--mag-x', `${cx}px`);
         btn.style.setProperty('--mag-y', `${cy}px`);
-        // Inner content moves 1.4× for parallax depth
         btn.style.setProperty('--inner-x', `${cx * 1.4}px`);
         btn.style.setProperty('--inner-y', `${cy * 1.4}px`);
-        if (isHoverRef.current) rafRef.current = requestAnimationFrame(animateMag);
+        if (isHoverRef.current) rafRef.current = requestAnimationFrame(animate);
     }, []);
 
     const handleMouseMove = useCallback((e) => {
@@ -40,22 +38,16 @@ const MagneticButton = ({
         const nx = (e.clientX - rect.left) / rect.width  - 0.5;
         const ny = (e.clientY - rect.top)  / rect.height - 0.5;
         target.current = { x: nx * 65, y: ny * 48 };
-        btn.style.setProperty('--glow-x', `${e.clientX - rect.left}px`);
-        btn.style.setProperty('--glow-y', `${e.clientY - rect.top}px`);
     }, []);
 
     const handleMouseEnter = useCallback(() => {
         isHoverRef.current = true;
-        setIsHovered(true);
-        buttonRef.current?.style.setProperty('--glow-opacity', '1');
         cancelAnimationFrame(rafRef.current);
-        rafRef.current = requestAnimationFrame(animateMag);
-    }, [animateMag]);
+        rafRef.current = requestAnimationFrame(animate);
+    }, [animate]);
 
     const handleMouseLeave = useCallback(() => {
         isHoverRef.current = false;
-        setIsHovered(false);
-        buttonRef.current?.style.setProperty('--glow-opacity', '0');
         target.current  = { x: 0, y: 0 };
         cancelAnimationFrame(rafRef.current);
         current.current = { x: 0, y: 0 };
@@ -74,7 +66,7 @@ const MagneticButton = ({
         <button
             ref={buttonRef}
             type={type}
-            className={`${styles.button} ${isHovered ? styles.hovered : ''} ${className}`}
+            className={`${styles.button} ${className}`}
             disabled={disabled}
             onClick={onClick}
             onMouseMove={handleMouseMove}
@@ -82,8 +74,7 @@ const MagneticButton = ({
             onMouseLeave={handleMouseLeave}
             {...rest}
         >
-            <span className={styles.sheen}       aria-hidden="true" />
-            <span className={styles.surfaceGlow} aria-hidden="true" />
+            <span className={styles.sheen}   aria-hidden="true" />
             <span className={styles.content}>{children}</span>
         </button>
     );

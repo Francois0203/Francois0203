@@ -1,6 +1,6 @@
 # Hooks
 
-Custom React hooks for managing global application state and side effects.
+Custom React hooks for managing global application state, data fetching, and UI side effects.
 
 ---
 
@@ -13,6 +13,35 @@ Manages the reduce-animations preference globally.
 - Auto-mirrors OS preference changes when no explicit user choice is stored
 
 **Returns:** `{ reduceAnimations, toggleAnimations }`
+
+---
+
+## usePortfolioData
+
+Fetches all portfolio content from Firestore in a single parallel call.
+
+- Loads all sections (`personal`, `contact`, `social`, `donation`, `skills`, `interests`, `experience`, `education`, `projects`) simultaneously via `Promise.all`
+- Returns a loading state while the fetch is in progress
+- Returns an error state if Firestore is unreachable
+
+**Returns:** `{ data, loading, error }`
+
+```jsx
+import { usePortfolioData } from '../hooks';
+
+const { data, loading, error } = usePortfolioData();
+
+if (loading) return <Loading />;
+if (error)   return <p>Failed to load.</p>;
+
+const { personal, experience, projects } = data;
+```
+
+To fetch only a specific section, import the individual Firestore helper directly instead:
+
+```js
+import { getExperience } from '../firebase/firestore';
+```
 
 ---
 
