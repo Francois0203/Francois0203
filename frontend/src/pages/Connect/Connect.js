@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaYoutube, FaEnvelope, FaGlobe, FaFacebook, FaHeart } from 'react-icons/fa';
 import { SiOrcid, SiHackerrank, SiCodewars } from 'react-icons/si';
 import { MdArrowOutward } from 'react-icons/md';
-import { useToast, LightWaveButton } from '../../components';
+import { useToast } from '../../components';
 import { submitContactForm, getDonation, getSocial } from '../../firebase/firestore';
 import styles from './Connect.module.css';
 
