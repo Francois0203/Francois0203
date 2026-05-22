@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm     from 'remark-gfm';
+import rehypeRaw     from 'rehype-raw';
 import styles        from './ReadmeRenderer.module.css';
 
 // Detects paragraphs that contain only images (badge rows).
@@ -15,6 +16,7 @@ const ReadmeRenderer = ({ markdown }) => (
   <div className={styles.body}>
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]}
       components={{
         // Badge rows get a flex wrapper
         p({ node, children }) {
