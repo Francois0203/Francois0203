@@ -47,7 +47,7 @@ function stripMarkdown(text) {
 }
 
 function stripLeadingEmoji(text) {
-  return text.replace(/^[^\x00-\x7F]+\s*/, '').trim();
+  return text.replace(/^[-￿]+\s*/, '').trim();
 }
 
 function extractListItems(content) {
