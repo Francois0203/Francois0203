@@ -3,55 +3,43 @@ import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 import { Modal, LightWaveButton } from '../../components';
 import { useGitHubProjects } from '../../hooks';
+import { parseReadme } from './parseReadme';
 import ReadmeRenderer from './ReadmeRenderer';
 import styles from './Projects.module.css';
 
-// ─── Language colour map ─────────────────────────────────────────────────────
+// ─── Language colour map ──────────────────────────────────────────────────────
 
 const LANG_COLORS = {
-  JavaScript: '#f7df1e',
-  TypeScript: '#3178c6',
-  Python:     '#3572a5',
-  Go:         '#00add8',
-  Rust:       '#dea584',
-  Java:       '#b07219',
-  'C#':       '#178600',
-  'C++':      '#f34b7d',
-  C:          '#555555',
-  HTML:       '#e34c26',
-  CSS:        '#563d7c',
-  SCSS:       '#c6538c',
-  Swift:      '#fa7343',
-  Kotlin:     '#a97bff',
-  Ruby:       '#701516',
-  PHP:        '#4f5d95',
-  Shell:      '#89e051',
-  Dart:       '#00b4ab',
-  R:          '#198ce7',
-  Vue:        '#41b883',
-  Svelte:     '#ff3e00',
+  JavaScript: '#f7df1e', TypeScript: '#3178c6', Python:  '#3572a5',
+  Go:         '#00add8', Rust:       '#dea584', Java:    '#b07219',
+  'C#':       '#178600', 'C++':      '#f34b7d', C:       '#555555',
+  HTML:       '#e34c26', CSS:        '#563d7c', SCSS:    '#c6538c',
+  Swift:      '#fa7343', Kotlin:     '#a97bff', Ruby:    '#701516',
+  PHP:        '#4f5d95', Shell:      '#89e051', Dart:    '#00b4ab',
+  R:          '#198ce7', Vue:        '#41b883', Svelte:  '#ff3e00',
 };
 
-function langColor(language) {
-  return LANG_COLORS[language] ?? 'var(--accent-1)';
-}
+const langColor = (lang) => LANG_COLORS[lang] ?? 'var(--accent-1)';
 
-// ─── Skeleton ────────────────────────────────────────────────────────────────
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 const SkeletonCard = () => (
   <div className={styles.skeletonCard}>
-    <div className={styles.skeletonMeta}>
-      <div className={`${styles.skeleton} ${styles.skeletonLang}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonStars}`} />
-    </div>
-    <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
-    <div className={`${styles.skeleton} ${styles.skeletonLine1}`} />
-    <div className={`${styles.skeleton} ${styles.skeletonLine2}`} />
-    <div className={`${styles.skeleton} ${styles.skeletonLine3}`} />
-    <div className={styles.skeletonTags}>
-      {[60, 70, 50].map(w => (
-        <div key={w} className={`${styles.skeleton} ${styles.skeletonTag}`} style={{ width: w }} />
-      ))}
+    <div className={styles.skeletonStrip} />
+    <div className={styles.skeletonBody}>
+      <div className={styles.skeletonMeta}>
+        <div className={`${styles.skeleton} ${styles.skeletonLang}`} />
+        <div className={`${styles.skeleton} ${styles.skeletonStars}`} />
+      </div>
+      <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
+      <div className={`${styles.skeleton} ${styles.skeletonLine1}`} />
+      <div className={`${styles.skeleton} ${styles.skeletonLine2}`} />
+      <div className={`${styles.skeleton} ${styles.skeletonLine3}`} />
+      <div className={styles.skeletonTags}>
+        {[72, 58, 80].map(w => (
+          <div key={w} className={`${styles.skeleton} ${styles.skeletonTag}`} style={{ width: w }} />
+        ))}
+      </div>
     </div>
     <div className={styles.skeletonFooter}>
       <div className={`${styles.skeleton} ${styles.skeletonBtn}`} />
@@ -60,73 +48,111 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ─── Project card ────────────────────────────────────────────────────────────
+// ─── Project card ─────────────────────────────────────────────────────────────
 
 const ProjectCard = ({ project, onReadme }) => {
-  const { name, description, url, language, stars, topics, isPrivate, readme } = project;
-  const hasReadme = readme && readme.trim().length > 0;
+  const { name, description: githubDesc, url, language, stars, topics, isPrivate, readme, owner, repo } = project;
+
+  const hasReadme = readme?.trim().length > 0;
+
+  // Parse README once — cheap, synchronous
+  const parsed = hasReadme
+    ? parseReadme(readme, { owner, repo, fallback: githubDesc ?? '' })
+    : { description: githubDesc ?? '', features: [], techStack: [], screenshot: null };
+
+  const { description, features, techStack, screenshot } = parsed;
+
+  // Collapse description to 2 lines when features are also shown
+  const descClass = features.length > 0
+    ? `${styles.cardDesc} ${styles.clamp2}`
+    : styles.cardDesc;
 
   return (
     <div className={styles.card}>
-      {/* Meta row */}
-      <div className={styles.cardMeta}>
-        <span className={styles.languageBadge}>
-          {language && (
-            <>
-              <span
-                className={styles.languageDot}
-                style={{ background: langColor(language) }}
-                aria-hidden="true"
-              />
-              {language}
-            </>
-          )}
-        </span>
-        <span className={styles.stars}>
-          <FaStar className={styles.starsIcon} aria-hidden="true" />
-          {stars ?? 0}
-          {isPrivate && (
-            <span className={styles.privateBadge}>
-              <FaLock aria-hidden="true" />
+      {/* Screenshot or accent strip */}
+      {screenshot
+        ? <img src={screenshot} alt={`${name} preview`} className={styles.screenshot} onError={e => { e.target.style.display = 'none'; }} />
+        : <div className={styles.screenshotPlaceholder} aria-hidden="true" />
+      }
+
+      <div className={styles.cardBody}>
+        {/* Meta row */}
+        <div className={styles.cardMeta}>
+          <span className={styles.languageBadge}>
+            {language && (
+              <>
+                <span className={styles.languageDot} style={{ background: langColor(language) }} aria-hidden="true" />
+                {language}
+              </>
+            )}
+          </span>
+          <div className={styles.metaRight}>
+            <span className={styles.stars}>
+              <FaStar className={styles.starsIcon} aria-hidden="true" />
+              {stars ?? 0}
             </span>
-          )}
-        </span>
+            {isPrivate && (
+              <span className={styles.privatePill}>
+                <FaLock size={9} aria-hidden="true" /> Private
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Name */}
+        <h3 className={styles.cardName}>{name}</h3>
+
+        {/* Description */}
+        {description && <p className={descClass}>{description}</p>}
+
+        {/* Features */}
+        {features.length > 0 && (
+          <>
+            <p className={styles.featuresLabel}>Features</p>
+            <ul className={styles.featureList}>
+              {features.map((f, i) => (
+                <li key={i} className={styles.featureItem}>
+                  <span className={styles.featureDot} aria-hidden="true" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {/* Tech stack from README */}
+        {techStack.length > 0 && (
+          <>
+            <p className={styles.techLabel}>Built with</p>
+            <div className={styles.techList}>
+              {techStack.map(t => (
+                <span key={t} className={styles.techChip}>{t}</span>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* GitHub topics (only if different from tech stack) */}
+        {topics?.length > 0 && (
+          <div className={styles.topics}>
+            {topics.slice(0, 5).map(t => (
+              <span key={t} className={styles.topic}>#{t}</span>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Name */}
-      <h3 className={styles.cardName}>{name}</h3>
-
-      {/* Description */}
-      {description && (
-        <p className={styles.cardDesc}>{description}</p>
-      )}
-
-      {/* Topics */}
-      {topics?.length > 0 && (
-        <div className={styles.topics}>
-          {topics.slice(0, 5).map(t => (
-            <span key={t} className={styles.topic}>{t}</span>
-          ))}
-        </div>
-      )}
+      <div className={styles.divider} aria-hidden="true" />
 
       {/* Footer */}
       <div className={styles.cardFooter}>
         {hasReadme && (
-          <LightWaveButton
-            className={styles.readmeBtn}
-            onClick={() => onReadme(project)}
-          >
-            README
+          <LightWaveButton className={styles.readmeBtn} onClick={() => onReadme(project)}>
+            Read README
           </LightWaveButton>
         )}
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.githubLink}
-        >
-          <FaGithub className={styles.githubIcon} aria-hidden="true" />
+        <a href={url} target="_blank" rel="noopener noreferrer" className={styles.githubLink}>
+          <FaGithub aria-hidden="true" />
           GitHub
           <MdArrowOutward aria-hidden="true" />
         </a>
@@ -135,14 +161,11 @@ const ProjectCard = ({ project, onReadme }) => {
   );
 };
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 const Projects = () => {
   const { projects, loading, error } = useGitHubProjects();
   const [selected, setSelected] = useState(null);
-
-  const openReadme  = (project) => setSelected(project);
-  const closeReadme = ()        => setSelected(null);
 
   return (
     <section className={styles.page}>
@@ -154,7 +177,7 @@ const Projects = () => {
             {loading
               ? 'Fetching projects…'
               : projects
-                ? `${projects.length} repositories`
+                ? `${projects.length} ${projects.length === 1 ? 'repository' : 'repositories'}`
                 : ''}
           </p>
         </header>
@@ -168,28 +191,22 @@ const Projects = () => {
             {loading
               ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
               : projects?.length === 0
-                ? (
-                  <div className={styles.emptyCard}>
-                    <p>No projects configured yet.</p>
-                  </div>
-                )
+                ? <div className={styles.emptyCard}><p>No projects configured yet.</p></div>
                 : projects?.map(p => (
-                  <ProjectCard key={p.id} project={p} onReadme={openReadme} />
+                  <ProjectCard key={p.id} project={p} onReadme={setSelected} />
                 ))
             }
           </div>
         )}
       </div>
 
-      {/* README modal */}
       <Modal
         open={!!selected}
-        onClose={closeReadme}
+        onClose={() => setSelected(null)}
         title={selected?.name}
+        size="lg"
       >
-        {selected?.readme && (
-          <ReadmeRenderer markdown={selected.readme} />
-        )}
+        {selected?.readme && <ReadmeRenderer markdown={selected.readme} />}
       </Modal>
     </section>
   );

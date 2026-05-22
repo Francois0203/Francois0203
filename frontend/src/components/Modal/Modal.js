@@ -13,7 +13,7 @@ const FOCUSABLE_SELECTORS = [
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 // Liquid-glass modal dialog. Traps focus, locks scroll, restores focus on close.
-const Modal = ({ open, onClose, children, title }) => {
+const Modal = ({ open, onClose, children, title, size = 'md' }) => {
   const dialogRef = useRef(null);
   const previousFocusRef = useRef(null);
 
@@ -86,7 +86,7 @@ const Modal = ({ open, onClose, children, title }) => {
       {/* Dialog — glass panel */}
       <div
         ref={dialogRef}
-        className={styles.dialog}
+        className={[styles.dialog, size === 'lg' ? styles.dialogLg : ''].filter(Boolean).join(' ')}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
