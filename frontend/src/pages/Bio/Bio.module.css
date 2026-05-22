@@ -1,0 +1,461 @@
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+
+.page {
+  min-height: 100svh;
+  padding: 4rem var(--spacing-4xl) var(--spacing-3xl);
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.header {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
+.headerMain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+/* ── Profile photo ───────────────────────────────────────────────────────── */
+
+.photoWrap {
+  flex-shrink: 0;
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-full);
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-1-rgb), 0.70) 0%,
+    rgba(var(--accent-2-rgb), 0.35) 50%,
+    rgba(var(--accent-3-rgb), 0.55) 100%
+  );
+  box-shadow:
+    0 4px 16px rgba(var(--accent-1-rgb), 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  border: 2px solid var(--background-1);
+}
+
+.photoSkel {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-full) !important;
+}
+
+.name {
+  margin: 0;
+  background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--accent-1) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.titleLine {
+  font-size: var(--font-size-md);
+  font-weight: 400;
+  color: var(--secondary-text-color);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* ── Contact strip ───────────────────────────────────────────────────────── */
+
+.contactRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.contactItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--tertiary-text-color);
+  text-decoration: none;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+a.contactItem:hover {
+  color: var(--accent-1);
+  opacity: 1;
+  text-decoration: none;
+}
+
+.cvLink {
+  color: var(--accent-1) !important;
+  font-weight: 600;
+  border: 1px solid rgba(var(--accent-1-rgb), 0.35);
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+  background: rgba(var(--accent-1-rgb), 0.06);
+  transition:
+    background     var(--transition-fast),
+    border-color   var(--transition-fast);
+}
+
+.cvLink:hover {
+  background: rgba(var(--accent-1-rgb), 0.12) !important;
+  border-color: rgba(var(--accent-1-rgb), 0.55) !important;
+}
+
+/* ── Content grid ────────────────────────────────────────────────────────── */
+
+.content {
+  display: grid;
+  grid-template-columns: 256px 1fr;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+.sidebar {
+  position: sticky;
+  top: calc(56px + var(--spacing-xl));
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--frosted-background);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.cardLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent-1);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.bio {
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* ── Skills ──────────────────────────────────────────────────────────────── */
+
+.skillGroup + .skillGroup {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.skillGroupLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chip {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--secondary-text-color);
+  background: var(--background-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 3px 9px;
+  white-space: nowrap;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.chip:hover {
+  border-color: rgba(var(--accent-1-rgb), 0.30);
+  color: var(--primary-text-color);
+}
+
+.interestChip {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent-1);
+  background: rgba(var(--accent-1-rgb), 0.08);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.20);
+  border-radius: var(--radius-full);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* ── Main ────────────────────────────────────────────────────────────────── */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.sectionHeading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent-1);
+  margin: 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(var(--accent-1-rgb), 0.18);
+}
+
+/* ── Timeline ────────────────────────────────────────────────────────────── */
+
+/*
+  Timeline line: position: absolute, left: 4px from timeline.
+  Timeline padding-left: 28px → entry content at 28px from timeline left.
+  Dot: width 8px, center at 4px → left = 4 - 28 - 4 = -28px from entry = left: -28px.
+*/
+
+.timeline {
+  position: relative;
+  padding-left: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  bottom: 12px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--accent-1-rgb), 0.55),
+    rgba(var(--accent-1-rgb), 0.06)
+  );
+}
+
+.entry {
+  position: relative;
+  padding-bottom: var(--spacing-xl);
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+.entryDot {
+  position: absolute;
+  left: -28px;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-1);
+  border: 2px solid var(--background-1);
+  box-shadow: 0 0 0 2px rgba(var(--accent-1-rgb), 0.20);
+  z-index: 1;
+}
+
+.entryBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Entry: top row (title + period) ─────────────────────────────────────── */
+
+.entryTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.entryTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.entryTitle {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--primary-text-color);
+  line-height: 1.3;
+}
+
+.presentBadge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-1);
+  background: rgba(var(--accent-1-rgb), 0.10);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.28);
+  border-radius: var(--radius-full);
+  padding: 1px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.entryPeriod {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--tertiary-text-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* ── Entry: body ─────────────────────────────────────────────────────────── */
+
+.entryRole {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent-2);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.entryDesc {
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  line-height: 1.7;
+  margin: 2px 0 0;
+}
+
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.tag {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--tertiary-text-color);
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.empty {
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+  margin: 0;
+}
+
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skel {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--background-2) 0%,
+    var(--background-3) 50%,
+    var(--background-2) 100%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skelStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (min-width: 861px) and (max-width: 1200px) {
+  .page    { padding-inline: var(--spacing-2xl); }
+  .content { grid-template-columns: 220px 1fr; }
+}
+
+@media (max-width: 860px) {
+  .page {
+    padding-top: 4.5rem;
+    padding-inline: var(--spacing-md);
+    padding-bottom: var(--spacing-xl);
+  }
+  .content {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+  }
+  .headerInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .page      { padding-inline: var(--spacing-sm); }
+  .entryTop  { flex-direction: column; gap: 2px; }
+}

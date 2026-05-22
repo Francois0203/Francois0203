@@ -54,85 +54,85 @@
     /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
 
     /* — Text: Light Mode — */
-    --primary-text-color-light: #0f1117;         /* Near-black, cool undertone */
-    --secondary-text-color-light: #374151;       /* Gray 700 */
-    --tertiary-text-color-light: #6b7280;        /* Gray 500 */
-    --disabled-color-light: #9ca3af;             /* Gray 400 */
+    --primary-text-color-light: #1c1208;         /* Warm near-black */
+    --secondary-text-color-light: #4a3c2a;       /* Warm dark brown */
+    --tertiary-text-color-light: #7a6852;        /* Warm muted brown */
+    --disabled-color-light: #a89880;             /* Warm gray */
 
     /* — Text: Dark Mode — */
-    --primary-text-color-dark: #f0f2f5;          /* Soft white, barely cool */
-    --secondary-text-color-dark: #c8cdd6;        /* Muted light gray */
-    --tertiary-text-color-dark: #8892a0;         /* Mid gray */
-    --disabled-color-dark: #505a6a;              /* Dim gray */
+    --primary-text-color-dark: #f5f0e8;          /* Warm off-white */
+    --secondary-text-color-dark: #d0c4b0;        /* Warm light tan */
+    --tertiary-text-color-dark: #9a8c78;         /* Warm mid brown-gray */
+    --disabled-color-dark: #5a5040;              /* Warm dim */
 
     /* — Status Colors — */
-    --error-color: #e5484d;                      /* Rose — clear, not harsh */
-    --warning-color: #e79420;                    /* Amber — warm, muted */
-    --success-color: #1a9e70;                    /* Emerald — close to teal family */
-    --info-color: #0d9488;                       /* Teal — unified with accent */
+    --error-color: #c0392b;                      /* Rose — clear, not harsh */
+    --warning-color: #c4780a;                    /* Amber — warm, muted */
+    --success-color: #2d7d5a;                    /* Emerald — warm tinted */
+    --info-color: #9a6e3a;                       /* Hazel — unified with accent */
 
     /* — Status Backgrounds: Light Mode — */
-    --success-background-color-light: #edfdf5;   /* Barely green */
-    --warning-background-color-light: #fefce8;   /* Barely amber */
-    --error-background-color-light: #fff1f2;     /* Barely rose */
-    --info-background-color-light: #f0fdfa;      /* Barely teal */
+    --success-background-color-light: #eef7f2;   /* Barely green */
+    --warning-background-color-light: #fdf6e8;   /* Barely amber */
+    --error-background-color-light: #fdf0ee;     /* Barely rose */
+    --info-background-color-light: #fdf6ec;      /* Barely hazel */
 
     /* — Status Backgrounds: Dark Mode — */
-    --success-background-color-dark: #022918;    /* Deep emerald */
-    --warning-background-color-dark: #311a00;    /* Deep amber */
-    --error-background-color-dark: #3d0a0f;      /* Deep rose */
-    --info-background-color-dark: #022926;       /* Deep teal */
+    --success-background-color-dark: #0a2018;    /* Deep emerald */
+    --warning-background-color-dark: #201408;    /* Deep amber */
+    --error-background-color-dark: #2a0a08;      /* Deep rose */
+    --info-background-color-dark: #1a1208;       /* Deep hazel */
 
-    /* — Accent: Turquoise (Light Mode) — */
-    --accent-1-light: #0d9488;        /* Teal 600 — primary action */
-    --accent-2-light: #14b8a6;        /* Teal 500 — subtle variation */
-    --accent-3-light: #0f766e;        /* Teal 700 — pressed / deep */
-    --accent-hover-light: #0f766e;    /* Teal 700 — hover state */
+    /* — Accent: Hazel Gold (Light Mode) — */
+    --accent-1-light: #9a6e3a;        /* Hazel — primary action */
+    --accent-2-light: #b07d32;        /* Amber hazel — subtle variation */
+    --accent-3-light: #7a5628;        /* Deep hazel — pressed / deep */
+    --accent-hover-light: #7a5628;    /* Deep hazel — hover state */
 
-    /* — Accent: Turquoise (Dark Mode) — */
-    --accent-1-dark: #2dd4bf;         /* Teal 400 — primary on dark */
-    --accent-2-dark: #5eead4;         /* Teal 300 — lighter highlights */
-    --accent-3-dark: #14b8a6;         /* Teal 500 — mid tone */
-    --accent-hover-dark: #5eead4;     /* Teal 300 — hover brightness */
+    /* — Accent: Soft Gold (Dark Mode) — */
+    --accent-1-dark: #d4a854;         /* Soft gold — primary on dark */
+    --accent-2-dark: #e8c070;         /* Warm light gold — lighter highlights */
+    --accent-3-dark: #b8912a;         /* Mid gold — mid tone */
+    --accent-hover-dark: #e8c070;     /* Warm light gold — hover brightness */
 
     /* — Accent RGB (for rgba() usage) — */
-    --accent-1-rgb-light: 13, 148, 136;
-    --accent-2-rgb-light: 20, 184, 166;
-    --accent-3-rgb-light: 15, 118, 110;
+    --accent-1-rgb-light: 154, 110, 58;
+    --accent-2-rgb-light: 176, 125, 50;
+    --accent-3-rgb-light: 122, 86, 40;
 
-    --accent-1-rgb-dark: 45, 212, 191;
-    --accent-2-rgb-dark: 94, 234, 212;
-    --accent-3-rgb-dark: 20, 184, 166;
+    --accent-1-rgb-dark: 212, 168, 84;
+    --accent-2-rgb-dark: 232, 192, 112;
+    --accent-3-rgb-dark: 184, 145, 42;
 
     /* — Accent Backgrounds: Light Mode — */
-    --accent-1-background-light: #f0fdfa;        /* Teal 50 — barely tinted */
-    --accent-2-background-light: #ccfbf1;        /* Teal 100 */
-    --accent-3-background-light: #99f6e4;        /* Teal 200 — stronger tint */
+    --accent-1-background-light: #fdf6ec;        /* Barely amber — barely tinted */
+    --accent-2-background-light: #f8e8cc;        /* Warm amber tint */
+    --accent-3-background-light: #f0d4a0;        /* Stronger amber tint */
 
     /* — Accent Backgrounds: Dark Mode — */
-    --accent-1-background-dark: #022926;         /* Near Teal 950 */
-    --accent-2-background-dark: #0d3d39;         /* Deep teal surface */
-    --accent-3-background-dark: #134e4a;         /* Teal 900 */
+    --accent-1-background-dark: #1a1208;         /* Deep warm hazel */
+    --accent-2-background-dark: #241a0c;         /* Warmer hazel surface */
+    --accent-3-background-dark: #302414;         /* Deeper hazel surface */
 
     /* — Backgrounds: Light Mode — */
-    --background-0-light: #f9fafb;               /* Gray 50 — page canvas */
+    --background-0-light: #faf8f4;               /* Warm off-white — page canvas */
     --background-1-light: #ffffff;               /* Pure white — primary surface */
-    --background-2-light: #f3f4f6;               /* Gray 100 — elevated surface */
-    --background-3-light: #e9ecf0;               /* Soft medium gray */
-    --background-4-light: #dde1e7;               /* Dividers, subtle cards */
-    --frosted-background-light: rgba(255, 255, 255, 0.85);
-    --border-color-light: #e5e7eb;               /* Gray 200 */
-    --border-color-hover-light: #d1d5db;         /* Gray 300 */
+    --background-2-light: #f5f1ec;               /* Warm light beige — elevated surface */
+    --background-3-light: #ede8e0;               /* Warm beige */
+    --background-4-light: #e4dcd2;               /* Deeper beige — dividers, subtle cards */
+    --frosted-background-light: rgba(255, 253, 248, 0.88);
+    --border-color-light: #e8e0d4;               /* Warm beige border */
+    --border-color-hover-light: #d8cec0;         /* Warmer border hover */
 
     /* — Backgrounds: Dark Mode — */
-    --background-0-dark: #06080d;                /* Near-black — page canvas */
-    --background-1-dark: #0d1117;                /* Very deep dark — primary surface */
-    --background-2-dark: #161b24;                /* Dark elevated surface */
-    --background-3-dark: #1f2530;                /* Raised surface */
-    --background-4-dark: #2a3140;                /* High-elevation card */
-    --frosted-background-dark: rgba(13, 17, 23, 0.88);
-    --border-color-dark: #1e2531;                /* Subtle dark border */
-    --border-color-hover-dark: #2a3140;          /* Slightly visible */
+    --background-0-dark: #0c0a06;                /* Warm near-black — page canvas */
+    --background-1-dark: #130f08;                /* Warm very deep dark — primary surface */
+    --background-2-dark: #1c1810;                /* Warm dark elevated surface */
+    --background-3-dark: #252018;                /* Warm raised surface */
+    --background-4-dark: #2e2a1e;                /* Warm high-elevation card */
+    --frosted-background-dark: rgba(19, 15, 8, 0.90);
+    --border-color-dark: #28221a;                /* Warm subtle dark border */
+    --border-color-hover-dark: #362e24;          /* Warm slightly visible */
 
     /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);

@@ -21,6 +21,10 @@ const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpee
   };
 
   useEffect(() => {
+    const noAnim =
+      document.documentElement.getAttribute('data-no-animations') === 'true' ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const scale = vw < 400 ? 0.38 : vw < 600 ? 0.57 : 1.0;
@@ -47,6 +51,8 @@ const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpee
         ? `translate(${b.x}px, ${b.y}px) rotate(${b.angle}deg)`
         : `translate(${b.x}px, ${b.y}px)`;
     });
+
+    if (noAnim) return;
 
     physicsRef.current = { blobs, vw, vh, lastTime: null };
 

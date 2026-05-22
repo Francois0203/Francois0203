@@ -464,6 +464,24 @@
   .glass3   { width: 140px; height: 155px; }
 }
 
+/* Landscape phones / short viewports */
+@media (max-height: 480px) {
+  .glassCard {
+    padding: var(--spacing-md) var(--spacing-xl);
+    gap: var(--spacing-md);
+    min-width: 0;
+    width: 60vw;
+    max-width: 480px;
+  }
+
+  .ambient1 { width: 280px; height: 280px; }
+  .ambient2 { width: 240px; height: 240px; }
+  .ambient3 { width: 195px; height: 195px; }
+  .glass1   { width: 200px; height: 220px; }
+  .glass2   { width: 240px; height: 180px; }
+  .glass3   { width: 160px; height: 165px; }
+}
+
 /* ==================== LIGHT MODE OVERRIDES ==================== */
 /*
  * Base styles above are tuned for dark mode (white-on-dark glass).

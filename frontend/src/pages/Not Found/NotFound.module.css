@@ -11,7 +11,7 @@
 /* ========== PAGE ROOT ========== */
 
 .root {
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -517,6 +517,38 @@
   .square1  { width: 135px; height: 135px; }
   .square2  { width: 155px; height: 155px; }
   .square3  { width: 115px; height: 115px; }
+}
+
+/* Landscape phones / short viewports */
+@media (max-height: 480px) {
+  .root {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding-block: var(--spacing-md);
+  }
+
+  .card {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    max-width: 560px;
+    width: 70vw;
+  }
+
+  .statusBadge { margin-bottom: var(--spacing-md); }
+
+  .codeDisplay {
+    font-size: clamp(3rem, 12vw, 5rem);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .heading { margin-bottom: var(--spacing-sm); }
+  .divider { margin: var(--spacing-md) 0; }
+
+  .ambient1 { width: 280px; height: 280px; }
+  .ambient2 { width: 230px; height: 230px; }
+  .ambient3 { width: 190px; height: 190px; }
+  .square1  { width: 160px; height: 160px; }
+  .square2  { width: 180px; height: 180px; }
+  .square3  { width: 135px; height: 135px; }
 }
 
 
