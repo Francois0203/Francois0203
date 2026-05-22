@@ -13,7 +13,8 @@
 
 Computer scientist and aspiring data scientist with a dual background in **statistics and software engineering**. I bring strong analytical foundations from my BSc in Computer Science & Statistics alongside hands-on production experience building full-stack systems. Currently pursuing an MSc in Computer Science focused on astronomical data processing.
 
-I care about:
+## Highlights
+
 - Statistical modelling and data-driven insight
 - Scientific computing and research engineering
 - Clean, maintainable system architecture
@@ -59,6 +60,8 @@ North-West University — Dual-major combining computational theory with statist
 ---
 
 ## Technical Skills
+
+`Statistical Modelling · Machine Learning · Data Visualisation · SQL · SAS · NumPy · React · Node.js · PostgreSQL · Redis · Docker · Kubernetes · MinIO · GitHub Actions CI/CD`
 
 ### Data & Analytics
 <p>
