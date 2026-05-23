@@ -91,6 +91,47 @@ const DriftingMotes = () => {
   );
 };
 
+/* ─── Falling autumn leaves overlay (fixed) ────────────────────────────────── */
+
+const LEAF_COUNT = 7;
+
+const FallingLeaves = () => {
+  const leaves = useMemo(() => Array.from({ length: LEAF_COUNT }, (_, i) => ({
+    i,
+    left:     Math.round(Math.random() * 100),
+    size:     14 + Math.round(Math.random() * 16),
+    duration: 15 + Math.round(Math.random() * 16),
+    delay:    -Math.round(Math.random() * 32),
+    drift:    (Math.random() * 34 - 17).toFixed(1),
+    spin:     Math.random() > 0.5 ? 1 : -1,
+    hue:      i % 3,
+    opacity:  (0.45 + Math.random() * 0.3).toFixed(2),
+  })), []);
+
+  return (
+    <div className={styles.leafField} aria-hidden="true">
+      {leaves.map(l => (
+        <span
+          key={l.i}
+          className={`${styles.fallingLeaf} ${styles[`leafHue${l.hue}`]}`}
+          style={{
+            left:              `${l.left}%`,
+            width:             `${l.size}px`,
+            height:            `${l.size}px`,
+            animationDuration: `${l.duration}s`,
+            animationDelay:    `${l.delay}s`,
+            '--drift':         `${l.drift}vw`,
+            '--spin':          l.spin,
+            '--leafOpacity':   l.opacity,
+          }}
+        >
+          <MapleLeaf />
+        </span>
+      ))}
+    </div>
+  );
+};
+
 /* ─── Word-by-word reveal ──────────────────────────────────────────────────── */
 
 const WordReveal = ({ text, inView, className, delay = 0 }) => {
@@ -472,6 +513,9 @@ const PolaroidCard = ({ src, index, onOpen }) => {
       aria-label={`Open memento ${index + 1}`}
     >
       <span className={styles.polaroidTape} aria-hidden="true" />
+      <span className={styles.polaroidLeaf} aria-hidden="true">
+        <MapleLeaf />
+      </span>
       <span className={styles.polaroidPhotoWrap}>
         <img
           src={src}
@@ -533,7 +577,7 @@ const SkillPile = ({ skills }) => {
           className={styles.skillLeaf}
           style={{
             '--si': i,
-            '--rot': `${((i * 17) % 18) - 9}deg`,
+            '--rot': `${((i * 13) % 5) - 2}deg`,
           }}
         >
           <FaLeaf className={styles.skillLeafIcon} aria-hidden="true" />
@@ -659,7 +703,9 @@ const Home = () => {
       {/* Atmospheric layers */}
       <div className={styles.warmSpot} aria-hidden="true" />
       <div className={styles.parchment} aria-hidden="true" />
+      <div className={styles.coffeeStains} aria-hidden="true" />
       <DriftingMotes />
+      <FallingLeaves />
 
       {/* ── Scene 1 ── Cover ──────────────────────────────────────────── */}
       <div className={`${styles.sceneFrame} ${styles.sceneFrame_cover}`}>

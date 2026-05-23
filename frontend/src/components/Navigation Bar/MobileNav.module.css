@@ -14,11 +14,13 @@
    ---------------------------------------------------------------- */
 .container {
   position: fixed;
-  bottom: 24px;
+  /* env() keeps the trigger above the home-indicator bar on iOS */
+  bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 8px));
   left: 50%;
-  transform: translate(-50%, 0);
-  /* Use modal z-index so the backdrop (modal-backdrop: 1040) sits below the
-     nav bubbles and trigger while still being above page content. */
+  /* translate3d forces a GPU compositing layer — prevents the iOS Safari bug
+     where position:fixed elements with backdrop-filter flicker during scroll */
+  transform: translate3d(-50%, 0, 0);
+  will-change: transform;
   z-index: var(--z-modal);
   overflow: visible;
   width:  var(--trigger-size, 64px);
@@ -359,5 +361,32 @@
     opacity: 1;
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+  }
+}
+
+/* ----------------------------------------------------------------
+   MOBILE: drop backdrop-filter on trigger + bubbles.
+   backdrop-filter on position:fixed elements is the primary cause of
+   the iOS Safari "element disappears during scroll" rendering bug.
+   Use a solid opaque background instead — visually equivalent.
+   ---------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .trigger {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--background-1);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .bubble {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--background-1);
+  }
+  .backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.32);
   }
 }

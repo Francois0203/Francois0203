@@ -3,7 +3,6 @@
 .page {
   position: relative;
   min-height: 100svh;
-  overflow-x: clip;
   --cx: -500px;
   --cy: -500px;
   isolation: isolate;
@@ -108,6 +107,80 @@
     transform: translate3d(var(--drift, 0vw), -118vh, 0);
     opacity: 0;
   }
+}
+
+/* ─── Coffee-ring stains (static background decoration) ───────────────────── */
+
+.coffeeStains {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(circle at 11% 24%, transparent 0 44px, rgba(110, 64, 26, 0.07) 45px 52px, transparent 53px),
+    radial-gradient(circle at 89% 66%, transparent 0 60px, rgba(110, 64, 26, 0.055) 61px 70px, transparent 71px),
+    radial-gradient(circle at 72% 13%, transparent 0 22px, rgba(110, 64, 26, 0.06) 23px 27px, transparent 28px),
+    radial-gradient(circle at 16% 82%, rgba(110, 64, 26, 0.045) 0 18px, transparent 19px);
+}
+:global([data-theme="dark"]) .coffeeStains {
+  opacity: 0.32;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(circle at 11% 24%, transparent 0 44px, rgba(210, 150, 90, 0.06) 45px 52px, transparent 53px),
+    radial-gradient(circle at 89% 66%, transparent 0 60px, rgba(210, 150, 90, 0.05) 61px 70px, transparent 71px),
+    radial-gradient(circle at 72% 13%, transparent 0 22px, rgba(210, 150, 90, 0.05) 23px 27px, transparent 28px),
+    radial-gradient(circle at 16% 82%, rgba(210, 150, 90, 0.04) 0 18px, transparent 19px);
+}
+
+/* ─── Falling autumn leaves overlay ──────────────────────────────────────── */
+
+.leafField {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+  contain: strict;
+}
+
+.fallingLeaf {
+  position: absolute;
+  top: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12));
+  animation: leafFall linear infinite;
+}
+.fallingLeaf svg { width: 100%; height: 100%; display: block; }
+
+.leafHue0 { color: var(--accent-1); }
+.leafHue1 { color: var(--accent-2); }
+.leafHue2 { color: var(--leaf-color); }
+
+@keyframes leafFall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10%, 86% {
+    opacity: var(--leafOpacity, 0.6);
+  }
+  100% {
+    transform: translate3d(var(--drift, 0vw), 114vh, 0)
+               rotate(calc(var(--spin, 1) * 340deg));
+    opacity: 0;
+  }
+}
+
+/* Fewer leaves on smaller screens — perf */
+@media (max-width: 768px) {
+  .leafField .fallingLeaf:nth-child(n+4) { display: none; }
+}
+@media (max-width: 480px) {
+  .leafField .fallingLeaf:nth-child(n+3) { display: none; }
 }
 
 /* ─── Cover scene ─────────────────────────────────────────────────────────── */
@@ -485,7 +558,7 @@
 .scene {
   position: relative;
   z-index: 2;
-  padding: var(--spacing-2xl) var(--spacing-3xl);
+  padding: var(--spacing-lg) var(--spacing-3xl);
   max-width: 1180px;
   margin: 0 auto;
   opacity: 0;
@@ -495,13 +568,13 @@
     transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   /* Skip rendering work for off-screen scenes — big perf win on mobile */
   content-visibility: auto;
-  contain-intrinsic-size: 1px 720px;
+  contain-intrinsic-size: 1px 560px;
 }
 .sceneVisible { opacity: 1; transform: translateY(0); }
 
 .sceneHead {
   text-align: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -541,7 +614,7 @@
 
 /* ─── Chapter coverflow ───────────────────────────────────────────────────── */
 
-.sceneChapters { padding-block: var(--spacing-2xl); }
+.sceneChapters { padding-block: var(--spacing-md); }
 
 .coverflow {
   position: relative;
@@ -982,7 +1055,7 @@
 
 /* ─── Epilogue ─────────────────────────────────────────────────────────────── */
 
-.sceneEnd { padding-block: var(--spacing-xl) var(--spacing-3xl); }
+.sceneEnd { padding-block: var(--spacing-md) var(--spacing-2xl); }
 
 .endCard {
   position: relative;
@@ -1198,16 +1271,16 @@
   transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Mobile (default): in-flow peek off screen edge */
+/* Mobile (default): fully on-screen, inset from the edge so nothing clips */
 .sidePolaroidWrap.side_right {
   margin-left: auto;
-  margin-right: -10vw;
-  transform: rotate(6deg);
+  margin-right: 5vw;
+  transform: rotate(5deg);
 }
 .sidePolaroidWrap.side_left {
   margin-right: auto;
-  margin-left: -10vw;
-  transform: rotate(-6deg);
+  margin-left: 5vw;
+  transform: rotate(-5deg);
 }
 
 /* Desktop: large, anchored to the side of the scene at a strategic vertical
@@ -1217,8 +1290,8 @@
   .sceneFrame > .sidePolaroidWrap {
     position: absolute;
     margin: 0;
-    width: 280px;
-    max-width: 280px;
+    width: 320px;
+    max-width: 320px;
     top: var(--polaroid-top, 50%);
   }
   .sceneFrame > .sidePolaroidWrap.side_right {
@@ -1231,33 +1304,35 @@
     right: auto;
     transform: translate(-40%, -50%) rotate(-8deg);
   }
+  /* Pull inward ~10% so the rotation (~8°) doesn't push corners past the
+     viewport edge (html has overflow-x: hidden) — a 280px card at 8° extends ~24px */
   .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn {
-    transform: translate(0%, -50%) rotate(8deg);
+    transform: translate(-16%, -50%) rotate(8deg);
   }
   .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn {
-    transform: translate(0%, -50%) rotate(-8deg);
+    transform: translate(16%, -50%) rotate(-8deg);
   }
   .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn:hover,
   .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn:focus-within {
-    transform: translate(-18%, -54%) rotate(0deg);
+    transform: translate(-26%, -54%) rotate(0deg);
   }
   .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn:hover,
   .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn:focus-within {
-    transform: translate(18%, -54%) rotate(0deg);
+    transform: translate(26%, -54%) rotate(0deg);
   }
 }
 
 /* Wide screens — go even bigger */
 @media (min-width: 1200px) {
   .sceneFrame > .sidePolaroidWrap {
-    width: 320px;
-    max-width: 320px;
+    width: 370px;
+    max-width: 370px;
   }
 }
 @media (min-width: 1600px) {
   .sceneFrame > .sidePolaroidWrap {
-    width: 360px;
-    max-width: 360px;
+    width: 420px;
+    max-width: 420px;
   }
 }
 
@@ -1303,7 +1378,7 @@
   opacity: 0;
   animation: polaroidIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   animation-delay: calc(var(--pi, 0) * 80ms);
-  contain: layout paint;
+  contain: layout;
 }
 
 @keyframes polaroidIn {
@@ -1326,6 +1401,26 @@
   box-shadow:
     0 0 0 3px rgba(var(--accent-1-rgb), 0.30),
     0 22px 42px -10px rgba(var(--accent-3-rgb), 0.55);
+}
+
+/* Pressed autumn leaf tucked at the corner of each photo */
+.polaroidLeaf {
+  position: absolute;
+  top: -15px;
+  right: -12px;
+  width: 30px;
+  height: 30px;
+  color: var(--leaf-color);
+  transform: rotate(26deg);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.20));
+  pointer-events: none;
+  z-index: 3;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.polaroidLeaf svg { width: 100%; height: 100%; display: block; }
+.polaroid:hover .polaroidLeaf,
+.polaroid:focus-visible .polaroidLeaf {
+  transform: rotate(14deg) scale(1.12) translateY(-2px);
 }
 
 /* Tape strip at the top */
@@ -1358,7 +1453,8 @@
 .polaroidImg {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
   border-radius: 0;
   transition: filter 0.4s ease, transform 0.6s ease;
@@ -1509,6 +1605,7 @@
 @media (prefers-reduced-motion: reduce) {
   .word              { transition: none; opacity: 1; transform: none; filter: none; }
   .mote              { animation: none !important; display: none; }
+  .fallingLeaf       { animation: none !important; display: none; }
   .coverDividerLeaf,
   .coverPortraitLeaf { animation: none !important; }
   .coverTitleScript  { animation: none !important; }
@@ -1517,6 +1614,7 @@
 }
 
 :global([data-no-animations="true"]) .mote,
+:global([data-no-animations="true"]) .fallingLeaf,
 :global([data-no-animations="true"]) .coverPortraitRing { display: none; }
 
 /* ─── Mobile perf: drop backdrop-filter & shorten transitions ─────────────── */
