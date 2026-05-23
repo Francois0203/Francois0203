@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 import usePortfolioData from '../../hooks/usePortfolioData';
@@ -69,6 +70,7 @@ const TimelineEntry = ({ title, subtitle, p, current, description, tags }) => (
 
 const Bio = () => {
   const { data, loading } = usePortfolioData();
+  const navigate = useNavigate();
 
   const personal   = data?.personal   ?? {};
   const contact    = data?.contact    ?? {};
@@ -96,6 +98,11 @@ const Bio = () => {
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <header className={styles.header}>
+          <p className={styles.chapterEyebrow}>
+            <span className={styles.chapterMark}>Chapter I</span>
+            <span className={styles.chapterDash} aria-hidden="true">—</span>
+            <span className={styles.chapterName}>The Storyteller</span>
+          </p>
           <div className={styles.headerInner}>
 
             {/* Profile photo */}
@@ -191,9 +198,18 @@ const Bio = () => {
                 <div className={styles.skelStack}>
                   <Skel w="100%" /><Skel w="88%" /><Skel w="75%" /><Skel w="93%" />
                 </div>
-              ) : (
-                <p className={styles.bio}>{personal.bio ?? personal.summary ?? '—'}</p>
-              )}
+              ) : (() => {
+                  const text = personal.bio ?? personal.summary ?? '—';
+                  if (!text || text.length < 2) return <p className={styles.bio}>{text}</p>;
+                  const [first, ...rest] = text;
+                  return (
+                    <p className={styles.bio}>
+                      <span className={styles.bioDropcap}>{first}</span>
+                      {rest.join('')}
+                    </p>
+                  );
+                })()
+              }
             </div>
 
             {/* Skills */}
@@ -295,6 +311,23 @@ const Bio = () => {
 
           </main>
         </div>
+
+        {/* ── Next chapter ─────────────────────────────────────────────── */}
+        <footer className={styles.nextChapter}>
+          <span className={styles.nextChapterLabel}>Turn the page</span>
+          <button
+            type="button"
+            className={styles.nextChapterBtn}
+            onClick={() => navigate('/projects')}
+          >
+            <span className={styles.nextChapterTitle}>
+              Chapter II — The Workshop
+            </span>
+            <span className={styles.nextChapterHint}>
+              See what I’ve been building <MdArrowOutward aria-hidden="true" />
+            </span>
+          </button>
+        </footer>
       </div>
     </section>
   );

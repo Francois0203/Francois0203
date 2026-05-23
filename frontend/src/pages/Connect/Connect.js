@@ -115,8 +115,13 @@ const Connect = () => {
       <div className={styles.container}>
 
         <header className={styles.header}>
-          <h1 className={styles.heading}>Connect</h1>
-          <p>Have a question, an opportunity, or just want to say hello?</p>
+          <p className={styles.chapterEyebrow}>
+            <span className={styles.chapterMark}>Chapter III</span>
+            <span className={styles.chapterDash} aria-hidden="true">—</span>
+            <span className={styles.chapterName}>A Letter</span>
+          </p>
+          <h1 className={styles.heading}>Write to me</h1>
+          <p>Have a question, an opportunity, or just want to say hello? Take a seat and write a line.</p>
         </header>
 
         <div className={`${styles.grid} ${!showRightCol ? styles.gridSingle : ''}`}>

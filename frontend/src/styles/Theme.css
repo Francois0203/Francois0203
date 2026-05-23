@@ -53,86 +53,91 @@
 
     /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
 
-    /* — Text: Light Mode — */
-    --primary-text-color-light: #1c1208;         /* Warm near-black */
-    --secondary-text-color-light: #4a3c2a;       /* Warm dark brown */
-    --tertiary-text-color-light: #7a6852;        /* Warm muted brown */
-    --disabled-color-light: #a89880;             /* Warm gray */
+    /* — Text: Light Mode (deep coffee → warm cocoa) — */
+    --primary-text-color-light: #2a1810;         /* Deep coffee brown */
+    --secondary-text-color-light: #5c3a1f;       /* Warm chestnut */
+    --tertiary-text-color-light: #8a6a48;        /* Muted brown */
+    --disabled-color-light: #b8a487;             /* Warm cream-gray */
 
-    /* — Text: Dark Mode — */
-    --primary-text-color-dark: #f5f0e8;          /* Warm off-white */
-    --secondary-text-color-dark: #d0c4b0;        /* Warm light tan */
-    --tertiary-text-color-dark: #9a8c78;         /* Warm mid brown-gray */
-    --disabled-color-dark: #5a5040;              /* Warm dim */
+    /* — Text: Dark Mode (warm cream → ochre) — */
+    --primary-text-color-dark: #f7e8cd;          /* Warm cream */
+    --secondary-text-color-dark: #d8b986;        /* Warm tan */
+    --tertiary-text-color-dark: #a08866;         /* Muted ochre */
+    --disabled-color-dark: #5a4a32;              /* Deep warm dim */
 
     /* — Status Colors — */
-    --error-color: #c0392b;                      /* Rose — clear, not harsh */
-    --warning-color: #c4780a;                    /* Amber — warm, muted */
-    --success-color: #2d7d5a;                    /* Emerald — warm tinted */
-    --info-color: #9a6e3a;                       /* Hazel — unified with accent */
+    --error-color: #b8391c;                      /* Burnt sienna — autumn red */
+    --warning-color: #d4882a;                    /* Autumn amber */
+    --success-color: #6b8c3a;                    /* Olive moss — autumn green */
+    --info-color: #b8651c;                       /* Burnt orange — unified with accent */
 
     /* — Status Backgrounds: Light Mode — */
-    --success-background-color-light: #eef7f2;   /* Barely green */
-    --warning-background-color-light: #fdf6e8;   /* Barely amber */
-    --error-background-color-light: #fdf0ee;     /* Barely rose */
-    --info-background-color-light: #fdf6ec;      /* Barely hazel */
+    --success-background-color-light: #f4f0db;   /* Barely olive */
+    --warning-background-color-light: #fdf2db;   /* Barely amber */
+    --error-background-color-light: #fbeee5;     /* Barely sienna */
+    --info-background-color-light: #fdf2db;      /* Barely orange */
 
     /* — Status Backgrounds: Dark Mode — */
-    --success-background-color-dark: #0a2018;    /* Deep emerald */
-    --warning-background-color-dark: #201408;    /* Deep amber */
-    --error-background-color-dark: #2a0a08;      /* Deep rose */
-    --info-background-color-dark: #1a1208;       /* Deep hazel */
+    --success-background-color-dark: #1a1e0a;    /* Deep moss */
+    --warning-background-color-dark: #28190a;    /* Deep amber */
+    --error-background-color-dark: #2a1108;      /* Deep sienna */
+    --info-background-color-dark: #2a1808;       /* Deep orange */
 
-    /* — Accent: Hazel Gold (Light Mode) — */
-    --accent-1-light: #9a6e3a;        /* Hazel — primary action */
-    --accent-2-light: #b07d32;        /* Amber hazel — subtle variation */
-    --accent-3-light: #7a5628;        /* Deep hazel — pressed / deep */
-    --accent-hover-light: #7a5628;    /* Deep hazel — hover state */
+    /* — Accent: Burnt Orange & Pumpkin Gold (Light Mode) — */
+    --accent-1-light: #b8651c;        /* Burnt orange — primary action */
+    --accent-2-light: #e07b1f;        /* Bright pumpkin — highlight */
+    --accent-3-light: #7a3e10;        /* Deep umber — pressed / deep */
+    --accent-hover-light: #8a4a14;    /* Rich amber — hover state */
 
-    /* — Accent: Soft Gold (Dark Mode) — */
-    --accent-1-dark: #d4a854;         /* Soft gold — primary on dark */
-    --accent-2-dark: #e8c070;         /* Warm light gold — lighter highlights */
-    --accent-3-dark: #b8912a;         /* Mid gold — mid tone */
-    --accent-hover-dark: #e8c070;     /* Warm light gold — hover brightness */
+    /* — Accent: Autumn Gold & Maple (Dark Mode) — */
+    --accent-1-dark: #e89542;         /* Warm pumpkin gold — primary on dark */
+    --accent-2-dark: #f5b56b;         /* Bright maple — lighter highlights */
+    --accent-3-dark: #c47020;         /* Deep amber — mid tone */
+    --accent-hover-dark: #f5b56b;     /* Maple — hover brightness */
 
     /* — Accent RGB (for rgba() usage) — */
-    --accent-1-rgb-light: 154, 110, 58;
-    --accent-2-rgb-light: 176, 125, 50;
-    --accent-3-rgb-light: 122, 86, 40;
+    --accent-1-rgb-light: 184, 101, 28;
+    --accent-2-rgb-light: 224, 123, 31;
+    --accent-3-rgb-light: 122, 62, 16;
 
-    --accent-1-rgb-dark: 212, 168, 84;
-    --accent-2-rgb-dark: 232, 192, 112;
-    --accent-3-rgb-dark: 184, 145, 42;
+    --accent-1-rgb-dark: 232, 149, 66;
+    --accent-2-rgb-dark: 245, 181, 107;
+    --accent-3-rgb-dark: 196, 112, 32;
+
+    /* — Leaf / Maple accent (cross-mode, used for decorative touches) — */
+    --leaf-color-light: #c4471c;      /* Maple red — autumn leaf */
+    --leaf-color-dark:  #e06030;      /* Bright maple — autumn leaf on dark */
+    --leaf-color: var(--leaf-color-light);
 
     /* — Accent Backgrounds: Light Mode — */
-    --accent-1-background-light: #fdf6ec;        /* Barely amber — barely tinted */
-    --accent-2-background-light: #f8e8cc;        /* Warm amber tint */
-    --accent-3-background-light: #f0d4a0;        /* Stronger amber tint */
+    --accent-1-background-light: #fdf2db;        /* Barely pumpkin */
+    --accent-2-background-light: #f8d8a8;        /* Warm honey tint */
+    --accent-3-background-light: #ecb878;        /* Stronger amber tint */
 
     /* — Accent Backgrounds: Dark Mode — */
-    --accent-1-background-dark: #1a1208;         /* Deep warm hazel */
-    --accent-2-background-dark: #241a0c;         /* Warmer hazel surface */
-    --accent-3-background-dark: #302414;         /* Deeper hazel surface */
+    --accent-1-background-dark: #1f1408;         /* Deep warm pumpkin */
+    --accent-2-background-dark: #2a1c0d;         /* Warmer amber surface */
+    --accent-3-background-dark: #3a2814;         /* Deeper amber surface */
 
-    /* — Backgrounds: Light Mode — */
-    --background-0-light: #faf8f4;               /* Warm off-white — page canvas */
-    --background-1-light: #ffffff;               /* Pure white — primary surface */
-    --background-2-light: #f5f1ec;               /* Warm light beige — elevated surface */
-    --background-3-light: #ede8e0;               /* Warm beige */
-    --background-4-light: #e4dcd2;               /* Deeper beige — dividers, subtle cards */
-    --frosted-background-light: rgba(255, 253, 248, 0.88);
-    --border-color-light: #e8e0d4;               /* Warm beige border */
-    --border-color-hover-light: #d8cec0;         /* Warmer border hover */
+    /* — Backgrounds: Light Mode (cream → toasted parchment) — */
+    --background-0-light: #f7eed8;               /* Warm parchment — page canvas */
+    --background-1-light: #fdf6e3;               /* Cream parchment — primary surface */
+    --background-2-light: #f0e0bc;               /* Toasted beige — elevated surface */
+    --background-3-light: #e6d099;               /* Warm sand */
+    --background-4-light: #dac08c;               /* Golden sand — dividers, subtle cards */
+    --frosted-background-light: rgba(253, 246, 227, 0.86);
+    --border-color-light: #dcbe8e;               /* Warm sand border */
+    --border-color-hover-light: #c89e62;         /* Toasted border hover */
 
-    /* — Backgrounds: Dark Mode — */
-    --background-0-dark: #0c0a06;                /* Warm near-black — page canvas */
-    --background-1-dark: #130f08;                /* Warm very deep dark — primary surface */
-    --background-2-dark: #1c1810;                /* Warm dark elevated surface */
-    --background-3-dark: #252018;                /* Warm raised surface */
-    --background-4-dark: #2e2a1e;                /* Warm high-elevation card */
-    --frosted-background-dark: rgba(19, 15, 8, 0.90);
-    --border-color-dark: #28221a;                /* Warm subtle dark border */
-    --border-color-hover-dark: #362e24;          /* Warm slightly visible */
+    /* — Backgrounds: Dark Mode (deep walnut → coffee bean) — */
+    --background-0-dark: #120a04;                /* Deep walnut — page canvas */
+    --background-1-dark: #1c1208;                /* Coffee bean — primary surface */
+    --background-2-dark: #281c0e;                /* Warm dark elevated surface */
+    --background-3-dark: #342612;                /* Warm raised surface */
+    --background-4-dark: #44321c;                /* Warm high-elevation card */
+    --frosted-background-dark: rgba(28, 18, 8, 0.88);
+    --border-color-dark: #44321c;                /* Warm subtle dark border */
+    --border-color-hover-dark: #5a4226;          /* Warm slightly visible */
 
     /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);
@@ -204,6 +209,8 @@
     --error-background-color: var(--error-background-color-dark);
     --info-background-color: var(--info-background-color-dark);
 
+    --leaf-color: var(--leaf-color-dark);
+
     /* Deeper shadows for dark surfaces */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
@@ -230,11 +237,15 @@ body {
 html, body, #root {
     min-height: 100%;
     margin: 0;
-    background: linear-gradient(
-        135deg,
-        var(--background-1) 0%,
-        var(--background-2) 100%
-    );
+    background:
+        radial-gradient(ellipse 90% 60% at 15% 0%, rgba(var(--accent-2-rgb), 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 70% at 85% 100%, rgba(var(--accent-1-rgb), 0.14) 0%, transparent 60%),
+        linear-gradient(
+            160deg,
+            var(--background-0) 0%,
+            var(--background-1) 45%,
+            var(--background-2) 100%
+        );
     background-attachment: fixed;
     transition: background var(--transition-slow);
 }

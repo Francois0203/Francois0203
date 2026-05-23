@@ -23,6 +23,29 @@
   gap: var(--spacing-md);
 }
 
+.chapterEyebrow {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--accent-3);
+}
+.chapterMark {
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+.chapterDash { opacity: 0.55; }
+.chapterName {
+  color: var(--accent-1);
+  font-weight: 600;
+}
+
 .headerInner {
   display: flex;
   align-items: center;
@@ -73,13 +96,17 @@
 
 .name {
   margin: 0;
-  background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--accent-1) 100%);
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-style: italic;
+  background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--leaf-color) 55%, var(--accent-1) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .titleLine {
+  font-family: 'Georgia', serif;
+  font-style: italic;
   font-size: var(--font-size-md);
   font-weight: 400;
   color: var(--secondary-text-color);
@@ -153,8 +180,8 @@ a.contactItem:hover {
 
 .card {
   background: var(--frosted-background);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
@@ -162,6 +189,15 @@ a.contactItem:hover {
     var(--shadow-md),
     inset 0 1px 0 rgba(255, 255, 255, 0.10),
     inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  contain: layout paint;
+}
+
+@media (max-width: 768px) {
+  .card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--background-1);
+  }
 }
 
 .cardLabel {
@@ -174,10 +210,27 @@ a.contactItem:hover {
 }
 
 .bio {
+  font-family: 'Georgia', serif;
   font-size: var(--font-size-sm);
   color: var(--secondary-text-color);
-  line-height: 1.75;
+  line-height: 1.85;
   margin: 0;
+}
+
+.bioDropcap {
+  float: left;
+  font-family: 'Georgia', serif;
+  font-size: 3em;
+  line-height: 0.85;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-1), var(--leaf-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 0.1em;
+  margin-right: 0.08em;
+  margin-top: 0.06em;
+  margin-bottom: -0.08em;
 }
 
 /* ── Skills ──────────────────────────────────────────────────────────────── */
@@ -248,14 +301,26 @@ a.contactItem:hover {
 }
 
 .sectionHeading {
+  position: relative;
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent-1);
   margin: 0;
   padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid rgba(var(--accent-1-rgb), 0.18);
+  padding-left: 22px;
+  border-bottom: 1px solid rgba(var(--accent-1-rgb), 0.22);
+}
+
+.sectionHeading::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 1px;
+  width: 14px; height: 14px;
+  background-color: var(--leaf-color);
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z'/></svg>") center / contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z'/></svg>") center / contain no-repeat;
 }
 
 /* ── Timeline ────────────────────────────────────────────────────────────── */
@@ -402,6 +467,68 @@ a.contactItem:hover {
   color: var(--tertiary-text-color);
   margin: 0;
 }
+
+/* ── Next-chapter footer ─────────────────────────────────────────────────── */
+
+.nextChapter {
+  margin-top: var(--spacing-3xl);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+}
+
+.nextChapterLabel {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.nextChapterBtn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: rgba(var(--accent-1-rgb), 0.06);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.30);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.nextChapterBtn:hover {
+  background: rgba(var(--accent-1-rgb), 0.12);
+  border-color: rgba(var(--accent-1-rgb), 0.55);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(var(--accent-3-rgb), 0.18);
+}
+
+.nextChapterTitle {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent-1);
+  font-size: var(--font-size-md);
+}
+
+.nextChapterHint {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.nextChapterHint svg { font-size: 1em; }
 
 /* ── Skeleton ────────────────────────────────────────────────────────────── */
 

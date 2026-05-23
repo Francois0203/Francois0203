@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 import { Modal, LightWaveButton } from '../../components';
@@ -166,18 +167,24 @@ const ProjectCard = ({ project, onReadme }) => {
 const Projects = () => {
   const { projects, loading, error } = useGitHubProjects();
   const [selected, setSelected] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <section className={styles.page}>
       <div className={styles.container}>
 
         <header className={styles.header}>
+          <p className={styles.chapterEyebrow}>
+            <span className={styles.chapterMark}>Chapter II</span>
+            <span className={styles.chapterDash} aria-hidden="true">—</span>
+            <span className={styles.chapterName}>The Workshop</span>
+          </p>
           <h1 className={styles.heading}>Notable Projects</h1>
           <p>
             {loading
-              ? 'Fetching projects…'
+              ? 'Fetching projects from the bench…'
               : projects
-                ? `${projects.length} ${projects.length === 1 ? 'repository' : 'repositories'}`
+                ? `${projects.length} ${projects.length === 1 ? 'repository' : 'repositories'} laid out for you`
                 : ''}
           </p>
         </header>
@@ -198,6 +205,23 @@ const Projects = () => {
             }
           </div>
         )}
+
+        {/* ── Next chapter ─────────────────────────────────────────── */}
+        <footer className={styles.nextChapter}>
+          <span className={styles.nextChapterLabel}>Turn the page</span>
+          <button
+            type="button"
+            className={styles.nextChapterBtn}
+            onClick={() => navigate('/connect')}
+          >
+            <span className={styles.nextChapterTitle}>
+              Chapter III — A Letter
+            </span>
+            <span className={styles.nextChapterHint}>
+              Send word, or browse the channels <MdArrowOutward aria-hidden="true" />
+            </span>
+          </button>
+        </footer>
       </div>
 
       <Modal

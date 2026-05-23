@@ -16,18 +16,48 @@
 
 .header {
   margin-bottom: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chapterEyebrow {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 10px;
+  margin: 0 0 var(--spacing-sm);
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--accent-3);
+}
+.chapterMark {
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+.chapterDash { opacity: 0.55; }
+.chapterName {
+  color: var(--accent-1);
+  font-weight: 600;
 }
 
 .heading {
   margin-top: 0;
   margin-bottom: var(--spacing-xs);
-  background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--accent-1) 100%);
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-style: italic;
+  background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--leaf-color) 55%, var(--accent-1) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .header p {
+  font-family: 'Georgia', serif;
+  font-style: italic;
   color: var(--secondary-text-color);
   margin: 0;
 }
@@ -39,14 +69,16 @@
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-lg);
   align-items: start;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1200px;
 }
 
 /* ── Card ────────────────────────────────────────────────────────────────── */
 
 .card {
   background: var(--frosted-background);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -60,6 +92,16 @@
     border-color var(--transition-base),
     box-shadow   var(--transition-base),
     transform    var(--transition-base);
+  contain: layout paint;
+}
+
+@media (max-width: 768px) {
+  .card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--background-1);
+  }
+  .card:hover { transform: none; }
 }
 
 .card:hover {
@@ -405,7 +447,7 @@
 .errorCard {
   grid-column: 1 / -1;
   background: var(--error-background-color);
-  border: 1px solid rgba(229, 72, 77, 0.25);
+  border: 1px solid rgba(184, 57, 28, 0.28);
   border-radius: var(--radius-xl);
   padding: var(--spacing-xl);
   text-align: center;
@@ -421,6 +463,68 @@
   text-align: center;
   color: var(--tertiary-text-color);
 }
+
+/* ── Next-chapter footer ─────────────────────────────────────────────────── */
+
+.nextChapter {
+  margin-top: var(--spacing-3xl);
+  padding-top: var(--spacing-xl);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+}
+
+.nextChapterLabel {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.nextChapterBtn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: rgba(var(--accent-1-rgb), 0.06);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.30);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.nextChapterBtn:hover {
+  background: rgba(var(--accent-1-rgb), 0.12);
+  border-color: rgba(var(--accent-1-rgb), 0.55);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(var(--accent-3-rgb), 0.18);
+}
+
+.nextChapterTitle {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent-1);
+  font-size: var(--font-size-md);
+}
+
+.nextChapterHint {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.nextChapterHint svg { font-size: 1em; }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
