@@ -586,3 +586,15 @@ a.contactItem:hover {
   .page      { padding-inline: var(--spacing-sm); }
   .entryTop  { flex-direction: column; gap: 2px; }
 }
+
+/* ── Error state ─────────────────────────────────────────────────────────── */
+
+.errorCard {
+  background: var(--error-background-color);
+  border: 1px solid rgba(184, 57, 28, 0.28);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--error-color);
+  margin-top: var(--spacing-xl);
+}

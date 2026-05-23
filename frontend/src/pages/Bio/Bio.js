@@ -69,7 +69,7 @@ const TimelineEntry = ({ title, subtitle, p, current, description, tags }) => (
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const Bio = () => {
-  const { data, loading } = usePortfolioData();
+  const { data, loading, error } = usePortfolioData();
   const navigate = useNavigate();
 
   const personal   = data?.personal   ?? {};
@@ -91,6 +91,18 @@ const Bio = () => {
     ? github.url.replace(/\/$/, '').split('/').pop()
     : null;
   const photoUrl = personal.photoUrl || (githubUser ? `https://github.com/${githubUser}.png` : null);
+
+  if (!loading && error) {
+    return (
+      <section className={styles.page}>
+        <div className={styles.container}>
+          <div className={styles.errorCard}>
+            <p>Could not load portfolio data. Please try again later.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.page}>

@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public portfolio data — read-only, written only by Admin SDK
+    match /portfolio/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /experience/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /education/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /projects/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /githubProjects/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Contact form — anonymous visitors may create, never read
+    match /contacts/{doc} {
+      allow read:   if false;
+      allow create: if true;
+    }
+  }
+}
