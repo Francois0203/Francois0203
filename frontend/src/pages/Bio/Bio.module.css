@@ -96,6 +96,7 @@
 
 .name {
   margin: 0;
+  padding: 0.06em 0.08em;
   font-family: 'Georgia', 'Cormorant Garamond', serif;
   font-style: italic;
   background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--leaf-color) 55%, var(--accent-1) 100%);

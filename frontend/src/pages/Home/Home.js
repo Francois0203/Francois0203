@@ -829,10 +829,6 @@ const Home = () => {
           </div>
         </div>
 
-        <div className={styles.coverScrollHint} aria-hidden="true">
-          <span>Turn the page</span>
-          <span className={styles.coverScrollLine}><span className={styles.coverScrollDot} /></span>
-        </div>
       </section>
       </div>
 

@@ -254,11 +254,12 @@
 }
 
 .coverTitleScript {
-  font-family: 'Brush Script MT', 'Lucida Handwriting', 'Segoe Script', cursive;
-  font-size: clamp(2.8rem, 8vw, 6rem);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 0.95;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  padding: 0.08em 0.1em;
   max-width: 14ch;
   background: linear-gradient(
     100deg,
@@ -272,7 +273,6 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: titleShimmer 9s ease-in-out infinite;
-  text-shadow: 0 4px 12px rgba(var(--accent-1-rgb), 0.18);
 }
 
 @keyframes titleShimmer {
@@ -377,8 +377,8 @@
 .coverDropcap {
   float: left;
   font-family: 'Georgia', serif;
-  font-size: 4.2em;
-  line-height: 0.85;
+  font-size: 3.6em;
+  line-height: 1;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent-1), var(--leaf-color));
   -webkit-background-clip: text;
@@ -386,8 +386,8 @@
   -webkit-text-fill-color: transparent;
   padding-right: 0.1em;
   margin-right: 0.08em;
-  margin-top: 0.06em;
-  margin-bottom: -0.08em;
+  margin-top: 0.04em;
+  margin-bottom: 0;
 }
 
 .coverProse { display: inline; }
@@ -591,11 +591,11 @@
 
 .sceneTitle {
   margin: 0;
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 700;
-  font-style: italic;
-  letter-spacing: -0.01em;
+  font-style: normal;
+  letter-spacing: -0.02em;
   background: linear-gradient(120deg, var(--primary-text-color), var(--accent-1));
   -webkit-background-clip: text;
   background-clip: text;
@@ -753,10 +753,10 @@
 }
 .coverTitle {
   margin: 0;
-  font-family: 'Georgia', serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: var(--font-size-xl);
   font-weight: 700;
-  font-style: italic;
+  font-style: normal;
   color: var(--primary-text-color);
 }
 .coverSubtitle {
@@ -1185,10 +1185,10 @@
 
 .endTitle {
   margin: 0 0 var(--spacing-md);
-  font-family: 'Georgia', serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: clamp(1.5rem, 3.5vw, 2.4rem);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: var(--primary-text-color);
 }
 .endTitle em {
@@ -1686,8 +1686,7 @@
 }
 
 @media (max-width: 380px) {
-  .coverTitleSerif { font-size: 2.2rem; }
-  .coverTitleScript { font-size: 3rem; }
+  .coverTitleScript { font-size: 2.2rem; }
 }
 
 /* ─── Reduced motion ──────────────────────────────────────────────────────── */
