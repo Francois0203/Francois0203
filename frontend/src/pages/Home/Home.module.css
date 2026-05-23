@@ -970,6 +970,48 @@
   color: var(--tertiary-text-color);
 }
 
+/* Mobile: the wavy horizontal path stretches badly when milestones stack, so
+   switch to a clean vertical timeline — a straight line threading the dots. */
+@media (max-width: 767px) {
+  .journey {
+    padding: var(--spacing-sm) 0 var(--spacing-md);
+    min-height: 0;
+  }
+  .journeyPath { display: none; }
+
+  .journeyList {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+  /* Continuous line threading the dot centres (dots are 28px → centre at 14px) */
+  .journeyList::before {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+    opacity: 0.4;
+  }
+
+  .journeyItem {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--spacing-md);
+  }
+  .journeyDot { flex: 0 0 auto; }
+
+  .journeyLabel {
+    align-items: flex-start;
+    text-align: left;
+    max-width: none;
+    padding-top: 2px;
+  }
+}
+
 .journeySkel {
   display: flex;
   align-items: center;
@@ -1051,6 +1093,43 @@
   background: linear-gradient(90deg, var(--background-2) 0%, var(--background-3) 50%, var(--background-2) 100%);
   background-size: 1200px 100%;
   animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ─── Album gallery (leftover photos) ─────────────────────────────────────── */
+
+.gallery {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-3xl) var(--spacing-xl);
+}
+
+.gallery .sceneHead {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity   0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.galleryVisible .sceneHead {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-2xl) var(--spacing-lg);
+  justify-items: center;
+  align-items: start;
+  margin-top: var(--spacing-lg);
+}
+
+/* Each card fills its grid cell (the base rule caps it at 220px) */
+.galleryGrid .polaroid {
+  width: 100%;
+  max-width: 280px;
 }
 
 /* ─── Epilogue ─────────────────────────────────────────────────────────────── */

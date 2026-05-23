@@ -10,7 +10,9 @@ import usePolaroidPhotos from '../../hooks/usePolaroidPhotos';
 import { Modal, MagneticButton, CursorGlowButton } from '../../components';
 import styles from './Home.module.css';
 
-const POLAROID_MIN = 4;
+// Photos 0..PAIRED_PHOTOS-1 sit beside the three content scenes; the rest
+// gather in the album gallery near the end.
+const PAIRED_PHOTOS = 3;
 
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
@@ -627,14 +629,14 @@ const Home = () => {
   const [openPolaroid,  setOpenPolaroid]  = useState(null);
 
   /* Polaroid slot helper: when photos are loading show 4 skeletons; when loaded
-     show the actual photo (if we have at least POLAROID_MIN); when loaded with
+     show the actual photo (if we have at least PAIRED_PHOTOS); when loaded with
      fewer than the minimum, render nothing. */
   const polaroidSlot = (slotIndex) => {
     const side = slotIndex % 2 === 0 ? 'right' : 'left';
-    if (photosLoading && slotIndex < POLAROID_MIN) {
+    if (photosLoading && slotIndex < PAIRED_PHOTOS) {
       return <SidePolaroid key={`skel-${slotIndex}`} index={slotIndex} side={side} loading />;
     }
-    if (!photosLoading && photos.length >= POLAROID_MIN && photos[slotIndex]) {
+    if (!photosLoading && photos.length >= PAIRED_PHOTOS && photos[slotIndex]) {
       return (
         <SidePolaroid
           key={photos[slotIndex]}
@@ -680,6 +682,7 @@ const Home = () => {
   const [chapterRef, chapterInView] = useInView(0.10);
   const [journeyRef, journeyInView] = useInView(0.10);
   const [pileSecRef, pileSecInView] = useInView(0.10);
+  const [galleryRef, galleryInView] = useInView(0.10);
   const [endRef,     endInView]     = useInView(0.20);
 
   const personal   = data?.personal ?? {};
@@ -831,9 +834,6 @@ const Home = () => {
           <span className={styles.coverScrollLine}><span className={styles.coverScrollDot} /></span>
         </div>
       </section>
-
-      {/* Photo peek beside the Cover */}
-      {polaroidSlot(0)}
       </div>
 
       {/* ── Scene 2 ── Chapter Carousel ───────────────────────────────── */}
@@ -850,8 +850,8 @@ const Home = () => {
         <ChapterCarousel chapters={CHAPTERS} onOpen={setOpenChapter} />
       </section>
 
-      {/* Photo peek beside the Chapter carousel */}
-      {polaroidSlot(1)}
+      {/* Paired photo — sits beside the carousel on desktop */}
+      {polaroidSlot(0)}
       </div>
 
       {/* ── Scene 3 ── The Journey ────────────────────────────────────── */}
@@ -873,8 +873,8 @@ const Home = () => {
         }
       </section>
 
-      {/* Photo peek beside the Journey */}
-      {polaroidSlot(2)}
+      {/* Paired photo — sits beside the journey on desktop */}
+      {polaroidSlot(1)}
       </div>
 
       {/* ── Scene 4 ── The Toolkit ────────────────────────────────────── */}
@@ -902,24 +902,28 @@ const Home = () => {
         </section>
       )}
 
-      {/* Photo peek beside the Toolkit */}
-      {polaroidSlot(3)}
+      {/* Paired photo — sits beside the toolkit on desktop */}
+      {polaroidSlot(2)}
       </div>
 
-      {/* Extras: any photos beyond the first 4 fall in here */}
-      {!photosLoading && photos.length > POLAROID_MIN && (
-        photos.slice(POLAROID_MIN).map((src, j) => {
-          const i = j + POLAROID_MIN;
-          return (
-            <SidePolaroid
-              key={src}
-              src={src}
-              index={i}
-              side={i % 2 === 0 ? 'right' : 'left'}
-              onOpen={setOpenPolaroid}
-            />
-          );
-        })
+      {/* The album — every remaining photo, gathered as a scrapbook spread */}
+      {!photosLoading && photos.length > PAIRED_PHOTOS && (
+        <section ref={galleryRef} className={`${styles.gallery} ${galleryInView ? styles.galleryVisible : ''}`}>
+          <div className={styles.sceneHead}>
+            <span className={styles.sceneEye}>Between the chapters</span>
+            <h2 className={styles.sceneTitle}>More from the album</h2>
+          </div>
+          <div className={styles.galleryGrid}>
+            {photos.slice(PAIRED_PHOTOS).map((src, j) => (
+              <PolaroidCard
+                key={src}
+                src={src}
+                index={j + PAIRED_PHOTOS}
+                onOpen={setOpenPolaroid}
+              />
+            ))}
+          </div>
+        </section>
       )}
 
       {/* ── Scene 5 ── Epilogue ───────────────────────────────────────── */}
