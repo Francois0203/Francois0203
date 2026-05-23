@@ -678,6 +678,7 @@ const Home = () => {
   /* Refs for scene reveals */
   const [coverRef,   coverInView]   = useInView(0.20);
   const [chapterRef, chapterInView] = useInView(0.10);
+  const [journeyRef, journeyInView] = useInView(0.10);
   const [pileSecRef, pileSecInView] = useInView(0.10);
   const [endRef,     endInView]     = useInView(0.20);
 
@@ -855,7 +856,7 @@ const Home = () => {
 
       {/* ── Scene 3 ── The Journey ────────────────────────────────────── */}
       <div className={`${styles.sceneFrame} ${styles.sceneFrame_journey}`}>
-      <section className={styles.scene}>
+      <section ref={journeyRef} className={`${styles.scene} ${journeyInView ? styles.sceneVisible : ''}`}>
         <div className={styles.sceneHead}>
           <span className={styles.sceneEye}>Chapter II</span>
           <h2 className={styles.sceneTitle}>The journey so far</h2>

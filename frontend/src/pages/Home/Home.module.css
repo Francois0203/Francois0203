@@ -1268,7 +1268,9 @@
   max-width: 180px;
   margin-block: var(--spacing-xl);
   will-change: transform;
-  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity   0.6s ease;
 }
 
 /* Mobile (default): fully on-screen, inset from the edge so nothing clips */
@@ -1283,57 +1285,66 @@
   transform: rotate(-5deg);
 }
 
-/* Desktop: large, anchored to the side of the scene at a strategic vertical
-   offset.  Hidden off-page on the right/left until scrolled into view, then
-   peeks in.  On hover/focus, fully tucks inside the page. */
+/* Desktop: each content scene becomes a centred two-column row — prose beside a
+   large, integrated photo on an alternating side. (Mobile keeps the in-flow
+   stacked layout defined above.) */
 @media (min-width: 768px) {
-  .sceneFrame > .sidePolaroidWrap {
-    position: absolute;
-    margin: 0;
-    width: 320px;
-    max-width: 320px;
-    top: var(--polaroid-top, 50%);
+  .sceneFrame_chapters,
+  .sceneFrame_journey,
+  .sceneFrame_toolkit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(32px, 5vw, 88px);
+    max-width: 1320px;
+    margin-inline: auto;
+    padding-inline: var(--spacing-xl);
   }
-  .sceneFrame > .sidePolaroidWrap.side_right {
-    right: 0;
-    left: auto;
-    transform: translate(40%, -50%) rotate(8deg);
-  }
-  .sceneFrame > .sidePolaroidWrap.side_left {
-    left: 0;
-    right: auto;
-    transform: translate(-40%, -50%) rotate(-8deg);
-  }
-  /* Pull inward ~10% so the rotation (~8°) doesn't push corners past the
-     viewport edge (html has overflow-x: hidden) — a 280px card at 8° extends ~24px */
-  .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn {
-    transform: translate(-16%, -50%) rotate(8deg);
-  }
-  .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn {
-    transform: translate(16%, -50%) rotate(-8deg);
-  }
-  .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn:hover,
-  .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn:focus-within {
-    transform: translate(-26%, -54%) rotate(0deg);
-  }
-  .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn:hover,
-  .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn:focus-within {
-    transform: translate(26%, -54%) rotate(0deg);
-  }
-}
 
-/* Wide screens — go even bigger */
-@media (min-width: 1200px) {
-  .sceneFrame > .sidePolaroidWrap {
-    width: 370px;
-    max-width: 370px;
+  .sceneFrame_chapters > .scene,
+  .sceneFrame_journey  > .scene,
+  .sceneFrame_toolkit  > .scene {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 760px;
+    padding-inline: 0;
   }
-}
-@media (min-width: 1600px) {
+
+  /* Photo column — large, integrated, vertically centred with the prose */
   .sceneFrame > .sidePolaroidWrap {
-    width: 420px;
-    max-width: 420px;
+    position: static;
+    flex: 0 0 auto;
+    margin: 0;
+    width: clamp(300px, 32vw, 420px);
+    max-width: clamp(300px, 32vw, 420px);
   }
+  /* Let the card fill its column — the mobile rule caps the card at 220px */
+  .sceneFrame > .sidePolaroidWrap .polaroid {
+    max-width: 100%;
+  }
+
+  /* Default DOM order puts the photo after the prose (right column).
+     Flip the journey scene's photo to the left for rhythm. */
+  .sceneFrame_journey > .sidePolaroidWrap { order: -1; }
+
+  /* Reveal: a gentle fade + rise, replacing the old off-screen horizontal peek */
+  .sceneFrame > .sidePolaroidWrap.side_right { opacity: 0; transform: translateY(34px) rotate(3deg); }
+  .sceneFrame > .sidePolaroidWrap.side_left  { opacity: 0; transform: translateY(34px) rotate(-3deg); }
+  .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn { opacity: 1; transform: translateY(0) rotate(3deg); }
+  .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn  { opacity: 1; transform: translateY(0) rotate(-3deg); }
+  .sceneFrame > .sidePolaroidWrap.sidePolaroidIn:hover,
+  .sceneFrame > .sidePolaroidWrap.sidePolaroidIn:focus-within { transform: translateY(-8px) rotate(0deg); }
+
+  /* Cover keeps a clean, single-focus hero — the circular portrait carries it */
+  .sceneFrame_cover > .sidePolaroidWrap { display: none; }
+
+  /* Loose extra photos (any beyond the four scene slots) — centre as a tidy stack */
+  .page > .sidePolaroidWrap {
+    width: clamp(300px, 30vw, 380px);
+    max-width: clamp(300px, 30vw, 380px);
+    margin: var(--spacing-2xl) auto;
+  }
+  .page > .sidePolaroidWrap .polaroid { max-width: 100%; }
 }
 
 /* Per-scene vertical placement — staggers the polaroid heights for rhythm */
