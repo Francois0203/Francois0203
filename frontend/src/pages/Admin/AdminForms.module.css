@@ -1,0 +1,211 @@
+/* Layout-only — inputs, labels, and buttons are styled globally by Components.css */
+
+/* ── Form grid ─────────────────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 var(--spacing-lg);
+}
+
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+/* Textareas span both columns */
+.grid :global(.input-container):has(textarea) { grid-column: 1 / -1; }
+
+/* ── Inline add row ────────────────────────────────────────────────────────── */
+.inlineAdd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  align-items: flex-end;
+  margin-bottom: var(--spacing-lg);
+}
+.inlineAdd :global(.input-container) { flex: 1; min-width: 160px; margin-bottom: 0; }
+.inlineAdd button { flex-shrink: 0; }
+
+/* ── Flex row for side-by-side fields ─────────────────────────────────────── */
+.row {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-end;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.row :global(.input-container) { flex: 1; min-width: 140px; }
+.row button { flex-shrink: 0; align-self: flex-end; }
+
+/* ── Action bar ────────────────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--frosted-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-sm);
+}
+
+.cardTitle {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+/* ── Chips ─────────────────────────────────────────────────────────────────── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.chip {
+  padding: 2px 10px;
+  background: rgba(var(--accent-1-rgb), 0.10);
+  color: var(--accent-1);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.30);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.chipRemovable {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 10px;
+  background: var(--frosted-background);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+}
+
+/* The × remove button inside a chip — minimal, not styled as a full button */
+.chipRemovable button {
+  all: unset;
+  cursor: pointer;
+  color: var(--tertiary-text-color);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 50%;
+  transition: color var(--transition-fast);
+}
+.chipRemovable button:hover { color: var(--error-color); }
+
+/* ── List rows ─────────────────────────────────────────────────────────────── */
+.listRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-sm);
+  background: var(--frosted-background);
+  transition: border-color var(--transition-fast);
+}
+.listRow:hover { border-color: var(--border-color-hover); }
+
+.listRowContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.listRowActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Small number input specifically for the order column */
+.orderInput {
+  width: 60px;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+/* ── Photo preview ─────────────────────────────────────────────────────────── */
+.photoPreview {
+  margin-bottom: var(--spacing-lg);
+}
+.photoPreview img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color-hover);
+}
+
+/* ── Messages ──────────────────────────────────────────────────────────────── */
+.messageCard {
+  background: var(--frosted-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.messageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.messageHeader > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.email { font-size: var(--font-size-sm); }
+
+.messageBody {
+  color: var(--secondary-text-color);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Mobile stacking ───────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .listRow { flex-direction: column; align-items: flex-start; }
+  .listRowActions { width: 100%; justify-content: flex-end; }
+  .card { padding: var(--spacing-md); }
+  .actions { justify-content: stretch; }
+  .actions button { flex: 1; }
+}

@@ -570,6 +570,8 @@ a.contactItem:hover {
     padding-inline: var(--spacing-md);
     padding-bottom: var(--spacing-xl);
   }
+  /* Push next-chapter footer above the fixed mobile nav circle (64px + 24px gap) */
+  .nextChapter { padding-bottom: 100px; }
   .content {
     grid-template-columns: 1fr;
   }

@@ -4,3 +4,4 @@ export { default as Connect   } from './Connect';
 export { default as Projects  } from './Projects';
 export { default as Bio       } from './Bio';
 export { default as Home      } from './Home';
+export { default as Admin     } from './Admin';

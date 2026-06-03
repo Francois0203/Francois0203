@@ -29,11 +29,21 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
     document.body.style.overflow = 'hidden';
     document.body.style.paddingRight = `${scrollbarWidth}px`;
 
+    // iOS Safari ignores touch-action on fixed elements — block touchmove on
+    // the backdrop in JS so swiping the scrim never scrolls the page behind it.
+    const preventBackdropScroll = (e) => {
+      if (!dialogRef.current?.contains(e.target)) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener('touchmove', preventBackdropScroll, { passive: false });
+
     // Move focus into the dialog after it has painted.
     const raf = requestAnimationFrame(() => dialogRef.current?.focus());
 
     return () => {
       cancelAnimationFrame(raf);
+      document.removeEventListener('touchmove', preventBackdropScroll);
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
       previousFocusRef.current?.focus();

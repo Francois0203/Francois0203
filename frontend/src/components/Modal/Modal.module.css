@@ -44,6 +44,9 @@
   -webkit-backdrop-filter: blur(6px);
 
   animation: backdropIn var(--transition-base) both;
+
+  /* Prevent touch-scroll on the backdrop from reaching the page. */
+  touch-action: none;
 }
 
 @media (max-width: 768px) {
@@ -62,6 +65,9 @@
   max-width: 580px;
   max-height: min(85dvh, 85vh);
   z-index: var(--z-modal);
+
+  /* Re-enable touch-scroll inside the dialog panel. */
+  touch-action: pan-y;
 
   display: flex;
   flex-direction: column;
@@ -122,6 +128,8 @@
   overflow-x: hidden;
   color: var(--secondary-text-color);
   line-height: 1.7;
+  /* Prevent scroll from escaping the modal on momentum scroll / rubber-band. */
+  overscroll-behavior: contain;
 }
 
 /* Subtle themed scrollbar. */

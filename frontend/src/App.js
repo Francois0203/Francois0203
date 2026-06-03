@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import { NotFound, Loading, Connect, Projects, Bio, Home } from './pages';
+import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider } from './components';
 import { useTheme, useAnimations } from './hooks';
 import styles from './App.module.css';
@@ -55,6 +55,9 @@ const AppContent = () => (
   <>
     <ScrollToTop />
     <Routes>
+      {/* Admin — standalone, no nav bar */}
+      <Route path="/admin" element={<Admin />} />
+
       <Route path="/" element={<AppLayout />}>
         <Route index             element={<Home />} />
         <Route path="bio"        element={<Bio />} />

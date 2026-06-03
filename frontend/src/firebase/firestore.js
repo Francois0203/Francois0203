@@ -15,8 +15,15 @@ export const getInterests = ()  => portfolioDoc('interests').then(d => d?.items 
 // ─── Ordered collection reads ─────────────────────────────────────────────────
 
 const orderedCollection = async (col) => {
-  const snap = await getDocs(query(collection(db, col), orderBy('order')));
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await getDocs(query(collection(db, col), orderBy('order')));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {
+    // orderBy requires an index — fall back to unordered and sort client-side
+    const snap = await getDocs(collection(db, col));
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    return docs.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
+  }
 };
 
 export const getExperience = () => orderedCollection('experience');
@@ -24,14 +31,17 @@ export const getEducation  = () => orderedCollection('education');
 export const getProjects   = () => orderedCollection('projects');
 
 // ─── Full portfolio fetch (all sections in parallel) ──────────────────────────
+// Uses allSettled so one failing read never crashes the whole page.
 
 export const getPortfolio = () =>
-  Promise.all([
+  Promise.allSettled([
     getPersonal(), getContact(), getSocial(), getDonation(),
     getSkills(), getInterests(), getExperience(), getEducation(), getProjects(),
-  ]).then(([personal, contact, social, donation, skills, interests, experience, education, projects]) => ({
-    personal, contact, social, donation, skills, interests, experience, education, projects,
-  }));
+  ]).then(results => {
+    const [personal, contact, social, donation, skills, interests, experience, education, projects] =
+      results.map(r => (r.status === 'fulfilled' ? r.value : null));
+    return { personal, contact, social, donation, skills, interests, experience, education, projects };
+  });
 
 // ─── Contact form write ───────────────────────────────────────────────────────
 

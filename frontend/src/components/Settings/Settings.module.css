@@ -16,8 +16,8 @@
   position: fixed;
   top: 16px;
   right: 20px;
-  /* Sit above the backdrop (--z-modal-backdrop: 1040) */
-  z-index: var(--z-modal);
+  /* Sit below the modal backdrop (--z-modal-backdrop: 1040) so modals cover it */
+  z-index: var(--z-fixed);
 }
 
 
@@ -271,15 +271,15 @@
 
 /* ===================== BACKDROP ===================== */
 /* With the container now portalled to <body> it lives in the root stacking
-   context alongside the backdrop, so z-index comparison is direct. */
+   context alongside the backdrop, so z-index comparison is direct.
+   Container is --z-fixed (1030), so backdrop must sit BELOW it. */
 .backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  /* Container is z-modal (1050), backdrop sits just below it */
-  z-index: var(--z-modal-backdrop);
+  z-index: var(--z-sticky);
   animation: backdropIn 0.3s ease forwards;
 }
 
