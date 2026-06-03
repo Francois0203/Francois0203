@@ -1,9 +1,9 @@
 name: Sync GitHub Projects to Firestore
 
 on:
-  # Run once a day at 02:00 UTC
+  # Run once a month on the 1st at 02:00 UTC
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 1 * *'
   # Run on every push to main
   push:
     branches: [main]
