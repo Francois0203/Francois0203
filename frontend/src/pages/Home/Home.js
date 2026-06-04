@@ -14,6 +14,12 @@ import styles from './Home.module.css';
 // gather in the album gallery near the end.
 const PAIRED_PHOTOS = 3;
 
+// Evaluated once at module load — avoids React overhead and is stable
+// across the page lifetime. Coarse-pointer (touch) also implies mobile.
+const IS_MOBILE = typeof window !== 'undefined' &&
+  (window.matchMedia('(max-width: 767px)').matches ||
+   window.matchMedia('(pointer: coarse)').matches);
+
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
 const itemLabel = (s) =>
@@ -59,7 +65,8 @@ const MapleLeaf = ({ className, style }) => (
 
 /* ─── Drifting motes overlay (fixed) ───────────────────────────────────────── */
 
-const MOTE_COUNT = 8;
+// Fewer particles on mobile: less DOM, less GPU work
+const MOTE_COUNT = IS_MOBILE ? 0 : 8;
 
 const DriftingMotes = () => {
   const motes = useMemo(() => Array.from({ length: MOTE_COUNT }, (_, i) => ({
@@ -71,6 +78,8 @@ const DriftingMotes = () => {
     drift:    (Math.random() * 36 - 18).toFixed(1),
     opacity:  (0.35 + Math.random() * 0.35).toFixed(2),
   })), []);
+
+  if (motes.length === 0) return null;
 
   return (
     <div className={styles.moteField} aria-hidden="true">
@@ -95,7 +104,7 @@ const DriftingMotes = () => {
 
 /* ─── Falling autumn leaves overlay (fixed) ────────────────────────────────── */
 
-const LEAF_COUNT = 7;
+const LEAF_COUNT = IS_MOBILE ? 0 : 7;
 
 const FallingLeaves = () => {
   const leaves = useMemo(() => Array.from({ length: LEAF_COUNT }, (_, i) => ({
@@ -109,6 +118,8 @@ const FallingLeaves = () => {
     hue:      i % 3,
     opacity:  (0.45 + Math.random() * 0.3).toFixed(2),
   })), []);
+
+  if (leaves.length === 0) return null;
 
   return (
     <div className={styles.leafField} aria-hidden="true">

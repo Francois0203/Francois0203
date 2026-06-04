@@ -298,14 +298,9 @@
 
 .shimmerBar {
   display: block;
-  background: linear-gradient(
-    90deg,
-    var(--background-2) 0%,
-    var(--background-3) 50%,
-    var(--background-2) 100%
-  );
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-2);
   border-radius: var(--radius-md);
 }
 
@@ -458,9 +453,9 @@
   display: block;
   width: 100%; height: 100%;
   border-radius: 50%;
-  background: linear-gradient(90deg, var(--background-2) 0%, var(--background-3) 50%, var(--background-2) 100%);
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-2);
 }
 
 .coverInvite {
@@ -1022,9 +1017,9 @@
 .journeySkelDot {
   width: 18px; height: 18px;
   border-radius: 50%;
-  background: linear-gradient(90deg, var(--background-2) 0%, var(--background-3) 50%, var(--background-2) 100%);
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-2);
 }
 
 /* ─── Toolkit pile ─────────────────────────────────────────────────────────── */
@@ -1090,9 +1085,9 @@
 .skillLeafSkel {
   height: 1.7rem;
   border-radius: 2px 18px 2px 18px;
-  background: linear-gradient(90deg, var(--background-2) 0%, var(--background-3) 50%, var(--background-2) 100%);
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-2);
 }
 
 /* ─── Album gallery (leftover photos) ─────────────────────────────────────── */
@@ -1577,14 +1572,9 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--background-2) 0%,
-    var(--background-3) 50%,
-    var(--background-2) 100%
-  );
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-2);
 }
 .polaroidCaptionSkel {
   display: block;
@@ -1592,14 +1582,9 @@
   height: 0.8rem;
   margin: 4px auto 0;
   border-radius: var(--radius-sm);
-  background: linear-gradient(
-    90deg,
-    var(--background-2) 0%,
-    var(--background-3) 50%,
-    var(--background-2) 100%
-  );
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-2);
 }
 
 /* ── Lightbox ────────────────────────────────────────────────────────────── */
@@ -1634,11 +1619,30 @@
   pointer-events: none;
 }
 
-/* ─── Shimmer ─────────────────────────────────────────────────────────────── */
+/* ─── Shimmer — compositor-only: translate an overlay, no repaint ─────────── */
+
+/* Shared ::after overlay for every shimmer element in this module */
+.shimmerBar::after,
+.coverPortraitSkel::after,
+.journeySkelDot::after,
+.skillLeafSkel::after,
+.polaroidImgSkel::after,
+.polaroidCaptionSkel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.13) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.6s ease-in-out infinite;
+}
 
 @keyframes shimmer {
-  0%   { background-position: -600px 0; }
-  100% { background-position:  600px 0; }
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────────────── */
@@ -1721,6 +1725,96 @@
   /* No 3D perspective on touch — saves a compositor layer + simpler paint */
   .coverStage { perspective: none; }
   .coverCard  { transform-style: flat; }
+}
+
+/* ─── Mobile animation budget — kill non-essential animations on small screens */
+/* This is separate from prefers-reduced-motion (which the user controls) —
+   here we simply skip effects that are expensive on low-end mobile CPUs.     */
+
+@media (max-width: 767px) {
+
+  /* ── Page entry animations: show immediately, no blur-in ─────────────── */
+  .coverFlourish,
+  .coverEyebrow,
+  .coverTitleLine,
+  .coverByline,
+  .coverDivider,
+  .coverPortraitRow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* ── Word-by-word reveal: show all words at once ─────────────────────── */
+  .word {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* ── Title gradient sweep: static gradient, no animation ────────────── */
+  .coverTitleScript { animation: none; }
+
+  /* ── Divider leaf: static, no rocking ───────────────────────────────── */
+  .coverDividerLeaf { animation: none; }
+
+  /* ── Portrait ring: remove spinning dashed ring ─────────────────────── */
+  .coverPortraitRing { display: none; }
+
+  /* ── Portrait leaf: no hover animation ──────────────────────────────── */
+  .coverPortraitLeaf { animation: none; }
+
+  /* ── Journey dot pulse: no pulsing rings around dots ────────────────── */
+  .journeyDotPulse { display: none; }
+
+  /* ── Scene entry: faster fade-in, no blur ────────────────────────────── */
+  .scene {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  /* ── Journey items: faster stagger ──────────────────────────────────── */
+  .journeyItem {
+    transition:
+      opacity  0.25s ease         calc(var(--ji, 0) * 0.04s),
+      transform 0.25s ease        calc(var(--ji, 0) * 0.04s);
+  }
+
+  /* ── Skill leaf: faster stagger, no hover transform ─────────────────── */
+  .skillLeaf {
+    transition:
+      opacity  0.2s ease  calc(var(--si, 0) * 0.015s),
+      translate 0.2s ease calc(var(--si, 0) * 0.015s);
+  }
+  .skillLeaf:hover { transform: none; }
+
+  /* ── Polaroid: simpler animation, no hover lift ─────────────────────── */
+  .polaroid:hover,
+  .polaroid:focus-visible {
+    transform: rotate(var(--pr, 0deg));
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 8px 18px -6px rgba(var(--accent-3-rgb), 0.32),
+      inset 0 0 0 1px rgba(255,255,255,0.40);
+  }
+
+  /* ── Gallery reveal: instant ─────────────────────────────────────────── */
+  .gallery .sceneHead {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── Shimmer: slightly faster on mobile ──────────────────────────────── */
+  .shimmerBar::after,
+  .coverPortraitSkel::after,
+  .journeySkelDot::after,
+  .skillLeafSkel::after,
+  .polaroidImgSkel::after,
+  .polaroidCaptionSkel::after {
+    animation-duration: 1.2s;
+  }
 }
 
 /* ─── Light theme tuning ─────────────────────────────────────────────────── */

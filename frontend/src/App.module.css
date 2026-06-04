@@ -45,3 +45,12 @@
   .navigationBar { top: var(--spacing-xs); left: var(--spacing-xs); }
   .themeSwitch   { top: var(--spacing-xs); right: var(--spacing-xs); }
 }
+
+/* Mobile: skip the translateY animation — just fade in */
+@media (max-width: 767px) {
+  @keyframes pageEnter {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .pageContent { animation-duration: 0.15s; }
+}
