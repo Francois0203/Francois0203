@@ -32,4 +32,4 @@ jobs:
         working-directory: scripts
         env:
           GH_PAT:                   ${{ secrets.GH_PAT }}
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}

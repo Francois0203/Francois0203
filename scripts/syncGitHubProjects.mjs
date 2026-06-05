@@ -7,7 +7,7 @@
  *
  * Required env vars
  *   GH_PAT                    — GitHub Personal Access Token (repo read)
- *   FIREBASE_SERVICE_ACCOUNT  — Firebase Admin SDK service-account JSON (string)
+ *   SERVICE_ACCOUNT  — Firebase Admin SDK service-account JSON (string)
  *
  * Node ≥18 required (uses native fetch).
  */
@@ -20,7 +20,7 @@ const admin = require('firebase-admin');
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT ?? '{}');
+const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT || '{}');
 
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 
@@ -86,8 +86,8 @@ async function main() {
     console.error('GH_PAT env var is not set.');
     process.exit(1);
   }
-  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-    console.error('FIREBASE_SERVICE_ACCOUNT env var is not set.');
+  if (!process.env.SERVICE_ACCOUNT) {
+    console.error('SERVICE_ACCOUNT env var is not set.');
     process.exit(1);
   }
 
