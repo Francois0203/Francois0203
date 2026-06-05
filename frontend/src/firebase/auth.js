@@ -1,7 +1,7 @@
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider } from './index';
 
-const ADMIN_EMAILS = (process.env.REACT_APP_ADMIN_EMAILS || '')
+const ADMIN_EMAILS = (import.meta.env.ADMIN_EMAILS || '')
   .split(',')
   .map(e => e.trim().toLowerCase())
   .filter(Boolean);
