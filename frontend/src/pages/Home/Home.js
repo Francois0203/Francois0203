@@ -6,13 +6,8 @@ import {
 } from 'react-icons/md';
 import { FaGithub, FaLinkedin, FaLeaf, FaFeatherAlt } from 'react-icons/fa';
 import usePortfolioData from '../../hooks/usePortfolioData';
-import usePolaroidPhotos from '../../hooks/usePolaroidPhotos';
 import { Modal, MagneticButton, CursorGlowButton } from '../../components';
 import styles from './Home.module.css';
-
-// Photos 0..PAIRED_PHOTOS-1 sit beside the three content scenes; the rest
-// gather in the album gallery near the end.
-const PAIRED_PHOTOS = 3;
 
 // Evaluated once at module load — avoids React overhead and is stable
 // across the page lifetime. Coarse-pointer (touch) also implies mobile.
@@ -513,70 +508,6 @@ const Journey = ({ stops, onSelect }) => {
   );
 };
 
-/* ─── Side-peek polaroid ───────────────────────────────────────────────────── */
-
-const PolaroidCard = ({ src, index, onOpen }) => {
-  const rot = (((index * 13) % 11) - 5).toFixed(1);
-  return (
-    <button
-      type="button"
-      className={styles.polaroid}
-      style={{ '--pr': `${rot}deg`, '--pi': index }}
-      onClick={() => onOpen({ src, index })}
-      aria-label={`Open memento ${index + 1}`}
-    >
-      <span className={styles.polaroidTape} aria-hidden="true" />
-      <span className={styles.polaroidLeaf} aria-hidden="true">
-        <MapleLeaf />
-      </span>
-      <span className={styles.polaroidPhotoWrap}>
-        <img
-          src={src}
-          alt={`Memento ${index + 1}`}
-          className={styles.polaroidImg}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-        />
-      </span>
-      <span className={styles.polaroidCaption}>No. {index + 1}</span>
-    </button>
-  );
-};
-
-const PolaroidSkel = ({ index }) => {
-  const rot = (((index * 13) % 11) - 5).toFixed(1);
-  return (
-    <span
-      className={`${styles.polaroid} ${styles.polaroidSkel}`}
-      style={{ '--pr': `${rot}deg`, '--pi': index }}
-      aria-hidden="true"
-    >
-      <span className={styles.polaroidTape} />
-      <span className={styles.polaroidPhotoWrap}>
-        <span className={styles.polaroidImgSkel} />
-      </span>
-      <span className={styles.polaroidCaptionSkel} />
-    </span>
-  );
-};
-
-const SidePolaroid = ({ src, index, side, onOpen, loading = false }) => {
-  const [ref, inView] = useInView(0.05);
-  return (
-    <div
-      ref={ref}
-      className={`${styles.sidePolaroidWrap} ${styles[`side_${side}`]} ${inView ? styles.sidePolaroidIn : ''}`}
-      aria-hidden={loading ? 'true' : undefined}
-    >
-      {loading
-        ? <PolaroidSkel index={index} />
-        : <PolaroidCard src={src} index={index} onOpen={onOpen} />
-      }
-    </div>
-  );
-};
-
 /* ─── Pile of skill leaves ─────────────────────────────────────────────────── */
 
 const SkillPile = ({ skills }) => {
@@ -631,35 +562,11 @@ const toJourney = ({ experience = [], education = [] }) => {
 
 const Home = () => {
   const { data, loading } = usePortfolioData();
-  const { photos, loading: photosLoading } = usePolaroidPhotos();
   const navigate = useNavigate();
   const pageRef  = useRef(null);
 
   const [openChapter,   setOpenChapter]   = useState(null);
   const [openMilestone, setOpenMilestone] = useState(null);
-  const [openPolaroid,  setOpenPolaroid]  = useState(null);
-
-  /* Polaroid slot helper: when photos are loading show 4 skeletons; when loaded
-     show the actual photo (if we have at least PAIRED_PHOTOS); when loaded with
-     fewer than the minimum, render nothing. */
-  const polaroidSlot = (slotIndex) => {
-    const side = slotIndex % 2 === 0 ? 'right' : 'left';
-    if (photosLoading && slotIndex < PAIRED_PHOTOS) {
-      return <SidePolaroid key={`skel-${slotIndex}`} index={slotIndex} side={side} loading />;
-    }
-    if (!photosLoading && photos.length >= PAIRED_PHOTOS && photos[slotIndex]) {
-      return (
-        <SidePolaroid
-          key={photos[slotIndex]}
-          src={photos[slotIndex]}
-          index={slotIndex}
-          side={side}
-          onOpen={setOpenPolaroid}
-        />
-      );
-    }
-    return null;
-  };
 
   /* Cursor warm-spot — skip entirely on touch / coarse pointers */
   useEffect(() => {
@@ -693,7 +600,6 @@ const Home = () => {
   const [chapterRef, chapterInView] = useInView(0.10);
   const [journeyRef, journeyInView] = useInView(0.10);
   const [pileSecRef, pileSecInView] = useInView(0.10);
-  const [galleryRef, galleryInView] = useInView(0.10);
   const [endRef,     endInView]     = useInView(0.20);
 
   const personal   = data?.personal ?? {};
@@ -856,9 +762,6 @@ const Home = () => {
 
         <ChapterCarousel chapters={CHAPTERS} onOpen={setOpenChapter} />
       </section>
-
-      {/* Paired photo — sits beside the carousel on desktop */}
-      {polaroidSlot(0)}
       </div>
 
       {/* ── Scene 3 ── The Journey ────────────────────────────────────── */}
@@ -879,9 +782,6 @@ const Home = () => {
           : <Journey stops={journey} onSelect={setOpenMilestone} />
         }
       </section>
-
-      {/* Paired photo — sits beside the journey on desktop */}
-      {polaroidSlot(1)}
       </div>
 
       {/* ── Scene 4 ── The Toolkit ────────────────────────────────────── */}
@@ -908,30 +808,7 @@ const Home = () => {
           }
         </section>
       )}
-
-      {/* Paired photo — sits beside the toolkit on desktop */}
-      {polaroidSlot(2)}
       </div>
-
-      {/* The album — every remaining photo, gathered as a scrapbook spread */}
-      {!photosLoading && photos.length > PAIRED_PHOTOS && (
-        <section ref={galleryRef} className={`${styles.gallery} ${galleryInView ? styles.galleryVisible : ''}`}>
-          <div className={styles.sceneHead}>
-            <span className={styles.sceneEye}>Between the chapters</span>
-            <h2 className={styles.sceneTitle}>More from the album</h2>
-          </div>
-          <div className={styles.galleryGrid}>
-            {photos.slice(PAIRED_PHOTOS).map((src, j) => (
-              <PolaroidCard
-                key={src}
-                src={src}
-                index={j + PAIRED_PHOTOS}
-                onOpen={setOpenPolaroid}
-              />
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* ── Scene 5 ── Epilogue ───────────────────────────────────────── */}
       <section ref={endRef} className={`${styles.scene} ${styles.sceneEnd} ${endInView ? styles.sceneVisible : ''}`}>
@@ -996,23 +873,6 @@ const Home = () => {
                 ))}
               </div>
             )}
-          </div>
-        )}
-      </Modal>
-
-      <Modal
-        open={!!openPolaroid}
-        onClose={() => setOpenPolaroid(null)}
-        title={openPolaroid ? `Memento No. ${openPolaroid.index + 1}` : ''}
-        size="lg"
-      >
-        {openPolaroid && (
-          <div className={styles.lightbox}>
-            <img
-              src={openPolaroid.src}
-              alt={`Memento ${openPolaroid.index + 1}`}
-              className={styles.lightboxImg}
-            />
           </div>
         )}
       </Modal>

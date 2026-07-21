@@ -122,7 +122,6 @@ const Admin = () => {
           <span className={styles.topbarTitle}>Portfolio Admin</span>
         </div>
         <div className={styles.topbarRight}>
-          {user.photoURL && <img src={user.photoURL} alt="" className={styles.avatar} />}
           <span className={styles.userEmail}>{user.email}</span>
           <button type="button" onClick={handleSignOut}>Sign Out</button>
         </div>

@@ -61,7 +61,7 @@ const ProjectCard = ({ project, onReadme }) => {
     ? parseReadme(readme, { owner, repo, fallback: githubDesc ?? '' })
     : { description: githubDesc ?? '', features: [], techStack: [], screenshot: null };
 
-  const { description, features, techStack, screenshot } = parsed;
+  const { description, features, techStack } = parsed;
 
   // Collapse description to 2 lines when features are also shown
   const descClass = features.length > 0
@@ -70,11 +70,8 @@ const ProjectCard = ({ project, onReadme }) => {
 
   return (
     <div className={styles.card}>
-      {/* Screenshot or accent strip */}
-      {screenshot
-        ? <img src={screenshot} alt={`${name} preview`} className={styles.screenshot} onError={e => { e.target.style.display = 'none'; }} />
-        : <div className={styles.screenshotPlaceholder} aria-hidden="true" />
-      }
+      {/* Accent strip */}
+      <div className={styles.screenshotPlaceholder} aria-hidden="true" />
 
       <div className={styles.cardBody}>
         {/* Meta row */}

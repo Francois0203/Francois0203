@@ -74,15 +74,6 @@
   gap: var(--spacing-sm);
 }
 
-.avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border-color-hover);
-  flex-shrink: 0;
-}
-
 .userEmail {
   font-size: var(--font-size-sm);
   color: var(--secondary-text-color);

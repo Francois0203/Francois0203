@@ -1090,43 +1090,6 @@
   background: var(--background-2);
 }
 
-/* ─── Album gallery (leftover photos) ─────────────────────────────────────── */
-
-.gallery {
-  position: relative;
-  z-index: 2;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: var(--spacing-lg) var(--spacing-3xl) var(--spacing-xl);
-}
-
-.gallery .sceneHead {
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity   0.7s ease,
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.galleryVisible .sceneHead {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.galleryGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-2xl) var(--spacing-lg);
-  justify-items: center;
-  align-items: start;
-  margin-top: var(--spacing-lg);
-}
-
-/* Each card fills its grid cell (the base rule caps it at 220px) */
-.galleryGrid .polaroid {
-  width: 100%;
-  max-width: 280px;
-}
-
 /* ─── Epilogue ─────────────────────────────────────────────────────────────── */
 
 .sceneEnd { padding-block: var(--spacing-md) var(--spacing-2xl); }
@@ -1323,45 +1286,14 @@
   padding: 3px 9px;
 }
 
-/* ─── Side-peek polaroids ─────────────────────────────────────────────────── */
+/* ─── Content scene frame ─────────────────────────────────────────────────── */
 
-/* Scene frame: wraps a scene + its companion polaroid. Provides the relative
-   positioning context that the polaroid anchors to on desktop. */
 .sceneFrame {
   position: relative;
   width: 100%;
 }
 
-/* Wrapper for an individual polaroid. Mobile default: in-flow, peeking off the
-   screen edge via negative margin. Desktop: absolutely positioned beside the
-   scene at a per-scene vertical offset (see modifier classes below). */
-.sidePolaroidWrap {
-  position: relative;
-  z-index: 5;
-  width: 60vw;
-  max-width: 180px;
-  margin-block: var(--spacing-xl);
-  will-change: transform;
-  transition:
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity   0.6s ease;
-}
-
-/* Mobile (default): fully on-screen, inset from the edge so nothing clips */
-.sidePolaroidWrap.side_right {
-  margin-left: auto;
-  margin-right: 5vw;
-  transform: rotate(5deg);
-}
-.sidePolaroidWrap.side_left {
-  margin-right: auto;
-  margin-left: 5vw;
-  transform: rotate(-5deg);
-}
-
-/* Desktop: each content scene becomes a centred two-column row — prose beside a
-   large, integrated photo on an alternating side. (Mobile keeps the in-flow
-   stacked layout defined above.) */
+/* Desktop: centre each content scene as a comfortable single column. */
 @media (min-width: 768px) {
   .sceneFrame_chapters,
   .sceneFrame_journey,
@@ -1369,7 +1301,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(32px, 5vw, 88px);
     max-width: 1320px;
     margin-inline: auto;
     padding-inline: var(--spacing-xl);
@@ -1383,230 +1314,6 @@
     max-width: 760px;
     padding-inline: 0;
   }
-
-  /* Photo column — large, integrated, vertically centred with the prose */
-  .sceneFrame > .sidePolaroidWrap {
-    position: static;
-    flex: 0 0 auto;
-    margin: 0;
-    width: clamp(300px, 32vw, 420px);
-    max-width: clamp(300px, 32vw, 420px);
-  }
-  /* Let the card fill its column — the mobile rule caps the card at 220px */
-  .sceneFrame > .sidePolaroidWrap .polaroid {
-    max-width: 100%;
-  }
-
-  /* Default DOM order puts the photo after the prose (right column).
-     Flip the journey scene's photo to the left for rhythm. */
-  .sceneFrame_journey > .sidePolaroidWrap { order: -1; }
-
-  /* Reveal: a gentle fade + rise, replacing the old off-screen horizontal peek */
-  .sceneFrame > .sidePolaroidWrap.side_right { opacity: 0; transform: translateY(34px) rotate(3deg); }
-  .sceneFrame > .sidePolaroidWrap.side_left  { opacity: 0; transform: translateY(34px) rotate(-3deg); }
-  .sceneFrame > .sidePolaroidWrap.side_right.sidePolaroidIn { opacity: 1; transform: translateY(0) rotate(3deg); }
-  .sceneFrame > .sidePolaroidWrap.side_left.sidePolaroidIn  { opacity: 1; transform: translateY(0) rotate(-3deg); }
-  .sceneFrame > .sidePolaroidWrap.sidePolaroidIn:hover,
-  .sceneFrame > .sidePolaroidWrap.sidePolaroidIn:focus-within { transform: translateY(-8px) rotate(0deg); }
-
-  /* Cover keeps a clean, single-focus hero — the circular portrait carries it */
-  .sceneFrame_cover > .sidePolaroidWrap { display: none; }
-
-  /* Loose extra photos (any beyond the four scene slots) — centre as a tidy stack */
-  .page > .sidePolaroidWrap {
-    width: clamp(300px, 30vw, 380px);
-    max-width: clamp(300px, 30vw, 380px);
-    margin: var(--spacing-2xl) auto;
-  }
-  .page > .sidePolaroidWrap .polaroid { max-width: 100%; }
-}
-
-/* Per-scene vertical placement — staggers the polaroid heights for rhythm */
-.sceneFrame_cover    { --polaroid-top: 32%; }   /* upper-right, above the portrait row */
-.sceneFrame_chapters { --polaroid-top: 50%; }   /* mid-left, beside the carousel */
-.sceneFrame_journey  { --polaroid-top: 55%; }   /* mid-right, beside the journey path */
-.sceneFrame_toolkit  { --polaroid-top: 50%; }   /* mid-left, beside the skill leaves */
-
-/* Inside a side-peek wrap, the wrap owns the rotation; the polaroid card itself
-   stays flat so wrap+child rotations don't compound. Hover lifts via child. */
-.sidePolaroidWrap .polaroid {
-  transform: none;
-}
-.sidePolaroidWrap .polaroid:hover,
-.sidePolaroidWrap .polaroid:focus-visible {
-  transform: translateY(-6px) scale(1.04);
-}
-
-.polaroid {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  width: 100%;
-  max-width: 220px;
-  padding: 14px 14px 18px;
-  background: var(--background-1);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 4px;
-  cursor: pointer;
-  text-align: center;
-  transform: rotate(var(--pr, 0deg));
-  box-shadow:
-    0 1px 0 rgba(0,0,0,0.04),
-    0 8px 18px -6px rgba(var(--accent-3-rgb), 0.32),
-    inset 0 0 0 1px rgba(255,255,255,0.40);
-  transition:
-    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.45s ease;
-
-  /* Stagger fade-in */
-  opacity: 0;
-  animation: polaroidIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--pi, 0) * 80ms);
-  contain: layout;
-}
-
-@keyframes polaroidIn {
-  from { opacity: 0; transform: rotate(var(--pr, 0deg)) translateY(14px) scale(0.96); }
-  to   { opacity: 1; transform: rotate(var(--pr, 0deg)) translateY(0)    scale(1);    }
-}
-
-.polaroid:hover,
-.polaroid:focus-visible {
-  outline: none;
-  transform: rotate(0deg) translateY(-8px) scale(1.04);
-  box-shadow:
-    0 1px 0 rgba(0,0,0,0.04),
-    0 22px 42px -10px rgba(var(--accent-3-rgb), 0.55),
-    inset 0 0 0 1px rgba(255,255,255,0.55);
-  z-index: 2;
-}
-
-.polaroid:focus-visible {
-  box-shadow:
-    0 0 0 3px rgba(var(--accent-1-rgb), 0.30),
-    0 22px 42px -10px rgba(var(--accent-3-rgb), 0.55);
-}
-
-/* Pressed autumn leaf tucked at the corner of each photo */
-.polaroidLeaf {
-  position: absolute;
-  top: -15px;
-  right: -12px;
-  width: 30px;
-  height: 30px;
-  color: var(--leaf-color);
-  transform: rotate(26deg);
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.20));
-  pointer-events: none;
-  z-index: 3;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.polaroidLeaf svg { width: 100%; height: 100%; display: block; }
-.polaroid:hover .polaroidLeaf,
-.polaroid:focus-visible .polaroidLeaf {
-  transform: rotate(14deg) scale(1.12) translateY(-2px);
-}
-
-/* Tape strip at the top */
-.polaroidTape {
-  position: absolute;
-  top: -8px; left: 50%;
-  transform: translateX(-50%) rotate(-4deg);
-  width: 64px; height: 16px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.45), transparent 60%),
-    rgba(var(--accent-2-rgb), 0.45);
-  border: 1px solid rgba(var(--accent-3-rgb), 0.18);
-  border-radius: 1px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-  pointer-events: none;
-}
-
-.polaroidPhotoWrap {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
-  background: var(--background-3);
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  overflow: hidden;
-  /* Slight inner shadow gives the photo a "behind glass" feel */
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
-}
-
-.polaroidImg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  border-radius: 0;
-  transition: filter 0.4s ease, transform 0.6s ease;
-}
-.polaroid:hover .polaroidImg,
-.polaroid:focus-visible .polaroidImg {
-  filter: saturate(1.10) brightness(1.04);
-  transform: scale(1.03);
-}
-
-.polaroidCaption {
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 0.85rem;
-  color: var(--secondary-text-color);
-  letter-spacing: 0.04em;
-  padding-top: 2px;
-}
-
-/* ── Polaroid skeleton ───────────────────────────────────────────────────── */
-
-.polaroidSkel {
-  cursor: default;
-  pointer-events: none;
-  animation:
-    polaroidIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--pi, 0) * 80ms);
-}
-.polaroidImgSkel {
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  background: var(--background-2);
-}
-.polaroidCaptionSkel {
-  display: block;
-  width: 60%;
-  height: 0.8rem;
-  margin: 4px auto 0;
-  border-radius: var(--radius-sm);
-  position: relative;
-  overflow: hidden;
-  background: var(--background-2);
-}
-
-/* ── Lightbox ────────────────────────────────────────────────────────────── */
-
-.lightbox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.lightboxImg {
-  max-width: 100%;
-  max-height: min(70vh, 640px);
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: var(--radius-md);
-  box-shadow:
-    0 24px 60px -12px rgba(var(--accent-3-rgb), 0.55),
-    0 0 0 1px rgba(0,0,0,0.04);
-  background: var(--background-2);
 }
 
 /* ─── Page fade ───────────────────────────────────────────────────────────── */
@@ -1625,9 +1332,7 @@
 .shimmerBar::after,
 .coverPortraitSkel::after,
 .journeySkelDot::after,
-.skillLeafSkel::after,
-.polaroidImgSkel::after,
-.polaroidCaptionSkel::after {
+.skillLeafSkel::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1666,10 +1371,6 @@
   .journeyList   { gap: var(--spacing-lg); }
 }
 
-@media (max-width: 860px) {
-  .polaroid { padding: 12px 12px 16px; }
-}
-
 @media (max-width: 520px) {
   .cover           { padding-inline: var(--spacing-md); }
   .scene           { padding-inline: var(--spacing-md); padding-block: var(--spacing-xl); }
@@ -1681,12 +1382,6 @@
   .coverCtas       { flex-direction: column; width: 100%; max-width: 280px; margin-inline: auto; }
   .coverCtas > *   { width: 100%; justify-content: center; }
   .endCtas > *     { flex: 1 1 auto; }
-
-  /* Mobile polaroid sizing — small enough that 30% peek still feels intentional */
-  .sidePolaroidWrap     { width: 60vw; max-width: 180px; margin-block: var(--spacing-xl); }
-  .polaroid             { padding: 10px 10px 14px; }
-  .polaroidTape         { width: 48px; height: 12px; top: -6px; }
-  .polaroidCaption      { font-size: 0.78rem; }
 }
 
 @media (max-width: 380px) {
@@ -1789,30 +1484,11 @@
   }
   .skillLeaf:hover { transform: none; }
 
-  /* ── Polaroid: simpler animation, no hover lift ─────────────────────── */
-  .polaroid:hover,
-  .polaroid:focus-visible {
-    transform: rotate(var(--pr, 0deg));
-    box-shadow:
-      0 1px 0 rgba(0,0,0,0.04),
-      0 8px 18px -6px rgba(var(--accent-3-rgb), 0.32),
-      inset 0 0 0 1px rgba(255,255,255,0.40);
-  }
-
-  /* ── Gallery reveal: instant ─────────────────────────────────────────── */
-  .gallery .sceneHead {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-
   /* ── Shimmer: slightly faster on mobile ──────────────────────────────── */
   .shimmerBar::after,
   .coverPortraitSkel::after,
   .journeySkelDot::after,
-  .skillLeafSkel::after,
-  .polaroidImgSkel::after,
-  .polaroidCaptionSkel::after {
+  .skillLeafSkel::after {
     animation-duration: 1.2s;
   }
 }
