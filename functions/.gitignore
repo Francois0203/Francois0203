@@ -1,0 +1,8 @@
+node_modules/
+# Local config (values applied at deploy from your machine)
+.env
+.env.local
+.env.*.local
+# Secrets never live in files — they go to Secret Manager
+*.log
+.runtimeconfig.json

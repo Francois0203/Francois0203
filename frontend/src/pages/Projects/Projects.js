@@ -4,6 +4,9 @@ import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 import { Modal, LightWaveButton } from '../../components';
 import { useGitHubProjects } from '../../hooks';
+import useSiteCopy from '../../hooks/useSiteCopy';
+import { resolveGroup } from '../../content/copy/resolve';
+import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { parseReadme } from './parseReadme';
 import ReadmeRenderer from './ReadmeRenderer';
 import styles from './Projects.module.css';
@@ -165,6 +168,8 @@ const Projects = () => {
   const { projects, loading, error } = useGitHubProjects();
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
+  const { overrides } = useSiteCopy();
+  const t = resolveGroup(PROJECTS_FIELDS, overrides.projects);
 
   return (
     <section className={styles.page}>
@@ -172,11 +177,11 @@ const Projects = () => {
 
         <header className={styles.header}>
           <p className={styles.chapterEyebrow}>
-            <span className={styles.chapterMark}>Chapter II</span>
+            <span className={styles.chapterMark}>{t.chapterMark}</span>
             <span className={styles.chapterDash} aria-hidden="true">—</span>
-            <span className={styles.chapterName}>The Workshop</span>
+            <span className={styles.chapterName}>{t.chapterName}</span>
           </p>
-          <h1 className={styles.heading}>Notable Projects</h1>
+          <h1 className={styles.heading}>{t.heading}</h1>
           <p>
             {loading
               ? 'Fetching projects from the bench…'
@@ -205,17 +210,17 @@ const Projects = () => {
 
         {/* ── Next chapter ─────────────────────────────────────────── */}
         <footer className={styles.nextChapter}>
-          <span className={styles.nextChapterLabel}>Turn the page</span>
+          <span className={styles.nextChapterLabel}>{t.nextChapterLabel}</span>
           <button
             type="button"
             className={styles.nextChapterBtn}
             onClick={() => navigate('/connect')}
           >
             <span className={styles.nextChapterTitle}>
-              Chapter III — A Letter
+              {t.nextChapterTitle}
             </span>
             <span className={styles.nextChapterHint}>
-              Send word, or browse the channels <MdArrowOutward aria-hidden="true" />
+              {t.nextChapterHint}<MdArrowOutward aria-hidden="true" />
             </span>
           </button>
         </footer>

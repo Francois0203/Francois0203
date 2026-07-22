@@ -140,6 +140,7 @@
     --border-color-hover-dark: #5a4226;          /* Warm slightly visible */
 
     /* — Applied Colors (Default: Light Mode) — */
+    color-scheme: light;   /* tells the browser to paint native UI (scrollbars!) light */
     --primary-text-color: var(--primary-text-color-light);
     --secondary-text-color: var(--secondary-text-color-light);
     --tertiary-text-color: var(--tertiary-text-color-light);
@@ -177,6 +178,7 @@
 /* ─── THEME OVERRIDES ───────────────────────────────────────────────────────── */
 
 [data-theme="dark"] {
+    color-scheme: dark;    /* native scrollbar/controls follow the dark theme */
     --primary-text-color: var(--primary-text-color-dark);
     --secondary-text-color: var(--secondary-text-color-dark);
     --tertiary-text-color: var(--tertiary-text-color-dark);

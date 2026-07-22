@@ -27,6 +27,26 @@ export const subscribeContact = (cb, onErr) =>
 export const updateContact = (data) =>
   setDoc(portfolioRef('contact'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 
+// ─── Donation ────────────────────────────────────────────────────────────────
+
+export const subscribeDonation = (cb, onErr) =>
+  portfolioSnap('donation', cb, onErr);
+
+export const updateDonation = (data) =>
+  setDoc(portfolioRef('donation'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+
+// ─── Site Copy (editable narrative / headings) ─────────────────────────────────
+// Stored as { home: {...}, bio: {...}, projects: {...}, connect: {...} } — only
+// the strings that differ from the in-code defaults need to be present.
+
+export const subscribeCopy = (cb, onErr) =>
+  portfolioSnap('copy', cb, onErr);
+
+// Full replace (no merge): the editor always sends the complete set of
+// overrides, so clearing a field must actually remove it and fall back to code.
+export const updateCopy = (data) =>
+  setDoc(portfolioRef('copy'), { ...data, updatedAt: serverTimestamp() });
+
 // ─── Skills ──────────────────────────────────────────────────────────────────
 
 // Normalise whatever shape is in Firestore to { categories: [{name, items}] }

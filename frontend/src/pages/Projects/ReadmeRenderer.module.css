@@ -4,6 +4,11 @@
   color: var(--primary-text-color);
   font-size: var(--font-size-base);
   line-height: 1.75;
+  min-width: 0;
+  /* Wrap long words / URLs / inline code so nothing overflows the modal on
+     mobile. (pre blocks keep white-space:pre and scroll instead — see below.) */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Headings ─────────────────────────────────────────────────────────────── */
@@ -128,7 +133,11 @@
 /* ── Table ────────────────────────────────────────────────────────────────── */
 
 .body :global(table) {
+  display: block;              /* let a wide table scroll instead of being clipped */
   width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-collapse: separate;
   border-spacing: 0;
   margin: var(--spacing-md) 0;
@@ -136,7 +145,6 @@
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  overflow: hidden;
   font-size: var(--font-size-sm);
 }
 

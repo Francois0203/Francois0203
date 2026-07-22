@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -90,7 +91,9 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
 
   if (!open) return null;
 
-  return (
+  // Portal to <body> so the fixed backdrop is centered on the viewport, never
+  // trapped by an ancestor's transform/filter (which would offset it to the page).
+  return createPortal(
     /* Backdrop — dims and blurs the page */
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       {/* Dialog — glass panel */}
@@ -130,12 +133,13 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
           </header>
         )}
 
-        {/* Body — scrolls independently on overflow */}
-        <div className={styles.body}>
+        {/* Body — scrolls independently on overflow; opt out of momentum scroll */}
+        <div className={styles.body} data-lenis-prevent>
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

@@ -154,6 +154,33 @@
   text-align: center;
 }
 
+/* ── Toggle row (checkbox + label) ─────────────────────────────────────────── */
+.toggleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  background: var(--frosted-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+.toggleRow input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent-1);
+  cursor: pointer;
+}
+.toggleRow > span { display: flex; flex-direction: column; gap: 2px; }
+.toggleHint {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  font-weight: 400;
+}
+
 /* ── Photo preview ─────────────────────────────────────────────────────────── */
 .photoPreview {
   margin-bottom: var(--spacing-lg);

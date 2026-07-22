@@ -1,23 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import App from './App';
 import { ErrorBoundary } from './components';
 
 import './styles/Theme.css';
 import './styles/Wrappers.css';
 import './styles/Components.css';
+import './styles/lenis.css';
 
 function ErrorBoundaryWrapper({ children }) {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const location = useLocation();
   return (
-    <ErrorBoundary
-      fallbackPath="/"
-      navigate={navigate}
-      onGoHome={() => navigate('/')}
-      resetKey={location.pathname}
-    >
+    <ErrorBoundary resetKey={location.pathname}>
       {children}
     </ErrorBoundary>
   );

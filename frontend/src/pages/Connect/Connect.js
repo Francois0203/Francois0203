@@ -4,6 +4,9 @@ import { SiOrcid, SiHackerrank, SiCodewars } from 'react-icons/si';
 import { MdArrowOutward } from 'react-icons/md';
 import { useToast } from '../../components';
 import { submitContactForm, getDonation, getSocial } from '../../firebase/firestore';
+import useSiteCopy from '../../hooks/useSiteCopy';
+import { resolveGroup } from '../../content/copy/resolve';
+import { CONNECT_FIELDS } from '../../content/copy/connect';
 import styles from './Connect.module.css';
 
 const EMPTY_FORM    = { name: '', email: '', message: '' };
@@ -48,6 +51,8 @@ const SkeletonSocialCard = () => (
 
 const Connect = () => {
   const { showToast } = useToast();
+  const { overrides } = useSiteCopy();
+  const t = resolveGroup(CONNECT_FIELDS, overrides.connect);
   const [form,       setForm      ] = useState(EMPTY_FORM);
   const [errors,     setErrors    ] = useState(EMPTY_ERRORS);
   const [touched,    setTouched   ] = useState(EMPTY_TOUCHED);
@@ -116,12 +121,12 @@ const Connect = () => {
 
         <header className={styles.header}>
           <p className={styles.chapterEyebrow}>
-            <span className={styles.chapterMark}>Chapter III</span>
+            <span className={styles.chapterMark}>{t.chapterMark}</span>
             <span className={styles.chapterDash} aria-hidden="true">—</span>
-            <span className={styles.chapterName}>A Letter</span>
+            <span className={styles.chapterName}>{t.chapterName}</span>
           </p>
-          <h1 className={styles.heading}>Write to me</h1>
-          <p>Have a question, an opportunity, or just want to say hello? Take a seat and write a line.</p>
+          <h1 className={styles.heading}>{t.heading}</h1>
+          <p>{t.intro}</p>
         </header>
 
         <div className={`${styles.grid} ${!showRightCol ? styles.gridSingle : ''}`}>
@@ -138,7 +143,7 @@ const Connect = () => {
               </div>
             ) : (
               <>
-                <h2>Send a Message</h2>
+                <h2>{t.formCardTitle}</h2>
                 <form className={styles.form} onSubmit={handleSubmit} noValidate>
 
                   <div className={styles.field}>
@@ -219,7 +224,7 @@ const Connect = () => {
                 <SkeletonSocialCard />
               ) : (
                 <div className={styles.card}>
-                  <h2>Find Me Online</h2>
+                  <h2>{t.socialCardTitle}</h2>
                   <ul className={styles.socialList}>
                     {social.map(({ key, url, platform }, i) => {
                       if (!url) return null;

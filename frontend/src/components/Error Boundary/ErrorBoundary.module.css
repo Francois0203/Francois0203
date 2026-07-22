@@ -103,9 +103,9 @@
 }
 
 .btnPrimary {
-  background: var(--error-color);
+  background: var(--accent-1);
   color: #fff;
-  border: 1px solid var(--error-color);
+  border: 1px solid var(--accent-1);
 }
 
 .btnPrimary:hover  { filter: brightness(1.12); }

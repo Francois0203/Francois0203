@@ -1,43 +1,45 @@
 # Error Boundary
 
-Catches JavaScript errors anywhere in the child component tree, preventing app crashes. Displays an animated error UI with recovery options.
+Catches JavaScript errors anywhere in the child component tree, preventing app crashes. Displays a themed fallback UI with graduated recovery options.
 
 ## Features
 
 - Catches render, lifecycle, and constructor errors in the subtree
-- Animated fallback UI — glow orbs, alert icon, collapsible technical details
-- Reload and Go Home recovery buttons
+- Fallback UI: alert icon, message, and a collapsible "Technical details" panel
+- Three recovery actions, cheapest first: **Try again** (soft re-render, no reload), **Reload**, **Go home**
 - Resets automatically when `resetKey` changes (e.g. on route change)
-- Full theme integration via `data-theme`
+- Self-contained: no required props and no router dependency — themes itself from the `:root` CSS variables
 
 ## Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `children` | `ReactNode` | — | The component tree to protect |
-| `fallbackPath` | `string` | `'/'` | Route to navigate to on "Go Home" |
-| `navigate` | `function` | — | React Router `navigate` function — inject from a wrapper component |
-| `onGoHome` | `function` | — | Called when the Go Home button is clicked |
-| `resetKey` | `any` | — | Change this value to programmatically clear the error state (pass `location.pathname`) |
+| `resetKey` | `any` | — | When this value changes, the error state clears automatically. Pass `location.pathname` so navigating away recovers on its own. |
+| `onError` | `(error, errorInfo) => void` | — | Optional callback for logging / error reporting |
 
 ## Usage
 
-The boundary requires React Router hooks (`useNavigate`, `useLocation`), so it must be rendered inside a `<BrowserRouter>`. The wrapper pattern used in `index.js` handles this automatically:
+Drop it in anywhere — no wiring required:
 
 ```jsx
-// Already wired in index.js — use ErrorBoundary directly in the tree for nested boundaries
 import { ErrorBoundary } from '../../components';
 
-<ErrorBoundary
-  fallbackPath="/"
-  navigate={navigate}
-  onGoHome={() => navigate('/')}
-  resetKey={location.pathname}
->
+<ErrorBoundary>
   <YourComponent />
+</ErrorBoundary>
+```
+
+To auto-recover on navigation (as wired in `index.js`), pass the current path:
+
+```jsx
+const location = useLocation();
+
+<ErrorBoundary resetKey={location.pathname}>
+  <App />
 </ErrorBoundary>
 ```
 
 ## Architecture
 
-`ErrorBoundaryInner` is a class component (required by React's error boundary API). The exported `ErrorBoundary` is a thin function wrapper that injects the current `theme` via `useTheme`, since hooks cannot run inside class components.
+A single class component (React's error boundary API requires a class). "Go home" and "Reload" use `window.location`, so the boundary needs no `navigate` prop and works even when the router itself is the thing that failed. "Try again" simply clears the error state to re-mount the children in place.

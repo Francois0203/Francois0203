@@ -4,10 +4,10 @@ import RecordForm from './RecordForm';
 import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
-const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete, renderSummary }) => {
+const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete, renderSummary, openAddOnMount }) => {
   const { showToast } = useToast();
   const [records, setRecords] = useState([]);
-  const [modal, setModal]     = useState(null);
+  const [modal, setModal]     = useState(openAddOnMount ? { mode: 'add' } : null);
   const [saving, setSaving]   = useState(false);
 
   useEffect(() => {

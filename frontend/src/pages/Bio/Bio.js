@@ -2,6 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 import usePortfolioData from '../../hooks/usePortfolioData';
+import useSiteCopy from '../../hooks/useSiteCopy';
+import { resolveGroup } from '../../content/copy/resolve';
+import { BIO_FIELDS } from '../../content/copy/bio';
 import styles from './Bio.module.css';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -71,6 +74,8 @@ const TimelineEntry = ({ title, subtitle, p, current, description, tags }) => (
 const Bio = () => {
   const { data, loading, error } = usePortfolioData();
   const navigate = useNavigate();
+  const { overrides } = useSiteCopy();
+  const t = resolveGroup(BIO_FIELDS, overrides.bio);
 
   const personal   = data?.personal   ?? {};
   const contact    = data?.contact    ?? {};
@@ -111,9 +116,9 @@ const Bio = () => {
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <header className={styles.header}>
           <p className={styles.chapterEyebrow}>
-            <span className={styles.chapterMark}>Chapter I</span>
+            <span className={styles.chapterMark}>{t.chapterMark}</span>
             <span className={styles.chapterDash} aria-hidden="true">—</span>
-            <span className={styles.chapterName}>The Storyteller</span>
+            <span className={styles.chapterName}>{t.chapterName}</span>
           </p>
           <div className={styles.headerInner}>
 
@@ -205,7 +210,7 @@ const Bio = () => {
 
             {/* About */}
             <div className={styles.card}>
-              <h2 className={styles.cardLabel}>About</h2>
+              <h2 className={styles.cardLabel}>{t.aboutHeading}</h2>
               {loading ? (
                 <div className={styles.skelStack}>
                   <Skel w="100%" /><Skel w="88%" /><Skel w="75%" /><Skel w="93%" />
@@ -227,7 +232,7 @@ const Bio = () => {
             {/* Skills */}
             {(loading || skills.length > 0) && (
               <div className={styles.card}>
-                <h2 className={styles.cardLabel}>Skills</h2>
+                <h2 className={styles.cardLabel}>{t.skillsHeading}</h2>
                 {loading ? (
                   <div className={styles.chipRow}>
                     {[72, 56, 88, 64, 80, 50].map(w => (
@@ -252,7 +257,7 @@ const Bio = () => {
             {/* Interests */}
             {(loading || interests.length > 0) && (
               <div className={styles.card}>
-                <h2 className={styles.cardLabel}>Interests</h2>
+                <h2 className={styles.cardLabel}>{t.interestsHeading}</h2>
                 {loading ? (
                   <div className={styles.chipRow}>
                     {[96, 80, 68, 88].map(w => <Skel key={w} w={w} h="1.6rem" />)}
@@ -274,7 +279,7 @@ const Bio = () => {
 
             {/* Experience */}
             <div className={styles.section}>
-              <h2 className={styles.sectionHeading}>Experience</h2>
+              <h2 className={styles.sectionHeading}>{t.experienceHeading}</h2>
               <div className={styles.timeline}>
                 {loading
                   ? [0, 1].map(i => <SkelEntry key={i} />)
@@ -297,7 +302,7 @@ const Bio = () => {
 
             {/* Education */}
             <div className={styles.section}>
-              <h2 className={styles.sectionHeading}>Education</h2>
+              <h2 className={styles.sectionHeading}>{t.educationHeading}</h2>
               <div className={styles.timeline}>
                 {loading
                   ? [0, 1].map(i => <SkelEntry key={i} />)
@@ -326,17 +331,17 @@ const Bio = () => {
 
         {/* ── Next chapter ─────────────────────────────────────────────── */}
         <footer className={styles.nextChapter}>
-          <span className={styles.nextChapterLabel}>Turn the page</span>
+          <span className={styles.nextChapterLabel}>{t.nextChapterLabel}</span>
           <button
             type="button"
             className={styles.nextChapterBtn}
             onClick={() => navigate('/projects')}
           >
             <span className={styles.nextChapterTitle}>
-              Chapter II — The Workshop
+              {t.nextChapterTitle}
             </span>
             <span className={styles.nextChapterHint}>
-              See what I’ve been building <MdArrowOutward aria-hidden="true" />
+              {t.nextChapterHint} <MdArrowOutward aria-hidden="true" />
             </span>
           </button>
         </footer>

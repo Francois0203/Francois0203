@@ -6,6 +6,9 @@ import {
 } from 'react-icons/md';
 import { FaGithub, FaLinkedin, FaLeaf, FaFeatherAlt } from 'react-icons/fa';
 import usePortfolioData from '../../hooks/usePortfolioData';
+import useSiteCopy from '../../hooks/useSiteCopy';
+import { resolveGroup } from '../../content/copy/resolve';
+import { HOME_FIELDS } from '../../content/copy/home';
 import { Modal, MagneticButton, CursorGlowButton } from '../../components';
 import styles from './Home.module.css';
 
@@ -161,46 +164,12 @@ const WordReveal = ({ text, inView, className, delay = 0 }) => {
 
 /* ─── Chapter cards data ───────────────────────────────────────────────────── */
 
-const CHAPTERS = [
-  {
-    id: 'bio',
-    chapter: 'I',
-    title: 'The Storyteller',
-    subtitle: 'A life in chapters',
-    icon: <MdPerson />,
-    to: '/bio',
-    accent: 'pumpkin',
-    opening: 'Every portfolio has a person behind it. This one is no exception.',
-    excerpt:
-      'Education, the roles that taught me the most, the languages and tools I picked up along the way — all laid out as a timeline you can walk through.',
-    cta: 'Open the Bio',
-  },
-  {
-    id: 'projects',
-    chapter: 'II',
-    title: 'The Workshop',
-    subtitle: 'Things I have built',
-    icon: <MdCode />,
-    to: '/projects',
-    accent: 'maple',
-    opening: 'Behind every craftsman is a workshop. Mine lives on GitHub.',
-    excerpt:
-      'A live look at the repositories I am most proud of — pulled fresh from GitHub, with READMEs you can read without ever leaving the page.',
-    cta: 'Step into the workshop',
-  },
-  {
-    id: 'connect',
-    chapter: 'III',
-    title: 'A Letter',
-    subtitle: 'Write to me',
-    icon: <MdEmail />,
-    to: '/connect',
-    accent: 'honey',
-    opening: 'Stories are better when shared. So please — write to me.',
-    excerpt:
-      'A short note, a long story, a job, an idea. Drop a message and it lands directly in my inbox. Or find me on the usual networks.',
-    cta: 'Pen a letter',
-  },
+// Non-text metadata only — the editable text (title/subtitle/opening/excerpt/cta)
+// comes from site copy and is merged in at render time (see `chapters` below).
+const CHAPTER_META = [
+  { id: 'bio',      chapter: 'I',   icon: <MdPerson />, to: '/bio',      accent: 'pumpkin' },
+  { id: 'projects', chapter: 'II',  icon: <MdCode />,   to: '/projects', accent: 'maple'   },
+  { id: 'connect',  chapter: 'III', icon: <MdEmail />,  to: '/connect',  accent: 'honey'   },
 ];
 
 /* ─── Chapter illustrations (inline SVG, no external assets) ───────────────── */
@@ -562,8 +531,16 @@ const toJourney = ({ experience = [], education = [] }) => {
 
 const Home = () => {
   const { data, loading } = usePortfolioData();
+  const { overrides } = useSiteCopy();
+  const t = resolveGroup(HOME_FIELDS, overrides.home);
   const navigate = useNavigate();
   const pageRef  = useRef(null);
+
+  const chapters = [
+    { ...CHAPTER_META[0], title: t.ch1Title, subtitle: t.ch1Subtitle, opening: t.ch1Opening, excerpt: t.ch1Excerpt, cta: t.ch1Cta },
+    { ...CHAPTER_META[1], title: t.ch2Title, subtitle: t.ch2Subtitle, opening: t.ch2Opening, excerpt: t.ch2Excerpt, cta: t.ch2Cta },
+    { ...CHAPTER_META[2], title: t.ch3Title, subtitle: t.ch3Subtitle, opening: t.ch3Opening, excerpt: t.ch3Excerpt, cta: t.ch3Cta },
+  ];
 
   const [openChapter,   setOpenChapter]   = useState(null);
   const [openMilestone, setOpenMilestone] = useState(null);
@@ -615,6 +592,12 @@ const Home = () => {
     ?? personal.summary
     ?? 'Welcome, traveler. Pull up a chair, pour something warm, and let me tell you who I am.';
 
+  // The drop-cap is the first letter of the (editable) opening paragraph itself,
+  // not a separate hardcoded glyph — so editing the copy changes the drop-cap too.
+  const coverText    = `${t.coverProseInvite} ${opening}`.trimStart();
+  const coverDropcap = coverText.charAt(0);
+  const coverRest    = coverText.slice(1);
+
   return (
     <div
       ref={pageRef}
@@ -637,10 +620,10 @@ const Home = () => {
           <span className={styles.coverFlourishLine} />
         </div>
 
-        <p className={styles.coverEyebrow}>Prologue</p>
+        <p className={styles.coverEyebrow}>{t.coverEyebrow}</p>
 
         <h1 className={styles.coverTitleLine}>
-          <span className={styles.coverTitleSerif}>the portfolio of</span>
+          <span className={styles.coverTitleSerif}>{t.coverTitleSerif}</span>
           {loading
             ? <span className={`${styles.coverTitleSkel} ${styles.shimmerBar}`} aria-hidden="true" />
             : (
@@ -659,7 +642,7 @@ const Home = () => {
           )
           : (
             <p className={styles.coverByline}>
-              <span className={styles.coverByLabel}>a collection of chapters</span>
+              <span className={styles.coverByLabel}>{t.coverByLabel}</span>
               {personal.title && (
                 <>
                   <span className={styles.coverByDot} aria-hidden="true">·</span>
@@ -684,9 +667,9 @@ const Home = () => {
           )
           : (
             <div className={styles.coverOpening}>
-              <span className={styles.coverDropcap}>P</span>
+              {coverDropcap && <span className={styles.coverDropcap}>{coverDropcap}</span>}
               <WordReveal
-                text={`ull up a chair, pour something warm. ${opening}`}
+                text={coverRest}
                 inView={coverInView}
                 className={styles.coverProse}
                 delay={0.2}
@@ -716,14 +699,14 @@ const Home = () => {
 
           <div className={styles.coverInvite}>
             <p className={styles.coverInviteText}>
-              Three chapters wait below. Turn the page whenever you’re ready.
+              {t.coverInviteText}
             </p>
             <div className={styles.coverCtas}>
               <MagneticButton onClick={() => navigate('/bio')}>
-                Begin reading <MdAutoStories aria-hidden="true" />
+                {t.coverCtaPrimary} <MdAutoStories aria-hidden="true" />
               </MagneticButton>
               <CursorGlowButton onClick={() => navigate('/projects')}>
-                Browse the workshop
+                {t.coverCtaSecondary}
               </CursorGlowButton>
             </div>
 
@@ -753,14 +736,14 @@ const Home = () => {
       <div className={`${styles.sceneFrame} ${styles.sceneFrame_chapters}`}>
       <section ref={chapterRef} className={`${styles.scene} ${styles.sceneChapters} ${chapterInView ? styles.sceneVisible : ''}`}>
         <div className={styles.sceneHead}>
-          <span className={styles.sceneEye}>Chapter I</span>
-          <h2 className={styles.sceneTitle}>Choose your chapter</h2>
+          <span className={styles.sceneEye}>{t.chaptersEye}</span>
+          <h2 className={styles.sceneTitle}>{t.chaptersTitle}</h2>
           <p className={styles.sceneLede}>
-            Three covers, three short stories. Tap one to peek inside; open it to read in full.
+            {t.chaptersLede}
           </p>
         </div>
 
-        <ChapterCarousel chapters={CHAPTERS} onOpen={setOpenChapter} />
+        <ChapterCarousel chapters={chapters} onOpen={setOpenChapter} />
       </section>
       </div>
 
@@ -768,10 +751,10 @@ const Home = () => {
       <div className={`${styles.sceneFrame} ${styles.sceneFrame_journey}`}>
       <section ref={journeyRef} className={`${styles.scene} ${journeyInView ? styles.sceneVisible : ''}`}>
         <div className={styles.sceneHead}>
-          <span className={styles.sceneEye}>Chapter II</span>
-          <h2 className={styles.sceneTitle}>The journey so far</h2>
+          <span className={styles.sceneEye}>{t.journeyEye}</span>
+          <h2 className={styles.sceneTitle}>{t.journeyTitle}</h2>
           <p className={styles.sceneLede}>
-            A meandering path of schools, jobs, and small obsessions. Press a milestone to read its page.
+            {t.journeyLede}
           </p>
         </div>
 
@@ -789,10 +772,10 @@ const Home = () => {
       {(loading || skills.length > 0) && (
         <section ref={pileSecRef} className={`${styles.scene} ${pileSecInView ? styles.sceneVisible : ''}`}>
           <div className={styles.sceneHead}>
-            <span className={styles.sceneEye}>Chapter III</span>
-            <h2 className={styles.sceneTitle}>The toolkit</h2>
+            <span className={styles.sceneEye}>{t.toolkitEye}</span>
+            <h2 className={styles.sceneTitle}>{t.toolkitTitle}</h2>
             <p className={styles.sceneLede}>
-              The tools I gather along the way — pinned here like pressed leaves.
+              {t.toolkitLede}
             </p>
           </div>
 
@@ -818,10 +801,9 @@ const Home = () => {
             <span className={styles.endOrnamentLine} />
             <MapleLeaf />
           </span>
-          <h2 className={styles.endTitle}>The End… <em>or just the beginning?</em></h2>
+          <h2 className={styles.endTitle}>{t.endTitlePre}<em>{t.endTitleEm}</em></h2>
           <p className={styles.endText}>
-            That is the prologue. The full story lives in three chapters, and they would love a reader.
-            Pick one, or send word and we’ll write the next page together.
+            {t.endText}
           </p>
           <div className={styles.endCtas}>
             <MagneticButton onClick={() => navigate('/bio')}>

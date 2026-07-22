@@ -1,0 +1,122 @@
+/* ── Trigger ───────────────────────────────────────────────────────────────── */
+.trigger {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: var(--secondary-text-color);
+  font-size: 1.15rem;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  background: rgba(var(--accent-1-rgb), 0.12);
+  color: var(--accent-1);
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 2px;
+}
+
+/* ── Overlay (click-catcher / backdrop) ──────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+/* ── Menu — desktop popover ──────────────────────────────────────────────────── */
+.menu {
+  position: fixed;
+  min-width: 210px;
+  max-width: min(280px, calc(100vw - 24px));
+  background: var(--background-1);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transform-origin: top right;
+  animation: menuIn 0.13s ease-out;
+}
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.grabber { display: none; }
+
+.item {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--primary-text-color);
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.item:hover,
+.item:focus-visible { background: rgba(var(--accent-1-rgb), 0.10); }
+.itemIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--secondary-text-color);
+  font-size: 1.05rem;
+}
+.itemDanger { color: var(--error-color); }
+.itemDanger .itemIcon { color: var(--error-color); }
+.itemDanger:hover,
+.itemDanger:focus-visible { background: rgba(220, 53, 69, 0.12); }
+
+/* ── Menu — mobile bottom sheet ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .overlay {
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: flex-end;
+    -webkit-backdrop-filter: blur(1px);
+    backdrop-filter: blur(1px);
+  }
+  .menu {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 8px 10px calc(14px + env(safe-area-inset-bottom));
+    animation: sheetIn 0.22s ease-out;
+  }
+  .grabber {
+    display: block;
+    width: 42px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color-hover);
+    margin: 6px auto 10px;
+  }
+  .item {
+    padding: 15px 12px;
+    font-size: var(--font-size-base);
+  }
+}
+@keyframes sheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+
+/* Respect reduced-motion */
+:global([data-no-animations='true']) .menu { animation: none; }

@@ -17,7 +17,11 @@ export default defineConfig({
   ],
   envPrefix: ['FIREBASE_', 'ADMIN_'],
   server: {
+    port: 3000,
     open: false,
+  },
+  preview: {
+    port: 3000,
   },
   optimizeDeps: {
     esbuildOptions: {

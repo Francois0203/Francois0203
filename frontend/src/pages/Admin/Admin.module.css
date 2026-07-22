@@ -2,9 +2,14 @@
 
 /* ── Page ──────────────────────────────────────────────────────────────────── */
 .page {
-  min-height: 100vh;
+  /* App-shell: fill the viewport and let ONLY the content pane scroll, so the
+     topbar and settings nav stay put. (dvh handles mobile browser chrome.) */
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--background-1);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* ── Auth screens ──────────────────────────────────────────────────────────── */
@@ -59,8 +64,7 @@
   background: var(--frosted-background);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: var(--z-sticky);
 }
 
@@ -79,55 +83,14 @@
   color: var(--secondary-text-color);
 }
 
-/* ── Tabs ──────────────────────────────────────────────────────────────────── */
-.tabs {
-  display: flex;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--border-color);
-  padding: 0 var(--spacing-md);
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  /* Tell the browser this element owns horizontal panning — prevents the
-     page swipe gesture from stealing the scroll before this element gets it. */
-  touch-action: pan-x;
-}
-.tabs::-webkit-scrollbar { display: none; }
 
-.tabBtn {
-  flex-shrink: 0;
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--secondary-text-color);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  min-height: 44px;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: none;
-  border-radius: 0;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
-}
-.tabBtn:hover:not(:disabled) {
-  color: var(--primary-text-color);
-  background: transparent;
-  box-shadow: none;
-  border-bottom-color: var(--border-color-hover);
-}
-.tabBtnActive {
-  color: var(--accent-1);
-  border-bottom-color: var(--accent-1);
-  font-weight: 600;
-}
-
-/* ── Content area ──────────────────────────────────────────────────────────── */
+/* ── Content area — the only scrolling region ──────────────────────────────── */
 .content {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-lg);
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl) 0;
 }
 
 .sectionTitle {
@@ -162,10 +125,196 @@
   border: 1px solid var(--border-color);
 }
 
+/* ── Settings shell (nav tree + content pane) ──────────────────────────────── */
+.shell {
+  flex: 1;
+  min-height: 0;         /* let the content pane own the scroll */
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  gap: var(--spacing-xl);
+  padding: 0 var(--spacing-lg);
+  overflow: hidden;
+}
+
+/* ── Nav tree (desktop sidebar) ────────────────────────────────────────────── */
+.nav {
+  width: 234px;
+  flex-shrink: 0;
+  min-height: 0;            /* fills the shell height; scrolls internally only if the tree is taller */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--spacing-lg) var(--spacing-xs) var(--spacing-lg) 0;
+  scrollbar-width: thin;
+}
+
+.navGroup { display: flex; flex-direction: column; gap: 2px; }
+
+.navGroupLabel {
+  margin: 0 0 var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tertiary-text-color);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+.navItem:hover { background: rgba(var(--accent-1-rgb), 0.08); }
+.navItemActive,
+.navItemActive:hover { background: rgba(var(--accent-1-rgb), 0.14); }
+
+.navItemBtn {
+  all: unset;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--secondary-text-color);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  min-width: 0;
+}
+.navItemBtn:focus-visible { outline: 2px solid var(--accent-1); outline-offset: -2px; }
+.navItemActive .navItemBtn { color: var(--accent-1); font-weight: 600; }
+
+.navIcon { display: inline-flex; align-items: center; font-size: 1.15rem; flex-shrink: 0; }
+.navLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.navKebab { flex-shrink: 0; padding-right: 2px; }
+/* The three-dots is part of the row: let the row's hover show through instead
+   of the trigger drawing its own separate hover pill. (Dots still tint to
+   accent via the trigger's color change — just no competing background.) */
+.navKebab button:hover,
+.navKebab button[aria-expanded='true'] { background: transparent; }
+
+.sectionBody { min-width: 0; }
+
+/* ── Mobile menu button (topbar) + drawer backdrop — hidden on desktop ─────── */
+.menuBtn {
+  all: unset;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--primary-text-color);
+  font-size: 1.45rem;
+  flex-shrink: 0;
+}
+.menuBtn:hover { background: rgba(var(--accent-1-rgb), 0.10); color: var(--accent-1); }
+.navBackdrop { display: none; }
+
+/* ── Mobile: the settings nav becomes a proper off-canvas side drawer ──────── */
+@media (max-width: 900px) {
+  .menuBtn { display: inline-flex; }
+  .shell { padding: 0; gap: 0; }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1100;                 /* above the topbar (var(--z-sticky) = 1020) */
+    width: min(288px, 84vw);
+    height: 100%;
+    padding: var(--spacing-lg) var(--spacing-md);
+    background: var(--background-1);
+    border-right: 1px solid var(--border-color);
+    box-shadow: var(--shadow-xl);
+    transform: translateX(-100%);
+    transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+  .navOpen { transform: translateX(0); }
+
+  .navBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(1px);
+    backdrop-filter: blur(1px);
+    animation: adminBackdropIn 0.2s ease;
+  }
+
+  .content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
+  }
+}
+
+@keyframes adminBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+:global([data-no-animations='true']) .nav { transition: none; }
+
+/* ── Sub-tabs (used inside Site Copy) ──────────────────────────────────────── */
+.subTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+}
+.subTab {
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--secondary-text-color);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  min-height: auto;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: all var(--transition-fast);
+}
+.subTab:hover:not(:disabled) {
+  border-color: var(--border-color-hover);
+  color: var(--primary-text-color);
+  background: transparent;
+  box-shadow: none;
+}
+.subTabActive,
+.subTabActive:hover {
+  background: var(--accent-1);
+  border-color: var(--accent-1);
+  color: #fff;
+}
+
+/* ── Reset-to-default link inside Site Copy labels ─────────────────────────── */
+.resetBtn {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 8px;
+  font-size: var(--font-size-xs);
+  color: var(--accent-1);
+  cursor: pointer;
+  vertical-align: middle;
+}
+.resetBtn:hover { text-decoration: underline; }
+
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .userEmail { display: none; }
   .topbarTitle { font-size: var(--font-size-md); }
-  .content { padding: var(--spacing-lg) var(--spacing-md); }
-  .tabBtn { padding: var(--spacing-sm) var(--spacing-md); font-size: var(--font-size-xs); }
 }

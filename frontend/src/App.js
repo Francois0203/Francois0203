@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-do
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider } from './components';
 import { useTheme, useAnimations } from './hooks';
+import useMomentumScroll, { getLenis } from './hooks/useMomentumScroll';
 import styles from './App.module.css';
 
 const NAVIGATION_PAGES = [
@@ -14,7 +15,11 @@ const NAVIGATION_PAGES = [
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    const lenis = getLenis();
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    else window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
 };
 
@@ -23,6 +28,10 @@ const AppLayout = () => {
   const location  = useLocation();
   const { theme, toggleTheme } = useTheme();
   const [, startTransition] = useTransition();
+
+  // Momentum scrolling for the public site only — this layout is not mounted
+  // on the standalone /admin route, so the admin keeps native scrolling.
+  useMomentumScroll();
 
   const handleNavigate = useCallback((to) => {
     if (to) startTransition(() => navigate(to));

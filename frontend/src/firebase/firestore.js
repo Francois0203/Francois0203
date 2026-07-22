@@ -8,6 +8,7 @@ const portfolioDoc = (id) => getDoc(doc(db, 'portfolio', id)).then(s => s.data()
 export const getPersonal  = ()  => portfolioDoc('personal');
 export const getContact   = ()  => portfolioDoc('contact');
 export const getDonation  = ()  => portfolioDoc('donation');
+export const getCopy      = ()  => portfolioDoc('copy').then(d => d ?? {});
 export const getSkills    = ()  => portfolioDoc('skills');
 export const getSocial    = ()  => portfolioDoc('social').then(d => d?.platforms ?? []);
 export const getInterests = ()  => portfolioDoc('interests').then(d => d?.items ?? []);
@@ -28,7 +29,6 @@ const orderedCollection = async (col) => {
 
 export const getExperience = () => orderedCollection('experience');
 export const getEducation  = () => orderedCollection('education');
-export const getProjects   = () => orderedCollection('projects');
 
 // ─── Full portfolio fetch (all sections in parallel) ──────────────────────────
 // Uses allSettled so one failing read never crashes the whole page.
@@ -36,11 +36,11 @@ export const getProjects   = () => orderedCollection('projects');
 export const getPortfolio = () =>
   Promise.allSettled([
     getPersonal(), getContact(), getSocial(), getDonation(),
-    getSkills(), getInterests(), getExperience(), getEducation(), getProjects(),
+    getSkills(), getInterests(), getExperience(), getEducation(),
   ]).then(results => {
-    const [personal, contact, social, donation, skills, interests, experience, education, projects] =
+    const [personal, contact, social, donation, skills, interests, experience, education] =
       results.map(r => (r.status === 'fulfilled' ? r.value : null));
-    return { personal, contact, social, donation, skills, interests, experience, education, projects };
+    return { personal, contact, social, donation, skills, interests, experience, education };
   });
 
 // ─── Contact form write ───────────────────────────────────────────────────────
