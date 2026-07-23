@@ -159,19 +159,19 @@ export function parseReadme(markdown, { owner = '', repo = '', fallback = '' } =
     // Stop at any heading
     if (/^#{1,6}\s/.test(line)) break;
 
-    // Pure HTML block with nothing inside — decorative, skip
+    // Pure HTML block with nothing inside - decorative, skip
     if (isDecorativeLine(line)) continue;
 
-    // Lines that are only badge/image links — skip
+    // Lines that are only badge/image links - skip
     if (/^\[!\[/.test(line)) continue;
 
-    // Markdown images — skip if badge host
+    // Markdown images - skip if badge host
     if (/^!\[/.test(line)) {
       const srcs = htmlImageSrcs(line);
       if (srcs.length === 0 || srcs.every(isBadgeUrl)) continue;
     }
 
-    // HTML img tag lines — skip if all srcs are badge hosts
+    // HTML img tag lines - skip if all srcs are badge hosts
     if (/<img/i.test(line)) {
       const srcs = htmlImageSrcs(line);
       if (srcs.length === 0 || srcs.every(isBadgeUrl)) continue;
@@ -248,7 +248,7 @@ export function parseReadme(markdown, { owner = '', repo = '', fallback = '' } =
   let techStack = [];
   if (techSec) {
     const fromList = extractListItems(techSec.content)
-      .map(item => stripMarkdown(item.split(/[-–—:·|]/)[0]).trim())
+      .map(item => stripMarkdown(item.split(/[-–-:·|]/)[0]).trim())
       .filter(Boolean);
     const fromDots = extractDotSeparated(techSec.content);
     techStack = [...new Set([...fromList, ...fromDots])].slice(0, 10);

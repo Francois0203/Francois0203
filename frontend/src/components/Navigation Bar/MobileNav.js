@@ -52,7 +52,7 @@ function useRadialScroll(count) {
   const scrollAtStart = useRef(0);
   const scrollPosRef  = useRef(0);
 
-  // Keep ref in sync — handlers read current value without going stale
+  // Keep ref in sync - handlers read current value without going stale
   useEffect(() => { scrollPosRef.current = scrollPos; }, [scrollPos]);
 
   const onTouchStart = useCallback((e) => {
@@ -93,7 +93,7 @@ function useRadialScroll(count) {
 
 function computeArcPosition(slot, maxVisible, radius, spanDeg) {
   const t          = maxVisible > 1 ? slot / (maxVisible - 1) : 0.5;
-  // Arc centred at 90° (directly above trigger) — both endpoints equally above
+  // Arc centred at 90° (directly above trigger) - both endpoints equally above
   const startAngle = 90 + spanDeg / 2;
   const angleDeg   = startAngle - t * spanDeg;
   const angleRad   = (angleDeg * Math.PI) / 180;
@@ -176,7 +176,7 @@ const LinkBubble = ({ link, position, opacity, isDragging, isOpen, isActive, del
       }}
       aria-hidden={!isOpen}
     >
-      {/* Label — always rendered, fades in with the anchor */}
+      {/* Label - always rendered, fades in with the anchor */}
       <span className={styles.bubbleLabel} aria-hidden="true">
         {link.label}
       </span>
@@ -221,7 +221,7 @@ const MobileNav = ({ links = [], onNavigate, activeTab = null, triggerSize = 64 
 
   // ─── TOUCH SETUP ──────────────────────────────────────────────────────────
   // Attach as non-passive so preventDefault() blocks pull-to-refresh.
-  // Only attach when the menu is open — otherwise the non-passive listener
+  // Only attach when the menu is open - otherwise the non-passive listener
   // prevents page scrolling when the user swipes near the nav trigger.
 
   useEffect(() => {
@@ -287,7 +287,7 @@ const MobileNav = ({ links = [], onNavigate, activeTab = null, triggerSize = 64 
   const { pathname } = useLocation();
 
   const isActive = (link, index) => {
-    // Match by pathname — exact for root, startsWith for others
+    // Match by pathname - exact for root, startsWith for others
     if (link.to) {
       if (link.to === "/") return pathname === "/";
       return pathname.startsWith(link.to);
@@ -308,7 +308,7 @@ const MobileNav = ({ links = [], onNavigate, activeTab = null, triggerSize = 64 
 
   return (
     <>
-      {/* Full-screen backdrop — portalled to body to avoid CSS transform containment */}
+      {/* Full-screen backdrop - portalled to body to avoid CSS transform containment */}
       {isOpen && createPortal(
         <div
           className={styles.backdrop}
@@ -325,7 +325,7 @@ const MobileNav = ({ links = [], onNavigate, activeTab = null, triggerSize = 64 
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-      {/* Arc link bubbles — slide smoothly along the arc while dragging */}
+      {/* Arc link bubbles - slide smoothly along the arc while dragging */}
       {linkSlots.map(({ linkIndex, position, opacity, delay }) => {
         const link = links[linkIndex];
         if (!link) return null;

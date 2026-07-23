@@ -2,12 +2,12 @@
 
 /**
  * Layer stack (back → front within the button's stacking context):
- *   z:0  .glow       — surface + outer bleed glow (inset: -12px)
- *   z:1  ::before    — reactive gradient border (mask punch-out technique)
- *   z:2  ::after     — static diagonal glass sheen
- *   z:3  .content    — text / children
+ *   z:0  .glow       - surface + outer bleed glow (inset: -12px)
+ *   z:1  ::before    - reactive gradient border (mask punch-out technique)
+ *   z:2  ::after     - static diagonal glass sheen
+ *   z:3  .content    - text / children
  *
- * overflow: hidden is intentionally absent — the .glow span bleeds
+ * overflow: hidden is intentionally absent - the .glow span bleeds
  * past the button edge for ambient area illumination.
  */
 
@@ -27,7 +27,7 @@
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
 
-    /* Subtle resting border — ::before overlays a reactive gradient on hover */
+    /* Subtle resting border - ::before overlays a reactive gradient on hover */
     border: 1px solid rgba(var(--accent-1-rgb), 0.12);
 
     color: var(--primary-text-color);
@@ -51,7 +51,7 @@
  * The pseudo-element is 2px larger than the button (inset: -1px).
  * padding: 1px defines the border thickness.
  * The CSS mask cuts away the interior (content-box), leaving only the
- * 1px padding ring — a transparent "border tube" filled with the gradient.
+ * 1px padding ring - a transparent "border tube" filled with the gradient.
  *
  * The gradient is centered at the cursor (--glow-x/y) so the lit section
  * follows the cursor around the perimeter.
@@ -73,7 +73,7 @@
         transparent 100%
     );
 
-    /* Punch a hole through the center — only the 1px ring is visible */
+    /* Punch a hole through the center - only the 1px ring is visible */
     -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
@@ -88,10 +88,10 @@
     will-change: opacity;
 }
 
-/* ── Static glass sheen — ambient light from above-left ──────────────────
+/* ── Static glass sheen - ambient light from above-left ──────────────────
  *
  * Mimics the faint highlight on a glass surface from room lighting.
- * Always visible, no hover dependency — it IS the surface material.
+ * Always visible, no hover dependency - it IS the surface material.
  */
 .button::after {
     content: '';
@@ -113,7 +113,7 @@
 /* ── Hover state ─────────────────────────────────────────────────────────
  *
  * Slight lift + accent border tint. The ::before gradient border
- * provides the primary reactive effect — these are supporting cues.
+ * provides the primary reactive effect - these are supporting cues.
  */
 .button:hover:not(:disabled) {
     border-color: rgba(var(--accent-1-rgb), 0.24);
@@ -143,11 +143,11 @@
 /* ── Surface glow (contained within button boundary) ────────────────────────
  *
  * Three concentric radial gradients:
- *   Core  ( 75px) — concentrated hotspot at the cursor
- *   Mid   (160px) — softer surface illumination
- *   Bloom (230px) — very faint outer diffusion for depth
+ *   Core  ( 75px) - concentrated hotspot at the cursor
+ *   Mid   (160px) - softer surface illumination
+ *   Bloom (230px) - very faint outer diffusion for depth
  *
- * inset: 0 — fully contained; border illumination is handled by ::before.
+ * inset: 0 - fully contained; border illumination is handled by ::before.
  */
 .glow {
     position: absolute;

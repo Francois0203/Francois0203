@@ -1,4 +1,4 @@
-/* App layout — structural positioning only.
+/* App layout - structural positioning only.
  * Colors, backgrounds, and visual effects live in styles/Components.css. */
 
 .app {
@@ -46,7 +46,7 @@
   .themeSwitch   { top: var(--spacing-xs); right: var(--spacing-xs); }
 }
 
-/* Mobile: skip the translateY animation — just fade in */
+/* Mobile: skip the translateY animation - just fade in */
 @media (max-width: 767px) {
   @keyframes pageEnter {
     from { opacity: 0; }

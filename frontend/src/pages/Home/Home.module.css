@@ -8,7 +8,7 @@
   isolation: isolate;
 }
 
-/* Warm cursor spotlight — GPU-translated single layer (no gradient repaints).
+/* Warm cursor spotlight - GPU-translated single layer (no gradient repaints).
    Hidden on touch / coarse-pointer devices where there's no cursor anyway. */
 .warmSpot {
   position: fixed;
@@ -36,7 +36,7 @@
   .warmSpot { display: none; }
 }
 
-/* Parchment paper texture — repeating subtle dots + lines */
+/* Parchment paper texture - repeating subtle dots + lines */
 .parchment {
   position: fixed;
   inset: 0;
@@ -74,7 +74,7 @@
   position: absolute;
   bottom: -3%;
   border-radius: 50%;
-  /* Soft glow without filter:blur — radial gradient creates the fall-off naturally */
+  /* Soft glow without filter:blur - radial gradient creates the fall-off naturally */
   background: radial-gradient(
     circle,
     rgba(var(--accent-2-rgb), 0.95) 0%,
@@ -175,7 +175,7 @@
   }
 }
 
-/* Fewer leaves on smaller screens — perf */
+/* Fewer leaves on smaller screens - perf */
 @media (max-width: 768px) {
   .leafField .fallingLeaf:nth-child(n+4) { display: none; }
 }
@@ -230,7 +230,7 @@
   animation: coverIn 0.9s 0.10s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Title — small italic prelude + big script name */
+/* Title - small italic prelude + big script name */
 .coverTitleLine {
   margin: 0 0 var(--spacing-md);
   display: flex;
@@ -357,7 +357,7 @@
   50%      { transform: rotate(9deg); }
 }
 
-/* Opening prose — drop cap + word-by-word */
+/* Opening prose - drop cap + word-by-word */
 .coverOpening {
   position: relative;
   max-width: 64ch;
@@ -561,7 +561,7 @@
   transition:
     opacity   0.8s ease,
     transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  /* Skip rendering work for off-screen scenes — big perf win on mobile */
+  /* Skip rendering work for off-screen scenes - big perf win on mobile */
   content-visibility: auto;
   contain-intrinsic-size: 1px 560px;
 }
@@ -966,7 +966,7 @@
 }
 
 /* Mobile: the wavy horizontal path stretches badly when milestones stack, so
-   switch to a clean vertical timeline — a straight line threading the dots. */
+   switch to a clean vertical timeline - a straight line threading the dots. */
 @media (max-width: 767px) {
   .journey {
     padding: var(--spacing-sm) 0 var(--spacing-md);
@@ -1326,7 +1326,7 @@
   pointer-events: none;
 }
 
-/* ─── Shimmer — compositor-only: translate an overlay, no repaint ─────────── */
+/* ─── Shimmer - compositor-only: translate an overlay, no repaint ─────────── */
 
 /* Shared ::after overlay for every shimmer element in this module */
 .shimmerBar::after,
@@ -1417,13 +1417,13 @@
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-  /* No 3D perspective on touch — saves a compositor layer + simpler paint */
+  /* No 3D perspective on touch - saves a compositor layer + simpler paint */
   .coverStage { perspective: none; }
   .coverCard  { transform-style: flat; }
 }
 
-/* ─── Mobile animation budget — kill non-essential animations on small screens */
-/* This is separate from prefers-reduced-motion (which the user controls) —
+/* ─── Mobile animation budget - kill non-essential animations on small screens */
+/* This is separate from prefers-reduced-motion (which the user controls) -
    here we simply skip effects that are expensive on low-end mobile CPUs.     */
 
 @media (max-width: 767px) {

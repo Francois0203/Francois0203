@@ -8,7 +8,7 @@ formatted summary to you. Replying to the notification replies to the visitor
 ## One-time setup
 
 Cloud Functions require the **Blaze** (pay-as-you-go) plan. It has a generous
-free tier — a personal contact form costs effectively nothing — but a card must
+free tier - a personal contact form costs effectively nothing - but a card must
 be on file. Upgrade at: Firebase Console → ⚙️ → Usage and billing → Modify plan.
 
 1. **Install deps**
@@ -31,7 +31,7 @@ be on file. Upgrade at: Firebase Console → ⚙️ → Usage and billing → Mo
    ```
    Set `SMTP_USER` to the Gmail address that will send the mail. `NOTIFY_TO`
    defaults to `francoismeiring0203@gmail.com`. (Not using Gmail? Change
-   `SMTP_HOST`/`SMTP_PORT` — e.g. SendGrid: `smtp.sendgrid.net` / `587`, with
+   `SMTP_HOST`/`SMTP_PORT` - e.g. SendGrid: `smtp.sendgrid.net` / `587`, with
    `SMTP_USER=apikey`.)
 
 4. **Deploy**
@@ -49,7 +49,7 @@ firebase functions:log
 ```
 
 Bad credentials or SMTP errors are logged there (the message is still saved in
-Firestore regardless — the function never blocks or drops it).
+Firestore regardless - the function never blocks or drops it).
 
 ## Notes
 

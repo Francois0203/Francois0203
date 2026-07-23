@@ -52,7 +52,7 @@ const CursorGlowButton = ({
             const rect = buttonRef.current.getBoundingClientRect();
             const x    = e.clientX - rect.left;
             const y    = e.clientY - rect.top;
-            // Snap to entry point — prevents initial teleport lag
+            // Snap to entry point - prevents initial teleport lag
             currentRef.current = { x, y };
             targetRef.current  = { x, y };
             applyPosition(x, y);

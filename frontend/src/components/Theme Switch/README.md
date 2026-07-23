@@ -4,8 +4,8 @@ Glassmorphism toggle for switching between light and dark themes.
 
 ## Visual Design
 
-- **Light mode** — thumb (sun) left; moon visible in right track area.
-- **Dark mode** — thumb (moon) right; sun visible in left track area.
+- **Light mode** - thumb (sun) left; moon visible in right track area.
+- **Dark mode** - thumb (moon) right; sun visible in left track area.
 - Frosted glass track with `backdrop-filter: blur`, entirely from `Theme.css` variables.
 - Spring cubic-bezier thumb animation (`0.34, 1.56, 0.64, 1`).
 
@@ -45,7 +45,7 @@ function Header() {
 
 - `role="switch"` with `aria-checked` reflecting boolean state.
 - `aria-label` updates dynamically.
-- Full keyboard support — `Enter` and `Space` activate the toggle.
+- Full keyboard support - `Enter` and `Space` activate the toggle.
 - `:focus-visible` ring uses `--accent-1`.
 - Transitions disabled when `prefers-reduced-motion` or `data-no-animations="true"` is set.
 

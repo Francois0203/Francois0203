@@ -22,7 +22,7 @@
 /*
  * JS physics drives position via transform: translate(x, y).
  * CSS only handles the slow border-radius morphing.
- * No top/left/animation-delay here — JS initialises all of that.
+ * No top/left/animation-delay here - JS initialises all of that.
  */
 .ambientBlob {
   position: absolute;
@@ -59,7 +59,7 @@
   animation-delay: -24s;
 }
 
-/* Border-radius morphing only — JS drives translate() */
+/* Border-radius morphing only - JS drives translate() */
 @keyframes ambientMorph1 {
   0%   { border-radius: 62% 38% 72% 28% / 52% 64% 36% 68%; }
   20%  { border-radius: 44% 56% 52% 48% / 68% 38% 62% 32%; }
@@ -102,7 +102,7 @@
   --cursor-y: -500px;
   will-change: transform, border-radius;
   pointer-events: none;
-  /* Tinted fill — gives the glass colour without a heavy sheen.
+  /* Tinted fill - gives the glass colour without a heavy sheen.
    * overflow: visible so ::after border ring can sit at inset: -1px */
   background: linear-gradient(
     160deg,
@@ -131,7 +131,7 @@
   z-index: 1;
 }
 
-/* Cursor-reactive border ring — mask punch-out technique (same as CursorGlowButton).
+/* Cursor-reactive border ring - mask punch-out technique (same as CursorGlowButton).
  * inset: -1px makes the pseudo-element sit exactly over the static border.
  * padding: 1px defines the ring width.
  * The mask cuts out the interior, leaving only the 1px gradient ring visible.
@@ -211,7 +211,7 @@
   animation-delay: -16s;
 }
 
-/* Border-radius morphing only — unique rhythm per blob, no transforms */
+/* Border-radius morphing only - unique rhythm per blob, no transforms */
 @keyframes glassMorph1 {
   0%   { border-radius: 62% 38% 55% 45% / 50% 60% 40% 50%; }
   20%  { border-radius: 40% 60% 42% 58% / 66% 34% 58% 42%; }
@@ -260,7 +260,7 @@
   backdrop-filter: blur(48px) saturate(200%) brightness(1.04);
   -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.04);
 
-  /* Glass surface — layered borders & depth */
+  /* Glass surface - layered borders & depth */
   border: 1px solid var(--border-color);
   box-shadow:
     var(--shadow-xl),
@@ -314,7 +314,7 @@
 /* ==================== WAVE DOTS ==================== */
 /*
  * 4 dots. Each shares a 1.6s cycle. The bounce takes up only the first 25%
- * of that cycle so the dot spends most of its time at rest — creating a clear
+ * of that cycle so the dot spends most of its time at rest - creating a clear
  * one-by-one sequential wave rather than a continuous sine.
  * Delays: 0s  0.4s  0.8s  1.2s  (1.6 / 4 = 0.4)
  */
@@ -429,7 +429,7 @@
     opacity: 0.85;
   }
 
-  /* Smaller blobs on mobile — physics engine still drives position */
+  /* Smaller blobs on mobile - physics engine still drives position */
   .ambient1 { width: 430px; height: 400px; }
   .ambient2 { width: 350px; height: 460px; }
   .ambient3 { width: 285px; height: 285px; }
@@ -528,4 +528,4 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.90);
 }
 
-/* Cursor glow uses accent colours — works for both dark and light mode */
+/* Cursor glow uses accent colours - works for both dark and light mode */

@@ -7,7 +7,7 @@ import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
 // Build the working draft: an override value if present, otherwise the in-code
-// default — so the editor always shows the text currently on the site.
+// default - so the editor always shows the text currently on the site.
 const buildDraft = (saved = {}) => {
   const d = {};
   for (const group of COPY_SCHEMA) {

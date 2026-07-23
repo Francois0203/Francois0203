@@ -1,4 +1,4 @@
-/* Layout-only — all colour/typography/button/input styles come from Components.css */
+/* Layout-only - all colour/typography/button/input styles come from Components.css */
 
 /* ── Page ──────────────────────────────────────────────────────────────────── */
 .page {
@@ -84,7 +84,7 @@
 }
 
 
-/* ── Content area — the only scrolling region ──────────────────────────────── */
+/* ── Content area - the only scrolling region ──────────────────────────────── */
 .content {
   flex: 1;
   min-width: 0;
@@ -196,13 +196,13 @@
 .navKebab { flex-shrink: 0; padding-right: 2px; }
 /* The three-dots is part of the row: let the row's hover show through instead
    of the trigger drawing its own separate hover pill. (Dots still tint to
-   accent via the trigger's color change — just no competing background.) */
+   accent via the trigger's color change - just no competing background.) */
 .navKebab button:hover,
 .navKebab button[aria-expanded='true'] { background: transparent; }
 
 .sectionBody { min-width: 0; }
 
-/* ── Mobile menu button (topbar) + drawer backdrop — hidden on desktop ─────── */
+/* ── Mobile menu button (topbar) + drawer backdrop - hidden on desktop ─────── */
 .menuBtn {
   all: unset;
   display: none;

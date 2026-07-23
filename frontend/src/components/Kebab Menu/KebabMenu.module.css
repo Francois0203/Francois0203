@@ -30,7 +30,7 @@
   z-index: 2000;
 }
 
-/* ── Menu — desktop popover ──────────────────────────────────────────────────── */
+/* ── Menu - desktop popover ──────────────────────────────────────────────────── */
 .menu {
   position: fixed;
   min-width: 210px;
@@ -80,7 +80,7 @@
 .itemDanger:hover,
 .itemDanger:focus-visible { background: rgba(220, 53, 69, 0.12); }
 
-/* ── Menu — mobile bottom sheet ──────────────────────────────────────────────── */
+/* ── Menu - mobile bottom sheet ──────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .overlay {
     background: rgba(0, 0, 0, 0.45);

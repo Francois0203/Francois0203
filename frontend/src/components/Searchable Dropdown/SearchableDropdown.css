@@ -1,5 +1,5 @@
 /* =============================================================================
- * SEARCHABLE DROPDOWN — CSS OVERRIDES
+ * SEARCHABLE DROPDOWN - CSS OVERRIDES
  * =============================================================================
  * Handles state-based styles that require rgba() composition with CSS variables.
  * These cannot live in the react-select `styles` prop (JS inline styles) because
@@ -8,7 +8,7 @@
  */
 
 /* ----------------------------------------------------------------------------
- * Input — remove browser box-shadow, hide caret until focused
+ * Input - remove browser box-shadow, hide caret until focused
  * ---------------------------------------------------------------------------- */
 .searchable-select__input-container,
 .searchable-select__control .css-1wa3eu0-ValueContainer {
@@ -27,7 +27,7 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Control — hover state
+ * Control - hover state
  * ---------------------------------------------------------------------------- */
 .searchable-select__control:not(.searchable-select__control--is-disabled):not(.searchable-select__control--is-focused):hover {
   border-color: var(--accent-1) !important;
@@ -37,7 +37,7 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Control — focused state
+ * Control - focused state
  * ---------------------------------------------------------------------------- */
 .searchable-select__control--is-focused {
   border-color: var(--accent-1) !important;
@@ -48,7 +48,7 @@
 }
 
 /* ----------------------------------------------------------------------------
- * Menu — open animation
+ * Menu - open animation
  * ---------------------------------------------------------------------------- */
 .searchable-select__menu {
   animation: searchableMenuOpen 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;

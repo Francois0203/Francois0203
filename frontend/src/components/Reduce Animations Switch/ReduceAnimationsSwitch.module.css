@@ -1,11 +1,11 @@
 /* ============================================================================
- * REDUCE ANIMATIONS SWITCH — Liquid Glass / Glassmorphism Style
+ * REDUCE ANIMATIONS SWITCH - Liquid Glass / Glassmorphism Style
  * All colors sourced exclusively from Theme.css global CSS variables.
  * Shares the same visual language as ThemeSwitch for consistency.
  * ============================================================================ */
 
 /* ------------------------------------------------------------------
- * Track — the pill-shaped container
+ * Track - the pill-shaped container
  * ------------------------------------------------------------------ */
 .track {
   position: relative;
@@ -46,7 +46,7 @@
 }
 
 /* ------------------------------------------------------------------
- * Checked (reduce animations ON) state — accent tint on the track
+ * Checked (reduce animations ON) state - accent tint on the track
  * ------------------------------------------------------------------ */
 .checked {
   border-color: rgba(var(--accent-1-rgb), 0.5);
@@ -69,7 +69,7 @@
     var(--shadow-md);
 }
 
-/* Focus ring — keyboard navigation */
+/* Focus ring - keyboard navigation */
 .track:focus-visible {
   outline: 2px solid var(--accent-1);
   outline-offset: 3px;
@@ -98,13 +98,13 @@
   z-index: 0;
 }
 
-/* Lightning icon (left) — hidden when animations are on, visible when reduced */
+/* Lightning icon (left) - hidden when animations are on, visible when reduced */
 .bgIconLeft {
   left: 9px;
   opacity: 0;
 }
 
-/* Pause icon (right) — visible when animations are on, hidden when reduced */
+/* Pause icon (right) - visible when animations are on, hidden when reduced */
 .bgIconRight {
   right: 9px;
   opacity: 1;
@@ -121,7 +121,7 @@
 }
 
 /* ------------------------------------------------------------------
- * Thumb — the sliding knob
+ * Thumb - the sliding knob
  * Track: 64px  Thumb: 26px  Edge padding: 4px  Travel: 64-4-4-26 = 30px
  * ------------------------------------------------------------------ */
 .thumb {
@@ -154,7 +154,7 @@
   transform: translateX(30px);
 }
 
-/* Press squish — thumb stretches on active */
+/* Press squish - thumb stretches on active */
 .track:active .thumb {
   width: 30px;
 }

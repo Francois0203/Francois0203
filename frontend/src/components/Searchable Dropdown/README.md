@@ -15,10 +15,10 @@ React-Select wrapper styled with CSS custom property tokens to match the app the
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `options` | `array` | — | `[{ value, label }]` option objects |
-| `value` | `object \| array` | — | Currently selected value(s) |
-| `onChange` | `function` | — | Called on selection change |
-| `placeholder` | `string` | — | Input placeholder text |
+| `options` | `array` | - | `[{ value, label }]` option objects |
+| `value` | `object \| array` | - | Currently selected value(s) |
+| `onChange` | `function` | - | Called on selection change |
+| `placeholder` | `string` | - | Input placeholder text |
 | `isClearable` | `boolean` | `true` | Show clear button |
 | `isDisabled` | `boolean` | `false` | Disables the control |
 | `components` | `object` | `{}` | Override react-select sub-components |

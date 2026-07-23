@@ -29,7 +29,7 @@ const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const [, startTransition] = useTransition();
 
-  // Momentum scrolling for the public site only — this layout is not mounted
+  // Momentum scrolling for the public site only - this layout is not mounted
   // on the standalone /admin route, so the admin keeps native scrolling.
   useMomentumScroll();
 
@@ -64,7 +64,7 @@ const AppContent = () => (
   <>
     <ScrollToTop />
     <Routes>
-      {/* Admin — standalone, no nav bar */}
+      {/* Admin - standalone, no nav bar */}
       <Route path="/admin" element={<Admin />} />
 
       <Route path="/" element={<AppLayout />}>

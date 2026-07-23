@@ -59,7 +59,7 @@ const ProjectCard = ({ project, onReadme }) => {
 
   const hasReadme = readme?.trim().length > 0;
 
-  // Parse README once — cheap, synchronous
+  // Parse README once - cheap, synchronous
   const parsed = hasReadme
     ? parseReadme(readme, { owner, repo, fallback: githubDesc ?? '' })
     : { description: githubDesc ?? '', features: [], techStack: [], screenshot: null };
@@ -178,7 +178,7 @@ const Projects = () => {
         <header className={styles.header}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
-            <span className={styles.chapterDash} aria-hidden="true">—</span>
+            <span className={styles.chapterDash} aria-hidden="true">-</span>
             <span className={styles.chapterName}>{t.chapterName}</span>
           </p>
           <h1 className={styles.heading}>{t.heading}</h1>

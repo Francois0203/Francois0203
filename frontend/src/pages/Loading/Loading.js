@@ -9,7 +9,7 @@ const BIBLE_VERSES = [
   { verse: 'But those who hope in the LORD will renew their strength.',                                                                                       reference: 'Isaiah 40:31'     },
   { verse: 'Trust in the LORD with all your heart and lean not on your own understanding.',                                                                   reference: 'Proverbs 3:5'     },
   { verse: 'For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you.',                                               reference: 'Jeremiah 29:11'   },
-  { verse: 'The LORD is my light and my salvation — whom shall I fear?',                                                                                      reference: 'Psalm 27:1'       },
+  { verse: 'The LORD is my light and my salvation - whom shall I fear?',                                                                                      reference: 'Psalm 27:1'       },
   { verse: 'Cast all your anxiety on him because he cares for you.',                                                                                          reference: '1 Peter 5:7'      },
   { verse: 'Be still, and know that I am God.',                                                                                                               reference: 'Psalm 46:10'      },
   { verse: 'The LORD will fight for you; you need only to be still.',                                                                                         reference: 'Exodus 14:14'     },
@@ -90,7 +90,7 @@ const Loading = ({ message = 'Loading', showVerse = true }) => {
               {BIBLE_VERSES[currentVerse].verse}
               <span className={styles.quoteMark}>&rdquo;</span>
             </p>
-            <cite className={styles.verseRef}>— {BIBLE_VERSES[currentVerse].reference}</cite>
+            <cite className={styles.verseRef}>- {BIBLE_VERSES[currentVerse].reference}</cite>
           </div>
         )}
       </div>

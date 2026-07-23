@@ -1,8 +1,8 @@
 /* ============================================================================
- * MODAL — LIQUID GLASS STYLES
+ * MODAL - LIQUID GLASS STYLES
  * ============================================================================
  * All colors are sourced exclusively from Theme.css custom properties.
- * The backdrop overlay uses a neutral rgba(0,0,0) scrim — not a brand color.
+ * The backdrop overlay uses a neutral rgba(0,0,0) scrim - not a brand color.
  * ============================================================================
  */
 
@@ -87,7 +87,7 @@
     0 0 0 1px var(--border-color),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 
-  /* Remove the default focus ring — we style focus on children instead. */
+  /* Remove the default focus ring - we style focus on children instead. */
   outline: none;
 
   overflow: hidden;

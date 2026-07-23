@@ -5,7 +5,7 @@ import './SearchableDropdown.css';
 // ─── STYLES ─────────────────────────────────────────────────────────────────
 // Structural layout + CSS token references only.
 // State-based styles (hover, focus, selected) live in SearchableDropdown.css
-// via classNamePrefix selectors — rgba(var(--x), alpha) doesn’t resolve in JS.
+// via classNamePrefix selectors - rgba(var(--x), alpha) doesn’t resolve in JS.
 const customStyles = {
   // ── Control (input wrapper) ──────────────────────────────────────────────────────────
   control: (base, { isDisabled }) => ({

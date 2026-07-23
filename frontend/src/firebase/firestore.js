@@ -20,7 +20,7 @@ const orderedCollection = async (col) => {
     const snap = await getDocs(query(collection(db, col), orderBy('order')));
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch {
-    // orderBy requires an index — fall back to unordered and sort client-side
+    // orderBy requires an index - fall back to unordered and sort client-side
     const snap = await getDocs(collection(db, col));
     const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     return docs.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));

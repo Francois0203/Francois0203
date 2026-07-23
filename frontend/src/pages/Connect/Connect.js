@@ -99,7 +99,7 @@ const Connect = () => {
       setForm(EMPTY_FORM);
       setErrors(EMPTY_ERRORS);
       setTouched(EMPTY_TOUCHED);
-      showToast('success', 'Message sent', "Thanks — I'll get back to you soon.");
+      showToast('success', 'Message sent', "Thanks - I'll get back to you soon.");
     } catch (err) {
       console.error('[Connect] submitContactForm failed:', err?.code, err?.message, err);
       showToast('error', 'Failed to send', 'Something went wrong. Please try again.');
@@ -122,7 +122,7 @@ const Connect = () => {
         <header className={styles.header}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
-            <span className={styles.chapterDash} aria-hidden="true">—</span>
+            <span className={styles.chapterDash} aria-hidden="true">-</span>
             <span className={styles.chapterName}>{t.chapterName}</span>
           </p>
           <h1 className={styles.heading}>{t.heading}</h1>

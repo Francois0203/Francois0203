@@ -127,7 +127,7 @@ li::marker {
 /* ─── BUTTONS ────────────────────────────────────────────────────────────── */
 
 button {
-    /* Component-scoped design tokens — overridden per variant below */
+    /* Component-scoped design tokens - overridden per variant below */
     --_btn-bg: rgba(var(--accent-1-rgb), 0.10);
     --_btn-border: rgba(var(--accent-1-rgb), 0.35);
     --_btn-color: var(--accent-1);
@@ -191,7 +191,7 @@ button:disabled {
     opacity: 0.40;
 }
 
-/* Secondary — neutral glass surface */
+/* Secondary - neutral glass surface */
 button.btn-secondary,
 button[type="button"] {
     --_btn-bg: var(--frosted-background);
@@ -210,7 +210,7 @@ button[type="button"]:hover:not(:disabled) {
     color: var(--accent-1);
 }
 
-/* Outline — bordered, transparent fill */
+/* Outline - bordered, transparent fill */
 button.btn-outline {
     --_btn-bg: transparent;
     --_btn-border: rgba(var(--accent-1-rgb), 0.45);
@@ -221,7 +221,7 @@ button.btn-outline {
     -webkit-backdrop-filter: none;
 }
 
-/* Ghost — no border, minimal */
+/* Ghost - no border, minimal */
 button.btn-ghost {
     --_btn-bg: transparent;
     --_btn-border: transparent;
@@ -238,7 +238,7 @@ button.btn-ghost:hover:not(:disabled) {
     box-shadow: none;
 }
 
-/* Danger — burnt sienna */
+/* Danger - burnt sienna */
 button.btn-danger,
 button[type="reset"] {
     --_btn-bg: rgba(184, 57, 28, 0.10);
@@ -252,7 +252,7 @@ button[type="reset"] {
         0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
-/* Success — olive moss */
+/* Success - olive moss */
 button.btn-success,
 button[type="submit"] {
     --_btn-bg: rgba(107, 140, 58, 0.13);
@@ -1167,11 +1167,11 @@ hr {
 }
 
 
-/* ─── SCROLLBAR — invisible track, floating accent thumb ─────────────────── */
+/* ─── SCROLLBAR - invisible track, floating accent thumb ─────────────────── */
 
 /* WebKit (Chrome/Edge/Safari): custom pseudo-elements give a fully transparent
    channel + floating thumb on EVERY scrollbar, including the classic page one.
-   We deliberately do NOT set the standard `scrollbar-color` here — Chromium
+   We deliberately do NOT set the standard `scrollbar-color` here - Chromium
    lets it win over these rules and repaints the root scrollbar's track (white). */
 ::-webkit-scrollbar {
     width: 12px;

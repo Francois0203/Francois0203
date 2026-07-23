@@ -5,7 +5,7 @@ import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
 const fmt = (ts) => {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   return d.toLocaleString();
 };

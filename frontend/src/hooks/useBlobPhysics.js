@@ -3,11 +3,11 @@ import { useRef, useEffect } from 'react';
 /**
  * Shared blob physics engine used by Loading and NotFound pages.
  *
- * blobDefs — array of { r, sx, sy, vx, vy, rotSpeed? }
- * options  — { withRotation, glassFrom, maxSpeed }
- *   withRotation — enables angle integration and adds rotate() to transform
- *   glassFrom    — blobs at index >= this get --cursor-x/y CSS vars (cursor-reactive)
- *   maxSpeed     — velocity cap in px/s (default 20)
+ * blobDefs - array of { r, sx, sy, vx, vy, rotSpeed? }
+ * options  - { withRotation, glassFrom, maxSpeed }
+ *   withRotation - enables angle integration and adds rotate() to transform
+ *   glassFrom    - blobs at index >= this get --cursor-x/y CSS vars (cursor-reactive)
+ *   maxSpeed     - velocity cap in px/s (default 20)
  */
 const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpeed = 20 } = {}) => {
   const blobRefs   = useRef([]);
@@ -43,7 +43,7 @@ const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpee
       };
     });
 
-    // Pin initial positions — prevents flash from 0,0
+    // Pin initial positions - prevents flash from 0,0
     blobs.forEach((b, i) => {
       const el = blobRefs.current[i];
       if (!el) return;

@@ -117,7 +117,7 @@ const Bio = () => {
         <header className={styles.header}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
-            <span className={styles.chapterDash} aria-hidden="true">—</span>
+            <span className={styles.chapterDash} aria-hidden="true">-</span>
             <span className={styles.chapterName}>{t.chapterName}</span>
           </p>
           <div className={styles.headerInner}>
@@ -216,7 +216,7 @@ const Bio = () => {
                   <Skel w="100%" /><Skel w="88%" /><Skel w="75%" /><Skel w="93%" />
                 </div>
               ) : (() => {
-                  const text = personal.bio ?? personal.summary ?? '—';
+                  const text = personal.bio ?? personal.summary ?? '-';
                   if (!text || text.length < 2) return <p className={styles.bio}>{text}</p>;
                   const [first, ...rest] = text;
                   return (
@@ -315,7 +315,7 @@ const Bio = () => {
                           subtitle={
                             [e.degree || e.qualification, e.field || e.major]
                               .filter(Boolean)
-                              .join(' — ') || null
+                              .join(' - ') || null
                           }
                           p={period(e)}
                           description={e.description || e.summary}

@@ -4,8 +4,8 @@ Glassmorphism toggle for enabling or disabling motion across the app. Uses the s
 
 ## Visual Design
 
-- **Animations on** (default) — thumb (lightning) left; pause icon visible right.
-- **Animations reduced** — thumb (pause) right; lightning icon visible left.
+- **Animations on** (default) - thumb (lightning) left; pause icon visible right.
+- **Animations reduced** - thumb (pause) right; lightning icon visible left.
 - Frosted glass track with `backdrop-filter: blur`, entirely from `Theme.css` variables.
 - Spring cubic-bezier thumb animation (`0.34, 1.56, 0.64, 1`).
 
@@ -26,7 +26,7 @@ State managed by `useAnimations` (`src/hooks/useAnimations.js`) which also:
 
 ## Props
 
-None — self-contained, state managed by `useAnimations`.
+None - self-contained, state managed by `useAnimations`.
 
 ## Usage
 

@@ -26,8 +26,8 @@ const ReduceAnimationsSwitch = () => {
       aria-checked={reduceAnimations}
       aria-label={
         reduceAnimations
-          ? 'Animations reduced — click to enable'
-          : 'Animations enabled — click to reduce'
+          ? 'Animations reduced - click to enable'
+          : 'Animations enabled - click to reduce'
       }
       className={`${styles.track} ${reduceAnimations ? styles.checked : ''}`}
       onClick={toggleAnimations}

@@ -30,7 +30,7 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
     document.body.style.overflow = 'hidden';
     document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-    // iOS Safari ignores touch-action on fixed elements — block touchmove on
+    // iOS Safari ignores touch-action on fixed elements - block touchmove on
     // the backdrop in JS so swiping the scrim never scrolls the page behind it.
     const preventBackdropScroll = (e) => {
       if (!dialogRef.current?.contains(e.target)) {
@@ -94,9 +94,9 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
   // Portal to <body> so the fixed backdrop is centered on the viewport, never
   // trapped by an ancestor's transform/filter (which would offset it to the page).
   return createPortal(
-    /* Backdrop — dims and blurs the page */
+    /* Backdrop - dims and blurs the page */
     <div className={styles.backdrop} onClick={handleBackdropClick}>
-      {/* Dialog — glass panel */}
+      {/* Dialog - glass panel */}
       <div
         ref={dialogRef}
         className={[styles.dialog, size === 'lg' ? styles.dialogLg : ''].filter(Boolean).join(' ')}
@@ -106,7 +106,7 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
         tabIndex={-1}
         onKeyDown={handleKeyDown}
       >
-        {/* Close button — only dismiss affordance inside the modal */}
+        {/* Close button - only dismiss affordance inside the modal */}
         <button
           className={styles.closeButton}
           onClick={onClose}
@@ -133,7 +133,7 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
           </header>
         )}
 
-        {/* Body — scrolls independently on overflow; opt out of momentum scroll */}
+        {/* Body - scrolls independently on overflow; opt out of momentum scroll */}
         <div className={styles.body} data-lenis-prevent>
           {children}
         </div>

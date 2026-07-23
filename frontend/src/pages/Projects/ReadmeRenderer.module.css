@@ -6,7 +6,7 @@
   line-height: 1.75;
   min-width: 0;
   /* Wrap long words / URLs / inline code so nothing overflows the modal on
-     mobile. (pre blocks keep white-space:pre and scroll instead — see below.) */
+     mobile. (pre blocks keep white-space:pre and scroll instead - see below.) */
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -181,7 +181,7 @@
   display: inline-block;
 }
 
-/* Badges / shields (small inline images) — don't add border-radius */
+/* Badges / shields (small inline images) - don't add border-radius */
 .body :global(p img[src*="shields.io"]),
 .body :global(p img[src*="badge"]),
 .body :global(p img[alt*="badge"]),

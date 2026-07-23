@@ -6,7 +6,7 @@ Floating settings panel with a circular glass cog trigger. Opens a radial arc of
 
 - Cog trigger with cursor-following rim glow when closed
 - Theme (light/dark) and Motion (reduce animations) bubbles
-- Portalled to `<body>` — never trapped by a parent stacking context
+- Portalled to `<body>` - never trapped by a parent stacking context
 - Closes on outside click or Escape
 - Full keyboard + ARIA support
 
@@ -14,8 +14,8 @@ Floating settings panel with a circular glass cog trigger. Opens a radial arc of
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `theme` | `string` | — | `'light'` or `'dark'` |
-| `toggleTheme` | `function` | — | Callback to toggle the theme |
+| `theme` | `string` | - | `'light'` or `'dark'` |
+| `toggleTheme` | `function` | - | Callback to toggle the theme |
 | `cogSize` | `number` | `52` | Trigger diameter in px |
 | `className` | `string` | `''` | Extra class on the container |
 

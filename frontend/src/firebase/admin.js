@@ -36,7 +36,7 @@ export const updateDonation = (data) =>
   setDoc(portfolioRef('donation'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 
 // ─── Site Copy (editable narrative / headings) ─────────────────────────────────
-// Stored as { home: {...}, bio: {...}, projects: {...}, connect: {...} } — only
+// Stored as { home: {...}, bio: {...}, projects: {...}, connect: {...} } - only
 // the strings that differ from the in-code defaults need to be present.
 
 export const subscribeCopy = (cb, onErr) =>

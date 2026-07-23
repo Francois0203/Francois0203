@@ -21,7 +21,7 @@ Sayings sourced from `src/data/notfound.json` (`sayings` array, each entry has `
 
 ## Props
 
-None — this page takes no props.
+None - this page takes no props.
 
 ---
 

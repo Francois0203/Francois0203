@@ -1,6 +1,6 @@
 # Modal
 
-Liquid-glass modal dialog with full accessibility support — focus trapping, scroll lock, keyboard navigation.
+Liquid-glass modal dialog with full accessibility support - focus trapping, scroll lock, keyboard navigation.
 
 ## Features
 
@@ -15,10 +15,10 @@ Liquid-glass modal dialog with full accessibility support — focus trapping, sc
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `open` | `boolean` | — | Controls visibility |
-| `onClose` | `function` | — | Called when the modal should close |
-| `children` | `ReactNode` | — | Modal body content |
-| `title` | `string` | — | Optional heading text |
+| `open` | `boolean` | - | Controls visibility |
+| `onClose` | `function` | - | Called when the modal should close |
+| `children` | `ReactNode` | - | Modal body content |
+| `title` | `string` | - | Optional heading text |
 
 ## Usage
 
@@ -41,7 +41,7 @@ function MyComponent() {
 
 ## Notes
 
-- Respects `prefers-reduced-motion` — entry/exit animations are disabled.
-- The backdrop scrim is `rgba(0, 0, 0, 0.45)` — intentionally neutral, not an accent color.
+- Respects `prefers-reduced-motion` - entry/exit animations are disabled.
+- The backdrop scrim is `rgba(0, 0, 0, 0.45)` - intentionally neutral, not an accent color.
 - Body scrollbar width is compensated on open to prevent layout shift.
 - `max-height` is capped at `85dvh` (desktop) / `92vh` (mobile); body content scrolls independently.

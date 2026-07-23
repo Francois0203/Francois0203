@@ -1,4 +1,4 @@
-/* Layout-only — inputs, labels, and buttons are styled globally by Components.css */
+/* Layout-only - inputs, labels, and buttons are styled globally by Components.css */
 
 /* ── Form grid ─────────────────────────────────────────────────────────────── */
 .grid {
@@ -96,7 +96,7 @@
   font-size: var(--font-size-sm);
 }
 
-/* The × remove button inside a chip — minimal, not styled as a full button */
+/* The × remove button inside a chip - minimal, not styled as a full button */
 .chipRemovable button {
   all: unset;
   cursor: pointer;

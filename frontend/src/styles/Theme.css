@@ -53,49 +53,49 @@
 
     /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
 
-    /* — Text: Light Mode (deep coffee → warm cocoa) — */
+    /* - Text: Light Mode (deep coffee → warm cocoa) - */
     --primary-text-color-light: #2a1810;         /* Deep coffee brown */
     --secondary-text-color-light: #5c3a1f;       /* Warm chestnut */
     --tertiary-text-color-light: #8a6a48;        /* Muted brown */
     --disabled-color-light: #b8a487;             /* Warm cream-gray */
 
-    /* — Text: Dark Mode (warm cream → ochre) — */
+    /* - Text: Dark Mode (warm cream → ochre) - */
     --primary-text-color-dark: #f7e8cd;          /* Warm cream */
     --secondary-text-color-dark: #d8b986;        /* Warm tan */
     --tertiary-text-color-dark: #a08866;         /* Muted ochre */
     --disabled-color-dark: #5a4a32;              /* Deep warm dim */
 
-    /* — Status Colors — */
-    --error-color: #b8391c;                      /* Burnt sienna — autumn red */
+    /* - Status Colors - */
+    --error-color: #b8391c;                      /* Burnt sienna - autumn red */
     --warning-color: #d4882a;                    /* Autumn amber */
-    --success-color: #6b8c3a;                    /* Olive moss — autumn green */
-    --info-color: #b8651c;                       /* Burnt orange — unified with accent */
+    --success-color: #6b8c3a;                    /* Olive moss - autumn green */
+    --info-color: #b8651c;                       /* Burnt orange - unified with accent */
 
-    /* — Status Backgrounds: Light Mode — */
+    /* - Status Backgrounds: Light Mode - */
     --success-background-color-light: #f4f0db;   /* Barely olive */
     --warning-background-color-light: #fdf2db;   /* Barely amber */
     --error-background-color-light: #fbeee5;     /* Barely sienna */
     --info-background-color-light: #fdf2db;      /* Barely orange */
 
-    /* — Status Backgrounds: Dark Mode — */
+    /* - Status Backgrounds: Dark Mode - */
     --success-background-color-dark: #1a1e0a;    /* Deep moss */
     --warning-background-color-dark: #28190a;    /* Deep amber */
     --error-background-color-dark: #2a1108;      /* Deep sienna */
     --info-background-color-dark: #2a1808;       /* Deep orange */
 
-    /* — Accent: Burnt Orange & Pumpkin Gold (Light Mode) — */
-    --accent-1-light: #b8651c;        /* Burnt orange — primary action */
-    --accent-2-light: #e07b1f;        /* Bright pumpkin — highlight */
-    --accent-3-light: #7a3e10;        /* Deep umber — pressed / deep */
-    --accent-hover-light: #8a4a14;    /* Rich amber — hover state */
+    /* - Accent: Burnt Orange & Pumpkin Gold (Light Mode) - */
+    --accent-1-light: #b8651c;        /* Burnt orange - primary action */
+    --accent-2-light: #e07b1f;        /* Bright pumpkin - highlight */
+    --accent-3-light: #7a3e10;        /* Deep umber - pressed / deep */
+    --accent-hover-light: #8a4a14;    /* Rich amber - hover state */
 
-    /* — Accent: Autumn Gold & Maple (Dark Mode) — */
-    --accent-1-dark: #e89542;         /* Warm pumpkin gold — primary on dark */
-    --accent-2-dark: #f5b56b;         /* Bright maple — lighter highlights */
-    --accent-3-dark: #c47020;         /* Deep amber — mid tone */
-    --accent-hover-dark: #f5b56b;     /* Maple — hover brightness */
+    /* - Accent: Autumn Gold & Maple (Dark Mode) - */
+    --accent-1-dark: #e89542;         /* Warm pumpkin gold - primary on dark */
+    --accent-2-dark: #f5b56b;         /* Bright maple - lighter highlights */
+    --accent-3-dark: #c47020;         /* Deep amber - mid tone */
+    --accent-hover-dark: #f5b56b;     /* Maple - hover brightness */
 
-    /* — Accent RGB (for rgba() usage) — */
+    /* - Accent RGB (for rgba() usage) - */
     --accent-1-rgb-light: 184, 101, 28;
     --accent-2-rgb-light: 224, 123, 31;
     --accent-3-rgb-light: 122, 62, 16;
@@ -104,34 +104,34 @@
     --accent-2-rgb-dark: 245, 181, 107;
     --accent-3-rgb-dark: 196, 112, 32;
 
-    /* — Leaf / Maple accent (cross-mode, used for decorative touches) — */
-    --leaf-color-light: #c4471c;      /* Maple red — autumn leaf */
-    --leaf-color-dark:  #e06030;      /* Bright maple — autumn leaf on dark */
+    /* - Leaf / Maple accent (cross-mode, used for decorative touches) - */
+    --leaf-color-light: #c4471c;      /* Maple red - autumn leaf */
+    --leaf-color-dark:  #e06030;      /* Bright maple - autumn leaf on dark */
     --leaf-color: var(--leaf-color-light);
 
-    /* — Accent Backgrounds: Light Mode — */
+    /* - Accent Backgrounds: Light Mode - */
     --accent-1-background-light: #fdf2db;        /* Barely pumpkin */
     --accent-2-background-light: #f8d8a8;        /* Warm honey tint */
     --accent-3-background-light: #ecb878;        /* Stronger amber tint */
 
-    /* — Accent Backgrounds: Dark Mode — */
+    /* - Accent Backgrounds: Dark Mode - */
     --accent-1-background-dark: #1f1408;         /* Deep warm pumpkin */
     --accent-2-background-dark: #2a1c0d;         /* Warmer amber surface */
     --accent-3-background-dark: #3a2814;         /* Deeper amber surface */
 
-    /* — Backgrounds: Light Mode (cream → toasted parchment) — */
-    --background-0-light: #f7eed8;               /* Warm parchment — page canvas */
-    --background-1-light: #fdf6e3;               /* Cream parchment — primary surface */
-    --background-2-light: #f0e0bc;               /* Toasted beige — elevated surface */
+    /* - Backgrounds: Light Mode (cream → toasted parchment) - */
+    --background-0-light: #f7eed8;               /* Warm parchment - page canvas */
+    --background-1-light: #fdf6e3;               /* Cream parchment - primary surface */
+    --background-2-light: #f0e0bc;               /* Toasted beige - elevated surface */
     --background-3-light: #e6d099;               /* Warm sand */
-    --background-4-light: #dac08c;               /* Golden sand — dividers, subtle cards */
+    --background-4-light: #dac08c;               /* Golden sand - dividers, subtle cards */
     --frosted-background-light: rgba(253, 246, 227, 0.86);
     --border-color-light: #dcbe8e;               /* Warm sand border */
     --border-color-hover-light: #c89e62;         /* Toasted border hover */
 
-    /* — Backgrounds: Dark Mode (deep walnut → coffee bean) — */
-    --background-0-dark: #120a04;                /* Deep walnut — page canvas */
-    --background-1-dark: #1c1208;                /* Coffee bean — primary surface */
+    /* - Backgrounds: Dark Mode (deep walnut → coffee bean) - */
+    --background-0-dark: #120a04;                /* Deep walnut - page canvas */
+    --background-1-dark: #1c1208;                /* Coffee bean - primary surface */
     --background-2-dark: #281c0e;                /* Warm dark elevated surface */
     --background-3-dark: #342612;                /* Warm raised surface */
     --background-4-dark: #44321c;                /* Warm high-elevation card */
@@ -139,7 +139,7 @@
     --border-color-dark: #44321c;                /* Warm subtle dark border */
     --border-color-hover-dark: #5a4226;          /* Warm slightly visible */
 
-    /* — Applied Colors (Default: Light Mode) — */
+    /* - Applied Colors (Default: Light Mode) - */
     color-scheme: light;   /* tells the browser to paint native UI (scrollbars!) light */
     --primary-text-color: var(--primary-text-color-light);
     --secondary-text-color: var(--secondary-text-color-light);

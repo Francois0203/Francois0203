@@ -12,7 +12,7 @@ import { HOME_FIELDS } from '../../content/copy/home';
 import { Modal, MagneticButton, CursorGlowButton } from '../../components';
 import styles from './Home.module.css';
 
-// Evaluated once at module load — avoids React overhead and is stable
+// Evaluated once at module load - avoids React overhead and is stable
 // across the page lifetime. Coarse-pointer (touch) also implies mobile.
 const IS_MOBILE = typeof window !== 'undefined' &&
   (window.matchMedia('(max-width: 767px)').matches ||
@@ -164,7 +164,7 @@ const WordReveal = ({ text, inView, className, delay = 0 }) => {
 
 /* ─── Chapter cards data ───────────────────────────────────────────────────── */
 
-// Non-text metadata only — the editable text (title/subtitle/opening/excerpt/cta)
+// Non-text metadata only - the editable text (title/subtitle/opening/excerpt/cta)
 // comes from site copy and is merged in at render time (see `chapters` below).
 const CHAPTER_META = [
   { id: 'bio',      chapter: 'I',   icon: <MdPerson />, to: '/bio',      accent: 'pumpkin' },
@@ -456,13 +456,13 @@ const Journey = ({ stops, onSelect }) => {
               type="button"
               className={styles.journeyDot}
               onClick={() => onSelect(s)}
-              aria-label={`${s.title} — ${s.period ?? ''}`}
+              aria-label={`${s.title} - ${s.period ?? ''}`}
             >
               <span className={styles.journeyDotInner} />
               <span className={styles.journeyDotPulse} aria-hidden="true" />
             </button>
             <div className={styles.journeyLabel}>
-              <span className={styles.journeyPeriod}>{s.period ?? '—'}</span>
+              <span className={styles.journeyPeriod}>{s.period ?? '-'}</span>
               <span className={styles.journeyTitle}>{s.title}</span>
               {s.subtitle && <span className={styles.journeySubtitle}>{s.subtitle}</span>}
             </div>
@@ -517,7 +517,7 @@ const toJourney = ({ experience = [], education = [] }) => {
   const ed = education.map(e => ({
     id:       `edu-${e.id}`,
     title:    e.institution || e.school || e.university || 'Education',
-    subtitle: [e.degree || e.qualification, e.field || e.major].filter(Boolean).join(' — '),
+    subtitle: [e.degree || e.qualification, e.field || e.major].filter(Boolean).join(' - '),
     period:   e.period || e.dates || (e.start ? `${e.start}${e.end ? ` – ${e.end}` : ' – Present'}` : null),
     description: e.description || e.summary,
     tags:     e.tags,
@@ -545,7 +545,7 @@ const Home = () => {
   const [openChapter,   setOpenChapter]   = useState(null);
   const [openMilestone, setOpenMilestone] = useState(null);
 
-  /* Cursor warm-spot — skip entirely on touch / coarse pointers */
+  /* Cursor warm-spot - skip entirely on touch / coarse pointers */
   useEffect(() => {
     const page = pageRef.current;
     if (!page) return;
@@ -593,7 +593,7 @@ const Home = () => {
     ?? 'Welcome, traveler. Pull up a chair, pour something warm, and let me tell you who I am.';
 
   // The drop-cap is the first letter of the (editable) opening paragraph itself,
-  // not a separate hardcoded glyph — so editing the copy changes the drop-cap too.
+  // not a separate hardcoded glyph - so editing the copy changes the drop-cap too.
   const coverText    = `${t.coverProseInvite} ${opening}`.trimStart();
   const coverDropcap = coverText.charAt(0);
   const coverRest    = coverText.slice(1);

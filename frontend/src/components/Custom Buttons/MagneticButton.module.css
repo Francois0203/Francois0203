@@ -1,11 +1,11 @@
 /* ==================== MagneticButton ====================
  * Layer stack (back → front):
- *   .sheen   — static diagonal highlight
- *   .content — children / text
+ *   .sheen   - static diagonal highlight
+ *   .content - children / text
  *
  * Magnetic transform driven by --mag-x / --mag-y (RAF + lerp via JS).
  * Inner content parallax driven by --inner-x / --inner-y.
- * No cursor glow — kept intentionally minimal.
+ * No cursor glow - kept intentionally minimal.
  */
 
 .button {
@@ -81,7 +81,7 @@
     filter: none;
 }
 
-/* Static diagonal highlight — gives depth without interaction cues */
+/* Static diagonal highlight - gives depth without interaction cues */
 .sheen {
     position: absolute;
     inset: 0;

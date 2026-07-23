@@ -52,7 +52,7 @@ const PersonalDetailsSection = () => {
           ? form[key].split(',').map(s => s.trim()).filter(Boolean)
           : form[key];
       });
-      await updatePersonal(payload); // merge:true — leaves other personal fields intact
+      await updatePersonal(payload); // merge:true - leaves other personal fields intact
       dirtyRef.current = false;
       showToast('success', 'Saved', 'Personal details updated');
     } catch {

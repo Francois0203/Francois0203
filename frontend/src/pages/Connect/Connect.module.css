@@ -366,7 +366,7 @@
   color: var(--success-color);
 }
 
-/* ── Skeleton shimmer — compositor-only ──────────────────────────────────────── */
+/* ── Skeleton shimmer - compositor-only ──────────────────────────────────────── */
 
 @keyframes shimmer {
   0%   { transform: translateX(-100%); }
@@ -507,7 +507,7 @@
 }
 
 @media (max-width: 767px) {
-  /* Conic-gradient spin is paint-heavy — replace with a static border on mobile */
+  /* Conic-gradient spin is paint-heavy - replace with a static border on mobile */
   .supportPillOuter::before {
     animation: none;
     background: rgba(var(--accent-1-rgb), 0.40);

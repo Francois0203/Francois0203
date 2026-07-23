@@ -531,7 +531,7 @@ a.contactItem:hover {
 }
 .nextChapterHint svg { font-size: 1em; }
 
-/* ── Skeleton — compositor-only shimmer ──────────────────────────────────── */
+/* ── Skeleton - compositor-only shimmer ──────────────────────────────────── */
 
 @keyframes shimmer {
   0%   { transform: translateX(-100%); }

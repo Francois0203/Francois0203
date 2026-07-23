@@ -3,7 +3,7 @@ import { subscribeDonation, updateDonation } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import formStyles from '../AdminForms.module.css';
 
-// portfolio/donation — the "Support" pill shown on the Connect page.
+// portfolio/donation - the "Support" pill shown on the Connect page.
 const FIELDS = [
   { key: 'title',      label: 'Title',       type: 'text',     placeholder: 'Support my work' },
   { key: 'message',    label: 'Message',     type: 'textarea', placeholder: 'A short line shown with the support link' },

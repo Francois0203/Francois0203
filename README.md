@@ -24,22 +24,22 @@ Computer scientist and aspiring data scientist with a dual background in **stati
 
 ## Current Work
 
-### Software Developer — Shareforce
+### Software Developer - Shareforce
 Maintaining and enhancing the company's main enterprise system within a structured team of senior, intermediate, and junior developers.
 
-### MSc Computer Science — North-West University
+### MSc Computer Science - North-West University
 Research focused on **astronomical data processing** and distributed computing systems.
 
 ---
 
 ## Previous Experience
 
-### Full Stack Software Developer — Aquatico Scientific *(Jan 2025 – Apr 2026)*
+### Full Stack Software Developer - Aquatico Scientific *(Jan 2025 – Apr 2026)*
 
 Built the company's enterprise systems from the ground up as one of two junior developers:
 
-- **EMS** — Environmental Management System
-- **LIMS** — Laboratory Information Management System (partial)
+- **EMS** - Environmental Management System
+- **LIMS** - Laboratory Information Management System (partial)
 - **Project Management** system
 
 **Stack:** `React · Node.js · PostgreSQL · Redis · MinIO · Docker · Kubernetes · GitHub CI/CD`
@@ -49,13 +49,13 @@ Built the company's enterprise systems from the ground up as one of two junior d
 ## Education
 
 **MSc Computer Science** *(2026 – present)*
-North-West University — Research: astronomical data processing
+North-West University - Research: astronomical data processing
 
 **BSc Honours Computer Science** *(2024)*
 North-West University
 
 **BSc Computer Science & Statistics** *(2021 – 2023)*
-North-West University — Dual-major combining computational theory with statistical analysis
+North-West University - Dual-major combining computational theory with statistical analysis
 
 ---
 

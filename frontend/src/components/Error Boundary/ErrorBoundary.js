@@ -4,18 +4,18 @@ import styles from './ErrorBoundary.module.css';
 /**
  * App-level error boundary.
  *
- * Drop-in — no required props:
+ * Drop-in - no required props:
  *   <ErrorBoundary>{children}</ErrorBoundary>
  *
  * Optional props:
- *   resetKey  — when this value changes, the boundary auto-clears (pass the
+ *   resetKey  - when this value changes, the boundary auto-clears (pass the
  *               route path so navigating away recovers automatically).
- *   onError   — (error, info) callback for logging / reporting.
+ *   onError   - (error, info) callback for logging / reporting.
  *
  * Recovery offered to the user, cheapest first:
- *   • Try again — re-render the children in place (no reload).
- *   • Reload    — full page reload.
- *   • Go home   — navigate to "/".
+ *   • Try again - re-render the children in place (no reload).
+ *   • Reload    - full page reload.
+ *   • Go home   - navigate to "/".
  */
 class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null, errorInfo: null };
@@ -54,7 +54,7 @@ class ErrorBoundary extends React.Component {
           <div className={styles.message}>
             <h1 className={styles.title}>Something went wrong</h1>
             <p className={styles.subtitle}>
-              An unexpected error interrupted the page. Try again first — if it
+              An unexpected error interrupted the page. Try again first - if it
               keeps happening, reload or head back home.
             </p>
           </div>
