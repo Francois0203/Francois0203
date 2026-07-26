@@ -248,7 +248,7 @@ export function parseReadme(markdown, { owner = '', repo = '', fallback = '' } =
   let techStack = [];
   if (techSec) {
     const fromList = extractListItems(techSec.content)
-      .map(item => stripMarkdown(item.split(/[-–-:·|]/)[0]).trim())
+      .map(item => stripMarkdown(item.split(/[-–:·|]/)[0]).trim())
       .filter(Boolean);
     const fromDots = extractDotSeparated(techSec.content);
     techStack = [...new Set([...fromList, ...fromDots])].slice(0, 10);
