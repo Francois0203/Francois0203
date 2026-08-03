@@ -100,14 +100,15 @@
 .chipRemovable button {
   all: unset;
   cursor: pointer;
-  color: var(--tertiary-text-color);
+  color: var(--error-color);   /* removal is destructive - red at rest, not only on hover */
+  opacity: 0.7;
   font-size: 1rem;
   line-height: 1;
   padding: 0 2px;
   border-radius: 50%;
-  transition: color var(--transition-fast);
+  transition: opacity var(--transition-fast);
 }
-.chipRemovable button:hover { color: var(--error-color); }
+.chipRemovable button:hover { opacity: 1; }
 
 /* ── List rows ─────────────────────────────────────────────────────────────── */
 .listRow {

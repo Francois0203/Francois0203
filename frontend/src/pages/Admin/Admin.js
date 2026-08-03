@@ -4,13 +4,14 @@ import { FaGoogle, FaGithub } from 'react-icons/fa';
 import { IoSettingsSharp } from 'react-icons/io5';
 import {
   MdPerson, MdBadge, MdEditNote, MdBuild, MdWork, MdSchool, MdFavorite,
-  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome,
+  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdVerified,
 } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
 import { signInWithGoogle, signOutUser } from '../../firebase/auth';
 import {
   subscribeExperience, createExperience, updateExperience, deleteExperience,
   subscribeEducation,  createEducation,  updateEducation,  deleteEducation,
+  subscribeCertifications, createCertification, updateCertification, deleteCertification,
 } from '../../firebase/admin';
 import { useToast, KebabMenu } from '../../components';
 import ProfileSection         from './sections/ProfileSection';
@@ -50,6 +51,19 @@ const EDUCATION_FIELDS = [
   { key: 'order',       label: 'Order',       type: 'number'                    },
 ];
 
+// Field keys mirror EDUCATION_FIELDS so the Bio timeline can render all three
+// sections through the same TimelineEntry component.
+const CERTIFICATION_FIELDS = [
+  { key: 'issuer',      label: 'Issuer',      type: 'text',     required: true  },
+  { key: 'credential',  label: 'Credential',  type: 'text',     required: true  },
+  { key: 'period',      label: 'Period',      type: 'text'                      },
+  { key: 'start',       label: 'Issued',      type: 'text'                      },
+  { key: 'end',         label: 'Expires',     type: 'text'                      },
+  { key: 'description', label: 'Description', type: 'textarea'                  },
+  { key: 'tags',        label: 'Tags',        type: 'tags'                      },
+  { key: 'order',       label: 'Order',       type: 'number'                    },
+];
+
 // The settings tree. `group` buckets items in the sidebar; `quickAdd` adds a
 // three-dots menu on that row for jumping straight into "Add entry".
 const GROUPS = ['Identity', 'Content', 'Projects', 'Inbox'];
@@ -61,6 +75,7 @@ const SECTIONS = [
   { id: 'skills',     group: 'Content',  title: 'Skills',            icon: <MdBuild /> },
   { id: 'experience', group: 'Content',  title: 'Experience',        icon: <MdWork />,   quickAdd: true },
   { id: 'education',  group: 'Content',  title: 'Education',         icon: <MdSchool />, quickAdd: true },
+  { id: 'certifications', group: 'Content', title: 'Certifications',  icon: <MdVerified />, quickAdd: true },
   { id: 'interests',  group: 'Content',  title: 'Interests',         icon: <MdFavorite /> },
   { id: 'socials',    group: 'Content',  title: 'Social Links',      icon: <MdShare /> },
   { id: 'donation',   group: 'Content',  title: 'Donation',          icon: <MdVolunteerActivism /> },
@@ -191,6 +206,26 @@ const Admin = () => {
                 <strong>{r.institution}</strong>
                 <span style={{ color: 'var(--secondary-text-color)' }}>
                   {[r.degree, r.field].filter(Boolean).join(', ')}{r.period ? ` · ${r.period}` : ''}
+                </span>
+              </>
+            )}
+          />
+        );
+      case 'certifications':
+        return (
+          <RecordSection
+            title="Certifications"
+            fields={CERTIFICATION_FIELDS}
+            subscribe={subscribeCertifications}
+            onCreate={createCertification}
+            onUpdate={updateCertification}
+            onDelete={deleteCertification}
+            openAddOnMount={view.add}
+            renderSummary={r => (
+              <>
+                <strong>{r.credential}</strong>
+                <span style={{ color: 'var(--secondary-text-color)' }}>
+                  {r.issuer}{r.period ? ` · ${r.period}` : ''}
                 </span>
               </>
             )}

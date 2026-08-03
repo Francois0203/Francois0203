@@ -8,22 +8,33 @@
  */
 
 /* ----------------------------------------------------------------------------
- * Input - remove browser box-shadow, hide caret until focused
+ * Input - neutralise the global `input` styling from Components.css
+ * ----------------------------------------------------------------------------
+ * The global `input, textarea, select` rules (and their :hover / :focus states)
+ * would otherwise paint a second bordered, frosted, padded box around
+ * react-select's own search input, nested inside the control.
+ * `input:hover` outspecifies react-select's emotion classes, so these need
+ * !important rather than plain overrides.
  * ---------------------------------------------------------------------------- */
-.searchable-select__input-container,
-.searchable-select__control .css-1wa3eu0-ValueContainer {
-  box-shadow: none !important;
-}
-
-.searchable-select__input {
-  caret-color: transparent !important;
-  outline: none !important;
+.searchable-select__control input {
   border: none !important;
+  outline: none !important;
   box-shadow: none !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  font-size: inherit !important;
+  color: var(--primary-text-color) !important;
 }
 
-.searchable-select__control--is-focused .searchable-select__input {
-  caret-color: var(--primary-text-color) !important;
+.searchable-select__input-container {
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* ----------------------------------------------------------------------------

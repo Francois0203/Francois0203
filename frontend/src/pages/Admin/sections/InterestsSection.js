@@ -59,7 +59,7 @@ const InterestsSection = () => {
             onKeyDown={e => e.key === 'Enter' && add()}
           />
         </div>
-        <button type="button" className="btn-outline" onClick={add}>Add</button>
+        <button type="button" className="btn-success" onClick={add}>Add</button>
       </div>
 
       <div className={formStyles.actions}>

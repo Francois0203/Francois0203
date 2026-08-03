@@ -50,7 +50,7 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
   return (
     <div>
       <div className={styles.sectionHeader}>
-        <button type="button" className="btn-outline" onClick={() => setModal({ mode: 'add' })}>
+        <button type="button" className="btn-success" onClick={() => setModal({ mode: 'add' })}>
           + Add Entry
         </button>
       </div>

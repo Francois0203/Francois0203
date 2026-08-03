@@ -132,14 +132,9 @@
   overscroll-behavior: contain;
 }
 
-/* Subtle themed scrollbar. */
-.body::-webkit-scrollbar        { width: 6px; }
-.body::-webkit-scrollbar-track  { background: transparent; }
-.body::-webkit-scrollbar-thumb  {
-  background: var(--border-color-hover);
-  border-radius: var(--radius-full);
-}
-.body::-webkit-scrollbar-thumb:hover { background: var(--accent-1); }
+/* Scrollbar is deliberately not styled here - the global accent scrollbar in
+   styles/Components.css already applies. Overriding the thumb locally is what
+   made this one grey while every other scrollbar was accent. */
 
 /* ── Close Button ────────────────────────────────────────────────────────── */
 

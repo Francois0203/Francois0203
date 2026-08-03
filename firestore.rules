@@ -18,6 +18,7 @@ service cloud.firestore {
     match /portfolio/{doc}      { allow read: if true; allow write: if isAdmin(); }
     match /experience/{doc}     { allow read: if true; allow write: if isAdmin(); }
     match /education/{doc}      { allow read: if true; allow write: if isAdmin(); }
+    match /certifications/{doc} { allow read: if true; allow write: if isAdmin(); }
     match /projects/{doc}       { allow read: if true; allow write: if isAdmin(); }
     match /githubProjects/{doc} { allow read: if true; allow write: if isAdmin(); }
 

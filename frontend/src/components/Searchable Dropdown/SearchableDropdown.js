@@ -8,6 +8,9 @@ import './SearchableDropdown.css';
 // via classNamePrefix selectors - rgba(var(--x), alpha) doesn’t resolve in JS.
 const customStyles = {
   // ── Control (input wrapper) ──────────────────────────────────────────────────────────
+  // Metrics deliberately mirror the global `input` rules in Components.css
+  // (font-size-md, 0.75rem block padding, spacing-md inline) so a dropdown and
+  // a text input sitting in the same row render at the same height.
   control: (base, { isDisabled }) => ({
     ...base,
     minHeight: '42px',
@@ -21,7 +24,7 @@ const customStyles = {
     boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)',
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? 0.55 : 1,
-    fontSize: 'var(--font-size-base)',
+    fontSize: 'var(--font-size-md)',
     transition: 'border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease',
     // Hover + focus states are handled in CSS to allow rgba() composition
   }),
@@ -29,8 +32,7 @@ const customStyles = {
   valueContainer: (base) => ({
     ...base,
     height: 'auto',
-    minHeight: '42px',
-    padding: '0 var(--spacing-sm) 0 var(--spacing-md)',
+    padding: '0.75rem var(--spacing-sm) 0.75rem var(--spacing-md)',
     display: 'flex',
     alignItems: 'center',
     flexWrap: 'wrap',
@@ -47,7 +49,6 @@ const customStyles = {
   // ── Indicators ────────────────────────────────────────────────────────────────
   indicatorsContainer: (base) => ({
     ...base,
-    minHeight: '42px',
     alignSelf: 'stretch',
     display: 'flex',
     alignItems: 'center',
@@ -110,7 +111,7 @@ const customStyles = {
     borderRadius: 'var(--radius-sm)',
     padding:      'var(--spacing-sm) var(--spacing-md)',
     cursor:       'pointer',
-    fontSize:     'var(--font-size-sm)',
+    fontSize:     'var(--font-size-base)',
     color:        'var(--primary-text-color)',
     transition:   'background-color 120ms ease',
     background:   'transparent', // hover/selected states handled in CSS
@@ -122,11 +123,11 @@ const customStyles = {
     color: 'var(--primary-text-color)',
   }),
 
+  // Keep react-select v5's own grid placement (base.gridArea) - overriding it
+  // with position/margin knocks the placeholder out of the control's layout.
   placeholder: (base) => ({
     ...base,
     color: 'var(--tertiary-text-color)',
-    position: 'absolute',
-    margin: 0,
     pointerEvents: 'none',
   }),
 

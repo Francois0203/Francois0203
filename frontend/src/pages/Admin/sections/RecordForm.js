@@ -59,7 +59,7 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="button" onClick={onCancel} disabled={saving}>Cancel</button>
+        <button type="button" className="btn-danger" onClick={onCancel} disabled={saving}>Cancel</button>
         <button type="submit" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save'}
         </button>

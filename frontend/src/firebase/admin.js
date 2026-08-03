@@ -131,6 +131,28 @@ export const updateEducation = (id, data) =>
 export const deleteEducation = (id) =>
   deleteDoc(doc(db, 'education', id));
 
+// ─── Certifications ──────────────────────────────────────────────────────────
+
+export const subscribeCertifications = (cb, onErr) =>
+  onSnapshot(
+    collection(db, 'certifications'),
+    snap => {
+      const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      docs.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
+      cb(docs);
+    },
+    onErr,
+  );
+
+export const createCertification = (data) =>
+  addDoc(collection(db, 'certifications'), { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+
+export const updateCertification = (id, data) =>
+  updateDoc(doc(db, 'certifications', id), { ...data, updatedAt: serverTimestamp() });
+
+export const deleteCertification = (id) =>
+  deleteDoc(doc(db, 'certifications', id));
+
 // ─── GitHub Projects ─────────────────────────────────────────────────────────
 
 export const subscribeGitHubProjects = (cb, onErr) =>

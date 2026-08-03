@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-label="François Meiring — Data Scientist &amp; Software Developer">
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdf6e3"/>
+      <stop offset="100%" stop-color="#f7eed8"/>
+    </linearGradient>
+    <linearGradient id="nameGrad" x1="0" y1="0" x2="1" y2="0.35">
+      <stop offset="0%" stop-color="#7a3e10"/>
+      <stop offset="45%" stop-color="#b8651c"/>
+      <stop offset="100%" stop-color="#e07b1f"/>
+    </linearGradient>
+    <linearGradient id="ruleL" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b8651c" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#b8651c" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="ruleR" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b8651c" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#b8651c" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="warm" cx="50%" cy="0%" r="75%">
+      <stop offset="0%" stop-color="#e07b1f" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#e07b1f" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Parchment dot texture, mirroring the .parchment overlay on the site. -->
+    <pattern id="dots" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="rgba(122,62,16,0.07)"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="340" rx="14" fill="url(#canvas)"/>
+  <rect width="1200" height="340" rx="14" fill="url(#dots)"/>
+  <rect width="1200" height="340" rx="14" fill="url(#warm)"/>
+
+  <!-- Coffee-ring stains, as on the page background -->
+  <circle cx="132" cy="86" r="48" fill="none" stroke="rgba(110,64,26,0.07)" stroke-width="7"/>
+  <circle cx="1064" cy="246" r="62" fill="none" stroke="rgba(110,64,26,0.07)" stroke-width="8"/>
+  <circle cx="196" cy="272" r="22" fill="none" stroke="rgba(110,64,26,0.07)" stroke-width="5"/>
+
+  <!-- Scattered leaves -->
+  <g transform="translate(86,214) rotate(-18) scale(0.4688)" opacity="0.3"><path d="M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z" fill="#c4471c"/></g>
+  <g transform="translate(1092,74) rotate(24) scale(0.4062)" opacity="0.32"><path d="M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z" fill="#e07b1f"/></g>
+  <g transform="translate(1006,122) rotate(52) scale(0.2656)" opacity="0.22"><path d="M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z" fill="#c4471c"/></g>
+
+  <rect x="0.75" y="0.75" width="1198.5" height="338.5" rx="14"
+        fill="none" stroke="#dcbe8e" stroke-width="1.5"/>
+
+  <!-- Top flourish: feather quill + rule, echoing .coverFlourish -->
+  <g transform="translate(600.0,52)">
+    <rect x="-96" y="-0.5" width="70" height="1" fill="url(#ruleL)"/>
+    <rect x="26" y="-0.5" width="70" height="1" fill="url(#ruleR)"/>
+    <path d="M-9 7 C-9 -4, 0 -11, 9 -12 C8 -2, 2 6, -9 7 Z M-9 7 L-13 11"
+          fill="#b8651c" stroke="#b8651c" stroke-width="1.4"
+          stroke-linecap="round" opacity="0.9"/>
+  </g>
+
+  <text x="600.0" y="96" text-anchor="middle" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+        font-size="13" font-weight="700" letter-spacing="6.5"
+        fill="#7a3e10">PROLOGUE</text>
+
+  <text x="600.0" y="136" text-anchor="middle" font-family="Georgia,'Times New Roman',serif"
+        font-size="18" letter-spacing="6" fill="#7a3e10"
+        opacity="0.85">THE PORTFOLIO OF</text>
+
+  <text x="600.0" y="207" text-anchor="middle" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+        font-size="66" font-weight="800" letter-spacing="-1.6"
+        fill="url(#nameGrad)">Fran&#231;ois Meiring</text>
+
+  <!-- Divider with a maple leaf at centre, as .coverDivider -->
+  <g transform="translate(600.0,238)">
+    <rect x="-190" y="-0.5" width="160" height="1" fill="url(#ruleL)"/>
+    <rect x="30" y="-0.5" width="160" height="1" fill="url(#ruleR)"/>
+    <g transform="translate(-11,-11) rotate(0) scale(0.3438)" opacity="0.95"><path d="M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z" fill="#c4471c"/></g>
+  </g>
+
+  <text x="600.0" y="277" text-anchor="middle" font-family="Georgia,'Times New Roman',serif"
+        font-size="17" font-style="italic" fill="#5c3a1f">a collection of chapters</text>
+
+  <text x="600.0" y="308" text-anchor="middle" font-family="-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"
+        font-size="13" font-weight="600" letter-spacing="2.6"
+        fill="#8a6a48">DATA SCIENTIST &#183; RESEARCHER &#183; DEVELOPER</text>
+</svg>

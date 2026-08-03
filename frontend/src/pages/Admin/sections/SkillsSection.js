@@ -97,7 +97,7 @@ const SkillsSection = () => {
             onKeyDown={e => e.key === 'Enter' && addCategory()}
           />
         </div>
-        <button type="button" className="btn-outline" onClick={addCategory}>Add Category</button>
+        <button type="button" className="btn-success" onClick={addCategory}>Add Category</button>
       </div>
 
       <div className={formStyles.actions}>

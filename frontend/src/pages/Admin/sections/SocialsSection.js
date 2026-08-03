@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeSocial, updateSocial } from '../../../firebase/admin';
-import { useToast } from '../../../components';
+import { useToast, SearchableDropdown } from '../../../components';
 import formStyles from '../AdminForms.module.css';
 
 const PLATFORMS = [
@@ -8,6 +8,14 @@ const PLATFORMS = [
   'twitter', 'behance', 'dribbble', 'youtube',
   'tiktok', 'whatsapp', 'email',
 ];
+
+const PLATFORM_OPTIONS = PLATFORMS.map(pl => ({
+  value: pl,
+  label: pl.charAt(0).toUpperCase() + pl.slice(1),
+}));
+
+const platformOption = (key) =>
+  PLATFORM_OPTIONS.find(o => o.value === key) ?? null;
 
 const SocialsSection = () => {
   const { showToast } = useToast();
@@ -25,6 +33,10 @@ const SocialsSection = () => {
 
   const set = (i, field, value) =>
     setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p));
+
+  // `platform` mirrors `key` (it drives the card title), so keep both in step.
+  const setPlatform = (i, key) =>
+    setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, key, platform: key } : p));
 
   const add = () => {
     const url = newUrl.trim();
@@ -60,10 +72,15 @@ const SocialsSection = () => {
           </div>
           <div className={formStyles.row}>
             <div className="input-container">
-              <label>Platform</label>
-              <select value={p.key} onChange={e => set(i, 'key', e.target.value)}>
-                {PLATFORMS.map(pl => <option key={pl} value={pl}>{pl}</option>)}
-              </select>
+              {/* Not a <label>: SearchableDropdown is not a labelable control. */}
+              <span className="input-label">Platform</span>
+              <SearchableDropdown
+                options={PLATFORM_OPTIONS}
+                value={platformOption(p.key)}
+                onChange={opt => opt && setPlatform(i, opt.value)}
+                placeholder="Platform"
+                isClearable={false}
+              />
             </div>
             <div className="input-container" style={{ flex: 2 }}>
               <label>URL</label>
@@ -81,10 +98,15 @@ const SocialsSection = () => {
         <p className={formStyles.cardTitle}>Add social link</p>
         <div className={formStyles.row}>
           <div className="input-container">
-            <label>Platform</label>
-            <select value={newKey} onChange={e => setNewKey(e.target.value)}>
-              {PLATFORMS.map(pl => <option key={pl} value={pl}>{pl}</option>)}
-            </select>
+            {/* Not a <label>: SearchableDropdown is not a labelable control. */}
+            <span className="input-label">Platform</span>
+            <SearchableDropdown
+              options={PLATFORM_OPTIONS}
+              value={platformOption(newKey)}
+              onChange={opt => opt && setNewKey(opt.value)}
+              placeholder="Platform"
+              isClearable={false}
+            />
           </div>
           <div className="input-container" style={{ flex: 2 }}>
             <label>URL</label>
@@ -96,7 +118,7 @@ const SocialsSection = () => {
               onKeyDown={e => e.key === 'Enter' && add()}
             />
           </div>
-          <button type="button" className="btn-outline" onClick={add}>Add</button>
+          <button type="button" className="btn-success" onClick={add}>Add</button>
         </div>
       </div>
 

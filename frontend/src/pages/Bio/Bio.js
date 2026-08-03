@@ -83,6 +83,7 @@ const Bio = () => {
   const interests  = data?.interests  ?? [];
   const experience = data?.experience ?? [];
   const education  = data?.education  ?? [];
+  const certifications = data?.certifications ?? [];
   const social     = data?.social     ?? [];
 
   const email    = personal.email    || contact.email;
@@ -325,6 +326,29 @@ const Bio = () => {
                 }
               </div>
             </div>
+
+            {/* Certifications - hidden when empty, unlike Experience and
+                Education, so the section only appears once there is one. */}
+            {(loading || certifications.length > 0) && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionHeading}>{t.certificationsHeading}</h2>
+                <div className={styles.timeline}>
+                  {loading
+                    ? [0, 1].map(i => <SkelEntry key={i} />)
+                    : certifications.map(c => (
+                        <TimelineEntry
+                          key={c.id}
+                          title={c.issuer || c.organisation}
+                          subtitle={c.credential || c.name || c.title}
+                          p={period(c)}
+                          description={c.description || c.summary}
+                          tags={c.tags}
+                        />
+                      ))
+                  }
+                </div>
+              </div>
+            )}
 
           </main>
         </div>

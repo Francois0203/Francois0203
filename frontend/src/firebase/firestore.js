@@ -27,8 +27,9 @@ const orderedCollection = async (col) => {
   }
 };
 
-export const getExperience = () => orderedCollection('experience');
-export const getEducation  = () => orderedCollection('education');
+export const getExperience     = () => orderedCollection('experience');
+export const getEducation      = () => orderedCollection('education');
+export const getCertifications = () => orderedCollection('certifications');
 
 // ─── Full portfolio fetch (all sections in parallel) ──────────────────────────
 // Uses allSettled so one failing read never crashes the whole page.
@@ -37,10 +38,15 @@ export const getPortfolio = () =>
   Promise.allSettled([
     getPersonal(), getContact(), getSocial(), getDonation(),
     getSkills(), getInterests(), getExperience(), getEducation(),
+    getCertifications(),
   ]).then(results => {
-    const [personal, contact, social, donation, skills, interests, experience, education] =
+    const [personal, contact, social, donation, skills, interests, experience,
+           education, certifications] =
       results.map(r => (r.status === 'fulfilled' ? r.value : null));
-    return { personal, contact, social, donation, skills, interests, experience, education };
+    return {
+      personal, contact, social, donation, skills, interests, experience,
+      education, certifications,
+    };
   });
 
 // ─── Contact form write ───────────────────────────────────────────────────────

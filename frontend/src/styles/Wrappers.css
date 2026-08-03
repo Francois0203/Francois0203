@@ -10,7 +10,10 @@
     margin-bottom: var(--spacing-md);
 }
 
-.input-container > label {
+/* `.input-label` is for captions on non-labelable controls (e.g. the
+   react-select combobox), which cannot legally be wrapped in a <label>. */
+.input-container > label,
+.input-container > .input-label {
     position: relative;
     display: flex;
     flex-direction: column;

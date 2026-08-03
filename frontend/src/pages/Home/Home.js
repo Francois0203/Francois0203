@@ -1,8 +1,8 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  MdArrowOutward, MdPerson, MdCode, MdEmail,
-  MdAutoStories, MdMenuBook,
+  MdArrowOutward, MdCode, MdEmail,
+  MdAutoStories, MdMenuBook, MdWork, MdSchool,
 } from 'react-icons/md';
 import { FaGithub, FaLinkedin, FaLeaf, FaFeatherAlt } from 'react-icons/fa';
 import usePortfolioData from '../../hooks/usePortfolioData';
@@ -162,316 +162,54 @@ const WordReveal = ({ text, inView, className, delay = 0 }) => {
   );
 };
 
-/* ─── Chapter cards data ───────────────────────────────────────────────────── */
-
-// Non-text metadata only - the editable text (title/subtitle/opening/excerpt/cta)
-// comes from site copy and is merged in at render time (see `chapters` below).
-const CHAPTER_META = [
-  { id: 'bio',      chapter: 'I',   icon: <MdPerson />, to: '/bio',      accent: 'pumpkin' },
-  { id: 'projects', chapter: 'II',  icon: <MdCode />,   to: '/projects', accent: 'maple'   },
-  { id: 'connect',  chapter: 'III', icon: <MdEmail />,  to: '/connect',  accent: 'honey'   },
-];
-
-/* ─── Chapter illustrations (inline SVG, no external assets) ───────────────── */
-
-const ChapterArt = ({ kind }) => {
-  if (kind === 'bio') {
-    return (
-      <svg viewBox="0 0 200 220" className={styles.chapterArtSvg} aria-hidden="true">
-        {/* Stack of books with leaves */}
-        <defs>
-          <linearGradient id="b1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"  stopColor="var(--accent-1)" />
-            <stop offset="100%" stopColor="var(--accent-3)" />
-          </linearGradient>
-          <linearGradient id="b2" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"  stopColor="var(--accent-2)" />
-            <stop offset="100%" stopColor="var(--accent-1)" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="100" cy="195" rx="78" ry="8" fill="rgba(0,0,0,0.18)" />
-        <rect x="34"  y="150" width="132" height="34" rx="3" fill="url(#b1)" />
-        <rect x="40"  y="156" width="120" height="3"  fill="rgba(255,255,255,0.25)" />
-        <rect x="44"  y="112" width="116" height="38" rx="3" fill="url(#b2)" transform="rotate(-2 100 130)" />
-        <rect x="50"  y="118" width="104" height="3"  fill="rgba(255,255,255,0.25)" transform="rotate(-2 100 119)" />
-        <rect x="50"  y="74"  width="100" height="38" rx="3" fill="url(#b1)" transform="rotate(3 100 92)" />
-        <rect x="55"  y="80"  width="90"  height="3"  fill="rgba(255,255,255,0.25)" transform="rotate(3 100 82)" />
-        {/* leaf perched on top */}
-        <g transform="translate(112,52) rotate(20)">
-          <path
-            d="M0 0 L4 10 L14 7 L11 18 L21 19 L15 26 L24 30 L15 33 L20 41 L11 39 L13 50 L4 45 L0 54 L-4 45 L-13 50 L-11 39 L-20 41 L-15 33 L-24 30 L-15 26 L-21 19 L-11 18 L-14 7 L-4 10 Z"
-            fill="var(--leaf-color)"
-          />
-        </g>
-        {/* bookmark */}
-        <rect x="142" y="74" width="6" height="42" fill="var(--accent-2)" />
-      </svg>
-    );
-  }
-  if (kind === 'projects') {
-    return (
-      <svg viewBox="0 0 200 220" className={styles.chapterArtSvg} aria-hidden="true">
-        <defs>
-          <linearGradient id="p1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stopColor="var(--accent-2)" />
-            <stop offset="100%" stopColor="var(--accent-1)" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="100" cy="200" rx="80" ry="7" fill="rgba(0,0,0,0.18)" />
-        {/* Workbench */}
-        <rect x="24" y="160" width="152" height="34" rx="3" fill="var(--accent-3)" />
-        <rect x="24" y="160" width="152" height="6"  fill="rgba(255,255,255,0.18)" />
-        {/* Monitor */}
-        <rect x="60" y="60" width="90" height="64" rx="4" fill="url(#p1)" stroke="var(--accent-3)" strokeWidth="2" />
-        <rect x="68" y="68" width="74" height="48" rx="2" fill="rgba(0,0,0,0.25)" />
-        {/* Code lines */}
-        <rect x="72" y="74" width="36" height="3" rx="1.5" fill="var(--accent-2)" />
-        <rect x="72" y="82" width="58" height="3" rx="1.5" fill="rgba(255,255,255,0.55)" />
-        <rect x="80" y="90" width="44" height="3" rx="1.5" fill="rgba(255,255,255,0.40)" />
-        <rect x="80" y="98" width="28" height="3" rx="1.5" fill="var(--accent-2)" />
-        <rect x="72" y="106" width="52" height="3" rx="1.5" fill="rgba(255,255,255,0.40)" />
-        {/* Stand */}
-        <rect x="92" y="124" width="26" height="14" fill="var(--accent-3)" />
-        <rect x="80" y="138" width="50" height="6" rx="2" fill="var(--accent-1)" />
-        {/* Mug */}
-        <path d="M30 138 L52 138 L50 158 L32 158 Z" fill="var(--accent-1)" />
-        <path d="M52 142 Q60 144 60 150 Q60 156 52 156" stroke="var(--accent-1)" strokeWidth="3" fill="none" />
-        <path d="M36 132 Q41 124 46 132" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none" />
-        {/* Leaf on workbench */}
-        <g transform="translate(150,150) rotate(-25)">
-          <path
-            d="M0 0 C -3 6 -10 5 -11 11 C -16 12 -16 18 -12 20 C -16 23 -14 28 -9 28 C -9 33 -4 35 0 32 C 4 35 9 33 9 28 C 14 28 16 23 12 20 C 16 18 16 12 11 11 C 10 5 3 6 0 0 Z"
-            fill="var(--leaf-color)"
-          />
-        </g>
-      </svg>
-    );
-  }
-  /* connect */
-  return (
-    <svg viewBox="0 0 200 220" className={styles.chapterArtSvg} aria-hidden="true">
-      <defs>
-        <linearGradient id="c1" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"  stopColor="var(--background-1)" />
-          <stop offset="100%" stopColor="var(--accent-2-background)" />
-        </linearGradient>
-      </defs>
-      <ellipse cx="100" cy="195" rx="76" ry="7" fill="rgba(0,0,0,0.18)" />
-      {/* Envelope */}
-      <rect x="30" y="70" width="140" height="100" rx="6" fill="url(#c1)" stroke="var(--accent-3)" strokeWidth="2" />
-      <path d="M30 76 L100 130 L170 76" fill="none" stroke="var(--accent-3)" strokeWidth="2" />
-      <path d="M30 170 L82 124" stroke="var(--accent-3)" strokeWidth="2" fill="none" />
-      <path d="M170 170 L118 124" stroke="var(--accent-3)" strokeWidth="2" fill="none" />
-      {/* Wax seal */}
-      <circle cx="100" cy="140" r="18" fill="var(--leaf-color)" />
-      <circle cx="100" cy="140" r="18" fill="none" stroke="rgba(0,0,0,0.18)" strokeWidth="1.5" />
-      <path
-        d="M100 132 L102 138 L108 138 L103 142 L105 148 L100 144 L95 148 L97 142 L92 138 L98 138 Z"
-        fill="rgba(255,255,255,0.65)"
-      />
-      {/* Feather quill */}
-      <g transform="translate(150,40) rotate(35)">
-        <path d="M0 0 Q 6 -30 -2 -56 Q -10 -30 -4 0 Z" fill="var(--accent-2)" />
-        <line x1="-1" y1="-2" x2="3" y2="-50" stroke="var(--accent-3)" strokeWidth="1" />
-        <line x1="-1" y1="0" x2="14" y2="36" stroke="var(--accent-3)" strokeWidth="2" />
-      </g>
-      {/* leaf */}
-      <g transform="translate(40,40) rotate(-20)">
-        <path
-          d="M0 0 L3 7 L10 5 L8 13 L15 13 L11 19 L17 22 L11 24 L14 29 L8 28 L9 36 L3 33 L0 39 L-3 33 L-9 36 L-8 28 L-14 29 L-11 24 L-17 22 L-11 19 L-15 13 L-8 13 L-10 5 L-3 7 Z"
-          fill="var(--leaf-color)"
-        />
-      </g>
-    </svg>
-  );
-};
-
-/* ─── Coverflow chapter carousel ───────────────────────────────────────────── */
-
-const ChapterCarousel = ({ chapters, onOpen }) => {
-  const [current, setCurrent] = useState(0);
-  const total = chapters.length;
-  const lockRef = useRef(false);
-
-  const goTo = useCallback((idx) => {
-    if (lockRef.current) return;
-    lockRef.current = true;
-    setCurrent(((idx % total) + total) % total);
-    setTimeout(() => { lockRef.current = false; }, 480);
-  }, [total]);
-
-  const goNext = useCallback(() => goTo(current + 1), [current, goTo]);
-  const goPrev = useCallback(() => goTo(current - 1), [current, goTo]);
-
-  /* Keyboard */
-  const onKeyDown = (e) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); goPrev(); }
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(chapters[current]); }
-  };
-
-  /* Touch / swipe */
-  const touchX = useRef(null);
-  const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
-  const onTouchEnd   = (e) => {
-    if (touchX.current == null) return;
-    const d = touchX.current - e.changedTouches[0].clientX;
-    if (Math.abs(d) > 38) (d > 0 ? goNext : goPrev)();
-    touchX.current = null;
-  };
-
-  /* Offset → coverflow style */
-  const slideStyle = (offset) => {
-    const abs = Math.abs(offset);
-    const sign = Math.sign(offset);
-    if (abs > 2) return { opacity: 0, pointerEvents: 'none', visibility: 'hidden' };
-    if (abs === 0) return {
-      transform: 'translateX(0) scale(1) rotateY(0deg)',
-      opacity: 1, zIndex: 4, filter: 'none',
-    };
-    if (abs === 1) return {
-      transform: `translateX(${sign * 58}%) scale(0.82) rotateY(${-sign * 22}deg)`,
-      opacity: 0.85, zIndex: 3,
-      filter: 'brightness(0.78) saturate(0.9)',
-      cursor: 'pointer',
-    };
-    return {
-      transform: `translateX(${sign * 96}%) scale(0.66) rotateY(${-sign * 32}deg)`,
-      opacity: 0.45, zIndex: 2,
-      filter: 'brightness(0.6) saturate(0.7) blur(1px)',
-      cursor: 'pointer',
-    };
-  };
-
-  return (
-    <div
-      className={styles.coverflow}
-      onKeyDown={onKeyDown}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-      tabIndex={0}
-      role="region"
-      aria-label="Choose a chapter"
-    >
-      <button
-        className={`${styles.coverArrow} ${styles.coverArrowPrev}`}
-        onClick={goPrev}
-        aria-label="Previous chapter"
-        type="button"
-      >‹</button>
-
-      <div className={styles.coverStage}>
-        {chapters.map((c, idx) => {
-          let off = idx - current;
-          if (off >  total / 2) off -= total;
-          if (off < -total / 2) off += total;
-          const isActive = off === 0;
-          return (
-            <div
-              key={c.id}
-              className={`${styles.coverCard} ${styles[`accent_${c.accent}`]} ${isActive ? styles.coverCardActive : ''}`}
-              style={slideStyle(off)}
-              onClick={() => (isActive ? onOpen(c) : goTo(idx))}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`Chapter ${c.chapter}: ${c.title}`}
-            >
-              <span className={styles.coverChapter}>Ch. {c.chapter}</span>
-              <span className={styles.coverIcon} aria-hidden="true">{c.icon}</span>
-
-              <div className={styles.coverArtFrame}>
-                <ChapterArt kind={c.id} />
-                <div className={styles.coverArtGloss} aria-hidden="true" />
-              </div>
-
-              <div className={styles.coverMeta}>
-                <h3 className={styles.coverTitle}>{c.title}</h3>
-                <p className={styles.coverSubtitle}>{c.subtitle}</p>
-              </div>
-
-              {isActive && (
-                <div className={styles.coverOpen}>
-                  <span>Open chapter</span>
-                  <MdArrowOutward aria-hidden="true" />
-                </div>
-              )}
-
-              <div className={styles.coverSpine} aria-hidden="true" />
-            </div>
-          );
-        })}
-      </div>
-
-      <button
-        className={`${styles.coverArrow} ${styles.coverArrowNext}`}
-        onClick={goNext}
-        aria-label="Next chapter"
-        type="button"
-      >›</button>
-
-      <div className={styles.coverDots} role="tablist" aria-label="Chapter indicators">
-        {chapters.map((c, idx) => (
-          <button
-            key={c.id}
-            className={`${styles.coverDot} ${idx === current ? styles.coverDotActive : ''}`}
-            onClick={() => goTo(idx)}
-            role="tab"
-            aria-selected={idx === current}
-            aria-label={`Go to chapter ${c.chapter}`}
-            type="button"
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
 /* ─── Journey milestones ───────────────────────────────────────────────────── */
 
+// Vertical timeline. The connecting spine is drawn in CSS from the dot column,
+// so it always lines up with the dots no matter how many milestones there are.
 const Journey = ({ stops, onSelect }) => {
   const [ref, inView] = useInView(0.15);
   return (
     <div ref={ref} className={`${styles.journey} ${inView ? styles.journeyVisible : ''}`}>
-      {/* Decorative path */}
-      <svg className={styles.journeyPath} viewBox="0 0 1000 200" preserveAspectRatio="none" aria-hidden="true">
-        <path
-          d="M 20 110 C 180 30, 280 180, 440 100 S 720 30, 880 130 S 980 80, 990 90"
-          fill="none"
-          stroke="var(--accent-1)"
-          strokeWidth="2"
-          strokeDasharray="4 6"
-          strokeLinecap="round"
-          opacity="0.55"
-        />
-      </svg>
-
-      <ol className={styles.journeyList}>
-        {stops.map((s, i) => (
-          <li
-            key={s.id ?? i}
-            className={styles.journeyItem}
-            style={{ '--ji': i }}
-          >
-            <button
-              type="button"
-              className={styles.journeyDot}
-              onClick={() => onSelect(s)}
-              aria-label={`${s.title} - ${s.period ?? ''}`}
-            >
-              <span className={styles.journeyDotInner} />
-              <span className={styles.journeyDotPulse} aria-hidden="true" />
-            </button>
-            <div className={styles.journeyLabel}>
-              <span className={styles.journeyPeriod}>{s.period ?? '-'}</span>
-              <span className={styles.journeyTitle}>{s.title}</span>
-              {s.subtitle && <span className={styles.journeySubtitle}>{s.subtitle}</span>}
-            </div>
-          </li>
-        ))}
-      </ol>
-
-      {stops.length === 0 && (
+      {stops.length === 0 ? (
         <p className={styles.journeyEmpty}>The journey is being written…</p>
+      ) : (
+        <ol className={styles.journeyList}>
+          {stops.map((s, i) => {
+            const isEdu = s.kind === 'education';
+            const Icon  = isEdu ? MdSchool : MdWork;
+            return (
+              <li key={s.id ?? i} className={styles.journeyItem} style={{ '--ji': i }}>
+                <span className={styles.journeyDot} aria-hidden="true">
+                  <Icon className={styles.journeyDotIcon} />
+                  {/* Pulse only on the newest stop - on every dot it was just noise. */}
+                  {i === 0 && <span className={styles.journeyDotPulse} />}
+                </span>
+
+                {/* The whole card is the control: the lede invites you to press a
+                    milestone, and a 28px dot was far too small a target. */}
+                <button
+                  type="button"
+                  className={styles.journeyCard}
+                  onClick={() => onSelect(s)}
+                >
+                  <span className={styles.journeyMeta}>
+                    <span className={styles.journeyPeriod}>{s.period ?? '—'}</span>
+                    <span className={styles.journeyKind}>
+                      {isEdu ? 'Education' : 'Experience'}
+                    </span>
+                  </span>
+                  <span className={styles.journeyTitle}>{s.title}</span>
+                  {s.subtitle && (
+                    <span className={styles.journeySubtitle}>{s.subtitle}</span>
+                  )}
+                  <span className={styles.journeyMore}>
+                    Read this page <MdArrowOutward aria-hidden="true" />
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
       )}
     </div>
   );
@@ -479,23 +217,53 @@ const Journey = ({ stops, onSelect }) => {
 
 /* ─── Pile of skill leaves ─────────────────────────────────────────────────── */
 
+// Groups the flattened skills back into their categories, preserving the order
+// they arrive in. `flattenSkills` already resolves each skill's `group` - the
+// previous pile discarded it and rendered all 28 as one undifferentiated blob.
+const groupSkills = (skills) => {
+  const out = [];
+  const byName = new Map();
+  for (const s of skills) {
+    const name = s.group ?? null;
+    let g = byName.get(name);
+    if (!g) { g = { name, items: [] }; byName.set(name, g); out.push(g); }
+    g.items.push(s);
+  }
+  return out;
+};
+
 const SkillPile = ({ skills }) => {
   const [ref, inView] = useInView(0.10);
   if (skills.length === 0) return null;
+  const groups = groupSkills(skills);
+
+  // Continuous index across groups so the reveal staggers down the whole
+  // section rather than restarting at every heading.
+  let n = -1;
+
   return (
     <div ref={ref} className={`${styles.pile} ${inView ? styles.pileVisible : ''}`}>
-      {skills.map((s, i) => (
-        <span
-          key={i}
-          className={styles.skillLeaf}
-          style={{
-            '--si': i,
-            '--rot': `${((i * 13) % 5) - 2}deg`,
-          }}
-        >
-          <FaLeaf className={styles.skillLeafIcon} aria-hidden="true" />
-          {s.label}
-        </span>
+      {groups.map((g, gi) => (
+        <div key={g.name ?? gi} className={styles.pileGroup}>
+          {g.name && (
+            <p className={styles.pileGroupHead}>
+              <FaLeaf className={styles.pileGroupLeaf} aria-hidden="true" />
+              <span className={styles.pileGroupName}>{g.name}</span>
+              <span className={styles.pileGroupRule} aria-hidden="true" />
+              <span className={styles.pileGroupCount}>{g.items.length}</span>
+            </p>
+          )}
+          <ul className={styles.pileChips}>
+            {g.items.map((s, i) => {
+              n += 1;
+              return (
+                <li key={i} className={styles.skillChip} style={{ '--si': n }}>
+                  {s.label}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ))}
     </div>
   );
@@ -536,13 +304,6 @@ const Home = () => {
   const navigate = useNavigate();
   const pageRef  = useRef(null);
 
-  const chapters = [
-    { ...CHAPTER_META[0], title: t.ch1Title, subtitle: t.ch1Subtitle, opening: t.ch1Opening, excerpt: t.ch1Excerpt, cta: t.ch1Cta },
-    { ...CHAPTER_META[1], title: t.ch2Title, subtitle: t.ch2Subtitle, opening: t.ch2Opening, excerpt: t.ch2Excerpt, cta: t.ch2Cta },
-    { ...CHAPTER_META[2], title: t.ch3Title, subtitle: t.ch3Subtitle, opening: t.ch3Opening, excerpt: t.ch3Excerpt, cta: t.ch3Cta },
-  ];
-
-  const [openChapter,   setOpenChapter]   = useState(null);
   const [openMilestone, setOpenMilestone] = useState(null);
 
   /* Cursor warm-spot - skip entirely on touch / coarse pointers */
@@ -574,7 +335,6 @@ const Home = () => {
 
   /* Refs for scene reveals */
   const [coverRef,   coverInView]   = useInView(0.20);
-  const [chapterRef, chapterInView] = useInView(0.10);
   const [journeyRef, journeyInView] = useInView(0.10);
   const [pileSecRef, pileSecInView] = useInView(0.10);
   const [endRef,     endInView]     = useInView(0.20);
@@ -612,7 +372,10 @@ const Home = () => {
       <FallingLeaves />
 
       {/* ── Scene 1 ── Cover ──────────────────────────────────────────── */}
-      <div className={`${styles.sceneFrame} ${styles.sceneFrame_cover}`}>
+      {/* No sceneFrame_cover modifier: unlike the journey/toolkit frames the
+          cover has never had one, and referencing it emitted a literal
+          "undefined" class into the markup. */}
+      <div className={styles.sceneFrame}>
       <section ref={coverRef} className={styles.cover}>
 
         <div className={styles.coverFlourish} aria-hidden="true">
@@ -732,21 +495,6 @@ const Home = () => {
       </section>
       </div>
 
-      {/* ── Scene 2 ── Chapter Carousel ───────────────────────────────── */}
-      <div className={`${styles.sceneFrame} ${styles.sceneFrame_chapters}`}>
-      <section ref={chapterRef} className={`${styles.scene} ${styles.sceneChapters} ${chapterInView ? styles.sceneVisible : ''}`}>
-        <div className={styles.sceneHead}>
-          <span className={styles.sceneEye}>{t.chaptersEye}</span>
-          <h2 className={styles.sceneTitle}>{t.chaptersTitle}</h2>
-          <p className={styles.sceneLede}>
-            {t.chaptersLede}
-          </p>
-        </div>
-
-        <ChapterCarousel chapters={chapters} onOpen={setOpenChapter} />
-      </section>
-      </div>
-
       {/* ── Scene 3 ── The Journey ────────────────────────────────────── */}
       <div className={`${styles.sceneFrame} ${styles.sceneFrame_journey}`}>
       <section ref={journeyRef} className={`${styles.scene} ${journeyInView ? styles.sceneVisible : ''}`}>
@@ -759,9 +507,12 @@ const Home = () => {
         </div>
 
         {loading
-          ? <div className={styles.journeySkel}>{[0,1,2,3].map(i =>
-              <span key={i} className={styles.journeySkelDot} />
-            )}</div>
+          ? <div className={styles.journeySkel}>{[0, 1, 2].map(i => (
+              <div key={i} className={styles.journeySkelRow}>
+                <span className={styles.journeySkelDot} />
+                <span className={styles.journeySkelCard} />
+              </div>
+            ))}</div>
           : <Journey stops={journey} onSelect={setOpenMilestone} />
         }
       </section>
@@ -782,8 +533,15 @@ const Home = () => {
           {loading
             ? (
               <div className={styles.pile}>
-                {[72, 56, 88, 64, 80, 92, 50, 68].map((w, i) => (
-                  <span key={i} className={styles.skillLeafSkel} style={{ width: w }} />
+                {[[72, 56, 88, 64, 80], [92, 50, 68, 76, 60, 84], [70, 88, 54]].map((widths, gi) => (
+                  <div key={gi} className={styles.pileGroup}>
+                    <span className={styles.pileSkelHead} />
+                    <ul className={styles.pileChips}>
+                      {widths.map((w, i) => (
+                        <li key={i} className={styles.skillLeafSkel} style={{ width: w }} />
+                      ))}
+                    </ul>
+                  </div>
                 ))}
               </div>
             )
@@ -822,23 +580,6 @@ const Home = () => {
       <div className={styles.pageFade} aria-hidden="true" />
 
       {/* ── Modals ───────────────────────────────────────────────────── */}
-      <Modal open={!!openChapter} onClose={() => setOpenChapter(null)} title={openChapter ? `Chapter ${openChapter.chapter} · ${openChapter.title}` : ''} size="md">
-        {openChapter && (
-          <div className={styles.chapterModal}>
-            <div className={`${styles.chapterModalArt} ${styles[`accent_${openChapter.accent}`]}`}>
-              <ChapterArt kind={openChapter.id} />
-            </div>
-            <p className={styles.chapterModalOpening}>{openChapter.opening}</p>
-            <p className={styles.chapterModalExcerpt}>{openChapter.excerpt}</p>
-            <div className={styles.chapterModalActions}>
-              <MagneticButton onClick={() => { setOpenChapter(null); navigate(openChapter.to); }}>
-                {openChapter.cta} <MdArrowOutward aria-hidden="true" />
-              </MagneticButton>
-            </div>
-          </div>
-        )}
-      </Modal>
-
       <Modal open={!!openMilestone} onClose={() => setOpenMilestone(null)} title={openMilestone?.title} size="md">
         {openMilestone && (
           <div className={styles.milestoneModal}>

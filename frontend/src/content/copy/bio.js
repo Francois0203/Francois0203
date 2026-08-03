@@ -6,6 +6,7 @@ export const BIO_FIELDS = [
   { key: 'interestsHeading', label: 'Interests heading', type: 'text', default: 'Interests' },
   { key: 'experienceHeading', label: 'Experience heading', type: 'text', default: 'Experience' },
   { key: 'educationHeading', label: 'Education heading', type: 'text', default: 'Education' },
+  { key: 'certificationsHeading', label: 'Certifications heading', type: 'text', default: 'Certifications' },
   { key: 'nextChapterLabel', label: 'Next chapter label', type: 'text', default: 'Turn the page' },
   { key: 'nextChapterTitle', label: 'Next chapter title', type: 'text', default: 'Chapter II - The Workshop' },
   { key: 'nextChapterHint', label: 'Next chapter hint', type: 'text', default: 'See what I’ve been building' },
