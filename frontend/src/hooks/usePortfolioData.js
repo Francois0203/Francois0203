@@ -1,18 +1,15 @@
-import { useState, useEffect } from 'react';
-import { getPortfolio } from '../firebase/firestore';
+import { useContent } from '../context/ContentContext';
 
+/**
+ * The portfolio documents (personal, contact, social, donation, skills,
+ * interests, experience, education, certifications).
+ *
+ * The fetch itself lives in ContentProvider so it happens once per visit instead
+ * of once per page mount; this hook is only the read side of it. Shape is
+ * unchanged from when it fetched on its own.
+ */
 const usePortfolioData = () => {
-  const [data,    setData]    = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
-
-  useEffect(() => {
-    getPortfolio()
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data, loading, error } = useContent();
   return { data, loading, error };
 };
 

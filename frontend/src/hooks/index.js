@@ -3,5 +3,7 @@ export * from './useTooltip';
 export * from './useAnimations';
 export { default as useBlobPhysics }     from './useBlobPhysics';
 export { default as usePortfolioData }   from './usePortfolioData';
+export { default as useSiteCopy }        from './useSiteCopy';
 export { default as useGitHubProjects }  from './useGitHubProjects';
 export { default as useAuth }            from './useAuth';
+export { default as useMomentumScroll, getLenis } from './useMomentumScroll';

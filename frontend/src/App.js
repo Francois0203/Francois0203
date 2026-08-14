@@ -2,8 +2,8 @@ import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider } from './components';
-import { useTheme, useAnimations } from './hooks';
-import useMomentumScroll, { getLenis } from './hooks/useMomentumScroll';
+import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
+import { ContentProvider } from './context/ContentContext';
 import styles from './App.module.css';
 
 const NAVIGATION_PAGES = [
@@ -16,9 +16,12 @@ const NAVIGATION_PAGES = [
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
+    // Both, not one or the other: Lenis keeps its own scroll position, so
+    // resetting only the window leaves it convinced the page is still scrolled
+    // down, and the first wheel notch on the new page jumps back there.
     const lenis = getLenis();
     if (lenis) lenis.scrollTo(0, { immediate: true });
-    else window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }, [pathname]);
   return null;
 };
@@ -39,43 +42,56 @@ const AppLayout = () => {
 
   const navigationLinks = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
 
+  /*
+   * ContentProvider sits here rather than at the app root so it covers every
+   * public page (this layout is not remounted by navigation between them, so the
+   * Firestore reads happen once) while /admin, which is a sibling route, never
+   * triggers them.
+   */
   return (
-    <div className={styles.app}>
-      <NavigationBar
-        links={navigationLinks}
-        onNavigate={handleNavigate}
-        className={styles.navigationBar}
-      />
+    <ContentProvider>
+      <div className={styles.app}>
+        <NavigationBar
+          links={navigationLinks}
+          onNavigate={handleNavigate}
+          className={styles.navigationBar}
+        />
 
-      <div className={styles.themeSwitch}>
-        <Settings theme={theme} toggleTheme={toggleTheme} />
-      </div>
+        <div className={styles.themeSwitch}>
+          <Settings theme={theme} toggleTheme={toggleTheme} />
+        </div>
 
-      <div key={location.pathname} className={styles.pageContent}>
-        <Suspense fallback={<Loading />}>
-          <Outlet />
-        </Suspense>
+        <div key={location.pathname} className={styles.pageContent}>
+          <Suspense fallback={<Loading />}>
+            <Outlet />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </ContentProvider>
   );
 };
 
 const AppContent = () => (
   <>
     <ScrollToTop />
-    <Routes>
-      {/* Admin - standalone, no nav bar */}
-      <Route path="/admin" element={<Admin />} />
+    {/* Admin sits outside AppLayout, so it needs its own boundary - the layout's
+        Suspense only covers the public Outlet. Every route is lazy now (see
+        pages/index.js), and a lazy element with no boundary above it throws. */}
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        {/* Admin - standalone, no nav bar */}
+        <Route path="/admin" element={<Admin />} />
 
-      <Route path="/" element={<AppLayout />}>
-        <Route index             element={<Home />} />
-        <Route path="bio"        element={<Bio />} />
-        <Route path="connect"    element={<Connect />} />
-        <Route path="projects"   element={<Projects />} />
-        <Route path="loading"    element={<Loading />} />
-        <Route path="*"          element={<NotFound />} />
-      </Route>
-    </Routes>
+        <Route path="/" element={<AppLayout />}>
+          <Route index             element={<Home />} />
+          <Route path="bio"        element={<Bio />} />
+          <Route path="connect"    element={<Connect />} />
+          <Route path="projects"   element={<Projects />} />
+          <Route path="loading"    element={<Loading />} />
+          <Route path="*"          element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
   </>
 );
 

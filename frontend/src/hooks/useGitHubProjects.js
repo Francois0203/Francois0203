@@ -1,19 +1,12 @@
-import { useState, useEffect } from 'react';
-import { getGitHubProjects } from '../firebase/github';
+import { useContent } from '../context/ContentContext';
 
+/**
+ * The synced GitHub project list. Loaded once by ContentProvider alongside the
+ * portfolio documents, so opening a project and coming back does not refetch.
+ */
 const useGitHubProjects = () => {
-  const [projects, setProjects] = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
-
-  useEffect(() => {
-    getGitHubProjects()
-      .then(setProjects)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, []);
-
-  return { projects, loading, error };
+  const { projects, projectsLoading, projectsError } = useContent();
+  return { projects, loading: projectsLoading, error: projectsError };
 };
 
 export default useGitHubProjects;

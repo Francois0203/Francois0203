@@ -1,38 +1,17 @@
-import { useState, useEffect } from 'react';
-import { getCopy } from '../firebase/firestore';
+import { useContent } from '../context/ContentContext';
 
 /**
- * Loads the editable "site copy" overrides (portfolio/copy) once and caches
- * them at module scope so navigating between pages doesn't refetch. Pages pass
- * the relevant group (e.g. overrides.home) through `resolveGroup` with their
- * in-code defaults, so the site looks identical until copy is edited in /admin.
+ * The editable "site copy" overrides (portfolio/copy), loaded once by
+ * ContentProvider and shared by every page.
+ *
+ * `copy(group)` is the shorter path: it hands back the group's strings already
+ * resolved against the in-code defaults, so a page does not have to import its
+ * own field list and call resolveGroup itself. `overrides` stays exposed for the
+ * pages that still do.
  */
-let cache = null;             // resolved overrides object, or null until first load
-let inflight = null;          // shared promise so parallel mounts share one read
-
-const load = () => {
-  if (cache) return Promise.resolve(cache);
-  if (!inflight) {
-    inflight = getCopy()
-      .then((data) => { cache = data ?? {}; return cache; })
-      .catch(() => { cache = {}; return cache; })
-      .finally(() => { inflight = null; });
-  }
-  return inflight;
-};
-
-export const useSiteCopy = () => {
-  const [overrides, setOverrides] = useState(cache ?? {});
-  const [loading, setLoading]     = useState(cache === null);
-
-  useEffect(() => {
-    let alive = true;
-    if (cache !== null) { setOverrides(cache); setLoading(false); return; }
-    load().then((data) => { if (alive) { setOverrides(data); setLoading(false); } });
-    return () => { alive = false; };
-  }, []);
-
-  return { overrides, loading };
+const useSiteCopy = () => {
+  const { overrides, copyLoading, copy } = useContent();
+  return { overrides, loading: copyLoading, copy };
 };
 
 export default useSiteCopy;

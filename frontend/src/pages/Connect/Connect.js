@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaYoutube, FaEnvelope, FaGlobe, FaFacebook, FaHeart } from 'react-icons/fa';
 import { SiOrcid, SiHackerrank, SiCodewars } from 'react-icons/si';
 import { MdArrowOutward } from 'react-icons/md';
 import { useToast } from '../../components';
-import { submitContactForm, getDonation, getSocial } from '../../firebase/firestore';
+import { submitContactForm } from '../../firebase/firestore';
+import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { CONNECT_FIELDS } from '../../content/copy/connect';
@@ -58,17 +59,13 @@ const Connect = () => {
   const [touched,    setTouched   ] = useState(EMPTY_TOUCHED);
   const [submitting, setSubmitting] = useState(false);
   const [submitted,  setSubmitted ] = useState(false);
-  const [donation,   setDonation  ] = useState(undefined);
-  const [social,     setSocial    ] = useState(null);
 
-  useEffect(() => {
-    getDonation()
-      .then(d  => setDonation(d))
-      .catch(() => setDonation(null));
-    getSocial()
-      .then(d  => setSocial(d ?? []))
-      .catch(() => setSocial([]));
-  }, []);
+  // Donation and socials come from the portfolio documents the layout already
+  // loaded; this page used to re-read those two on its own. `social` stays null
+  // while loading because that is what renders the skeleton card.
+  const { data, loading } = usePortfolioData();
+  const donation = loading ? undefined : (data?.donation ?? null);
+  const social   = loading ? null      : (data?.social   ?? []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
