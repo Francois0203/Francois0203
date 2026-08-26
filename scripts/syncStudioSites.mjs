@@ -16,12 +16,15 @@
  */
 
 import { ghPaginate, ghReadJson } from './lib/gh.mjs';
-import { initFirestore, closeFirestore, admin } from './lib/firebase.mjs';
+import { initFirestore, closeFirestore, projectId, admin } from './lib/firebase.mjs';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const ORG         = process.env.STUDIO_ORG  || 'FM-Web-Studio';
-const SITE_ORIGIN = process.env.SITE_ORIGIN || '';
+// Defaults to this site's own Firebase origin, so a target's CSP
+// `frame-ancestors` list can be evaluated without extra configuration.
+const SITE_ORIGIN = process.env.SITE_ORIGIN
+  || (projectId() ? `${projectId()}.web.app` : '');
 const COLLECTION  = 'studioSites';
 const PROBE_MS    = 10_000;
 

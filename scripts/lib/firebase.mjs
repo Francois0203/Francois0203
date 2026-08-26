@@ -12,7 +12,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
  * Project id, so a local run needs no extra env var: taken from the repo's own
  * .firebaserc unless overridden.
  */
-function projectId() {
+export function projectId() {
   const fromEnv = process.env.FIREBASE_PROJECT
     || process.env.GOOGLE_CLOUD_PROJECT
     || process.env.GCLOUD_PROJECT;
