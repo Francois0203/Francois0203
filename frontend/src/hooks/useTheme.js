@@ -6,7 +6,7 @@ const THEME_FIELD = 'prefersColorScheme';
 
 // ─── INITIAL VALUE ────────────────────────────────────────────────────────────
 // Reads stored theme; falls back to OS prefers-color-scheme.
-export const getInitialTheme = () => {
+const getInitialTheme = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {

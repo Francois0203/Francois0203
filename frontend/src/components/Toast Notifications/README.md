@@ -8,7 +8,6 @@ Animated toast notification system with auto-dismiss, manual close, and portal r
 |---|---|
 | `ToastContext.js` | Context + provider; portal-renders the toast stack |
 | `ToastNotification.js` | Individual toast card with close animation |
-| `ToastContainer.js` | Standalone container for use outside of the provider |
 
 ## Features
 

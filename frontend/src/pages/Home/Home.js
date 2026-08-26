@@ -9,7 +9,8 @@ import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
-import { Modal, MagneticButton, CursorGlowButton } from '../../components';
+import useStudioSites from '../../hooks/useStudioSites';
+import { Modal, MagneticButton, CursorGlowButton, SiteShowcase } from '../../components';
 import styles from './Home.module.css';
 
 // Evaluated once at module load - avoids React overhead and is stable
@@ -95,49 +96,6 @@ const DriftingMotes = () => {
             '--moteOpacity':    m.opacity,
           }}
         />
-      ))}
-    </div>
-  );
-};
-
-/* ─── Falling autumn leaves overlay (fixed) ────────────────────────────────── */
-
-const LEAF_COUNT = IS_MOBILE ? 0 : 7;
-
-const FallingLeaves = () => {
-  const leaves = useMemo(() => Array.from({ length: LEAF_COUNT }, (_, i) => ({
-    i,
-    left:     Math.round(Math.random() * 100),
-    size:     14 + Math.round(Math.random() * 16),
-    duration: 15 + Math.round(Math.random() * 16),
-    delay:    -Math.round(Math.random() * 32),
-    drift:    (Math.random() * 34 - 17).toFixed(1),
-    spin:     Math.random() > 0.5 ? 1 : -1,
-    hue:      i % 3,
-    opacity:  (0.45 + Math.random() * 0.3).toFixed(2),
-  })), []);
-
-  if (leaves.length === 0) return null;
-
-  return (
-    <div className={styles.leafField} aria-hidden="true">
-      {leaves.map(l => (
-        <span
-          key={l.i}
-          className={`${styles.fallingLeaf} ${styles[`leafHue${l.hue}`]}`}
-          style={{
-            left:              `${l.left}%`,
-            width:             `${l.size}px`,
-            height:            `${l.size}px`,
-            animationDuration: `${l.duration}s`,
-            animationDelay:    `${l.delay}s`,
-            '--drift':         `${l.drift}vw`,
-            '--spin':          l.spin,
-            '--leafOpacity':   l.opacity,
-          }}
-        >
-          <MapleLeaf />
-        </span>
       ))}
     </div>
   );
@@ -297,9 +255,46 @@ const toJourney = ({ experience = [], education = [] }) => {
 
 /* ─── Main page ───────────────────────────────────────────────────────────── */
 
+/* ─── Featured work ─────────────────────────────────────────────────────────────
+   The lead site gets the full band width (embed left, story right); the next two
+   sit side by side beneath it. Nothing here is a fixed list - the cards are
+   whatever the studio org currently has flagged `featured` in its manifests. */
+
+const WorkSkeleton = () => (
+  <div className={styles.workSkel} aria-hidden="true">
+    <span className={`${styles.workSkelHero} ${styles.shimmerBar}`} />
+    <div className={styles.workSkelRow}>
+      <span className={`${styles.workSkelCard} ${styles.shimmerBar}`} />
+      <span className={`${styles.workSkelCard} ${styles.shimmerBar}`} />
+    </div>
+  </div>
+);
+
+const FeaturedWork = ({ items, loading, emptyText }) => {
+  if (loading) return <WorkSkeleton />;
+
+  if (items.length === 0) {
+    return <p className={styles.workEmpty}>{emptyText}</p>;
+  }
+
+  const [lead, ...rest] = items;
+
+  return (
+    <div className={styles.workLayout}>
+      <SiteShowcase project={lead} variant="hero" className={styles.workLead} />
+      {rest.length > 0 && (
+        <div className={styles.workRow}>
+          {rest.map(p => <SiteShowcase key={p.id} project={p} />)}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Home = () => {
   const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
+  const { featured: featuredSites, loading: sitesLoading } = useStudioSites({ featuredLimit: 3 });
   const t = resolveGroup(HOME_FIELDS, overrides.home);
   const navigate = useNavigate();
   const pageRef  = useRef(null);
@@ -335,6 +330,7 @@ const Home = () => {
 
   /* Refs for scene reveals */
   const [coverRef,   coverInView]   = useInView(0.20);
+  const [workRef,    workInView]    = useInView(0.08);
   const [journeyRef, journeyInView] = useInView(0.10);
   const [pileSecRef, pileSecInView] = useInView(0.10);
   const [endRef,     endInView]     = useInView(0.20);
@@ -369,14 +365,17 @@ const Home = () => {
       <div className={styles.parchment} aria-hidden="true" />
       <div className={styles.coffeeStains} aria-hidden="true" />
       <DriftingMotes />
-      <FallingLeaves />
 
-      {/* ── Scene 1 ── Cover ──────────────────────────────────────────── */}
-      {/* No sceneFrame_cover modifier: unlike the journey/toolkit frames the
-          cover has never had one, and referencing it emitted a literal
-          "undefined" class into the markup. */}
-      <div className={styles.sceneFrame}>
-      <section ref={coverRef} className={styles.cover}>
+      {/* ── Band 1 ── Cover · narrative left, portrait rail right ─────── */}
+      <section className={`${styles.band} ${styles.bandCover}`}>
+      <div className={styles.bandInner}>
+      <div ref={coverRef} className={styles.cover}>
+
+      {/* Left column. Wrapping the narrative explicitly beats placing six
+          separate children on a grid: `grid-row: 1 / -1` on the portrait rail
+          silently spanned a single row (there are no explicit rows to count
+          back from), which dropped the two columns into different row bands. */}
+      <div className={styles.coverNarrative}>
 
         <div className={styles.coverFlourish} aria-hidden="true">
           <FaFeatherAlt />
@@ -441,7 +440,9 @@ const Home = () => {
           )
         }
 
-        {/* Portrait + invitation */}
+      </div>
+
+        {/* Right rail: portrait + invitation */}
         <div className={styles.coverPortraitRow}>
           {(loading || photoUrl) && (
             <div className={styles.coverPortrait}>
@@ -492,12 +493,41 @@ const Home = () => {
           </div>
         </div>
 
-      </section>
       </div>
+      </div>
+      </section>
 
-      {/* ── Scene 3 ── The Journey ────────────────────────────────────── */}
-      <div className={`${styles.sceneFrame} ${styles.sceneFrame_journey}`}>
-      <section ref={journeyRef} className={`${styles.scene} ${journeyInView ? styles.sceneVisible : ''}`}>
+      {/* ── Band 2 ── Featured work · content sits right ──────────────── */}
+      <section className={`${styles.band} ${styles.bandAlt}`}>
+      <div className={styles.bandInner}>
+      <div ref={workRef} className={`${styles.scene} ${workInView ? styles.sceneVisible : ''}`}>
+        <div className={`${styles.sceneHead} ${styles.sceneHeadRight}`}>
+          <span className={styles.sceneEye}>{t.workEye}</span>
+          <h2 className={styles.sceneTitle}>{t.workTitle}</h2>
+          <p className={styles.sceneLede}>{t.workLede}</p>
+        </div>
+
+        <FeaturedWork
+          items={featuredSites}
+          loading={sitesLoading}
+          emptyText={t.workEmpty}
+        />
+
+        {featuredSites.length > 0 && (
+          <div className={styles.workCta}>
+            <MagneticButton onClick={() => navigate('/projects')}>
+              {t.workCta} <MdArrowOutward aria-hidden="true" />
+            </MagneticButton>
+          </div>
+        )}
+      </div>
+      </div>
+      </section>
+
+      {/* ── Band 3 ── The Journey · content sits left ─────────────────── */}
+      <section className={styles.band}>
+      <div className={styles.bandInner}>
+      <div ref={journeyRef} className={`${styles.scene} ${styles.sceneLeft} ${journeyInView ? styles.sceneVisible : ''}`}>
         <div className={styles.sceneHead}>
           <span className={styles.sceneEye}>{t.journeyEye}</span>
           <h2 className={styles.sceneTitle}>{t.journeyTitle}</h2>
@@ -515,14 +545,16 @@ const Home = () => {
             ))}</div>
           : <Journey stops={journey} onSelect={setOpenMilestone} />
         }
-      </section>
       </div>
+      </div>
+      </section>
 
-      {/* ── Scene 4 ── The Toolkit ────────────────────────────────────── */}
-      <div className={`${styles.sceneFrame} ${styles.sceneFrame_toolkit}`}>
+      {/* ── Band 4 ── The Toolkit · content sits right ────────────────── */}
       {(loading || skills.length > 0) && (
-        <section ref={pileSecRef} className={`${styles.scene} ${pileSecInView ? styles.sceneVisible : ''}`}>
-          <div className={styles.sceneHead}>
+      <section className={`${styles.band} ${styles.bandAlt}`}>
+      <div className={styles.bandInner}>
+        <div ref={pileSecRef} className={`${styles.scene} ${styles.sceneRight} ${pileSecInView ? styles.sceneVisible : ''}`}>
+          <div className={`${styles.sceneHead} ${styles.sceneHeadRight}`}>
             <span className={styles.sceneEye}>{t.toolkitEye}</span>
             <h2 className={styles.sceneTitle}>{t.toolkitTitle}</h2>
             <p className={styles.sceneLede}>
@@ -547,12 +579,13 @@ const Home = () => {
             )
             : <SkillPile skills={skills} />
           }
-        </section>
-      )}
+        </div>
       </div>
+      </section>
+      )}
 
-      {/* ── Scene 5 ── Epilogue ───────────────────────────────────────── */}
-      <section ref={endRef} className={`${styles.scene} ${styles.sceneEnd} ${endInView ? styles.sceneVisible : ''}`}>
+      {/* ── Band 5 ── Epilogue · the one place centring is the point ──── */}
+      <section ref={endRef} className={`${styles.band} ${styles.scene} ${styles.sceneEnd} ${endInView ? styles.sceneVisible : ''}`}>
         <div className={styles.endCard}>
           <span className={styles.endOrnament} aria-hidden="true">
             <MapleLeaf />

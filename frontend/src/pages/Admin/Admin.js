@@ -4,7 +4,7 @@ import { FaGoogle, FaGithub } from 'react-icons/fa';
 import { IoSettingsSharp } from 'react-icons/io5';
 import {
   MdPerson, MdBadge, MdEditNote, MdBuild, MdWork, MdSchool, MdFavorite,
-  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdVerified,
+  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdVerified, MdPublic,
 } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
 import { signInWithGoogle, signOutUser } from '../../firebase/auth';
@@ -21,6 +21,7 @@ import InterestsSection from './sections/InterestsSection';
 import SocialsSection   from './sections/SocialsSection';
 import RecordSection    from './sections/RecordSection';
 import GitHubSection    from './sections/GitHubSection';
+import StudioSection    from './sections/StudioSection';
 import MessagesSection  from './sections/MessagesSection';
 import DonationSection  from './sections/DonationSection';
 import SiteCopySection  from './sections/SiteCopySection';
@@ -79,6 +80,7 @@ const SECTIONS = [
   { id: 'interests',  group: 'Content',  title: 'Interests',         icon: <MdFavorite /> },
   { id: 'socials',    group: 'Content',  title: 'Social Links',      icon: <MdShare /> },
   { id: 'donation',   group: 'Content',  title: 'Donation',          icon: <MdVolunteerActivism /> },
+  { id: 'studio',     group: 'Projects', title: 'Client Sites',      icon: <MdPublic /> },
   { id: 'github',     group: 'Projects', title: 'GitHub Projects',   icon: <FaGithub /> },
   { id: 'messages',   group: 'Inbox',    title: 'Messages',          icon: <MdMailOutline /> },
 ];
@@ -171,6 +173,7 @@ const Admin = () => {
       case 'interests': return <InterestsSection />;
       case 'socials':   return <SocialsSection />;
       case 'donation':  return <DonationSection />;
+      case 'studio':    return <StudioSection />;
       case 'github':    return <GitHubSection />;
       case 'messages':  return <MessagesSection />;
       case 'experience':

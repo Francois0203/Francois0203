@@ -10,13 +10,20 @@ export const HOME_FIELDS = [
   { key: 'coverCtaPrimary',  label: 'Cover primary button', type: 'text',     default: 'Begin reading' },
   { key: 'coverCtaSecondary',label: 'Cover second button',  type: 'text',     default: 'Browse the workshop' },
 
+  // ── Scene: Featured work ──
+  { key: 'workEye',      label: 'Featured work - eyebrow',  type: 'text',     default: 'Chapter I' },
+  { key: 'workTitle',    label: 'Featured work - title',    type: 'text',     default: 'Sites I have built' },
+  { key: 'workLede',     label: 'Featured work - lede',     type: 'textarea', default: 'Real, running websites - not screenshots. Have a click around, then take the tour of the rest.' },
+  { key: 'workCta',      label: 'Featured work - button',   type: 'text',     default: 'See every site' },
+  { key: 'workEmpty',    label: 'Featured work - empty',    type: 'textarea', default: 'The next site is still on the workbench. Check back shortly.' },
+
   // ── Scene: The journey so far ──
-  { key: 'journeyEye',   label: 'Journey - eyebrow', type: 'text',     default: 'Chapter I' },
+  { key: 'journeyEye',   label: 'Journey - eyebrow', type: 'text',     default: 'Chapter II' },
   { key: 'journeyTitle', label: 'Journey - title',   type: 'text',     default: 'The journey so far' },
   { key: 'journeyLede',  label: 'Journey - lede',    type: 'textarea', default: 'A meandering path of schools, jobs, and small obsessions. Press a milestone to read its page.' },
 
   // ── Scene: The toolkit ──
-  { key: 'toolkitEye',   label: 'Toolkit - eyebrow', type: 'text',     default: 'Chapter II' },
+  { key: 'toolkitEye',   label: 'Toolkit - eyebrow', type: 'text',     default: 'Chapter III' },
   { key: 'toolkitTitle', label: 'Toolkit - title',   type: 'text',     default: 'The toolkit' },
   { key: 'toolkitLede',  label: 'Toolkit - lede',    type: 'textarea', default: 'The tools I gather along the way - pinned here like pressed leaves.' },
 

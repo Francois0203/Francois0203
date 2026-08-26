@@ -6,7 +6,7 @@ const ANIMATIONS_FIELD = 'reduceAnimations';
 
 // ─── INITIAL VALUE ────────────────────────────────────────────────────────────
 // Reads stored preference; falls back to OS prefers-reduced-motion.
-export const getInitialAnimations = () => {
+const getInitialAnimations = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {

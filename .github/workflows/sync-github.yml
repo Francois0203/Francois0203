@@ -33,3 +33,20 @@ jobs:
         env:
           GH_PAT:                   ${{ secrets.GH_PAT }}
           SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+
+      # Discovers every repo in the studio org and resolves its live site(s).
+      # Runs even if the step above failed: the two collections are independent,
+      # and a broken personal-repo list should not blank the client work.
+      - name: Sync studio sites → Firestore
+        if: always()
+        run: node syncStudioSites.mjs
+        working-directory: scripts
+        env:
+          # A fine-grained token is scoped to ONE resource owner, so listing the
+          # org needs its own token. Falls back to GH_PAT for a classic token
+          # that covers both owners.
+          GH_PAT:          ${{ secrets.STUDIO_PAT || secrets.GH_PAT }}
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+          STUDIO_ORG:      FM-Web-Studio
+          SITE_ORIGIN:     ${{ vars.SITE_ORIGIN }}
+          PRUNE:           '1'

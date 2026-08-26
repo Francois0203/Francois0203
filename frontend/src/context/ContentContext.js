@@ -1,25 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { getPortfolio, getCopy } from '../firebase/firestore';
 import { getGitHubProjects } from '../firebase/github';
+import { getStudioSites } from '../firebase/studio';
 import { COPY_SCHEMA, resolveGroup } from '../content/copy';
 
 /*
- * One load for the whole public site.
+ * One load for the whole public site, so walking Home -> Bio -> Home does not
+ * re-read the same documents and re-render from a blank state.
  *
- * Every page used to mount its own fetching hook, so walking Home -> Bio -> Home
- * re-read the nine portfolio documents each time and re-rendered from a blank
- * state on arrival. The reads are identical every time and nothing on the site
- * changes between two clicks, so the trip was pure latency: a second of skeletons
- * for data the browser already had.
+ * The four sources start together and settle independently - each keeps its own
+ * loading flag - so one slow read never holds up an unrelated page.
  *
- * The three sources are started together and settle independently, so the
- * projects page is not held up waiting for the portfolio documents and vice
- * versa. Each keeps its own loading flag for that reason.
- *
- * The provider is mounted in AppLayout, not at the app root, so /admin (which
- * reads Firestore through its own section components) never pays for this at all.
- * That also means returning from /admin remounts the provider and re-reads, which
- * is what you want after editing something.
+ * Mounted in AppLayout rather than the app root, so /admin (which reads via its
+ * own section components) never pays for this, and returning from /admin
+ * remounts and re-reads.
  */
 
 const ContentContext = createContext(null);
@@ -32,11 +26,13 @@ export function ContentProvider({ children }) {
   const [portfolio, setPortfolio] = useState({ data: null, loading: true, error: null });
   const [copy,      setCopy]      = useState({ overrides: {}, loading: true });
   const [github,    setGithub]    = useState({ projects: null, loading: true, error: null });
+  const [studio,    setStudio]    = useState({ sites: null, loading: true, error: null });
 
   const reload = useCallback(() => {
     setPortfolio(s => ({ ...s, loading: true }));
     setCopy(s => ({ ...s, loading: true }));
     setGithub(s => ({ ...s, loading: true }));
+    setStudio(s => ({ ...s, loading: true }));
 
     getPortfolio()
       .then(data => setPortfolio({ data, loading: false, error: null }))
@@ -51,6 +47,10 @@ export function ContentProvider({ children }) {
     getGitHubProjects()
       .then(projects => setGithub({ projects, loading: false, error: null }))
       .catch(error => setGithub({ projects: null, loading: false, error }));
+
+    getStudioSites()
+      .then(sites => setStudio({ sites, loading: false, error: null }))
+      .catch(error => setStudio({ sites: null, loading: false, error }));
   }, []);
 
   useEffect(() => { reload(); }, [reload]);
@@ -70,8 +70,11 @@ export function ContentProvider({ children }) {
     projects:        github.projects,
     projectsLoading: github.loading,
     projectsError:   github.error,
+    studioSites:     studio.sites,
+    studioLoading:   studio.loading,
+    studioError:     studio.error,
     reload,
-  }), [portfolio, copy.overrides, copy.loading, copyFor, github, reload]);
+  }), [portfolio, copy.overrides, copy.loading, copyFor, github, studio, reload]);
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
 }

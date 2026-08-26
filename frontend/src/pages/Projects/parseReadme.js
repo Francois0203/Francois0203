@@ -71,35 +71,6 @@ function extractDotSeparated(content) {
   return results;
 }
 
-// Finds the first non-badge image URL in content (markdown OR HTML img tags)
-function extractFirstNonBadgeImage(content) {
-  // Markdown images: ![alt](url)
-  const mdRe = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
-  let m;
-  while ((m = mdRe.exec(content)) !== null) {
-    const [, alt, url] = m;
-    if (isBadgeUrl(url)) continue;
-    if (/badge|shield|logo|icon/i.test(alt)) continue;
-    if (url.endsWith('.svg') && !/screenshot|demo|preview|banner|hero/i.test(url + alt)) continue;
-    return url;
-  }
-  // HTML img tags: <img src="...">
-  const htmlRe = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
-  while ((m = htmlRe.exec(content)) !== null) {
-    const url = m[1];
-    if (isBadgeUrl(url)) continue;
-    if (url.endsWith('.svg')) continue;
-    return url;
-  }
-  return null;
-}
-
-function resolveImageUrl(src, owner, repo) {
-  if (!src || src.startsWith('http')) return src ?? null;
-  const path = src.replace(/^\.?\//, '');
-  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`;
-}
-
 // Splits markdown into sections: [{ level, heading, content }]
 function parseSections(markdown) {
   const sections = [];
@@ -131,12 +102,12 @@ function findSection(sections, pattern) {
  * Parses a README (markdown + HTML mix) into structured card data.
  *
  * @param {string} markdown  Raw README content
- * @param {object} opts      { owner, repo, fallback }
- * @returns {{ description, features, techStack, screenshot }}
+ * @param {object} opts      { fallback }
+ * @returns {{ description, features, techStack }}
  */
-export function parseReadme(markdown, { owner = '', repo = '', fallback = '' } = {}) {
+export function parseReadme(markdown, { fallback = '' } = {}) {
   if (!markdown?.trim()) {
-    return { description: fallback, features: [], techStack: [], screenshot: null };
+    return { description: fallback, features: [], techStack: [] };
   }
 
   const lines = markdown.split('\n');
@@ -267,14 +238,5 @@ export function parseReadme(markdown, { owner = '', repo = '', fallback = '' } =
     .filter(t => t.length > 0 && t.length < 40 && !/\.$/.test(t))
     .slice(0, 10);
 
-  // ── Screenshot ────────────────────────────────────────────────────────────
-  const screenshotSec = findSection(sections,
-    /screenshot|demo|preview|gallery|showcase|example|output|result/i
-  );
-  const rawImg = extractFirstNonBadgeImage(
-    (screenshotSec?.content ?? '') || markdown
-  );
-  const screenshot = rawImg ? resolveImageUrl(rawImg, owner, repo) : null;
-
-  return { description, features, techStack, screenshot };
+  return { description, features, techStack };
 }

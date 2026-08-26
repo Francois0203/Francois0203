@@ -1,0 +1,19 @@
+{
+  "_readme": "Copy this file to the ROOT of a FM-Web-Studio repo as `.showcase.json` and delete the keys you don't need. It is the only thing the portfolio needs from a repo: syncStudioSites.mjs reads it on every sync, so editing it here updates the portfolio with no code change. Every field is optional - a repo with no manifest still appears, using its GitHub homepage field or its .firebaserc to find the live url.",
+
+  "name": "Acme Plumbing",
+  "client": "Acme Plumbing (Pretoria)",
+  "tagline": "Booking and quote site for a local trade",
+  "description": "Longer paragraph shown on the project card. Falls back to the repo description, then the README, when omitted.",
+
+  "featured": true,
+  "order": 10,
+
+  "sites": [
+    { "label": "Live site", "url": "https://acme-plumbing.web.app" },
+    { "label": "Admin panel", "url": "https://acme-plumbing-admin.web.app" }
+  ],
+
+  "stack": ["React", "Firebase", "Firestore"],
+  "tags": ["Local business", "Bookings"]
+}

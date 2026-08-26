@@ -6,45 +6,20 @@
  * into  githubProjects/{owner}_{repo}.
  *
  * Required env vars
- *   GH_PAT                    — GitHub Personal Access Token (repo read)
- *   SERVICE_ACCOUNT  — Firebase Admin SDK service-account JSON (string)
+ *   GH_PAT           — GitHub Personal Access Token (repo read)
+ *   SERVICE_ACCOUNT  — Firebase Admin service-account JSON. Omit for a local
+ *                      run to use application-default credentials instead.
  *
  * Node ≥18 required (uses native fetch).
  */
 
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-
-// firebase-admin ships CommonJS; require() works inside an .mjs module.
-const admin = require('firebase-admin');
-
-// ─── Init ─────────────────────────────────────────────────────────────────────
-
-const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT || '{}');
-
-admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-
-const db = admin.firestore();
-
-// ─── GitHub helpers (native fetch, no extra dep) ──────────────────────────────
-
-const GITHUB_HEADERS = {
-  Authorization:        `Bearer ${process.env.GH_PAT}`,
-  Accept:               'application/vnd.github+json',
-  'X-GitHub-Api-Version': '2022-11-28',
-  'User-Agent':         'portfolio-sync-script',
-};
-
-async function ghGet(path) {
-  const res = await fetch(`https://api.github.com${path}`, { headers: GITHUB_HEADERS });
-  if (!res.ok) throw new Error(`GitHub ${res.status} for ${path}`);
-  return res.json();
-}
+import { ghGet, ghReadme } from './lib/gh.mjs';
+import { initFirestore, closeFirestore, admin } from './lib/firebase.mjs';
 
 async function fetchRepoData(owner, repo) {
   const [repoResult, readmeResult] = await Promise.allSettled([
     ghGet(`/repos/${owner}/${repo}`),
-    ghGet(`/repos/${owner}/${repo}/readme`),
+    ghReadme(owner, repo),
   ]);
 
   if (repoResult.status === 'rejected') {
@@ -52,9 +27,7 @@ async function fetchRepoData(owner, repo) {
   }
 
   const r      = repoResult.value;
-  const readme = readmeResult.status === 'fulfilled'
-    ? Buffer.from(readmeResult.value.content, 'base64').toString('utf-8')
-    : '';
+  const readme = readmeResult.status === 'fulfilled' ? readmeResult.value : '';
 
   return {
     owner,
@@ -86,26 +59,22 @@ async function main() {
     console.error('GH_PAT env var is not set.');
     process.exit(1);
   }
-  if (!process.env.SERVICE_ACCOUNT) {
-    console.error('SERVICE_ACCOUNT env var is not set.');
-    process.exit(1);
-  }
+
+  const db = initFirestore();
 
   const configSnap = await db.collection('portfolio').doc('githubConfig').get();
 
   if (!configSnap.exists) {
-    console.error(
+    throw new Error(
       'portfolio/githubConfig not found in Firestore.\n' +
       'Create it with a "repos" array: [{owner, repo, order}]'
     );
-    process.exit(1);
   }
 
   const { repos } = configSnap.data();
 
   if (!Array.isArray(repos) || repos.length === 0) {
-    console.error('portfolio/githubConfig.repos is empty or not an array.');
-    process.exit(1);
+    throw new Error('portfolio/githubConfig.repos is empty or not an array.');
   }
 
   console.log(`Syncing ${repos.length} repo(s)...\n`);
@@ -147,4 +116,6 @@ async function main() {
   );
 }
 
-main().catch(err => { console.error(err); process.exit(1); });
+main()
+  .catch(err => { console.error(err.message ?? err); process.exitCode = 1; })
+  .finally(closeFirestore);

@@ -5,13 +5,13 @@ import { db } from './index';
 
 const portfolioDoc = (id) => getDoc(doc(db, 'portfolio', id)).then(s => s.data() ?? null);
 
-export const getPersonal  = ()  => portfolioDoc('personal');
-export const getContact   = ()  => portfolioDoc('contact');
-export const getDonation  = ()  => portfolioDoc('donation');
+const getPersonal  = ()  => portfolioDoc('personal');
+const getContact   = ()  => portfolioDoc('contact');
+const getDonation  = ()  => portfolioDoc('donation');
 export const getCopy      = ()  => portfolioDoc('copy').then(d => d ?? {});
-export const getSkills    = ()  => portfolioDoc('skills');
-export const getSocial    = ()  => portfolioDoc('social').then(d => d?.platforms ?? []);
-export const getInterests = ()  => portfolioDoc('interests').then(d => d?.items ?? []);
+const getSkills    = ()  => portfolioDoc('skills');
+const getSocial    = ()  => portfolioDoc('social').then(d => d?.platforms ?? []);
+const getInterests = ()  => portfolioDoc('interests').then(d => d?.items ?? []);
 
 // ─── Ordered collection reads ─────────────────────────────────────────────────
 
@@ -27,9 +27,9 @@ const orderedCollection = async (col) => {
   }
 };
 
-export const getExperience     = () => orderedCollection('experience');
-export const getEducation      = () => orderedCollection('education');
-export const getCertifications = () => orderedCollection('certifications');
+const getExperience     = () => orderedCollection('experience');
+const getEducation      = () => orderedCollection('education');
+const getCertifications = () => orderedCollection('certifications');
 
 // ─── Full portfolio fetch (all sections in parallel) ──────────────────────────
 // Uses allSettled so one failing read never crashes the whole page.

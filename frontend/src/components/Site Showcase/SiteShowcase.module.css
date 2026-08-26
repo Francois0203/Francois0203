@@ -1,0 +1,508 @@
+/* ── Card shell ─────────────────────────────────────────────────────────────── */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--frosted-background);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  transition:
+    border-color var(--transition-base),
+    box-shadow   var(--transition-base),
+    transform    var(--transition-base);
+}
+
+.card:hover {
+  border-color: rgba(var(--accent-1-rgb), 0.35);
+  transform: translateY(-3px);
+}
+
+/* ── Browser chrome ─────────────────────────────────────────────────────────── */
+
+.browser {
+  position: relative;
+  background: var(--background-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 8px 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(var(--accent-1-rgb), 0.06),
+    transparent
+  );
+  border-bottom: 1px solid var(--border-color);
+  min-height: 38px;
+}
+
+.lights {
+  display: inline-flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.lights i {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--border-color);
+}
+.lights i:nth-child(1) { background: rgba(var(--accent-1-rgb), 0.55); }
+.lights i:nth-child(2) { background: rgba(var(--accent-2-rgb), 0.45); }
+.lights i:nth-child(3) { background: rgba(var(--accent-3-rgb), 0.40); }
+
+.urlBar {
+  flex: 1;
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  color: var(--tertiary-text-color);
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Repos hosting two apps get real tabs in the chrome instead of a url pill. */
+.tabs {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--tertiary-text-color);
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 4px 12px;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+.tab:hover { color: var(--primary-text-color); }
+
+.tabActive {
+  color: var(--primary-text-color);
+  background: rgba(var(--accent-1-rgb), 0.12);
+  border-color: rgba(var(--accent-1-rgb), 0.35);
+}
+
+.chromeOpen {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  color: var(--tertiary-text-color);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.chromeOpen:hover {
+  color: var(--accent-1);
+  background: rgba(var(--accent-1-rgb), 0.10);
+}
+
+/* ── Viewport + scaled frame ────────────────────────────────────────────────── */
+
+.viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--background-2);
+}
+
+/* Scaled down from 1440px so the framed site lays out as a desktop site. */
+.frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: top left;
+  background: #fff;
+}
+
+/* ── Idle state (mobile, and any frame not yet requested) ───────────────────── */
+
+.overlayBtn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(var(--accent-1-rgb), 0.10), transparent 70%),
+    var(--background-2);
+  color: var(--secondary-text-color);
+  transition: background var(--transition-base);
+}
+.overlayBtn:hover { background: rgba(var(--accent-1-rgb), 0.08); }
+
+.overlayIcon {
+  display: inline-flex;
+  font-size: 1.6rem;
+  color: var(--accent-1);
+}
+.overlayTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--primary-text-color);
+}
+.overlayHint {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
+  color: var(--tertiary-text-color);
+}
+
+/* ── Loading ────────────────────────────────────────────────────────────────── */
+
+.loadingVeil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: var(--background-2);
+  pointer-events: none;
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-1);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loadingText {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+}
+
+/* ── Blocked / unreachable ──────────────────────────────────────────────────── */
+
+.blocked {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--spacing-lg);
+  text-align: center;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 10px,
+      rgba(var(--accent-3-rgb), 0.05) 10px 20px
+    ),
+    var(--background-2);
+}
+
+.blockedTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--primary-text-color);
+}
+.blockedText {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  max-width: 34ch;
+  line-height: 1.5;
+}
+.blockedActions {
+  display: inline-flex;
+  gap: var(--spacing-sm);
+  margin-top: 6px;
+}
+
+.blockedLink,
+.retryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.blockedLink {
+  color: var(--primary-text-color);
+  background: rgba(var(--accent-1-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.35);
+}
+.blockedLink:hover { border-color: var(--accent-1); }
+
+.retryBtn {
+  color: var(--tertiary-text-color);
+  background: var(--background-3);
+  border: 1px solid var(--border-color);
+}
+.retryBtn:hover { color: var(--primary-text-color); }
+
+/* ── Pointer shield ──────────────────────────────────────────────────────────
+   The frame underneath is live; this layer only keeps the scroll with the page
+   until the card is clicked. */
+
+.shield {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: var(--spacing-md);
+  border: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.28),
+    transparent 45%
+  );
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+.card:hover .shield { opacity: 1; }
+
+.shieldPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: #fff;
+  background: rgba(20, 20, 20, 0.72);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+}
+
+.liveBadge {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  right: var(--spacing-sm);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(var(--accent-1-rgb), 0.85);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  pointer-events: none;
+}
+
+/* ── Info block ─────────────────────────────────────────────────────────────── */
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg);
+  flex: 1;
+  min-height: 0;
+}
+
+.infoHead {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.client {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-3);
+}
+
+.name {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--primary-text-color);
+}
+
+.tagline {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  line-height: 1.55;
+}
+
+.blurb {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip,
+.chipSoft {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.chip {
+  color: var(--primary-text-color);
+  background: var(--background-3);
+  border: 1px solid var(--border-color);
+}
+
+.chipSoft {
+  color: var(--accent-1);
+  background: rgba(var(--accent-1-rgb), 0.07);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.18);
+  border-radius: var(--radius-full);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: auto;
+  padding-top: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  transition:
+    border-color var(--transition-fast),
+    background   var(--transition-fast),
+    color        var(--transition-fast);
+}
+
+.primaryLink {
+  color: var(--primary-text-color);
+  background: rgba(var(--accent-1-rgb), 0.12);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.32);
+}
+.primaryLink:hover {
+  background: rgba(var(--accent-1-rgb), 0.2);
+  border-color: var(--accent-1);
+}
+
+.secondaryLink {
+  color: var(--tertiary-text-color);
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+}
+.secondaryLink:hover { color: var(--primary-text-color); }
+
+.privatePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--tertiary-text-color);
+  background: var(--background-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+}
+
+/* ── Hero variant - lead card on the home page, side-by-side when wide ────── */
+
+@media (min-width: 1024px) {
+  .hero {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .hero .browser {
+    flex: 1 1 62%;
+    min-width: 0;
+    border-bottom: 0;
+    border-right: 1px solid var(--border-color);
+  }
+  .hero .info {
+    flex: 1 1 38%;
+    justify-content: center;
+    padding: var(--spacing-xl);
+  }
+  .hero .name    { font-size: clamp(1.4rem, 2vw, 1.9rem); }
+  .hero .tagline { font-size: var(--font-size-md); }
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--background-1);
+  }
+  .card:hover { transform: none; }
+  /* No hover on touch, so keep the affordance visible. */
+  .shield { opacity: 1; }
+  .viewport { aspect-ratio: 4 / 3; }
+  .info { padding: var(--spacing-md); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .shield { transition: none; }
+  .card:hover { transform: none; }
+  .spinner { animation-duration: 2s; }
+}
+
+:global([data-no-animations="true"]) .card { transition: none; }
+:global([data-no-animations="true"]) .card:hover { transform: none; }

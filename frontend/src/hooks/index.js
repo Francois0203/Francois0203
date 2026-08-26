@@ -5,5 +5,6 @@ export { default as useBlobPhysics }     from './useBlobPhysics';
 export { default as usePortfolioData }   from './usePortfolioData';
 export { default as useSiteCopy }        from './useSiteCopy';
 export { default as useGitHubProjects }  from './useGitHubProjects';
+export { default as useStudioSites }     from './useStudioSites';
 export { default as useAuth }            from './useAuth';
 export { default as useMomentumScroll, getLenis } from './useMomentumScroll';

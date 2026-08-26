@@ -162,6 +162,18 @@ export const subscribeGitHubProjects = (cb, onErr) =>
     onErr,
   );
 
+// ─── Studio sites (client work, synced from the FM-Web-Studio org) ────────────
+// Read-only from here on purpose: every field is derived from the repo's own
+// .showcase.json, so an edit made here would be silently reverted by the next
+// sync. Change the manifest in the repo instead.
+
+export const subscribeStudioSites = (cb, onErr) =>
+  onSnapshot(
+    query(collection(db, 'studioSites'), orderBy('order')),
+    snap => cb(snap.docs.map(d => ({ id: d.id, ...d.data() }))),
+    onErr,
+  );
+
 export const updateGitHubProject = (id, data) =>
   updateDoc(doc(db, 'githubProjects', id), { ...data, updatedAt: serverTimestamp() });
 

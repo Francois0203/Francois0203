@@ -21,6 +21,8 @@ service cloud.firestore {
     match /certifications/{doc} { allow read: if true; allow write: if isAdmin(); }
     match /projects/{doc}       { allow read: if true; allow write: if isAdmin(); }
     match /githubProjects/{doc} { allow read: if true; allow write: if isAdmin(); }
+    // Client sites, synced from the FM-Web-Studio org by syncStudioSites.mjs.
+    match /studioSites/{doc}    { allow read: if true; allow write: if isAdmin(); }
 
     // Contact form: visitors may submit; admin may read and delete.
     match /contacts/{doc}       { allow create: if true; allow read, delete: if isAdmin(); allow update: if false; }

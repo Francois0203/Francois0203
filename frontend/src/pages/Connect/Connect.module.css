@@ -291,66 +291,6 @@
   transform: translate(2px, -2px);
 }
 
-/* ── Floating donate bubble ──────────────────────────────────────────────────── */
-
-.donateBubble {
-  position: fixed;
-  top: 4.5rem;
-  left: 1rem;
-  z-index: var(--z-sticky);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) var(--spacing-sm);
-  background: var(--frosted-background);
-  backdrop-filter: blur(20px) saturate(200%);
-  -webkit-backdrop-filter: blur(20px) saturate(200%);
-  border: 1px solid rgba(var(--accent-1-rgb), 0.35);
-  border-radius: var(--radius-full);
-  color: var(--accent-1);
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    var(--shadow-md),
-    0 0 18px rgba(var(--accent-1-rgb), 0.15);
-  transition:
-    transform      var(--transition-fast),
-    box-shadow     var(--transition-fast),
-    border-color   var(--transition-fast),
-    background     var(--transition-fast);
-  animation: bubbleEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
-  white-space: nowrap;
-}
-
-.donateBubble:hover {
-  transform: scale(1.06);
-  border-color: rgba(var(--accent-1-rgb), 0.6);
-  box-shadow:
-    var(--shadow-lg),
-    0 0 28px rgba(var(--accent-1-rgb), 0.28);
-  background: rgba(var(--accent-1-rgb), 0.10);
-}
-
-.donateBubble:active {
-  transform: scale(0.97);
-}
-
-@keyframes bubbleEnter {
-  from { opacity: 0; transform: translateX(-16px) scale(0.85); }
-  to   { opacity: 1; transform: translateX(0)      scale(1);   }
-}
-
-.donateBubbleIcon {
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
-.donateBubbleText {
-  line-height: 1;
-}
-
 /* ── Success state ───────────────────────────────────────────────────────────── */
 
 .success {
@@ -549,7 +489,6 @@
   .rightCol  { align-self: unset; }
   .formCard  { display: block; }
   .fieldGrow textarea { min-height: 100px; }
-  .donateBubble { top: 4rem; left: 0.75rem; font-size: var(--font-size-xs); }
 }
 
 @media (max-width: 480px) {

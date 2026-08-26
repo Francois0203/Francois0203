@@ -1,6 +1,6 @@
 # Firebase
 
-Firebase service layer. All Firestore reads, the contact form write, and Firebase Analytics initialisation live here.
+Firebase service layer. All Firestore reads and the contact form write live here.
 
 ---
 
@@ -8,10 +8,13 @@ Firebase service layer. All Firestore reads, the contact form write, and Firebas
 
 | File | Purpose |
 |---|---|
-| `index.js` | Firebase app init - exports `db` and `initAnalytics` |
+| `index.js` | Firebase app init - exports `db`, `auth`, `googleProvider` |
 | `firestore.js` | All Firestore read helpers + `submitContactForm` re-export |
 | `contact.js` | Contact form write (`submitContactForm`) |
-| `storage.js` | Stub - images are served from the repo; Firebase Storage is not used |
+| `github.js` | Reads the synced `githubProjects` collection |
+| `studio.js` | Reads the synced `studioSites` collection (client work) |
+| `admin.js` | Admin-panel subscriptions and writes |
+| `auth.js` | Google sign-in / sign-out |
 
 ---
 

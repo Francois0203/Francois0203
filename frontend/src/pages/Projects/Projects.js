@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
-import { Modal, LightWaveButton } from '../../components';
-import { useGitHubProjects } from '../../hooks';
+import { Modal, LightWaveButton, SiteShowcase } from '../../components';
+import { useGitHubProjects, useStudioSites } from '../../hooks';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
@@ -52,17 +52,30 @@ const SkeletonCard = () => (
   </div>
 );
 
+// ─── Showcase skeleton ────────────────────────────────────────────────────────
+
+const SkeletonShowcase = () => (
+  <div className={styles.skeletonShowcase} aria-hidden="true">
+    <div className={styles.skeletonViewport} />
+    <div className={styles.skeletonBody}>
+      <div className={`${styles.skeleton} ${styles.skeletonLang}`} />
+      <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
+      <div className={`${styles.skeleton} ${styles.skeletonLine2}`} />
+    </div>
+  </div>
+);
+
 // ─── Project card ─────────────────────────────────────────────────────────────
 
 const ProjectCard = ({ project, onReadme }) => {
-  const { name, description: githubDesc, url, language, stars, topics, isPrivate, readme, owner, repo } = project;
+  const { name, description: githubDesc, url, language, stars, topics, isPrivate, readme } = project;
 
   const hasReadme = readme?.trim().length > 0;
 
   // Parse README once - cheap, synchronous
   const parsed = hasReadme
-    ? parseReadme(readme, { owner, repo, fallback: githubDesc ?? '' })
-    : { description: githubDesc ?? '', features: [], techStack: [], screenshot: null };
+    ? parseReadme(readme, { fallback: githubDesc ?? '' })
+    : { description: githubDesc ?? '', features: [], techStack: [] };
 
   const { description, features, techStack } = parsed;
 
@@ -166,6 +179,7 @@ const ProjectCard = ({ project, onReadme }) => {
 
 const Projects = () => {
   const { projects, loading, error } = useGitHubProjects();
+  const { sites, loading: sitesLoading, error: sitesError } = useStudioSites();
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { overrides } = useSiteCopy();
@@ -183,30 +197,68 @@ const Projects = () => {
           </p>
           <h1 className={styles.heading}>{t.heading}</h1>
           <p>
-            {loading
+            {loading || sitesLoading
               ? 'Fetching projects from the bench…'
-              : projects
-                ? `${projects.length} ${projects.length === 1 ? 'repository' : 'repositories'} laid out for you`
-                : ''}
+              : [
+                  sites.length > 0
+                    ? `${sites.length} live ${sites.length === 1 ? 'site' : 'sites'}`
+                    : null,
+                  projects?.length
+                    ? `${projects.length} ${projects.length === 1 ? 'repository' : 'repositories'}`
+                    : null,
+                ].filter(Boolean).join(' · ')}
           </p>
         </header>
 
-        {error ? (
-          <div className={styles.errorCard}>
-            <p>Could not load projects. Please try again later.</p>
+        {/* ── Client work ── live embeds of the sites in the studio org ── */}
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <span className={styles.sectionEye}>{t.studioEye}</span>
+            <h2 className={styles.sectionTitle}>{t.studioTitle}</h2>
+            <p className={styles.sectionLede}>{t.studioLede}</p>
           </div>
-        ) : (
-          <div className={styles.grid}>
-            {loading
-              ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-              : projects?.length === 0
-                ? <div className={styles.emptyCard}><p>No projects configured yet.</p></div>
-                : projects?.map(p => (
-                  <ProjectCard key={p.id} project={p} onReadme={setSelected} />
-                ))
-            }
+
+          {sitesError ? (
+            <div className={styles.errorCard}>
+              <p>Could not load the client sites. Please try again later.</p>
+            </div>
+          ) : (
+            <div className={styles.showcaseGrid}>
+              {sitesLoading
+                ? Array.from({ length: 2 }).map((_, i) => <SkeletonShowcase key={i} />)
+                : sites.length === 0
+                  ? <div className={styles.emptyCard}><p>{t.studioEmpty}</p></div>
+                  : sites.map(p => <SiteShowcase key={p.id} project={p} />)
+              }
+            </div>
+          )}
+        </section>
+
+        {/* ── Code & experiments ── the personal repos ─────────────────── */}
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <span className={styles.sectionEye}>{t.codeEye}</span>
+            <h2 className={styles.sectionTitle}>{t.codeTitle}</h2>
+            <p className={styles.sectionLede}>{t.codeLede}</p>
           </div>
-        )}
+
+          {error ? (
+            <div className={styles.errorCard}>
+              <p>Could not load projects. Please try again later.</p>
+            </div>
+          ) : (
+            <div className={styles.grid}>
+              {loading
+                ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                : projects?.length === 0
+                  ? <div className={styles.emptyCard}><p>No projects configured yet.</p></div>
+                  : projects?.map(p => (
+                    <ProjectCard key={p.id} project={p} onReadme={setSelected} />
+                  ))
+              }
+            </div>
+          )}
+        </section>
 
         {/* ── Next chapter ─────────────────────────────────────────── */}
         <footer className={styles.nextChapter}>
