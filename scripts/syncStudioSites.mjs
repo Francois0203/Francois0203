@@ -216,7 +216,7 @@ async function main() {
     process.exit(1);
   }
 
-  const db = initFirestore();
+  const db = await initFirestore();
 
   console.log(`Discovering repos in ${ORG} ...`);
 

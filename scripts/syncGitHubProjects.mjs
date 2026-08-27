@@ -60,7 +60,7 @@ async function main() {
     process.exit(1);
   }
 
-  const db = initFirestore();
+  const db = await initFirestore();
 
   const configSnap = await db.collection('portfolio').doc('githubConfig').get();
 

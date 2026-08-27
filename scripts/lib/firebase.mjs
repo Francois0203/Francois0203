@@ -33,8 +33,9 @@ export function projectId() {
  * to application-default credentials, so a local run only needs
  * `gcloud auth application-default login`.
  */
-export function initFirestore() {
+export async function initFirestore() {
   const raw = process.env.SERVICE_ACCOUNT;
+  const project = raw ? null : projectId();
 
   if (raw) {
     let creds;
@@ -44,9 +45,7 @@ export function initFirestore() {
       throw new Error(`SERVICE_ACCOUNT is not valid JSON: ${err.message}`);
     }
     admin.initializeApp({ credential: admin.credential.cert(creds) });
-    console.log('Auth: service account');
   } else {
-    const project = projectId();
     if (!project) {
       throw new Error(
         'No credentials. Either set SERVICE_ACCOUNT to a service-account JSON, or run\n' +
@@ -65,9 +64,23 @@ export function initFirestore() {
         'Run `gcloud auth application-default login`, or set SERVICE_ACCOUNT.',
       );
     }
-    console.log(`Auth: application-default credentials, project ${project}`);
   }
 
+  // Resolve the credential now rather than on first query: initializeApp is
+  // lazy, so without this a missing credential surfaces as a raw stack trace
+  // from deep inside the Firestore client instead of the message above.
+  try {
+    await admin.app().options.credential.getAccessToken();
+  } catch (err) {
+    throw new Error(
+      `Credentials were rejected (${err.message}).
+` +
+      'Run `gcloud auth application-default login`, or set SERVICE_ACCOUNT to a ' +
+      'service-account JSON.',
+    );
+  }
+
+  console.log(raw ? 'Auth: service account' : `Auth: application-default credentials, project ${project}`);
   return admin.firestore();
 }
 
