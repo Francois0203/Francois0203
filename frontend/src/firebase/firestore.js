@@ -5,7 +5,11 @@ import { db } from './index';
 
 const portfolioDoc = (id) => getDoc(doc(db, 'portfolio', id)).then(s => s.data() ?? null);
 
-const getPersonal  = ()  => portfolioDoc('personal');
+/* Exported on its own as well as via getPortfolio: the Intro needs the name and
+ * photo within a few hundred ms of load, and getPortfolio does not resolve
+ * until all nine of its reads have settled. One document is a much shorter
+ * wait than the slowest of nine. */
+export const getPersonal = ()  => portfolioDoc('personal');
 const getContact   = ()  => portfolioDoc('contact');
 const getDonation  = ()  => portfolioDoc('donation');
 export const getCopy      = ()  => portfolioDoc('copy').then(d => d ?? {});

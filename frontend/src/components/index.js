@@ -14,3 +14,4 @@ export { default as Tooltip } from './Tooltip';
 export { ToastProvider, useToast } from './Toast Notifications/ToastContext';
 export { default as PasswordInput } from './Password Input';
 export { default as SiteShowcase } from './Site Showcase';
+export { default as Intro } from './Intro';

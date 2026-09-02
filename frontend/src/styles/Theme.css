@@ -85,6 +85,9 @@
     --z-modal: 1050;
     --z-popover: 1060;
     --z-tooltip: 1070;
+    /* Above everything, including the admin's mobile nav backdrop at 1090 - the
+       opening title card is the only thing on screen while it plays. */
+    --z-intro: 1100;
 
     /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
 

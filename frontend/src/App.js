@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
-import { NavigationBar, Settings, ToastProvider } from './components';
+import { NavigationBar, Settings, ToastProvider, Intro } from './components';
 import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
 import { ContentProvider } from './context/ContentContext';
 import styles from './App.module.css';
@@ -50,6 +50,12 @@ const AppLayout = () => {
    */
   return (
     <ContentProvider>
+      {/* Public site only - it lives in this layout rather than at the app root
+          so /admin, a sibling route, never plays it. It plays once per page
+          load and gates itself internally, so this layout remounting on the
+          way back from /admin does not replay it. */}
+      <Intro />
+
       <div className={styles.app}>
         <NavigationBar
           links={navigationLinks}
