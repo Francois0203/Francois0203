@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FaFeatherAlt } from 'react-icons/fa';
 import { getLenis } from '../../hooks/useMomentumScroll';
-import { readIdentity, resolveIdentity, initialsOf } from './identity';
+import { readIdentity, resolveIdentity, preloadPhoto, initialsOf } from './identity';
 import styles from './Intro.module.css';
 
 /**
@@ -120,6 +120,19 @@ const Intro = () => {
   const [started,  setStarted]  = useState(false);
   const [identity, setIdentity] = useState(null);
 
+  /*
+   * Tracked separately from `identity` on purpose. The photo is not allowed to
+   * hold the sequence up - it loads alongside and crossfades into the portrait
+   * disc whenever it lands. Gating on it meant a slow avatar either delayed
+   * everything or lost the picture for the whole run.
+   *
+   * Seeded from the cache so a repeat visit can begin preloading before the
+   * network has said anything, which is usually enough for the image to be
+   * decoded by the time the card mounts.
+   */
+  const [photoUrl,   setPhotoUrl]   = useState(() => readIdentity()?.photoUrl ?? null);
+  const [photoReady, setPhotoReady] = useState(false);
+
   const timerRef = useRef(0);
   const embers = useMemo(buildEmbers, []);
 
@@ -161,10 +174,23 @@ const Intro = () => {
         // would swap the name under the reader mid-animation.
         setIdentity(resolved);
         setStarted(true);
+        // The photo is the one thing allowed to arrive late, and it may be a
+        // different url than the cache had (an edited photoUrl, or a changed
+        // GitHub handle).
+        if (resolved.photoUrl) setPhotoUrl(resolved.photoUrl);
       });
 
     return () => { live = false; };
   }, [playing]);
+
+  /* Kicks off as soon as a url is known - from cache on mount, or from the
+     fetch a moment later - and never blocks anything. */
+  useEffect(() => {
+    if (!playing || !photoUrl) return undefined;
+    let live = true;
+    preloadPhoto(photoUrl).then((ok) => { if (live && ok) setPhotoReady(true); });
+    return () => { live = false; };
+  }, [playing, photoUrl]);
 
   /* ── Runtime ──────────────────────────────────────────────────────────── */
 
@@ -220,7 +246,6 @@ const Intro = () => {
   const name     = identity?.name ?? null;
   const title    = identity?.title ?? null;
   const initials = initialsOf(name);
-  const showPhoto = Boolean(identity?.photoReady && identity?.photoUrl);
 
   return (
     // Decorative, and the cover underneath carries all of it as real content,
@@ -269,15 +294,22 @@ const Intro = () => {
             starts every delay inside it. */}
         {started && (
           <div className={styles.card}>
+            {/* Both layers are always present and stacked: the monogram sits
+                underneath, and the photo fades in on top the moment it has
+                decoded. Swapping one element for the other would pop, and
+                would relayout the disc if the photo arrived mid-animation. */}
             <div className={styles.portrait}>
+              <span className={styles.portraitFallback}>
+                {initials ?? <FaFeatherAlt />}
+              </span>
+              {photoUrl && (
+                <img
+                  src={photoUrl}
+                  alt=""
+                  className={`${styles.portraitImg} ${photoReady ? styles.portraitImgReady : ''}`}
+                />
+              )}
               <span className={styles.portraitRing} />
-              {showPhoto
-                ? <img src={identity.photoUrl} alt="" className={styles.portraitImg} />
-                : (
-                  <span className={styles.portraitFallback}>
-                    {initials ?? <FaFeatherAlt />}
-                  </span>
-                )}
             </div>
 
             {name && <h1 className={styles.name}>{name}</h1>}

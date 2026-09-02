@@ -1,4 +1,4 @@
-import { getPersonal } from '../../firebase/firestore';
+import { getPersonal, getSocial } from '../../firebase/firestore';
 
 /**
  * Who the intro is about, available fast enough to actually animate.
@@ -9,19 +9,34 @@ import { getPersonal } from '../../firebase/firestore';
  * is far too late - and reading them in through context would mean the name
  * popping into a card the reader is already looking at.
  *
- * So: read one document instead of nine, cache the answer in localStorage, and
- * seed the next load from that cache synchronously. First-ever visit waits a
- * few hundred ms behind a parchment sheet that is already covering the screen,
- * so the wait is invisible. Every load after that is instant.
+ * So: read the two documents that matter instead of nine, cache the answer in
+ * localStorage, and seed the next load from that cache synchronously. A
+ * first-ever visit waits a few hundred ms behind a parchment sheet that is
+ * already covering the screen, so the wait is invisible. Every load after that
+ * is instant.
  *
- * The cache is intentionally not the source of truth for anything - it is only
- * ever used to decide what the intro draws, is refreshed on every load, and if
- * it is missing or stale the intro degrades rather than breaks.
+ * The cache is not the source of truth for anything - it only decides what the
+ * intro draws, it is refreshed on every load, and if it is missing or stale the
+ * intro degrades rather than breaks.
  */
 
 const CACHE_KEY = 'fm:identity';
 
 const EMPTY = { name: null, title: null, photoUrl: null };
+
+/**
+ * The same fallback chain the cover uses (see Home.js): an explicit photoUrl
+ * wins, and failing that the GitHub avatar is derived from the social document.
+ * Duplicating the chain here rather than reading one field is the whole fix for
+ * the intro showing a monogram while the cover two seconds later showed a face
+ * - photoUrl is frequently empty precisely because the GitHub fallback works.
+ */
+const resolvePhotoUrl = (personal, platforms) => {
+  if (personal?.photoUrl) return personal.photoUrl;
+  const github = (platforms ?? []).find(p => (p?.key || '').toLowerCase() === 'github');
+  const handle = github?.url?.replace(/\/$/, '').split('/').pop();
+  return handle ? `https://github.com/${handle}.png` : null;
+};
 
 /** localStorage, not sessionStorage: the point is to be warm on a *new* visit. */
 export const readIdentity = () => {
@@ -44,11 +59,12 @@ const writeIdentity = (identity) => {
 };
 
 /**
- * Resolves when the image is actually decodable, so the portrait never appears
- * as a half-painted band partway through its own reveal. Never rejects - a
- * missing or broken photo is a state the intro is designed for, not an error.
+ * Resolves true only once the image is actually decodable, so the portrait can
+ * never appear as a half-painted band partway through its own reveal. Never
+ * rejects - a missing or broken photo is a state the intro is designed for, not
+ * an error.
  */
-const preloadPhoto = (url) =>
+export const preloadPhoto = (url) =>
   new Promise((resolve) => {
     if (!url) { resolve(false); return; }
     const img = new Image();
@@ -58,33 +74,40 @@ const preloadPhoto = (url) =>
   });
 
 /**
- * @param {number} timeoutMs how long to wait before starting without the data.
- *        Short when there is a warm cache (we are only waiting on the photo,
- *        which is almost certainly in the HTTP cache), longer on a cold one.
- * @returns {Promise<{name, title, photoUrl, photoReady}>}
+ * Deliberately does NOT wait for the image.
+ *
+ * An earlier version raced the photo download inside this gate, which meant a
+ * slow avatar either delayed the whole sequence or fell through to the monogram
+ * for the entire run. The photo now loads alongside and crossfades into the
+ * portrait disc whenever it lands - so the timing of the card never depends on
+ * the network, and the picture is not sacrificed to hold the schedule.
+ *
+ * @param {number} timeoutMs how long to hold the sequence for the name.
+ * @returns {Promise<{name, title, photoUrl}>}
  */
 export const resolveIdentity = async ({ timeoutMs = 900 } = {}) => {
   const cached = readIdentity();
 
-  // Runs to completion whether or not it wins the race below - so the cache is
-  // refreshed on every load even when the intro started without waiting for it.
+  // Runs to completion whether or not it wins the race below, so the cache is
+  // refreshed on every load even when the intro started without waiting.
   const work = (async () => {
-    let identity = cached ?? EMPTY;
     try {
-      const personal = await getPersonal();
+      // Both at once - the second read is free in wall-clock terms.
+      const [personal, platforms] = await Promise.all([getPersonal(), getSocial()]);
       if (personal?.name) {
-        identity = {
-          name:     personal.name     ?? null,
-          title:    personal.title    ?? null,
-          photoUrl: personal.photoUrl ?? null,
+        const identity = {
+          name:     personal.name  ?? null,
+          title:    personal.title ?? null,
+          photoUrl: resolvePhotoUrl(personal, platforms),
         };
         writeIdentity(identity);
+        return identity;
       }
     } catch {
       // Offline, or rules changed. Whatever the cache holds is still the best
       // answer available, and no answer at all is handled downstream.
     }
-    return { ...identity, photoReady: await preloadPhoto(identity.photoUrl) };
+    return cached ?? EMPTY;
   })();
 
   const settled = await Promise.race([
@@ -92,13 +115,13 @@ export const resolveIdentity = async ({ timeoutMs = 900 } = {}) => {
     new Promise((resolve) => { setTimeout(() => resolve(null), timeoutMs); }),
   ]);
 
-  // Timed out: go with the cache and no photo. The monogram fallback is a
-  // designed state, so this still looks deliberate rather than unfinished.
-  return settled ?? { ...(cached ?? EMPTY), photoReady: false };
+  // Timed out: go with the cache. The monogram fallback is a designed state, so
+  // an empty cache still looks deliberate rather than unfinished.
+  return settled ?? (cached ?? EMPTY);
 };
 
 /**
- * "François Meiring" → "FM". Two letters at most: three initials in a 96px
+ * "François Meiring" → "FM". Two letters at most: three initials in a 104px
  * disc stop being a monogram and start being a word.
  */
 export const initialsOf = (name) => {

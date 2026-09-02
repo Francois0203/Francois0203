@@ -276,17 +276,35 @@
     to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 
+/**
+ * Stacked over the monogram rather than swapped with it. Held at opacity 0
+ * until identity.js confirms the image has decoded, then crossfaded in - so it
+ * can never appear as a half-painted band, and a photo that arrives late fades
+ * over the initials instead of replacing an element and relaying out the disc.
+ *
+ * 420ms and `ease`, slower and softer than the rest of the card: this is the
+ * one transition that may land at an unpredictable moment, and a slow crossfade
+ * is far harder to catch out than a quick one.
+ */
 .portraitImg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Only ever rendered once identity.js has confirmed the image decodes, so
-       it can never appear as a half-painted band mid-reveal. */
+    opacity: 0;
+    transition: opacity 420ms ease;
 }
 
-/* Monogram, for when there is no photo or it did not arrive in time. A designed
+.portraitImgReady {
+    opacity: 1;
+}
+
+/* Monogram, for when there is no photo or it has not arrived yet. A designed
    state, not a placeholder: initials in the cover's own serif. */
 .portraitFallback {
+    position: absolute;
+    inset: 0;
     font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
     font-size: 2.1rem;
     font-weight: 400;

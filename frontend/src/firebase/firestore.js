@@ -14,7 +14,10 @@ const getContact   = ()  => portfolioDoc('contact');
 const getDonation  = ()  => portfolioDoc('donation');
 export const getCopy      = ()  => portfolioDoc('copy').then(d => d ?? {});
 const getSkills    = ()  => portfolioDoc('skills');
-const getSocial    = ()  => portfolioDoc('social').then(d => d?.platforms ?? []);
+/* Exported alongside getPersonal for the Intro: the cover's portrait falls back
+ * to the GitHub avatar derived from this document when personal.photoUrl is
+ * empty, so anything that wants "the profile picture" needs both docs. */
+export const getSocial = ()  => portfolioDoc('social').then(d => d?.platforms ?? []);
 const getInterests = ()  => portfolioDoc('interests').then(d => d?.items ?? []);
 
 // ─── Ordered collection reads ─────────────────────────────────────────────────
