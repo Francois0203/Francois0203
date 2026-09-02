@@ -35,6 +35,41 @@
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
 
+    /* ─── MOTION ────────────────────────────────────────────────────────────── */
+    /* The built-in CSS easings are too weak to read as intentional. These are
+       the curves every interactive component should reach for.
+
+       --ease-out    entering / responding to the user. Starts fast, so the
+                     interface answers in the frame the user is watching.
+       --ease-in-out something already on screen moving to a new place.
+       --ease-emph   the same, with more authority - used for sweeps and fills.
+       Never ease-in: it delays the first 100ms, which is the only part the
+       user actually perceives as latency. */
+    --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-emph:    cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Durations. Everything interactive stays under 300ms. */
+    --dur-press:  120ms;   /* press / release feedback */
+    --dur-hover:  180ms;   /* colour + border on hover */
+    --dur-sweep:  420ms;   /* a fill or gradient crossing the element */
+
+    /* ─── CONTROLS ──────────────────────────────────────────────────────────── */
+    /* Shared by buttons, inputs, selects - so a button and the input beside it
+       line up without either one hard-coding a height. */
+    --control-height-sm: 2rem;      /* 32px */
+    --control-height:    2.375rem;  /* 38px */
+    --control-height-lg: 2.75rem;   /* 44px - also the touch-target minimum */
+
+    --control-radius: 0.625rem;     /* 10px - 8px reads dated at these heights */
+    --control-radius-sm: 0.5rem;    /* 8px  */
+
+    /* Control surfaces. Kept as separate tokens from the accent scale so a
+       button's resting state can be quiet without dragging the accent with it. */
+    --control-border:       rgba(var(--accent-1-rgb), 0.16);
+    --control-border-hover: rgba(var(--accent-1-rgb), 0.34);
+    --control-hairline:     inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -212,6 +247,13 @@
     --info-background-color: var(--info-background-color-dark);
 
     --leaf-color: var(--leaf-color-dark);
+
+    /* Controls read differently on a dark ground: the border has to carry more
+       of the shape (there is no ambient shadow to define it) and a white
+       hairline along the top edge is what sells the surface as lit. */
+    --control-border:       rgba(var(--accent-1-rgb), 0.20);
+    --control-border-hover: rgba(var(--accent-1-rgb), 0.42);
+    --control-hairline:     inset 0 1px 0 rgba(255, 255, 255, 0.07);
 
     /* Deeper shadows for dark surfaces */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);

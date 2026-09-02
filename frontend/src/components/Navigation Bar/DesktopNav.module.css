@@ -183,8 +183,12 @@
   user-select: none;
   outline: none;
 
-  /* Hard-reset every token the global button[type="button"] rule sets.
-     This prevents the frosted border/background/glow from showing on nav links. */
+  /* Hard-reset every token the global button[type="button"] rule sets, so the
+     frosted border/background/lift never show on a nav link. min-height and
+     line-height are in here because the global rule sizes buttons off a shared
+     control height - without them the capsule inherits a 38px floor and grows. */
+  min-height: 0;
+  line-height: normal;
   border: none;
   background: transparent;
   box-shadow: none;
@@ -194,7 +198,14 @@
   --_btn-border:       transparent;
   --_btn-hover-bg:     transparent;
   --_btn-hover-border: transparent;
-  --_btn-glow:         transparent;
+  /* Points hover at the resting colour, so the global rule's
+     `color: var(--_btn-hover-color)` becomes a no-op. A nav link should not
+     react to hover at all - the pill is the only thing that indicates where
+     you are, and a second signal competing with it just adds noise.
+     .navLinkActive re-points the same token at the accent below, so an active
+     link keeps its colour when the cursor passes over it. */
+  --_btn-hover-color:  var(--secondary-text-color);
+  --_btn-lift:         none;
   --_btn-shadow:       none;
 
   transition: color 0.25s ease;
@@ -221,6 +232,9 @@
 .navLinkActive {
   color: var(--accent-1);
   font-weight: 600;
+  /* Declared after .navLink, so this wins at equal specificity and the active
+     link does not drop to the resting colour while hovered. */
+  --_btn-hover-color: var(--accent-1);
 }
 
 /* ----------------------------------------------------------------

@@ -78,9 +78,17 @@
   z-index: 0;
 }
 
+/* background / color / box-shadow are restated because the global button:hover
+   rule declares all three. Without them here, hovering the trigger swapped its
+   frosted glass for a flat surface and dropped its shadow. */
 .trigger:hover {
   border-color: var(--accent-1);
   transform: scale(1.07);
+  background: var(--frosted-background);
+  color: inherit;
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .trigger:focus-visible {
@@ -207,10 +215,14 @@
   z-index: 0;
 }
 
+/* Same as .trigger:hover - background and color are restated so the global
+   button:hover rule cannot reach through and flatten the glass. */
 .bubble:hover,
 .bubbleHovered {
   transform: scale(1.12) translateY(-3px);
   border-color: var(--accent-1);
+  background: var(--frosted-background);
+  color: inherit;
   box-shadow:
     var(--shadow-xl),
     0 0 0 2px var(--accent-1-background),

@@ -173,6 +173,11 @@ const LiveFrame = ({ site, name }) => {
           // allow-top-navigation absent on purpose: no navigating the portfolio.
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
           tabIndex={live ? 0 : -1}
+          // Opts this frame out of Lenis's blanket `iframe { pointer-events:
+          // none }` once the card has been clicked - without it the frame is
+          // inert whenever momentum scrolling is on. Undefined rather than
+          // false so the attribute is absent, not present-and-empty.
+          data-lenis-interactive={live ? '' : undefined}
         />
       )}
 

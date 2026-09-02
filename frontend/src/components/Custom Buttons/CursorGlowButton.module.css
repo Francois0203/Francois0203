@@ -1,79 +1,117 @@
-/* ==================== CursorGlowButton ==================== */
-
-/**
- * Layer stack (back → front within the button's stacking context):
- *   z:0  .glow       - surface + outer bleed glow (inset: -12px)
- *   z:1  ::before    - reactive gradient border (mask punch-out technique)
- *   z:2  ::after     - static diagonal glass sheen
- *   z:3  .content    - text / children
+/* ==================== CursorGlowButton ====================
  *
- * overflow: hidden is intentionally absent - the .glow span bleeds
- * past the button edge for ambient area illumination.
+ * Layer stack (back → front):
+ *   z:0  .glow     - spotlight on the surface, clipped to the button
+ *   z:1  .edge     - the same spotlight, masked to a 1px ring
+ *   z:2  .content  - label
+ *
+ * --glow-x / --glow-y are written from JS each frame; they default to the
+ * centre so the button is correct before any pointer arrives and on devices
+ * where the JS gate never opens.
  */
 
 .button {
+    --glow-x: 50%;
+    --glow-y: 50%;
+    --glow-opacity: 0;
+
     position: relative;
     isolation: isolate;
-    /* overflow: hidden intentionally absent */
+    /* No overflow: hidden. Both glow layers are inset to the button box
+       already, and clipping would also clip the border radius antialiasing on
+       the .edge ring. */
+
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: var(--control-height-lg);
+    padding: 0 1.25rem;
+    border-radius: var(--control-radius);
+    border: 1px solid var(--control-border);
+    background-color: rgba(var(--accent-1-rgb), 0.045);
+    color: var(--primary-text-color);
+
+    /* This is the glass variant, so the blur is the point rather than a
+       decoration applied on top of an opaque fill. */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
     font-family: inherit;
     font-size: var(--font-size-sm);
     font-weight: 500;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-
-    /* Frosted glass base */
-    background-color: var(--frosted-background);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-
-    /* Subtle resting border - ::before overlays a reactive gradient on hover */
-    border: 1px solid rgba(var(--accent-1-rgb), 0.12);
-
-    color: var(--primary-text-color);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
+    line-height: 1;
+    letter-spacing: 0.01em;
     white-space: nowrap;
+    cursor: pointer;
     user-select: none;
 
+    box-shadow: var(--control-hairline);
+
     transition:
-        border-color var(--transition-fast),
-        color var(--transition-fast),
-        box-shadow var(--transition-fast),
-        transform var(--transition-fast);
+        border-color var(--dur-hover) var(--ease-out),
+        color        var(--dur-hover) var(--ease-out),
+        box-shadow   var(--dur-hover) var(--ease-out),
+        opacity      var(--dur-hover) var(--ease-out),
+        transform    var(--dur-press) var(--ease-out);
 }
 
-/* ── Reactive gradient border (mask punch-out technique) ─────────────────
- *
- * The pseudo-element is 2px larger than the button (inset: -1px).
- * padding: 1px defines the border thickness.
- * The CSS mask cuts away the interior (content-box), leaving only the
- * 1px padding ring - a transparent "border tube" filled with the gradient.
- *
- * The gradient is centered at the cursor (--glow-x/y) so the lit section
- * follows the cursor around the perimeter.
+/* ── Surface spotlight ───────────────────────────────────────────────────── */
+
+/**
+ * Two gradients, not five. The tight one is the light itself; the wide one is
+ * the falloff that keeps it from looking like a hard disc. Both are painted
+ * into a single layer, so a frame costs one composite regardless.
  */
-.button::before {
-    content: '';
+.glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle 80px at var(--glow-x) var(--glow-y),
+            rgba(var(--accent-1-rgb), 0.20) 0%,
+            transparent 70%
+        ),
+        radial-gradient(
+            circle 200px at var(--glow-x) var(--glow-y),
+            rgba(var(--accent-1-rgb), 0.07) 0%,
+            transparent 75%
+        );
+
+    opacity: var(--glow-opacity);
+    transition: opacity var(--dur-hover) var(--ease-out);
+}
+
+/* ── Lit border ──────────────────────────────────────────────────────────── */
+
+/**
+ * The same spotlight, cut to a 1px ring by the mask punch-out technique: fill
+ * the whole box, fill the content-box again, composite the second out of the
+ * first, and the 1px padding gap is all that survives. The lit arc tracks the
+ * cursor around the perimeter.
+ */
+.edge {
     position: absolute;
     inset: -1px;
-    border-radius: calc(var(--radius-md) + 1px);
-    padding: 1px;
-    pointer-events: none;
     z-index: 1;
+    padding: 1px;
+    border-radius: calc(var(--control-radius) + 1px);
+    pointer-events: none;
 
     background: radial-gradient(
-        circle 150px at var(--glow-x, 50%) var(--glow-y, 50%),
-        rgba(var(--accent-1-rgb), 0.90) 0%,
-        rgba(var(--accent-1-rgb), 0.30) 35%,
-        rgba(var(--accent-1-rgb), 0.06) 65%,
-        transparent 100%
+        circle 130px at var(--glow-x) var(--glow-y),
+        rgb(var(--accent-1-rgb)) 0%,
+        rgba(var(--accent-1-rgb), 0.35) 45%,
+        transparent 80%
     );
 
-    /* Punch a hole through the center - only the 1px ring is visible */
     -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
@@ -83,51 +121,24 @@
         linear-gradient(#fff 0 0);
     mask-composite: exclude;
 
-    opacity: var(--glow-opacity, 0);
-    transition: opacity var(--transition-fast);
-    will-change: opacity;
+    opacity: var(--glow-opacity);
+    transition: opacity var(--dur-hover) var(--ease-out);
 }
 
-/* ── Static glass sheen - ambient light from above-left ──────────────────
- *
- * Mimics the faint highlight on a glass surface from room lighting.
- * Always visible, no hover dependency - it IS the surface material.
+/* ── States ──────────────────────────────────────────────────────────────── */
+
+/**
+ * Opacity is driven here rather than from an inline style. The previous
+ * version held an `isHovered` React state solely to set it, which re-rendered
+ * the button and its children on every enter and leave.
  */
-.button::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 2;
-
-    background: linear-gradient(
-        138deg,
-        rgba(255, 255, 255, 0.07) 0%,
-        rgba(255, 255, 255, 0.02) 40%,
-        transparent 55%,
-        rgba(255, 255, 255, 0.03) 100%
-    );
-}
-
-/* ── Hover state ─────────────────────────────────────────────────────────
- *
- * Slight lift + accent border tint. The ::before gradient border
- * provides the primary reactive effect - these are supporting cues.
- */
-.button:hover:not(:disabled) {
-    border-color: rgba(var(--accent-1-rgb), 0.24);
-    color: var(--accent-1);
-    transform: translateY(-1px);
-    box-shadow:
-        0 4px 20px rgba(var(--accent-1-rgb), 0.10),
-        var(--shadow-md);
-}
-
-.button:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: none;
-    opacity: 0.9;
+@media (hover: hover) and (pointer: fine) {
+    .button:hover:not(:disabled) {
+        --glow-opacity: 1;
+        border-color: var(--control-border-hover);
+        color: var(--accent-1);
+        box-shadow: var(--control-hairline), 0 4px 16px -8px rgba(var(--accent-1-rgb), 0.5);
+    }
 }
 
 .button:focus-visible {
@@ -135,54 +146,39 @@
     outline-offset: 3px;
 }
 
+.button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
 .button:disabled {
     cursor: not-allowed;
-    opacity: 0.45;
+    opacity: 0.42;
+    box-shadow: none;
 }
 
-/* ── Surface glow (contained within button boundary) ────────────────────────
- *
- * Three concentric radial gradients:
- *   Core  ( 75px) - concentrated hotspot at the cursor
- *   Mid   (160px) - softer surface illumination
- *   Bloom (230px) - very faint outer diffusion for depth
- *
- * inset: 0 - fully contained; border illumination is handled by ::before.
- */
-.glow {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 0;
+/* ── Content ─────────────────────────────────────────────────────────────── */
 
-    background:
-        radial-gradient(
-            circle 75px at var(--glow-x, 50%) var(--glow-y, 50%),
-            rgba(var(--accent-1-rgb), 0.17) 0%,
-            transparent 65%
-        ),
-        radial-gradient(
-            circle 160px at var(--glow-x, 50%) var(--glow-y, 50%),
-            rgba(var(--accent-1-rgb), 0.07) 0%,
-            transparent 65%
-        ),
-        radial-gradient(
-            circle 230px at var(--glow-x, 50%) var(--glow-y, 50%),
-            rgba(var(--accent-1-rgb), 0.025) 0%,
-            transparent 70%
-        );
-
-    opacity: var(--glow-opacity, 0);
-    transition: opacity var(--transition-fast);
-    will-change: opacity;
-}
-
-/* Content always on top of all glow layers */
 .content {
     position: relative;
-    z-index: 3;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.5em;
+}
+
+.content > svg {
+    flex: none;
+    width: 1.05em;
+    height: 1.05em;
+}
+
+/**
+ * Reduced motion. The JS never writes a position, so the spotlight would sit
+ * at the centre - show it as a still, even wash instead of a disc parked in
+ * the middle of the button.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .glow { display: none; }
+    .edge { background: rgba(var(--accent-1-rgb), 0.45); }
+    .button:hover:not(:disabled) { --glow-opacity: 1; }
 }

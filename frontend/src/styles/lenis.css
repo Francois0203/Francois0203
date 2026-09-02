@@ -20,6 +20,25 @@ html.lenis body {
   overflow: hidden;
 }
 
+/**
+ * Lenis ships this so a wheel over an embedded frame is not swallowed by the
+ * frame and lost to the page scroll.
+ *
+ * It also silently broke Site Showcase. Those cards embed real client sites and
+ * hand pointer events to the frame once the card is clicked - and this rule,
+ * at (0,2,1), outranks anything the component says at a single class. Every
+ * showcase frame was inert for as long as momentum scrolling was on, which is
+ * always, which made the whole click-to-interact feature look like it had never
+ * worked.
+ *
+ * So the default stands, and a frame that has been deliberately activated opts
+ * back in. Scroll is not a concern once it has: the frame is cross-origin, so
+ * its wheel events never reach this document either way.
+ */
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+.lenis.lenis-smooth iframe[data-lenis-interactive] {
+  pointer-events: auto;
 }

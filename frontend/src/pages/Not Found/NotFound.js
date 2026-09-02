@@ -99,7 +99,7 @@ const NotFound = () => {
             <MdHome aria-hidden="true" />
             Go Home
           </LightWaveButton>
-          <button type="button" onClick={handleGoBack} className={styles.backButton}>
+          <button type="button" onClick={handleGoBack} className="btn-secondary btn-lg">
             <MdArrowBack aria-hidden="true" />
             Go Back
           </button>

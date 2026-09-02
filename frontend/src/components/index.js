@@ -1,7 +1,8 @@
 export { default as ErrorBoundary } from './Error Boundary';
 export { default as CursorGlowButton } from './Custom Buttons/CursorGlowButton';
-export { default as MagneticButton } from './Custom Buttons/MagneticButton';
+export { default as ShimmerButton } from './Custom Buttons/ShimmerButton';
 export { default as LightWaveButton } from './Custom Buttons/LightWaveButton';
+export { default as GlowBorderButton } from './Custom Buttons/GlowBorderButton';
 export { default as Modal } from './Modal';
 export { default as KebabMenu } from './Kebab Menu';
 export { default as NavigationBar } from './Navigation Bar';

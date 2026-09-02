@@ -126,146 +126,254 @@ li::marker {
 
 /* ─── BUTTONS ────────────────────────────────────────────────────────────── */
 
-button {
-    /* Component-scoped design tokens - overridden per variant below */
-    --_btn-bg: rgba(var(--accent-1-rgb), 0.10);
-    --_btn-border: rgba(var(--accent-1-rgb), 0.35);
-    --_btn-color: var(--accent-1);
-    --_btn-hover-bg: rgba(var(--accent-1-rgb), 0.17);
-    --_btn-hover-border: rgba(var(--accent-1-rgb), 0.55);
-    --_btn-glow: rgba(var(--accent-1-rgb), 0.10);
-    --_btn-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 1px 2px rgba(0, 0, 0, 0.06);
+/**
+ * One base rule, six variants, driven entirely by component-scoped custom
+ * properties. A variant only ever restates the tokens - never the layout, the
+ * transitions or the states - so every button in the app presses, focuses and
+ * disables identically.
+ *
+ * Deliberately absent:
+ *   backdrop-filter  - it was on every button, costing a compositor layer each,
+ *                      for a frost effect that only reads when there is
+ *                      something behind the button. The glass variants
+ *                      (Custom Buttons/) opt into it; ordinary buttons do not.
+ *   glow ring        - the 4px accent halo on hover. Loud, and it competed with
+ *                      the focus ring for the same visual slot.
+ */
 
+button {
+    /* Shape */
+    --_btn-height: var(--control-height);
+    --_btn-pad-x:  0.875rem;
+    --_btn-radius: var(--control-radius);
+    --_btn-font:   var(--font-size-xs);
+
+    /* Colour - restated per variant below */
+    --_btn-bg:           rgba(var(--accent-1-rgb), 0.09);
+    --_btn-border:       rgba(var(--accent-1-rgb), 0.22);
+    --_btn-color:        var(--accent-1);
+    --_btn-hover-bg:     rgba(var(--accent-1-rgb), 0.15);
+    --_btn-hover-border: rgba(var(--accent-1-rgb), 0.38);
+    --_btn-hover-color:  var(--_btn-color);
+    --_btn-ring:         var(--accent-1);
+    --_btn-shadow:       var(--control-hairline);
+    --_btn-lift:         0 2px 6px -2px rgba(var(--accent-1-rgb), 0.22);
+
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
     cursor: pointer;
-    font-family: inherit;
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--_btn-border);
-    background: var(--_btn-bg);
-    color: var(--_btn-color);
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-sm);
-    white-space: nowrap;
+    gap: 0.5em;
+
+    min-height: var(--_btn-height);
+    padding: 0 var(--_btn-pad-x);
+    border-radius: var(--_btn-radius);
+    border: 1px solid var(--_btn-border);
+    background: var(--_btn-bg);
+    color: var(--_btn-color);
     box-shadow: var(--_btn-shadow);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+
+    font-family: inherit;
+    font-size: var(--_btn-font);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+
+    /* Named properties only. `transition: all` would sweep up layout
+       properties and quietly animate them off the compositor. */
     transition:
-        background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-        border-color     200ms cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow       200ms cubic-bezier(0.4, 0, 0.2, 1),
-        color            var(--transition-fast),
-        opacity          var(--transition-fast),
-        transform        var(--transition-fast);
+        background-color var(--dur-hover) var(--ease-out),
+        border-color     var(--dur-hover) var(--ease-out),
+        color            var(--dur-hover) var(--ease-out),
+        box-shadow       var(--dur-hover) var(--ease-out),
+        opacity          var(--dur-hover) var(--ease-out),
+        transform        var(--dur-press) var(--ease-out);
 }
 
-button:hover:not(:disabled) {
-    background: var(--_btn-hover-bg);
-    border-color: var(--_btn-hover-border);
-    box-shadow:
-        var(--_btn-shadow),
-        0 0 0 4px var(--_btn-glow),
-        0 4px 16px var(--_btn-glow);
+/* Sized in em so an icon tracks the button's own font size across .btn-sm /
+   .btn-lg without a second rule per size. */
+button > svg {
+    flex: none;
+    width: 1.05em;
+    height: 1.05em;
 }
 
-button:active:not(:disabled) {
-    transform: translateY(1px);
-    box-shadow:
-        inset 0 1px 3px rgba(0, 0, 0, 0.12),
-        0 1px 2px rgba(0, 0, 0, 0.06);
+/**
+ * Hover is a pointer affordance. On touch it fires on tap and then sticks until
+ * the next tap elsewhere, which reads as a jammed button.
+ *
+ * The disabled guard is wrapped in `:where()`, which contributes zero
+ * specificity. That matters: a plain `button:hover:not(:disabled)` weighs
+ * (0,2,1), which quietly outranks a component's own `.someButton:hover` at
+ * (0,2,0) - so any module that dresses a <button> as something else (the nav
+ * links, the mobile nav triggers, switch tracks) could style the resting state
+ * but not the hover, and would silently inherit this rule's shadow and colour.
+ * At (0,1,1) a single module class wins, which is what everyone writing one
+ * already assumes.
+ */
+@media (hover: hover) and (pointer: fine) {
+    button:hover:where(:not(:disabled)) {
+        background: var(--_btn-hover-bg);
+        border-color: var(--_btn-hover-border);
+        color: var(--_btn-hover-color);
+        box-shadow: var(--_btn-shadow), var(--_btn-lift);
+    }
+}
+
+/* Press feedback. scale() rather than translateY(): it takes the label and any
+   icons down with it, so the whole control reads as physically depressed, and
+   it cannot nudge a neighbour into a relayout. Same zero-weight guard, so a
+   component that owns its own press transform is not fighting this one. */
+button:active:where(:not(:disabled)) {
+    transform: scale(0.97);
+    transition-duration: var(--dur-press);
 }
 
 button:focus-visible {
-    outline: 2px solid var(--accent-1);
-    outline-offset: 3px;
+    outline: 2px solid var(--_btn-ring);
+    outline-offset: 2px;
 }
 
+/* Must stay after :hover and :active - it now ties with them at (0,1,1), so it
+   wins on source order alone, and has to restate everything they touch. */
 button:disabled {
     cursor: not-allowed;
-    opacity: 0.40;
+    opacity: 0.42;
+    background: var(--_btn-bg);
+    border-color: var(--_btn-border);
+    color: var(--_btn-color);
+    box-shadow: none;
+    transform: none;
 }
 
-/* Secondary - neutral glass surface */
+/* ── Sizes ───────────────────────────────────────────────────────────────── */
+
+button.btn-sm {
+    --_btn-height: var(--control-height-sm);
+    --_btn-pad-x:  0.625rem;
+    --_btn-radius: var(--control-radius-sm);
+}
+
+button.btn-lg {
+    --_btn-height: var(--control-height-lg);
+    --_btn-pad-x:  1.25rem;
+    --_btn-font:   var(--font-size-sm);
+}
+
+/* Square, for a lone icon. Padding is dropped so the glyph sits dead centre. */
+button.btn-icon {
+    --_btn-pad-x: 0;
+    width: var(--_btn-height);
+}
+
+button.btn-block {
+    width: 100%;
+}
+
+/* ── Variants ────────────────────────────────────────────────────────────── */
+
+/* Primary - the one solid fill in the system. At most one per view. */
+button.btn-primary {
+    --_btn-bg:           var(--accent-1);
+    --_btn-border:       var(--accent-1);
+    --_btn-color:        var(--background-1);
+    --_btn-hover-bg:     var(--accent-hover);
+    --_btn-hover-border: var(--accent-hover);
+    --_btn-hover-color:  var(--background-1);
+    --_btn-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 1px 2px rgba(0, 0, 0, 0.10);
+    --_btn-lift: 0 4px 14px -4px rgba(var(--accent-1-rgb), 0.55);
+    font-weight: 550;
+}
+
+/**
+ * Secondary - the workhorse. Neutral until touched, then it picks up the accent
+ * in the border and label only.
+ *
+ * The type-attribute fallbacks (here and on danger/success) are wrapped in
+ * `:where()` so they carry zero specificity and land at (0,0,1), the same weight
+ * as the bare `button` rule they follow - which is all they need to override it.
+ *
+ * Unwrapped, `button[type="button"]` weighs (0,1,1) and outranks *any* single
+ * class, including a component's own module class at (0,1,0). That is how the
+ * nav links ended up with a dark pill on hover: `.navLink` set
+ * `--_btn-hover-bg: transparent`, this rule set it to `var(--background-1)`,
+ * and the attribute selector won the custom property. The link painted an
+ * opaque surface over the capsule's frosted glass on hover, while its resting
+ * state looked correct - because `background` itself was being set directly by
+ * `.navLink` and only the *token* was being hijacked.
+ */
 button.btn-secondary,
-button[type="button"] {
-    --_btn-bg: var(--frosted-background);
-    --_btn-border: var(--border-color);
-    --_btn-color: var(--primary-text-color);
-    --_btn-hover-bg: rgba(var(--accent-1-rgb), 0.06);
-    --_btn-hover-border: rgba(var(--accent-1-rgb), 0.30);
-    --_btn-glow: rgba(var(--accent-1-rgb), 0.07);
-    --_btn-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 1px 2px rgba(0, 0, 0, 0.05);
+button:where([type="button"]) {
+    --_btn-bg:           var(--background-1);
+    --_btn-border:       var(--border-color);
+    --_btn-color:        var(--secondary-text-color);
+    --_btn-hover-bg:     var(--background-1);
+    --_btn-hover-border: var(--control-border-hover);
+    --_btn-hover-color:  var(--accent-1);
+    --_btn-lift:         0 2px 6px -3px rgba(0, 0, 0, 0.18);
 }
 
-button.btn-secondary:hover:not(:disabled),
-button[type="button"]:hover:not(:disabled) {
-    color: var(--accent-1);
-}
-
-/* Outline - bordered, transparent fill */
+/* Outline - shape without a surface. Sits on photography and coloured bands. */
 button.btn-outline {
-    --_btn-bg: transparent;
-    --_btn-border: rgba(var(--accent-1-rgb), 0.45);
-    --_btn-color: var(--accent-1);
-    --_btn-hover-bg: rgba(var(--accent-1-rgb), 0.08);
-    --_btn-hover-border: rgba(var(--accent-1-rgb), 0.65);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    --_btn-bg:           transparent;
+    --_btn-border:       var(--control-border-hover);
+    --_btn-color:        var(--accent-1);
+    --_btn-hover-bg:     rgba(var(--accent-1-rgb), 0.07);
+    --_btn-hover-border: var(--accent-1);
+    --_btn-shadow:       none;
+    --_btn-lift:         none;
 }
 
-/* Ghost - no border, minimal */
+/* Ghost - toolbar and table-row density. No border, no shadow, no lift. */
 button.btn-ghost {
-    --_btn-bg: transparent;
-    --_btn-border: transparent;
-    --_btn-color: var(--accent-1);
-    --_btn-hover-bg: rgba(var(--accent-1-rgb), 0.08);
+    --_btn-bg:           transparent;
+    --_btn-border:       transparent;
+    --_btn-color:        var(--secondary-text-color);
+    --_btn-hover-bg:     rgba(var(--accent-1-rgb), 0.09);
     --_btn-hover-border: transparent;
-    --_btn-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: none;
+    --_btn-hover-color:  var(--accent-1);
+    --_btn-shadow:       none;
+    --_btn-lift:         none;
 }
 
-button.btn-ghost:hover:not(:disabled) {
-    box-shadow: none;
-}
-
-/* Danger - burnt sienna */
+/* Danger - burnt sienna. Tinted rather than solid: a destructive action should
+   be legible at a glance without shouting from across the page. */
 button.btn-danger,
-button[type="reset"] {
-    --_btn-bg: rgba(184, 57, 28, 0.10);
-    --_btn-border: rgba(184, 57, 28, 0.35);
-    --_btn-color: var(--error-color);
-    --_btn-hover-bg: rgba(184, 57, 28, 0.17);
-    --_btn-hover-border: rgba(184, 57, 28, 0.55);
-    --_btn-glow: rgba(184, 57, 28, 0.10);
-    --_btn-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 1px 2px rgba(0, 0, 0, 0.06);
+button:where([type="reset"]) {
+    --_btn-bg:           rgba(184, 57, 28, 0.09);
+    --_btn-border:       rgba(184, 57, 28, 0.26);
+    --_btn-color:        var(--error-color);
+    --_btn-hover-bg:     rgba(184, 57, 28, 0.16);
+    --_btn-hover-border: rgba(184, 57, 28, 0.46);
+    --_btn-ring:         var(--error-color);
+    --_btn-lift:         0 2px 6px -2px rgba(184, 57, 28, 0.28);
 }
 
-/* Success - olive moss */
+/* Success - olive moss. `[type="submit"]` maps here for the admin forms. */
 button.btn-success,
-button[type="submit"] {
-    --_btn-bg: rgba(107, 140, 58, 0.13);
-    --_btn-border: rgba(107, 140, 58, 0.38);
-    --_btn-color: var(--success-color);
-    --_btn-hover-bg: rgba(107, 140, 58, 0.20);
-    --_btn-hover-border: rgba(107, 140, 58, 0.58);
-    --_btn-glow: rgba(107, 140, 58, 0.12);
-    --_btn-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 1px 2px rgba(0, 0, 0, 0.06);
+button:where([type="submit"]) {
+    --_btn-bg:           rgba(107, 140, 58, 0.10);
+    --_btn-border:       rgba(107, 140, 58, 0.28);
+    --_btn-color:        var(--success-color);
+    --_btn-hover-bg:     rgba(107, 140, 58, 0.18);
+    --_btn-hover-border: rgba(107, 140, 58, 0.48);
+    --_btn-ring:         var(--success-color);
+    --_btn-lift:         0 2px 6px -2px rgba(107, 140, 58, 0.28);
 }
 
+/**
+ * No tie-breaker block is needed here. An earlier revision carried one, pairing
+ * every `[type=...]` selector with every variant class, because the attribute
+ * selectors outweighed a bare `.btn-*` class and `<button type="submit"
+ * class="btn-primary">` came out green. `:where()` above drops them to (0,0,1),
+ * so any variant class - or any component's own module class - simply wins.
+ */
 
 /* ─── LABELS ─────────────────────────────────────────────────────────────── */
 
@@ -282,76 +390,87 @@ label {
 
 /* ─── FORM INPUTS ────────────────────────────────────────────────────────── */
 
+/**
+ * Fields share the button's height and radius tokens, so a field and the button
+ * beside it line up without either hard-coding a number.
+ *
+ * The old rule stacked five box-shadows at rest and animated `backdrop-filter`
+ * on focus - a blur radius cannot be interpolated on the compositor, so every
+ * focus repainted the field and whatever sat behind it. Focus is now one crisp
+ * ring plus a border, which is also the only state that needs to be unmissable.
+ */
 input,
 textarea,
 select {
     font-family: inherit;
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
     color: var(--primary-text-color);
-    background: var(--frosted-background);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: var(--background-1);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.75rem var(--spacing-md);
+    border-radius: var(--control-radius);
+    padding: 0.5rem 0.75rem;
+    min-height: var(--control-height);
     box-sizing: border-box;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.06),
-        inset 0 2px 4px rgba(0, 0, 0, 0.03);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
     transition:
-        border-color     200ms cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow       200ms cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-        backdrop-filter  200ms cubic-bezier(0.4, 0, 0.2, 1);
+        border-color     var(--dur-hover) var(--ease-out),
+        box-shadow       var(--dur-hover) var(--ease-out),
+        background-color var(--dur-hover) var(--ease-out);
 }
 
-input:hover:not(:disabled),
-textarea:hover:not(:disabled),
-select:hover:not(:disabled) {
-    border-color: rgba(var(--accent-1-rgb), 0.35);
-    background-color: rgba(var(--accent-1-rgb), 0.04);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.09),
-        inset 0 2px 4px rgba(0, 0, 0, 0.02),
-        0 2px 8px rgba(0, 0, 0, 0.06);
+input::placeholder,
+textarea::placeholder {
+    color: var(--tertiary-text-color);
+    opacity: 0.75;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    input:hover:not(:disabled):not(:focus),
+    textarea:hover:not(:disabled):not(:focus),
+    select:hover:not(:disabled):not(:focus) {
+        border-color: var(--border-color-hover);
+    }
+}
+
+/* One ring, drawn with box-shadow rather than outline so it follows the
+   border-radius and can sit flush against the 1px border with no gap. */
 input:focus,
 textarea:focus,
 select:focus {
     outline: none;
-    border-color: rgba(var(--accent-1-rgb), 0.65);
-    background-color: rgba(var(--accent-1-rgb), 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    border-color: var(--accent-1);
+    background-color: var(--background-1);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        inset 0 -1px 0 rgba(var(--accent-1-rgb), 0.05),
-        0 0 0 3px rgba(var(--accent-1-rgb), 0.10),
-        0 0 0 1px rgba(var(--accent-1-rgb), 0.28),
-        0 2px 10px rgba(0, 0, 0, 0.06);
-}
-
-input:focus:active,
-textarea:focus:active,
-select:focus:active {
-    box-shadow:
-        inset 0 1px 2px rgba(0, 0, 0, 0.07),
-        0 0 0 3px rgba(var(--accent-1-rgb), 0.08),
-        0 0 0 1px rgba(var(--accent-1-rgb), 0.22);
-    background-color: rgba(var(--accent-1-rgb), 0.04);
+        inset 0 1px 2px rgba(0, 0, 0, 0.03),
+        0 0 0 3px rgba(var(--accent-1-rgb), 0.16);
 }
 
 input:disabled,
 textarea:disabled,
 select:disabled {
-    background-color: var(--background-3);
+    background-color: var(--background-2);
     color: var(--disabled-color);
     cursor: not-allowed;
-    opacity: 0.55;
+    opacity: 0.6;
     box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+}
+
+/* Fields that failed validation. Applied by the browser for :invalid, or by
+   hand with aria-invalid on a field the app validated itself. */
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+    border-color: rgba(184, 57, 28, 0.55);
+}
+
+input[aria-invalid="true"]:focus,
+textarea[aria-invalid="true"]:focus,
+select[aria-invalid="true"]:focus {
+    border-color: var(--error-color);
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.03),
+        0 0 0 3px rgba(184, 57, 28, 0.16);
 }
 
 /* Input group wrapper */
@@ -410,20 +529,23 @@ textarea {
 
 /* ─── SELECT ─────────────────────────────────────────────────────────────── */
 
+/* A stroked chevron rather than the old filled triangle: it matches the
+   1.5px weight of the react-icons set used everywhere else, where a solid
+   triangle read as a heavier, older control. The arrow is a background image,
+   so its colour has to be restated per theme - it cannot inherit. */
 select {
     cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    padding-right: calc(var(--spacing-xl) + var(--spacing-sm));
-    min-height: 42px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b8651c' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-position: right var(--spacing-md) center;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23b8651c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
     background-repeat: no-repeat;
 }
 
 [data-theme="dark"] select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e89542' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23e89542' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 
 select:focus option:checked {
@@ -444,14 +566,20 @@ option[value=""] {
 
 /* ─── CHECKBOX ───────────────────────────────────────────────────────────── */
 
+/**
+ * Checked is a solid accent fill with a white tick, not a tint. A tinted box
+ * with an accent tick is legible at 18px only if you are looking for it; a
+ * filled box is legible from across the form, which is the entire job of a
+ * checkbox in a list of twenty.
+ */
 input[type="checkbox"] {
     --size: 18px;
 
     width: var(--size);
     height: var(--size);
     appearance: none;
-    background: var(--frosted-background);
-    border: 1px solid var(--border-color);
+    background: var(--background-1);
+    border: 1.5px solid var(--border-color);
     border-radius: var(--radius-sm);
     display: inline-flex;
     align-items: center;
@@ -459,51 +587,49 @@ input[type="checkbox"] {
     cursor: pointer;
     position: relative;
     flex-shrink: 0;
-    box-shadow:
-        inset 0 1px 3px rgba(0, 0, 0, 0.08),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
     transition:
-        background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-        border-color     200ms cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow       200ms cubic-bezier(0.4, 0, 0.2, 1);
+        background-color var(--dur-hover) var(--ease-out),
+        border-color     var(--dur-hover) var(--ease-out),
+        transform        var(--dur-press) var(--ease-out);
 }
 
-input[type="checkbox"]:hover:not(:disabled) {
-    border-color: rgba(var(--accent-1-rgb), 0.55);
-    background: rgba(var(--accent-1-rgb), 0.05);
-    box-shadow:
-        inset 0 1px 2px rgba(0, 0, 0, 0.06),
-        0 0 0 3px rgba(var(--accent-1-rgb), 0.08);
+@media (hover: hover) and (pointer: fine) {
+    input[type="checkbox"]:hover:not(:disabled) {
+        border-color: var(--accent-1);
+    }
+}
+
+input[type="checkbox"]:active:not(:disabled) {
+    transform: scale(0.92);
 }
 
 input[type="checkbox"]:checked {
-    background: rgba(var(--accent-1-rgb), 0.13);
-    border-color: rgba(var(--accent-1-rgb), 0.75);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 0 0 2px rgba(var(--accent-1-rgb), 0.12);
+    background: var(--accent-1);
+    border-color: var(--accent-1);
 }
 
 input[type="checkbox"]:focus-visible {
     outline: 2px solid var(--accent-1);
     outline-offset: 2px;
-    box-shadow:
-        inset 0 1px 2px rgba(0, 0, 0, 0.06),
-        0 0 0 3px rgba(var(--accent-1-rgb), 0.14);
 }
 
+/* The tick is two borders of an empty box, rotated 45deg. It starts at 0.6
+   rather than 0 - nothing in the physical world appears out of nothing, and
+   at scale(0) the tick pops rather than lands. The overshoot curve gives it
+   the small settle that makes the check feel confirmed. */
 input[type="checkbox"]::after {
     content: "";
     position: absolute;
     width: 4px;
     height: 8px;
-    border-right: 2px solid var(--accent-1);
-    border-bottom: 2px solid var(--accent-1);
-    transform: rotate(45deg) scale(0);
+    margin-top: -1px;
+    border-right: 2px solid var(--background-1);
+    border-bottom: 2px solid var(--background-1);
+    transform: rotate(45deg) scale(0.6);
     opacity: 0;
     transition:
-        transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1),
-        opacity   var(--transition-fast);
+        transform 200ms cubic-bezier(0.34, 1.4, 0.64, 1),
+        opacity   120ms var(--ease-out);
 }
 
 input[type="checkbox"]:checked::after {
@@ -514,7 +640,6 @@ input[type="checkbox"]:checked::after {
 input[type="checkbox"]:disabled {
     cursor: not-allowed;
     opacity: 0.40;
-    box-shadow: none;
 }
 
 label:has(input[type="checkbox"]) {
@@ -535,14 +660,17 @@ label:has(input[type="checkbox"]):hover {
 
 /* ─── RADIO ──────────────────────────────────────────────────────────────── */
 
+/* Matches the checkbox: solid accent when selected, and the dot always exists
+   in the DOM so it can scale from 0.6 instead of being created at full size on
+   the frame it becomes visible. */
 input[type="radio"] {
     --size: 18px;
 
     width: var(--size);
     height: var(--size);
     appearance: none;
-    background: var(--frosted-background);
-    border: 1px solid var(--border-color);
+    background: var(--background-1);
+    border: 1.5px solid var(--border-color);
     border-radius: var(--radius-full);
     display: inline-flex;
     align-items: center;
@@ -550,55 +678,54 @@ input[type="radio"] {
     cursor: pointer;
     position: relative;
     flex-shrink: 0;
-    box-shadow:
-        inset 0 1px 3px rgba(0, 0, 0, 0.08),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
     transition:
-        border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow   200ms cubic-bezier(0.4, 0, 0.2, 1),
-        background   200ms cubic-bezier(0.4, 0, 0.2, 1);
+        border-color     var(--dur-hover) var(--ease-out),
+        background-color var(--dur-hover) var(--ease-out),
+        transform        var(--dur-press) var(--ease-out);
 }
 
-input[type="radio"]:hover:not(:disabled) {
-    border-color: rgba(var(--accent-1-rgb), 0.55);
-    background: rgba(var(--accent-1-rgb), 0.05);
-    box-shadow:
-        inset 0 1px 2px rgba(0, 0, 0, 0.06),
-        0 0 0 3px rgba(var(--accent-1-rgb), 0.08);
+@media (hover: hover) and (pointer: fine) {
+    input[type="radio"]:hover:not(:disabled) {
+        border-color: var(--accent-1);
+    }
+}
+
+input[type="radio"]:active:not(:disabled) {
+    transform: scale(0.92);
 }
 
 input[type="radio"]:checked {
-    border-color: rgba(var(--accent-1-rgb), 0.75);
-    background: rgba(var(--accent-1-rgb), 0.10);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 0 0 2px rgba(var(--accent-1-rgb), 0.12);
+    background: var(--accent-1);
+    border-color: var(--accent-1);
+}
+
+input[type="radio"]::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--background-1);
+    border-radius: var(--radius-full);
+    position: absolute;
+    transform: scale(0.6);
+    opacity: 0;
+    transition:
+        transform 200ms cubic-bezier(0.34, 1.4, 0.64, 1),
+        opacity   120ms var(--ease-out);
 }
 
 input[type="radio"]:checked::after {
-    content: "";
-    width: 7px;
-    height: 7px;
-    background: var(--accent-1);
-    border-radius: var(--radius-full);
-    position: absolute;
-    box-shadow: 0 0 0 1px rgba(var(--accent-1-rgb), 0.20);
     transform: scale(1);
-    transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 1;
 }
 
 input[type="radio"]:focus-visible {
     outline: 2px solid var(--accent-1);
     outline-offset: 2px;
-    box-shadow:
-        inset 0 1px 2px rgba(0, 0, 0, 0.06),
-        0 0 0 3px rgba(var(--accent-1-rgb), 0.14);
 }
 
 input[type="radio"]:disabled {
     cursor: not-allowed;
     opacity: 0.40;
-    box-shadow: none;
 }
 
 

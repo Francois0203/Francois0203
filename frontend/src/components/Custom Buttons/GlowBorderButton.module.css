@@ -1,0 +1,228 @@
+/* ==================== GlowBorderButton ====================
+ *
+ * Layer stack (back → front):
+ *   z:0  .rim      - constant hairline border
+ *   z:1  .track    - masked 1px ring containing the travelling light
+ *   z:2  .content  - label
+ *
+ * The button itself carries no border. Both rings are inset overlays, so the
+ * light can sit exactly on the edge without the 1px border painting over it.
+ */
+
+.button {
+    /* --ring-size drives how much of the perimeter the light covers, and
+       --ring-speed how long one lap takes. Overridable per instance. */
+    --ring-speed: 5s;
+    --ring-rest: 0.55;   /* light opacity when idle */
+    --ring-live: 1;      /* ...and on hover / focus */
+
+    position: relative;
+    isolation: isolate;
+
+    /* Reset the global button rule - this variant paints its own surface. */
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    box-shadow: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: var(--control-height-lg);
+    padding: 0 1.25rem;
+    border-radius: var(--control-radius);
+
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background-color var(--dur-hover) var(--ease-out),
+        color            var(--dur-hover) var(--ease-out),
+        opacity          var(--dur-hover) var(--ease-out),
+        transform        var(--dur-press) var(--ease-out);
+}
+
+/* ── Tones ───────────────────────────────────────────────────────────────── */
+
+.glass {
+    background-color: rgba(var(--accent-1-rgb), 0.05);
+    color: var(--primary-text-color);
+    /* The one place a backdrop-filter earns its layer: this surface is
+       translucent by design and sits over page content. */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.solid {
+    background-color: var(--accent-1);
+    color: var(--background-1);
+    font-weight: 550;
+}
+
+/* ── Constant hairline ───────────────────────────────────────────────────── */
+
+.rim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border: 1px solid rgba(var(--accent-1-rgb), 0.22);
+    border-radius: inherit;
+    pointer-events: none;
+    transition: border-color var(--dur-hover) var(--ease-out);
+}
+
+.solid .rim {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Travelling light ────────────────────────────────────────────────────── */
+
+/**
+ * .track is a 1px-thick ring, cut with the mask punch-out technique: the
+ * pseudo-mask fills the whole box, a second copy fills only the content-box,
+ * and compositing them out leaves just the 1px padding ring. `overflow: hidden`
+ * then clips the spinning square inside it to that ring.
+ */
+.track {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1px;
+    border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+
+    opacity: var(--ring-rest);
+    transition: opacity var(--dur-hover) var(--ease-out);
+}
+
+/**
+ * The square must be larger than the button's diagonal, or its corners sweep
+ * inside the ring and the light stutters at the ends of a wide button. 150%
+ * of the larger dimension clears that for any realistic aspect ratio.
+ *
+ * `linear` because this is constant motion - any easing would make the light
+ * visibly hesitate once per lap, at the same place every lap.
+ */
+.spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    aspect-ratio: 1;
+    transform-origin: center;
+    will-change: transform;
+    animation: sweep var(--ring-speed) linear infinite;
+
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 300deg,
+        rgba(var(--accent-2-rgb), 0.35) 330deg,
+        rgb(var(--accent-2-rgb))        352deg,
+        rgb(var(--accent-2-rgb))        360deg
+    );
+}
+
+.solid .spinner {
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 300deg,
+        rgba(255, 255, 255, 0.45) 335deg,
+        rgba(255, 255, 255, 0.95) 356deg,
+        rgba(255, 255, 255, 0.95) 360deg
+    );
+}
+
+@keyframes sweep {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+
+.content {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.content > svg {
+    flex: none;
+    width: 1.05em;
+    height: 1.05em;
+}
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+
+/**
+ * Hover brightens the light rather than speeding it up. Changing
+ * animation-duration mid-lap restarts the clock, so the light would jump to a
+ * new position the instant the cursor arrived.
+ */
+@media (hover: hover) and (pointer: fine) {
+    .button:hover:not(:disabled) .track { opacity: var(--ring-live); }
+    .button:hover:not(:disabled) .rim   { border-color: rgba(var(--accent-1-rgb), 0.38); }
+
+    .glass:hover:not(:disabled) {
+        background-color: rgba(var(--accent-1-rgb), 0.09);
+    }
+
+    .solid:hover:not(:disabled) {
+        background-color: var(--accent-hover);
+    }
+}
+
+.button:focus-visible .track { opacity: var(--ring-live); }
+
+.button:focus-visible {
+    outline: 2px solid var(--accent-1);
+    outline-offset: 3px;
+}
+
+.button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+}
+
+.button:disabled .track {
+    /* A light still circling a control you cannot press reads as a pending
+       operation. Stop it and leave the plain rim. */
+    opacity: 0;
+}
+
+/**
+ * Reduced motion keeps the button but stops the lap: a still, evenly lit rim.
+ * The site-wide `[data-no-animations="true"] *` rule already kills the keyframe;
+ * this restores a border so the button does not lose its outline entirely.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; display: none; }
+    .rim     { border-color: rgba(var(--accent-1-rgb), 0.45); }
+}
+
+:global([data-no-animations='true']) .spinner { display: none; }
+:global([data-no-animations='true']) .rim     { border-color: rgba(var(--accent-1-rgb), 0.45); }

@@ -426,35 +426,8 @@
   flex-shrink: 0;
 }
 
-.backButton {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background: transparent;
-  color: var(--secondary-text-color);
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    background var(--transition-fast);
-}
-
-.backButton:hover {
-  color: var(--accent-1);
-  border-color: rgba(var(--accent-1-rgb), 0.40);
-  background: rgba(var(--accent-1-rgb), 0.06);
-}
-
-.backButton:active {
-  opacity: 0.8;
-}
+/* The back button is now the global `btn-secondary btn-lg` variant - it was a
+   line-for-line reimplementation of it, and drifted from it on hover. */
 
 
 /* ========== SHARED KEYFRAMES ========== */

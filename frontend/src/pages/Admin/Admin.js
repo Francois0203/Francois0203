@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaGithub } from 'react-icons/fa';
 import { IoSettingsSharp } from 'react-icons/io5';
@@ -7,6 +7,7 @@ import {
   MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdVerified, MdPublic,
 } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
+import useMomentumScroll from '../../hooks/useMomentumScroll';
 import { signInWithGoogle, signOutUser } from '../../firebase/auth';
 import {
   subscribeExperience, createExperience, updateExperience, deleteExperience,
@@ -92,6 +93,13 @@ const Admin = () => {
   const [view, setView]           = useState({ id: 'profile' }); // { id, add }
   const [signingIn, setSigningIn] = useState(false);
   const [navOpen, setNavOpen]     = useState(false); // mobile drawer
+
+  // Momentum scrolling for the admin's own scroll region. The public site gets
+  // this from AppLayout at the window level; this route is not inside that
+  // layout, and would not benefit from a window scroller anyway.
+  const scrollWrapperRef = useRef(null);
+  const scrollContentRef = useRef(null);
+  useMomentumScroll({ wrapperRef: scrollWrapperRef, contentRef: scrollContentRef });
 
   const openSection = (id, add = false) => {
     setView({ id, add });
@@ -307,10 +315,18 @@ const Admin = () => {
           ))}
         </aside>
 
-        <main className={styles.content}>
-          <h2 className={styles.sectionTitle}>{activeSection.title}</h2>
-          <div key={view.id} className={styles.sectionBody}>
-            {renderSection()}
+        {/* The admin is a fixed shell - this <main> owns the scroll, not the
+            window - so momentum scrolling has to be pointed at it directly.
+            .contentInner exists purely as the element Lenis watches for size
+            changes: for a non-window wrapper it measures the wrapper but
+            observes `content`, and <main> is held at a fixed height by the
+            flex shell, so it never reports a resize when a section grows. */}
+        <main className={styles.content} ref={scrollWrapperRef}>
+          <div className={styles.contentInner} ref={scrollContentRef}>
+            <h2 className={styles.sectionTitle}>{activeSection.title}</h2>
+            <div key={view.id} className={styles.sectionBody}>
+              {renderSection()}
+            </div>
           </div>
         </main>
       </div>

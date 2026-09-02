@@ -1,95 +1,114 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { lerp, motionAllowed } from './motion';
 import styles from './CursorGlowButton.module.css';
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-// Liquid-glass cursor-reactive button. Glow tracks cursor via RAF + lerp.
-// Layer stack: .glow → glass base → ::before (reactive border) → ::after (sheen) → .content
+/**
+ * A glass button lit by a spotlight that follows the cursor across its surface
+ * and around its border.
+ *
+ * Two things changed from the previous version:
+ *
+ *   - It no longer re-renders. The old one kept an `isHovered` state purely to
+ *     drive an inline `--glow-opacity`, so every hover and unhover cost React a
+ *     render of the button and its children. Opacity is now a CSS :hover
+ *     concern, and React never re-renders after mount.
+ *
+ *   - The glow is two gradients instead of five. Three stacked radial
+ *     gradients on the surface plus one on the border is four gradients being
+ *     recomputed every frame for a difference nobody can see. One tight
+ *     spotlight and one soft bloom carry the whole effect.
+ */
 
-const LERP = 0.13;
-const lerp = (a, b, t) => a + (b - a) * t;
-
-// ─── COMPONENT ────────────────────────────────────────────────────────────────
+/** Smoothing per frame. Slightly slacker than the magnetic button - the glow
+ *  trailing the cursor is what makes it read as light rather than a cursor. */
+const EASE = 0.14;
+const EPSILON = 0.3;   // px; the glow is soft, so it can settle coarsely
 
 const CursorGlowButton = ({
-    children,
-    onClick,
-    disabled,
-    type = 'button',
-    className = '',
-    ...rest
+  children,
+  onClick,
+  disabled,
+  type = 'button',
+  className = '',
+  ...rest
 }) => {
-    const buttonRef    = useRef(null);
-    const rafRef       = useRef(null);
-    const targetRef    = useRef({ x: 0, y: 0 });
-    const currentRef   = useRef({ x: 0, y: 0 });
-    const isHoveredRef = useRef(false);
-    const [isHovered, setIsHovered] = useState(false);
+  const buttonRef = useRef(null);
+  const rafRef    = useRef(0);
+  const current   = useRef({ x: 0, y: 0 });
+  const target    = useRef({ x: 0, y: 0 });
+  const active    = useRef(false);
 
-    // ─── GLOW TRACKING ────────────────────────────────────────────────────────
+  const write = useCallback((x, y) => {
+    const btn = buttonRef.current;
+    if (!btn) return;
+    btn.style.setProperty('--glow-x', `${x.toFixed(1)}px`);
+    btn.style.setProperty('--glow-y', `${y.toFixed(1)}px`);
+  }, []);
 
-    const applyPosition = useCallback((x, y) => {
-        buttonRef.current?.style.setProperty('--glow-x', `${x}px`);
-        buttonRef.current?.style.setProperty('--glow-y', `${y}px`);
-    }, []);
+  const tick = useCallback(() => {
+    const x = lerp(current.current.x, target.current.x, EASE);
+    const y = lerp(current.current.y, target.current.y, EASE);
+    const settled =
+      Math.abs(x - target.current.x) < EPSILON &&
+      Math.abs(y - target.current.y) < EPSILON;
 
-    const animate = useCallback(() => {
-        const cx = lerp(currentRef.current.x, targetRef.current.x, LERP);
-        const cy = lerp(currentRef.current.y, targetRef.current.y, LERP);
-        currentRef.current = { x: cx, y: cy };
-        applyPosition(cx, cy);
-        if (isHoveredRef.current) rafRef.current = requestAnimationFrame(animate);
-    }, [applyPosition]);
+    current.current = settled ? { ...target.current } : { x, y };
+    write(current.current.x, current.current.y);
 
-    const handleMouseMove = useCallback((e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        targetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    }, []);
+    if (active.current) rafRef.current = requestAnimationFrame(tick);
+    else rafRef.current = 0;
+  }, [write]);
 
-    const handleMouseEnter = useCallback((e) => {
-        isHoveredRef.current = true;
-        setIsHovered(true);
-        if (buttonRef.current) {
-            const rect = buttonRef.current.getBoundingClientRect();
-            const x    = e.clientX - rect.left;
-            const y    = e.clientY - rect.top;
-            // Snap to entry point - prevents initial teleport lag
-            currentRef.current = { x, y };
-            targetRef.current  = { x, y };
-            applyPosition(x, y);
-        }
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = requestAnimationFrame(animate);
-    }, [animate, applyPosition]);
+  const handlePointerEnter = useCallback((e) => {
+    if (disabled || !motionAllowed()) return;
+    const btn = buttonRef.current;
+    if (!btn) return;
 
-    const handleMouseLeave = useCallback(() => {
-        isHoveredRef.current = false;
-        setIsHovered(false);
-        cancelAnimationFrame(rafRef.current);
-    }, []);
+    // Seed both positions at the entry point. Without this the glow lerps in
+    // from wherever it was left last time - usually the opposite edge - and
+    // the first ~150ms of every hover is a light streaking across the button.
+    const rect = btn.getBoundingClientRect();
+    const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    current.current = { ...p };
+    target.current  = { ...p };
+    write(p.x, p.y);
 
-    // ─── CLEANUP ──────────────────────────────────────────────────────────────
+    active.current = true;
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(tick);
+  }, [disabled, tick, write]);
 
-    useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+  const handlePointerMove = useCallback((e) => {
+    const btn = buttonRef.current;
+    if (!btn || !active.current) return;
+    const rect = btn.getBoundingClientRect();
+    target.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }, []);
 
-    // ─── RENDER ───────────────────────────────────────────────────────────────
+  // The glow fades out via CSS on unhover, so the loop can stop immediately -
+  // there is no return journey to animate.
+  const handlePointerLeave = useCallback(() => {
+    active.current = false;
+  }, []);
 
-    return (
-        <button
-            ref={buttonRef}
-            type={type}
-            className={`${styles.button} ${className}`}
-            disabled={disabled}
-            onClick={onClick}
-            onMouseMove={handleMouseMove}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            style={{ '--glow-opacity': isHovered ? '1' : '0' }}
-            {...rest}
-        >
-            <span className={styles.glow} aria-hidden="true" />
-            <span className={styles.content}>{children}</span>
-        </button>
-    );
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
+  return (
+    <button
+      ref={buttonRef}
+      type={type}
+      className={`${styles.button} ${className}`}
+      disabled={disabled}
+      onClick={onClick}
+      onPointerEnter={handlePointerEnter}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      {...rest}
+    >
+      <span className={styles.glow} aria-hidden="true" />
+      <span className={styles.edge} aria-hidden="true" />
+      <span className={styles.content}>{children}</span>
+    </button>
+  );
 };
 
 export default CursorGlowButton;

@@ -1,0 +1,216 @@
+/* ==================== ShimmerButton ====================
+ *
+ * Layer stack (back → front):
+ *   z:0  .sheen    - fixed highlight along the top edge (the material)
+ *   z:1  .shimmer  - the travelling band of light (the event)
+ *   z:2  .content  - label
+ */
+
+.button {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;          /* clips the band to the button shape */
+
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: var(--control-height-lg);
+    padding: 0 1.375rem;
+    border-radius: var(--control-radius);
+    border: 1px solid var(--accent-1);
+    /* A gradient, not a flat block. A travelling highlight needs a surface with
+       some tonal range to move across - on a single flat colour the band has
+       nothing to catch, which is most of why it was invisible. The ramp uses
+       the existing accent scale, so it stays on-brand in both themes. */
+    background-image: linear-gradient(
+        135deg,
+        var(--accent-3) 0%,
+        var(--accent-1) 52%,
+        var(--accent-2) 100%
+    );
+    background-color: var(--accent-1);   /* fallback under the gradient */
+    color: var(--background-1);
+
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: 550;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+
+    /* Two shadows doing different jobs: a tight contact shadow that keeps the
+       button attached to the page, and a wide accent bloom that gives the fill
+       some heat. Both stay small at rest - the lift belongs to hover. */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 1px 2px rgba(0, 0, 0, 0.12),
+        0 2px 10px -4px rgba(var(--accent-1-rgb), 0.45);
+
+    transition:
+        filter       var(--dur-hover) var(--ease-out),
+        border-color var(--dur-hover) var(--ease-out),
+        box-shadow   var(--dur-hover) var(--ease-out),
+        opacity      var(--dur-hover) var(--ease-out),
+        transform    var(--dur-press) var(--ease-out);
+}
+
+/* ── The material ────────────────────────────────────────────────────────── */
+
+/* A short highlight along the top edge only. Light landing on a raised surface
+   catches the top edge and stops; a full-height diagonal wash flattens it. */
+.sheen {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.04) 42%,
+        transparent 70%
+    );
+}
+
+/* ── The travelling band ─────────────────────────────────────────────────── */
+
+/**
+ * A keyframe animation rather than a hover transition, and that is the whole
+ * trick. A transition would have to run backwards when the pointer leaves, so
+ * the light would reverse out the way it came - which is exactly the mistake
+ * the old LightWaveButton made. A one-shot animation ends with the band parked
+ * off the right edge and resets to off the left edge, both invisible, so the
+ * unhover has nothing to undo.
+ *
+ * Interruptibility, normally the reason to prefer transitions, does not apply
+ * here: a re-hover mid-sweep just restarts the pass, and since both ends of the
+ * animation are off-screen there is no visible jump.
+ *
+ * The band is skewed rather than vertical because a hard vertical edge reads as
+ * a UI element sliding past; an angled one reads as a reflection.
+ */
+.shimmer {
+    position: absolute;
+    top: -20%;
+    bottom: -20%;             /* overhang, so the skew never exposes a corner */
+    left: 0;
+    width: 40%;
+    z-index: 1;
+    pointer-events: none;
+    transform: translateX(-120%) skewX(-18deg);
+
+    /* Brighter core than the first attempt. White at 0.38 over #e89542 - the
+       dark-theme accent, which is already a light colour - shifts luminance by
+       almost nothing. The band has to out-value the surface to read as light
+       falling on it rather than a slightly paler patch of the same paint. */
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.14) 30%,
+        rgba(255, 255, 255, 0.62) 50%,
+        rgba(255, 255, 255, 0.14) 70%,
+        transparent 100%
+    );
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .button:hover:not(:disabled) .shimmer {
+        animation: pass 850ms linear 1;
+    }
+
+    /* Brightened with a filter rather than by swapping the gradient. Browsers
+       only interpolate one linear-gradient into another when the stop lists
+       line up exactly, and even then support is uneven - a snap on hover is
+       the usual result. `filter` is a single compositor property that is
+       always smooth, and it lifts the travelling band with the surface. */
+    .button:hover:not(:disabled) {
+        filter: brightness(1.07) saturate(1.06);
+        border-color: var(--accent-hover);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.20),
+            0 2px 4px rgba(0, 0, 0, 0.14),
+            0 10px 28px -10px rgba(var(--accent-1-rgb), 0.70);
+    }
+
+    /* A trailing icon leans toward wherever it is pointing. Guarded with
+       :not(:first-child) so an icon-only button does not drift sideways. */
+    .button:hover:not(:disabled) .content > svg:last-child:not(:first-child) {
+        transform: translateX(2px);
+    }
+}
+
+/**
+ * The endpoints are trimmed to just off each edge rather than far off it.
+ *
+ * At 40% width, the band is on-screen between translateX(-100%) and (250%), so
+ * -120%..270% spends ~90% of the duration visible. The first version ran
+ * -260%..260%, which was over half off-screen, and ran it on the site's
+ * --ease-out curve - cubic-bezier(0.22, 1, 0.36, 1) is ~75% through its travel
+ * at 20% of its duration, so the band crossed the button inside the first
+ * ~150ms and spent the remaining 570ms creeping off the right edge. It fired
+ * correctly every time and was essentially impossible to see.
+ *
+ * `linear` because this is constant motion. Any easing puts the light through
+ * an acceleration a reflection would not have, and on a short pass it reads as
+ * the band snagging halfway across.
+ */
+@keyframes pass {
+    from { transform: translateX(-120%) skewX(-18deg); }
+    to   { transform: translateX(270%)  skewX(-18deg); }
+}
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+
+.button:active:not(:disabled) {
+    transform: scale(0.97);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.button:focus-visible {
+    outline: 2px solid var(--accent-1);
+    outline-offset: 3px;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+    box-shadow: none;
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+
+.content {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.content > svg {
+    flex: none;
+    width: 1.05em;
+    height: 1.05em;
+    transition: transform var(--dur-hover) var(--ease-out);
+}
+
+/**
+ * Reduced motion drops the travel and keeps the state change: the fill still
+ * brightens and lifts on hover, so the button is just as clearly interactive
+ * without anything crossing the screen.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .shimmer { display: none; }
+    .content > svg { transition: none; }
+    .button:hover:not(:disabled) .content > svg:last-child:not(:first-child) {
+        transform: none;
+    }
+}

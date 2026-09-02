@@ -10,7 +10,7 @@ import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
 import useStudioSites from '../../hooks/useStudioSites';
-import { Modal, MagneticButton, CursorGlowButton, SiteShowcase } from '../../components';
+import { Modal, ShimmerButton, CursorGlowButton, GlowBorderButton, SiteShowcase } from '../../components';
 import styles from './Home.module.css';
 
 // Evaluated once at module load - avoids React overhead and is stable
@@ -466,9 +466,9 @@ const Home = () => {
               {t.coverInviteText}
             </p>
             <div className={styles.coverCtas}>
-              <MagneticButton onClick={() => navigate('/bio')}>
+              <ShimmerButton onClick={() => navigate('/bio')}>
                 {t.coverCtaPrimary} <MdAutoStories aria-hidden="true" />
-              </MagneticButton>
+              </ShimmerButton>
               <CursorGlowButton onClick={() => navigate('/projects')}>
                 {t.coverCtaSecondary}
               </CursorGlowButton>
@@ -515,9 +515,9 @@ const Home = () => {
 
         {featuredSites.length > 0 && (
           <div className={styles.workCta}>
-            <MagneticButton onClick={() => navigate('/projects')}>
+            <ShimmerButton onClick={() => navigate('/projects')}>
               {t.workCta} <MdArrowOutward aria-hidden="true" />
-            </MagneticButton>
+            </ShimmerButton>
           </div>
         )}
       </div>
@@ -596,15 +596,21 @@ const Home = () => {
           <p className={styles.endText}>
             {t.endText}
           </p>
+          {/* One primary, two supporting. This row previously ran two solid
+              buttons beside a glass one, which gave the reader three equally
+              loud options and no answer to "so what now". Getting in touch is
+              the action this page exists to produce, so it takes the accent -
+              and it is the only place on the site running the travelling
+              border, which stops that effect becoming wallpaper. */}
           <div className={styles.endCtas}>
-            <MagneticButton onClick={() => navigate('/bio')}>
-              <MdMenuBook aria-hidden="true" /> Read the Bio
-            </MagneticButton>
-            <MagneticButton onClick={() => navigate('/projects')}>
-              <MdCode aria-hidden="true" /> See projects
-            </MagneticButton>
-            <CursorGlowButton onClick={() => navigate('/connect')}>
+            <GlowBorderButton tone="solid" onClick={() => navigate('/connect')}>
               <MdEmail aria-hidden="true" /> Write a letter
+            </GlowBorderButton>
+            <CursorGlowButton onClick={() => navigate('/bio')}>
+              <MdMenuBook aria-hidden="true" /> Read the Bio
+            </CursorGlowButton>
+            <CursorGlowButton onClick={() => navigate('/projects')}>
+              <MdCode aria-hidden="true" /> See projects
             </CursorGlowButton>
           </div>
         </div>

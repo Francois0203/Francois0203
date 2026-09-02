@@ -1,61 +1,100 @@
-/* ==================== GhostButton ==================== */
-
-/**
- * Layer stack (back → front):
- *   z:0  ::before   - sliding glass fill + leading accent stripe
- *   z:1  ::after    - static diagonal glass sheen (always visible)
- *   z:2  .content   - text / children
+/* ==================== LightWaveButton ====================
  *
- * overflow: hidden clips the sliding ::before fill to the button shape.
+ * Layer stack (back → front):
+ *   z:0  .fill     - the sweeping gradient
+ *   z:1  .content  - label
+ *
+ * The fill is a separate span rather than a pseudo-element so it owns its own
+ * compositor layer and the sweep never touches the label's paint.
  */
 
 .button {
     position: relative;
-    overflow: hidden;
     isolation: isolate;
+    overflow: hidden;
+
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: var(--control-height-lg);
+    padding: 0 1.25rem;
+    border-radius: var(--control-radius);
+    border: 1px solid rgba(var(--accent-1-rgb), 0.28);
+    background-color: transparent;
+    color: var(--accent-1);
 
     font-family: inherit;
     font-size: var(--font-size-sm);
     font-weight: 500;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-
-    /* Frosted glass base - barely-there accent tint */
-    background-color: rgba(var(--accent-1-rgb), 0.04);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-
-    /* Visible accent border at rest */
-    border: 1px solid rgba(var(--accent-1-rgb), 0.40);
-    color: var(--accent-1);
-
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
+    line-height: 1;
+    letter-spacing: 0.01em;
     white-space: nowrap;
+    cursor: pointer;
     user-select: none;
 
     transition:
-        color var(--transition-fast),
-        border-color 0.34s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow var(--transition-fast),
-        transform var(--transition-fast);
+        border-color var(--dur-hover) var(--ease-out),
+        color        180ms var(--ease-out),
+        transform    var(--dur-press) var(--ease-out);
 }
 
-.button:hover:not(:disabled) {
-    border-color: var(--accent-1);
-    transform: translateY(-1px);
-    box-shadow:
-        0 4px 18px rgba(var(--accent-1-rgb), 0.18),
-        var(--shadow-sm);
+/**
+ * ── The sweep ────────────────────────────────────────────────────────────
+ *
+ * Rest      scaleX(0), origin right  → collapsed against the right edge
+ * Hover     scaleX(1), origin left   → grows from the left edge, rightward
+ * Leave     back to the rest rule    → origin snaps to the right, so the fill
+ *                                      collapses toward the right edge
+ *
+ * `transform-origin` is not in the transition list, so it changes instantly
+ * while `scaleX` interpolates. That asymmetry is what makes one continuous
+ * left-to-right pass out of two opposite scale animations.
+ *
+ * scaleX is used rather than translateX because it needs no overflow beyond
+ * the button box and stays a single composited transform in both directions.
+ */
+.fill {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: right center;
+    will-change: transform;
+
+    /* Reads as a single body of light with a hot leading edge, rather than a
+       flat panel of colour sliding across. */
+    background: linear-gradient(
+        90deg,
+        var(--accent-3) 0%,
+        var(--accent-1) 45%,
+        var(--accent-2) 100%
+    );
+
+    transition: transform var(--dur-sweep) var(--ease-emph);
 }
 
-.button:active:not(:disabled) {
-    transform: translateY(0);
-    opacity: 0.88;
-    box-shadow: none;
+@media (hover: hover) and (pointer: fine) {
+    .button:hover:not(:disabled) .fill {
+        transform: scaleX(1);
+        transform-origin: left center;
+    }
+
+    .button:hover:not(:disabled) {
+        border-color: var(--accent-1);
+        color: var(--background-1);
+        /* Delayed so the label flips once the fill is most of the way across,
+           not while half of it still sits on the transparent surface - where
+           the light-on-light text would be unreadable for ~150ms. On leave the
+           delay is dropped (see the base rule) so the label goes dark the
+           moment the fill starts retreating. */
+        transition-delay: 0ms, 170ms, 0ms;
+    }
 }
 
 .button:focus-visible {
@@ -63,74 +102,43 @@
     outline-offset: 3px;
 }
 
+.button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
 .button:disabled {
     cursor: not-allowed;
-    opacity: 0.45;
+    opacity: 0.42;
 }
 
-/* ── Sliding glass fill + leading accent stripe ─────────────────────────
- *
- * The fill slides in from the left (translateX -100% → 0).
- * The gradient puts a bright accent stripe on the LEFT side of the panel.
- * As the panel moves right, this stripe sweeps across the button like
- * a bar of light passing through glass - the "sliding border highlight".
- *
- * The main body of the fill is a very soft translucent accent tint.
- * backdrop-filter on the pseudo-element gives the fill its own blur,
- * layering a frosted depth on top of the base glass.
- */
-.button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        90deg,
-        rgba(var(--accent-1-rgb), 0.55) 0%,
-        rgba(var(--accent-1-rgb), 0.32) 8%,
-        rgba(var(--accent-1-rgb), 0.18) 40%,
-        rgba(var(--accent-1-rgb), 0.14) 100%
-    );
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    transform: translateX(-100%);
-    transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 0;
-    pointer-events: none;
-}
-
-.button:hover:not(:disabled)::before {
-    transform: translateX(0);
-}
-
-/* ── Static diagonal glass sheen ───────────────────────────────────────
- *
- * Matches CursorGlowButton::after - ambient light from above-left.
- * Always visible; gives the surface material depth at rest.
- * Sits above the fill so the sheen persists through the slide.
- */
-.button::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 1;
-
-    background: linear-gradient(
-        138deg,
-        rgba(255, 255, 255, 0.07) 0%,
-        rgba(255, 255, 255, 0.02) 40%,
-        transparent 55%,
-        rgba(255, 255, 255, 0.03) 100%
-    );
-}
-
-/* ── Content ──────────────────────────────────────────────────────────── */
+/* ── Content ─────────────────────────────────────────────────────────────── */
 
 .content {
     position: relative;
-    z-index: 2; /* above both ::before fill and ::after sheen */
+    z-index: 1;
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.5em;
+}
+
+.content > svg {
+    flex: none;
+    width: 1.05em;
+    height: 1.05em;
+}
+
+/**
+ * Reduced motion keeps the state change and drops the travel: the fill appears
+ * as a straight opacity crossfade, which still tells the user the button is
+ * hovered without moving anything across the screen.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .fill {
+        transform: scaleX(1);
+        opacity: 0;
+        transition: opacity 120ms linear;
+    }
+
+    .button:hover:not(:disabled) .fill { opacity: 1; }
+    .button:hover:not(:disabled) { transition-delay: 0ms; }
 }

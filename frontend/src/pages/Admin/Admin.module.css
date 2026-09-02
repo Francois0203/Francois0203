@@ -85,6 +85,14 @@
 
 
 /* ── Content area - the only scrolling region ──────────────────────────────── */
+
+/* Wraps everything inside .content so Lenis has a node that actually grows with
+   the section it is showing. .content itself is pinned to the shell height by
+   flex and never resizes, so observing it would report nothing. */
+.contentInner {
+  min-height: 100%;
+}
+
 .content {
   flex: 1;
   min-width: 0;
