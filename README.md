@@ -1,6 +1,7 @@
 <!-- Palette and layout mirror the live site (frontend/src/styles/Theme.css).
      GitHub strips style/class/inline <svg> from markdown, so the brand comes
-     from committed SVGs, <picture> theme switching, and hex-coloured badges. -->
+     from committed SVGs, <picture> theme switching, and hex-coloured badges.
+     Content is the same data the site renders from Firestore - keep them in step. -->
 
 <p align="center">
   <picture>
@@ -10,121 +11,235 @@
 </p>
 
 <p align="center">
-  <img alt="Data Scientist  |  Researcher  |  Developer" src="https://readme-typing-svg.demolab.com?font=Georgia&size=19&pause=1200&color=e89542&center=true&vCenter=true&width=680&lines=Data%20Scientist%20%20%7C%20%20Researcher%20%20%7C%20%20Developer%3BStatistical%20Modelling%20%20%7C%20%20Machine%20Learning%20%20%7C%20%20Python%3BReact%20%20%7C%20%20Node.js%20%20%7C%20%20PostgreSQL%20%20%7C%20%20Kubernetes%3BAstronomical%20data%20processing%20%40%20NWU">
+  <img alt="Data Scientist  |  Researcher  |  Developer" src="https://readme-typing-svg.demolab.com?font=Georgia&size=19&pause=1200&color=e89542&center=true&vCenter=true&width=680&lines=Data%20Scientist%20%20%7C%20%20Researcher%20%20%7C%20%20Developer%3BStatistical%20modelling%20%C2%B7%20machine%20learning%20%C2%B7%20Python%3BReact%20%20%7C%20%20Node.js%20%20%7C%20%20PostgreSQL%20%20%7C%20%20Kubernetes%3BMSc%20research%3A%20astronomical%20data%20processing%20%40%20NWU">
 </p>
 
 <p align="center">
   <a href="https://francois-portfolio.web.app/"><img alt="Portfolio" src="https://img.shields.io/badge/Portfolio-b8651c?style=for-the-badge&logo=firefox&logoColor=ffffff"></a>
   <a href="https://www.linkedin.com/in/francois-meiring"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-7a3e10?style=for-the-badge&logo=linkedin&logoColor=ffffff"></a>
-  <a href="https://github.com/Francois0203"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-c4471c?style=for-the-badge&logo=github&logoColor=ffffff"></a>
+  <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email" src="https://img.shields.io/badge/Email-c4471c?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
   <a href="https://orcid.org/0009-0004-7605-0618"><img alt="ORCID" src="https://img.shields.io/badge/ORCID-7a3e10?style=for-the-badge&logo=orcid&logoColor=ffffff"></a>
   <a href="https://www.hackerrank.com/profile/francoismeiring"><img alt="HackerRank" src="https://img.shields.io/badge/HackerRank-b8651c?style=for-the-badge&logo=hackerrank&logoColor=ffffff"></a>
   <a href="https://www.codewars.com/users/CriminalShrimp"><img alt="Codewars" src="https://img.shields.io/badge/Codewars-c4471c?style=for-the-badge&logo=codewars&logoColor=ffffff"></a>
 </p>
 
----
-
-## Prologue
-
-Computer scientist and aspiring data scientist with a dual background in **statistics and software engineering**. Currently pursuing an MSc in Computer Science at North-West University, with research focused on **astronomical data processing** and distributed computing. My undergraduate degree in Computer Science and Statistics gave me a strong analytical foundation, which I complement with hands-on production experience building full-stack systems.
-
-I am drawn to roles where rigorous statistical thinking and engineering capability work together — whether that is building data pipelines, developing models, or extracting meaning from complex datasets. Outside of work, you will find me at the gym, on the squash court, or working through a guitar piece.
+<p align="center">
+  <img alt="Open to data science, data analysis and research opportunities" src="https://img.shields.io/badge/Open%20to-Data%20Science%20%C2%B7%20Analysis%20%C2%B7%20Research-e07b1f?style=flat-square&labelColor=2a1810">
+  <img alt="Based in Centurion, South Africa" src="https://img.shields.io/badge/Based%20in-Centurion%2C%20South%20Africa-7a3e10?style=flat-square&labelColor=2a1810">
+  <img alt="Languages: Afrikaans and English" src="https://img.shields.io/badge/Languages-Afrikaans%20%C2%B7%20English-b8651c?style=flat-square&labelColor=2a1810">
+</p>
 
 ---
 
-## Chapter I &middot; The journey so far
+## About
 
-<!-- Same experience + education timeline the site renders on /bio. -->
+Computer scientist and aspiring data scientist with a dual background in **statistics and software engineering**. Currently reading for an **MSc in Computer Science** at North-West University, with research focused on **astronomical data processing and distributed computing**. My undergraduate degree in Computer Science and Statistics gave me a strong analytical foundation, which I complement with hands-on production experience building full-stack systems.
 
-| | Period | Where | What |
-|:--|:--|:--|:--|
-| &#9679; | `May 2026 – Present` | **Shareforce (Pty) Ltd** | Junior Software Developer |
-| &#9675; | `2026 – Present` | **North-West University** | MSc. Computer Science |
-| &#9679; | `Jan 2025 – Apr 2026` | **Aquatico Scientific** | Full Stack Software Developer |
-| &#9675; | `2024` | **North-West University** | BSc. Hons. Computer Science |
-| &#9675; | `2021 – 2023` | **North-West University** | BSc. Computer Science &amp; Statistics |
-| &#9675; | `Completed` | **Ho&euml;rskool Noordheuwel** | National Senior Certificate |
+I am drawn to roles where rigorous statistical thinking and engineering capability work together &mdash; building data pipelines, developing models, or extracting meaning from complex datasets. Away from the keyboard: the gym, the squash court, hiking trails, and a guitar piece I have not quite finished.
 
-<sub>&#9679; Experience &nbsp;&middot;&nbsp; &#9675; Education</sub>
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Aquatico Scientific &mdash; what I built
+**Currently**
 
-Built the company's enterprise systems from the ground up as one of two junior developers:
+Junior Software Developer &mdash; Shareforce (Pty) Ltd
+<br>MSc. Computer Science &mdash; North-West University
+
+</td>
+<td width="50%" valign="top">
+
+**Focus areas**
+
+Statistical modelling &middot; machine learning
+<br>Distributed systems &middot; full-stack engineering
+
+</td>
+</tr>
+</table>
+
+---
+
+## Experience
+
+| Period | Role | Organisation |
+|:--|:--|:--|
+| `May 2026 – Present` | **Junior Software Developer** | **Shareforce (Pty) Ltd** &nbsp;<sub>Melrose Arch, Johannesburg</sub> |
+| `Jan 2025 – Apr 2026` | **Full Stack Software Developer** | **Aquatico Scientific** &nbsp;<sub>Centurion, South Africa</sub> |
+| `Matric year` | Shop Assistant | Western Rackets |
+| `Matric year` | Waiter | Bean Tree, Krugersdorp |
+
+<details>
+<summary><b>Shareforce (Pty) Ltd</b> &mdash; Junior Software Developer &nbsp; <sub>May 2026 &ndash; Present</sub></summary>
+
+<br>
+
+Working within a structured team of senior, intermediate, and junior developers to maintain and enhance the company's main enterprise system. Responsibilities span resolving defects, implementing improvements, and collaborating closely with experienced colleagues. Working alongside more senior developers has given me exposure to professional software practice and accelerated my growth as an engineer.
+
+</details>
+
+<details>
+<summary><b>Aquatico Scientific</b> &mdash; Full Stack Software Developer &nbsp; <sub>Jan 2025 &ndash; Apr 2026</sub></summary>
+
+<br>
+
+Built the company's enterprise systems from the ground up as one of two junior developers on the project:
 
 - **EMS** &mdash; Environmental Management System
 - **LIMS** &mdash; Laboratory Information Management System *(partial)*
 - **Project Management** system
 
+**Stack** &mdash; React on the frontend and Node.js on the backend, with PostgreSQL as the primary database and Redis for caching. Object storage was handled through MinIO; source control and CI/CD ran on GitHub. The stack was containerised with Docker and orchestrated on Kubernetes in production.
+
+</details>
+
 ---
 
-## Chapter II &middot; The toolkit
+## Education
 
-<!-- Grouped exactly as the skills document groups them on the site. -->
+| Period | Qualification | Institution |
+|:--|:--|:--|
+| `2026 – Present` | **MSc. Computer Science** | North-West University, Potchefstroom |
+| `2024` | **BSc. Hons. Computer Science** | North-West University, Potchefstroom |
+| `2021 – 2023` | **BSc. Computer Science &amp; Statistics** | North-West University, Potchefstroom |
+| `Completed` | National Senior Certificate (Matric) | Ho&euml;rskool Noordheuwel |
 
-**Data &amp; Analytics**  <sub>8</sub>
+<details>
+<summary>Detail on each qualification</summary>
 
-<p>
-  <img alt="Python" src="https://img.shields.io/badge/Python-7a3e10?style=flat-square"> <img alt="R" src="https://img.shields.io/badge/R-7a3e10?style=flat-square"> <img alt="SQL" src="https://img.shields.io/badge/SQL-7a3e10?style=flat-square"> <img alt="SAS" src="https://img.shields.io/badge/SAS-7a3e10?style=flat-square"> <img alt="Statistical Modelling" src="https://img.shields.io/badge/Statistical%20Modelling-7a3e10?style=flat-square"> <img alt="Data Visualisation" src="https://img.shields.io/badge/Data%20Visualisation-7a3e10?style=flat-square"> <img alt="Machine Learning" src="https://img.shields.io/badge/Machine%20Learning-7a3e10?style=flat-square"> <img alt="NumPy" src="https://img.shields.io/badge/NumPy-7a3e10?style=flat-square">
-</p>
+<br>
 
-**Development &amp; Infrastructure**  <sub>14</sub>
+- **MSc. Computer Science** &mdash; research-focused master's degree, emphasis on astronomical data processing and distributed computing systems.
+- **BSc. Hons. Computer Science** &mdash; honours degree specialising in advanced software engineering and computational research methodologies.
+- **BSc. Computer Science &amp; Statistics** &mdash; dual-major undergraduate degree combining computational theory with statistical analysis and data science fundamentals.
+- **National Senior Certificate** &mdash; Physics, Afrikaans Home Language, English First Additional Language, Mathematics, Information Technology, Computer Applications Technology.
 
-<p>
-  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-b8651c?style=flat-square"> <img alt="React" src="https://img.shields.io/badge/React-b8651c?style=flat-square"> <img alt="Node.js" src="https://img.shields.io/badge/Node.js-b8651c?style=flat-square"> <img alt="Docker" src="https://img.shields.io/badge/Docker-b8651c?style=flat-square"> <img alt="Kubernetes" src="https://img.shields.io/badge/Kubernetes-b8651c?style=flat-square"> <img alt="Nginx" src="https://img.shields.io/badge/Nginx-b8651c?style=flat-square"> <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-b8651c?style=flat-square"> <img alt="Redis" src="https://img.shields.io/badge/Redis-b8651c?style=flat-square"> <img alt="MinIO" src="https://img.shields.io/badge/MinIO-b8651c?style=flat-square"> <img alt="GitHub CI/CD" src="https://img.shields.io/badge/GitHub%20CI/CD-b8651c?style=flat-square"> <img alt="Git" src="https://img.shields.io/badge/Git-b8651c?style=flat-square"> <img alt="HTML5" src="https://img.shields.io/badge/HTML5-b8651c?style=flat-square"> <img alt="CSS3" src="https://img.shields.io/badge/CSS3-b8651c?style=flat-square"> <img alt="Linux" src="https://img.shields.io/badge/Linux-b8651c?style=flat-square">
-</p>
-
-**Professional Skills**  <sub>6</sub>
-
-<p>
-  <img alt="Research" src="https://img.shields.io/badge/Research-c4471c?style=flat-square"> <img alt="Data Analysis" src="https://img.shields.io/badge/Data%20Analysis-c4471c?style=flat-square"> <img alt="Statistical Thinking" src="https://img.shields.io/badge/Statistical%20Thinking-c4471c?style=flat-square"> <img alt="Full-Stack Development" src="https://img.shields.io/badge/Full--Stack%20Development-c4471c?style=flat-square"> <img alt="System Architecture" src="https://img.shields.io/badge/System%20Architecture-c4471c?style=flat-square"> <img alt="Team Collaboration" src="https://img.shields.io/badge/Team%20Collaboration-c4471c?style=flat-square">
-</p>
+</details>
 
 ---
 
 ## Certifications
 
-- **Open Water Diver** &mdash; NAUI
-- **Fire Marshal Training** &mdash; VAT IT
+| Credential | Issuer | Awarded |
+|:--|:--|:--|
+| **NAUI Open Water Scuba Diver** | National Association of Underwater Instructors (NAUI) | `Jun 2026` &nbsp;<sub>does not expire</sub> |
+| **Fire Marshal Training** | VAT IT | &mdash; |
+
+<details>
+<summary>NAUI Open Water Scuba Diver &mdash; scope of the course</summary>
+
+<br>
+
+Dive planning, scuba equipment, underwater communication, buoyancy control, navigation, emergency procedures, environmental awareness, and safe diving practice &mdash; delivered through classroom learning, confined-water training, and open-water dives.
+
+</details>
 
 ---
 
-## The palette
+## Technical Skills
 
-<!-- The actual tokens from Theme.css, so README and site stay in step. -->
+<table>
+<tr>
+<td valign="top" width="33%">
 
-| | Token | Light | Dark |
-|:--|:--|:--|:--|
-| Accent&nbsp;1 | `--accent-1` | <img src="https://img.shields.io/badge/%23b8651c-b8651c?style=flat-square" alt="#b8651c"> | <img src="https://img.shields.io/badge/%23e89542-e89542?style=flat-square" alt="#e89542"> |
-| Accent&nbsp;2 | `--accent-2` | <img src="https://img.shields.io/badge/%23e07b1f-e07b1f?style=flat-square" alt="#e07b1f"> | <img src="https://img.shields.io/badge/%23f5b56b-f5b56b?style=flat-square" alt="#f5b56b"> |
-| Accent&nbsp;3 | `--accent-3` | <img src="https://img.shields.io/badge/%237a3e10-7a3e10?style=flat-square" alt="#7a3e10"> | <img src="https://img.shields.io/badge/%23c47020-c47020?style=flat-square" alt="#c47020"> |
-| Leaf | `--leaf-color` | <img src="https://img.shields.io/badge/%23c4471c-c4471c?style=flat-square" alt="#c4471c"> | <img src="https://img.shields.io/badge/%23e06030-e06030?style=flat-square" alt="#e06030"> |
-| Canvas | `--background-0` | <img src="https://img.shields.io/badge/%23f7eed8-f7eed8?style=flat-square" alt="#f7eed8"> | <img src="https://img.shields.io/badge/%23120a04-120a04?style=flat-square" alt="#120a04"> |
-| Text | `--primary-text-color` | <img src="https://img.shields.io/badge/%232a1810-2a1810?style=flat-square" alt="#2a1810"> | <img src="https://img.shields.io/badge/%23f7e8cd-f7e8cd?style=flat-square" alt="#f7e8cd"> |
+**Data &amp; Analytics**
+
+<img alt="Python" src="https://img.shields.io/badge/Python-7a3e10?style=flat-square&logo=python&logoColor=ffffff">
+<img alt="R" src="https://img.shields.io/badge/R-7a3e10?style=flat-square&logo=r&logoColor=ffffff">
+<img alt="SQL" src="https://img.shields.io/badge/SQL-7a3e10?style=flat-square&logo=postgresql&logoColor=ffffff">
+<img alt="SAS" src="https://img.shields.io/badge/SAS-7a3e10?style=flat-square">
+<img alt="NumPy" src="https://img.shields.io/badge/NumPy-7a3e10?style=flat-square&logo=numpy&logoColor=ffffff">
+<img alt="Statistical Modelling" src="https://img.shields.io/badge/Statistical%20Modelling-7a3e10?style=flat-square">
+<img alt="Machine Learning" src="https://img.shields.io/badge/Machine%20Learning-7a3e10?style=flat-square">
+<img alt="Data Visualisation" src="https://img.shields.io/badge/Data%20Visualisation-7a3e10?style=flat-square">
+
+</td>
+<td valign="top" width="34%">
+
+**Development &amp; Infrastructure**
+
+<img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-b8651c?style=flat-square&logo=javascript&logoColor=ffffff">
+<img alt="React" src="https://img.shields.io/badge/React-b8651c?style=flat-square&logo=react&logoColor=ffffff">
+<img alt="Node.js" src="https://img.shields.io/badge/Node.js-b8651c?style=flat-square&logo=nodedotjs&logoColor=ffffff">
+<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-b8651c?style=flat-square&logo=postgresql&logoColor=ffffff">
+<img alt="Redis" src="https://img.shields.io/badge/Redis-b8651c?style=flat-square&logo=redis&logoColor=ffffff">
+<img alt="MinIO" src="https://img.shields.io/badge/MinIO-b8651c?style=flat-square&logo=minio&logoColor=ffffff">
+<img alt="Docker" src="https://img.shields.io/badge/Docker-b8651c?style=flat-square&logo=docker&logoColor=ffffff">
+<img alt="Kubernetes" src="https://img.shields.io/badge/Kubernetes-b8651c?style=flat-square&logo=kubernetes&logoColor=ffffff">
+<img alt="Nginx" src="https://img.shields.io/badge/Nginx-b8651c?style=flat-square&logo=nginx&logoColor=ffffff">
+<img alt="Linux" src="https://img.shields.io/badge/Linux-b8651c?style=flat-square&logo=linux&logoColor=ffffff">
+<img alt="Git" src="https://img.shields.io/badge/Git-b8651c?style=flat-square&logo=git&logoColor=ffffff">
+<img alt="GitHub CI/CD" src="https://img.shields.io/badge/GitHub%20CI%2FCD-b8651c?style=flat-square&logo=githubactions&logoColor=ffffff">
+<img alt="HTML5" src="https://img.shields.io/badge/HTML5-b8651c?style=flat-square&logo=html5&logoColor=ffffff">
+<img alt="CSS3" src="https://img.shields.io/badge/CSS3-b8651c?style=flat-square&logo=css3&logoColor=ffffff">
+
+</td>
+<td valign="top" width="33%">
+
+**Professional**
+
+<img alt="Research" src="https://img.shields.io/badge/Research-c4471c?style=flat-square">
+<img alt="Data Analysis" src="https://img.shields.io/badge/Data%20Analysis-c4471c?style=flat-square">
+<img alt="Statistical Thinking" src="https://img.shields.io/badge/Statistical%20Thinking-c4471c?style=flat-square">
+<img alt="Full-Stack Development" src="https://img.shields.io/badge/Full--Stack%20Development-c4471c?style=flat-square">
+<img alt="System Architecture" src="https://img.shields.io/badge/System%20Architecture-c4471c?style=flat-square">
+<img alt="Team Collaboration" src="https://img.shields.io/badge/Team%20Collaboration-c4471c?style=flat-square">
+
+</td>
+</tr>
+</table>
 
 ---
 
-## GitHub
+## Contribution Activity
+
+<!-- Rendered daily by .github/workflows/contribution-snake.yml (Platane/snk) into
+     the `output` branch, coloured with the site's own accent tokens. It is an
+     animated SVG, so it plays as the README loads - no JS, no third-party host. -->
 
 <p align="center">
-  <img alt="Followers" src="https://img.shields.io/github/followers/Francois0203?style=for-the-badge&label=Followers&color=b8651c&labelColor=7a3e10&logo=github&logoColor=ffffff">
-  <img alt="Last commit" src="https://img.shields.io/github/last-commit/Francois0203/Francois0203?style=for-the-badge&label=Last%20commit&color=c4471c&labelColor=7a3e10&logo=github&logoColor=ffffff">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Francois0203/Francois0203/output/snake-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Francois0203/Francois0203/output/snake-light.svg">
+    <img alt="A year of contributions, animated" src="https://raw.githubusercontent.com/Francois0203/Francois0203/output/snake-light.svg">
+  </picture>
 </p>
 
-The live project list &mdash; pulled straight from GitHub, with READMEs rendered in-page &mdash; lives at **[the workshop](https://francois-portfolio.web.app/projects)**.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-activity-graph.vercel.app/graph?username=Francois0203&bg_color=120a04&color=f7e8cd&line=e89542&point=f5b56b&area_color=e07b1f&area=true&hide_border=true&custom_title=Commits%20over%20time">
+    <img alt="Commits over time" src="https://github-readme-activity-graph.vercel.app/graph?username=Francois0203&bg_color=f7eed8&color=2a1810&line=b8651c&point=7a3e10&area_color=e07b1f&area=true&hide_border=true&custom_title=Commits%20over%20time">
+  </picture>
+</p>
+
+<p align="center">
+  <img height="165" alt="GitHub statistics" src="https://github-readme-stats.vercel.app/api?username=Francois0203&show_icons=true&hide_border=true&include_all_commits=true&rank_icon=github&title_color=b8651c&icon_color=e07b1f&text_color=8a6a4a&bg_color=00000000">
+  <img height="165" alt="Most used languages" src="https://github-readme-stats.vercel.app/api/top-langs/?username=Francois0203&layout=compact&hide_border=true&langs_count=8&title_color=b8651c&text_color=8a6a4a&bg_color=00000000">
+</p>
 
 ---
 
-## Epilogue &mdash; *or just the beginning?*
-
-The rest of the story is a click away, and it would love a reader.
-Pick a page, or send word and we&rsquo;ll write the next one together.
+## Selected Work
 
 <p align="center">
-  <a href="https://francois-portfolio.web.app/bio"><img alt="Read the Bio" src="https://img.shields.io/badge/Read%20the%20Bio-b8651c?style=for-the-badge&logo=readme&logoColor=ffffff"></a>
-  <a href="https://francois-portfolio.web.app/projects"><img alt="See projects" src="https://img.shields.io/badge/See%20projects-7a3e10?style=for-the-badge&logo=github&logoColor=ffffff"></a>
-  <a href="https://francois-portfolio.web.app/connect"><img alt="Write a letter" src="https://img.shields.io/badge/Write%20a%20letter-c4471c?style=for-the-badge&logo=maildotru&logoColor=ffffff"></a>
+  <a href="https://github.com/Francois0203/Telescope-Correlator"><img width="47%" alt="Telescope-Correlator" src="https://github-readme-stats.vercel.app/api/pin/?username=Francois0203&repo=Telescope-Correlator&hide_border=true&title_color=b8651c&icon_color=e07b1f&text_color=8a6a4a&bg_color=00000000"></a>
+  <a href="https://github.com/Francois0203/Nutrition-AI"><img width="47%" alt="Nutrition-AI" src="https://github-readme-stats.vercel.app/api/pin/?username=Francois0203&repo=Nutrition-AI&hide_border=true&title_color=b8651c&icon_color=e07b1f&text_color=8a6a4a&bg_color=00000000"></a>
 </p>
 
-```text
-Data Science  ·  Statistical Modelling  ·  Scientific Computing  ·  Full-Stack Engineering
-```
+The full project list &mdash; pulled straight from GitHub, with READMEs rendered in-page &mdash; lives at **[francois-portfolio.web.app/projects](https://francois-portfolio.web.app/projects)**.
+
+---
+
+## Get in touch
+
+Open to **data science, data analysis, and research opportunities**.
+
+<p align="center">
+  <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email me" src="https://img.shields.io/badge/Email%20me-b8651c?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
+  <a href="https://www.linkedin.com/in/francois-meiring"><img alt="Connect on LinkedIn" src="https://img.shields.io/badge/Connect%20on%20LinkedIn-7a3e10?style=for-the-badge&logo=linkedin&logoColor=ffffff"></a>
+  <a href="https://francois-portfolio.web.app/connect"><img alt="Contact form" src="https://img.shields.io/badge/Contact%20form-c4471c?style=for-the-badge&logo=maildotru&logoColor=ffffff"></a>
+</p>
+
+<p align="center">
+  <sub>Data Science &nbsp;&middot;&nbsp; Statistical Modelling &nbsp;&middot;&nbsp; Scientific Computing &nbsp;&middot;&nbsp; Full-Stack Engineering</sub>
+</p>
