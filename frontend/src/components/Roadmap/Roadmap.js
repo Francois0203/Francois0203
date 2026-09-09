@@ -1,0 +1,319 @@
+import {
+  useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState,
+} from 'react';
+import { MdArrowOutward, MdSchool, MdWork } from 'react-icons/md';
+import styles from './Roadmap.module.css';
+
+/**
+ * The journey as a route on a map.
+ *
+ * Waypoints alternate across the width, numbered in the order they happened,
+ * and a trail is drawn through them from the first to the present one. The
+ * reader travels it by scrolling: the trail draws, each waypoint lights as the
+ * trail reaches it, and a traveller rides the line.
+ *
+ * ── Why the trail is measured, not authored ──────────────────────────────────
+ * The waypoints sit wherever their rows put them, and row heights depend on
+ * content, font and viewport, so a hand-drawn path would only line up at one
+ * width. The component measures each marker after layout and fits a spline
+ * through the centres, which is why the trail always passes exactly through
+ * the pins. Measuring happens in a layout effect and on a ResizeObserver -
+ * never on scroll, never per frame.
+ *
+ * ── Motion ───────────────────────────────────────────────────────────────────
+ * Scrubbed by scroll with CSS scroll-driven animation, so there is no scroll
+ * listener and no rAF loop. Drawing a line means animating stroke-dashoffset,
+ * which paints rather than composites: a deliberate trade, and it is two thin
+ * paths in one layer. Everything else - pins, labels, the traveller - is
+ * transform and opacity.
+ *
+ * Where scroll-driven animation is unsupported the trail is drawn in full and
+ * the waypoints fade in from a single IntersectionObserver, which is a
+ * complete map rather than a broken one.
+ */
+
+const SUPPORTS_SCROLL_TIMELINE =
+  typeof CSS !== 'undefined' &&
+  typeof CSS.supports === 'function' &&
+  CSS.supports('animation-timeline: view()');
+
+/**
+ * Catmull-Rom through the waypoints as cubic beziers. 1/4 rather than the
+ * textbook 1/6: a route on a map should overshoot and bend around its
+ * waypoints, not take the shortest polite curve between them.
+ */
+const TENSION = 4;
+
+const splinePath = (pts) => {
+  if (pts.length === 0) return '';
+  if (pts.length === 1) return `M ${pts[0][0]} ${pts[0][1]}`;
+
+  let d = `M ${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const p0 = pts[i - 1] || pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] || p2;
+    const c1x = p1[0] + (p2[0] - p0[0]) / TENSION;
+    const c1y = p1[1] + (p2[1] - p0[1]) / TENSION;
+    const c2x = p2[0] - (p3[0] - p1[0]) / TENSION;
+    const c2y = p2[1] - (p3[1] - p1[1]) / TENSION;
+    d += ` C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)},`
+       + ` ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`;
+  }
+  return d;
+};
+
+/** Fallback reveal for browsers without scroll-driven animation. */
+const useReveal = (enabled) => {
+  const ref = useRef(null);
+  const [shown, setShown] = useState(!enabled);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+    const el = ref.current;
+    if (!el) return undefined;
+
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        setShown(true);
+        obs.disconnect();
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [enabled]);
+
+  return [ref, shown];
+};
+
+/* ─── Map furniture ─────────────────────────────────────────────────────────
+   Static decoration, drawn once and never animated. It is what separates a
+   route on a map from a wavy line beside a list, and it costs nothing to
+   render because none of it moves. */
+
+const Graticule = () => (
+  <defs>
+    <pattern id="rm-grid" width="52" height="52" patternUnits="userSpaceOnUse">
+      <path d="M 52 0 L 0 0 0 52" fill="none" stroke="currentColor" strokeWidth="1" />
+    </pattern>
+    <radialGradient id="rm-vignette" cx="50%" cy="50%" r="72%">
+      <stop offset="55%" stopColor="#000" stopOpacity="0" />
+      <stop offset="100%" stopColor="#000" stopOpacity="0.10" />
+    </radialGradient>
+  </defs>
+);
+
+const Compass = () => (
+  <svg className={styles.compass} viewBox="0 0 64 64" aria-hidden="true">
+    <circle cx="32" cy="32" r="26" className={styles.compassRing} />
+    <circle cx="32" cy="32" r="20" className={styles.compassRing} />
+    {/* Cardinal ticks, then the needle: north filled, south hollow. */}
+    {[0, 90, 180, 270].map((a) => (
+      <line
+        key={a}
+        x1="32" y1="4" x2="32" y2="11"
+        className={styles.compassTick}
+        transform={`rotate(${a} 32 32)`}
+      />
+    ))}
+    <polygon points="32,10 37,32 32,28 27,32" className={styles.compassNorth} />
+    <polygon points="32,54 27,32 32,36 37,32" className={styles.compassSouth} />
+    <text x="32" y="49" className={styles.compassLabel} textAnchor="middle">N</text>
+  </svg>
+);
+
+const Roadmap = ({ stops = [], onSelect, emptyText = 'The route is still being drawn.' }) => {
+  const [ref, shown] = useReveal(!SUPPORTS_SCROLL_TIMELINE);
+
+  const planeRef = useRef(null);
+  const listRef = useRef(null);
+  const pinRefs = useRef([]);
+
+  /** { w, h, d } - the plane's box and the fitted trail. */
+  const [geom, setGeom] = useState(null);
+
+  const measure = useCallback(() => {
+    const plane = planeRef.current;
+    const list = listRef.current;
+    if (!plane || !list) return;
+
+    const planeBox = plane.getBoundingClientRect();
+    const w = planeBox.width;
+    const h = planeBox.height;
+    if (w < 2 || h < 2) return;
+
+    const pts = [];
+    pinRefs.current.slice(0, stops.length).forEach((pin) => {
+      if (!pin) return;
+      // Measured against the plane, so the numbers are already in the SVG's
+      // coordinate space and no scroll offset can leak in.
+      const box = pin.getBoundingClientRect();
+      pts.push([
+        box.left - planeBox.left + box.width / 2,
+        box.top - planeBox.top + box.height / 2,
+      ]);
+    });
+
+    if (pts.length === 0) return;
+
+    // The trail runs on past the first and last pin, so the route reads as
+    // arriving from somewhere and continuing, not as starting on a dot.
+    const first = pts[0];
+    const last = pts[pts.length - 1];
+    const lead = [first[0], Math.max(6, first[1] - 46)];
+    // Longer than the lead: the end badge sits below the tail rather than on
+    // it, so the trail needs room to arrive before the label starts.
+    const tail = [last[0], Math.min(h - 6, last[1] + 62)];
+
+    setGeom({ w, h, d: splinePath([lead, ...pts, tail]), lead, tail });
+  }, [stops.length]);
+
+  useLayoutEffect(() => { measure(); }, [measure, stops]);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || typeof ResizeObserver === 'undefined') return undefined;
+    const obs = new ResizeObserver(() => measure());
+    obs.observe(list);
+    return () => obs.disconnect();
+  }, [measure]);
+
+  const handleSelect = useCallback((stop) => () => onSelect?.(stop), [onSelect]);
+
+  // The traveller rides the trail itself, so it stays on the route rather than
+  // tracking a straight line beside it.
+  const travellerStyle = useMemo(
+    () => (geom ? { offsetPath: `path("${geom.d}")` } : undefined),
+    [geom],
+  );
+
+  if (stops.length === 0) {
+    return <p className={styles.empty}>{emptyText}</p>;
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={styles.wrap}
+      data-shown={shown ? 'true' : 'false'}
+      data-scrubbed={SUPPORTS_SCROLL_TIMELINE ? 'true' : 'false'}
+      data-measured={geom ? 'true' : 'false'}
+    >
+      <div ref={planeRef} className={styles.plane}>
+        {/* Everything in here is decoration; the list underneath carries all
+            of the actual content. */}
+        <svg
+          className={styles.paper}
+          width={geom?.w ?? 0}
+          height={geom?.h ?? 0}
+          viewBox={geom ? `0 0 ${geom.w} ${geom.h}` : '0 0 1 1'}
+          fill="none"
+          aria-hidden="true"
+        >
+          <Graticule />
+          <rect width="100%" height="100%" fill="url(#rm-grid)" className={styles.grid} />
+
+          {/* Contours: three soft closed curves, the way elevation reads on a
+              printed map. Fixed shapes scaled to the plane, so they cost one
+              paint and never reflow. */}
+          {geom && (
+            <g className={styles.contours}>
+              <ellipse cx={geom.w * 0.22} cy={geom.h * 0.24} rx={geom.w * 0.20} ry={geom.h * 0.11} />
+              <ellipse cx={geom.w * 0.22} cy={geom.h * 0.24} rx={geom.w * 0.13} ry={geom.h * 0.07} />
+              <ellipse cx={geom.w * 0.79} cy={geom.h * 0.68} rx={geom.w * 0.22} ry={geom.h * 0.12} />
+              <ellipse cx={geom.w * 0.79} cy={geom.h * 0.68} rx={geom.w * 0.14} ry={geom.h * 0.075} />
+              <ellipse cx={geom.w * 0.79} cy={geom.h * 0.68} rx={geom.w * 0.07} ry={geom.h * 0.035} />
+            </g>
+          )}
+
+          {geom && (
+            <>
+              {/* The route not yet travelled: a dashed trail, the way a path is
+                  drawn on a map. */}
+              <path className={styles.trailTrack} d={geom.d} />
+              {/* The route travelled, drawn by the scroll. */}
+              <path className={styles.trailDrawn} d={geom.d} pathLength="1" />
+            </>
+          )}
+
+          <rect width="100%" height="100%" fill="url(#rm-vignette)" />
+        </svg>
+
+        <Compass />
+
+        {geom && (
+          <>
+            <span
+              className={`${styles.terminus} ${styles.terminusStart}`}
+              style={{ left: `${geom.lead[0]}px`, top: `${geom.lead[1]}px` }}
+              aria-hidden="true"
+            >
+              Start
+            </span>
+            <span
+              className={`${styles.terminus} ${styles.terminusEnd}`}
+              style={{ left: `${geom.tail[0]}px`, top: `${geom.tail[1]}px` }}
+              aria-hidden="true"
+            >
+              Here
+            </span>
+            <span className={styles.traveller} style={travellerStyle} aria-hidden="true" />
+          </>
+        )}
+
+        <ol ref={listRef} className={styles.list}>
+          {stops.map((s, i) => {
+            const isEdu = s.kind === 'education';
+            const Icon = isEdu ? MdSchool : MdWork;
+            // Waypoints alternate across the plane, which is what turns a
+            // column of rows into a route with a shape.
+            const side = i % 2 === 0 ? 'left' : 'right';
+
+            return (
+              <li
+                key={s.id ?? i}
+                className={styles.stop}
+                data-side={side}
+                style={{ '--i': i }}
+              >
+                <span className={styles.pinCell} ref={(el) => { pinRefs.current[i] = el; }}>
+                  <span className={styles.pin} aria-hidden="true">
+                    <span className={styles.pinHalo} />
+                    <span className={styles.pinNo}>{i + 1}</span>
+                  </span>
+                </span>
+
+                <button
+                  type="button"
+                  className={styles.card}
+                  onClick={handleSelect(s)}
+                  disabled={!onSelect}
+                >
+                  <span className={styles.cardMeta}>
+                    <Icon className={styles.cardIcon} aria-hidden="true" />
+                    <span className={styles.cardKind}>
+                      {isEdu ? 'Education' : 'Experience'}
+                    </span>
+                    {s.period && <span className={styles.cardPeriod}>{s.period}</span>}
+                  </span>
+
+                  <span className={styles.cardTitle}>
+                    {s.title}
+                    <MdArrowOutward className={styles.cardArrow} aria-hidden="true" />
+                  </span>
+
+                  {s.subtitle && <span className={styles.cardSub}>{s.subtitle}</span>}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </div>
+  );
+};
+
+export default Roadmap;

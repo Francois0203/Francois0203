@@ -11,7 +11,7 @@ import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
 import useStudioSites from '../../hooks/useStudioSites';
 import { Modal, ShimmerButton, CursorGlowButton, GlowBorderButton, SiteShowcase } from '../../components';
-import Trajectory from '../../components/Trajectory';
+import Roadmap from '../../components/Roadmap';
 import styles from './Home.module.css';
 
 // Evaluated once at module load - avoids React overhead and is stable
@@ -198,7 +198,34 @@ const toJourney = ({ experience = [], education = [] }) => {
     kind:     'education',
     order:    e.order ?? 0,
   }));
-  return [...ex, ...ed].sort((a, b) => a.order - b.order);
+  /*
+   * Chronological, because the roadmap is now a route: you travel it from the
+   * first waypoint to the present one, so it cannot be ordered newest-first
+   * the way a CV list is.
+   *
+   * The period strings are free text off Firestore ("2021 - 2023", "May 2026 -
+   * Present", "During Matric Year"), so the first four-digit year in the
+   * string is the only reliable key. Entries with no year at all are the
+   * school-era ones, which belong at the start; they fall back to the curated
+   * `order` field reversed, which is a recency rank.
+   */
+  const startYear = (p) => {
+    const m = /(19|20)\d{2}/.exec(p ?? '');
+    return m ? Number(m[0]) : null;
+  };
+
+  return [...ex, ...ed]
+    .map(s => ({ ...s, year: startYear(s.period) }))
+    .sort((a, b) => {
+      if (a.year !== b.year) {
+        if (a.year === null) return -1;
+        if (b.year === null) return 1;
+        return a.year - b.year;
+      }
+      // Same year, or both undated: the curated order runs newest-first, so
+      // reversing it keeps the pair in the order they actually happened.
+      return b.order - a.order;
+    });
 };
 
 /* ─── Main page ───────────────────────────────────────────────────────────── */
@@ -485,18 +512,21 @@ const Home = () => {
         </div>
 
         {loading
-          ? <div className={styles.trajectorySkel}>{[0, 1, 2, 4].map(i => (
-              <div key={i} className={styles.trajectorySkelRow}>
-                <span className={styles.trajectorySkelPeriod} />
-                <span className={styles.trajectorySkelNode} />
-                <span className={styles.trajectorySkelText} />
+          ? <div className={styles.roadmapSkel}>{[0, 1, 2, 3].map(i => (
+              <div
+                key={i}
+                className={styles.roadmapSkelRow}
+                data-side={i % 2 === 0 ? 'left' : 'right'}
+              >
+                <span className={styles.roadmapSkelPin} />
+                <span className={styles.roadmapSkelCard} />
               </div>
             ))}</div>
           : (
-            <Trajectory
+            <Roadmap
               stops={journey}
               onSelect={setOpenMilestone}
-              emptyText={t.journeyEmpty ?? 'The journey is being written.'}
+              emptyText={t.journeyEmpty ?? 'The route is still being drawn.'}
             />
           )
         }

@@ -6,6 +6,17 @@ import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
 import { ContentProvider } from './context/ContentContext';
 import styles from './App.module.css';
 
+/*
+ * Dev-only component previews. Rendered outside AppLayout so there is no intro,
+ * no nav and no Firestore: a measured component can only be checked by looking
+ * at it, and the live page cannot be relied on to have loaded when you do.
+ * import.meta.env.DEV is statically false in a production build, so Rollup
+ * drops both the route and the import.
+ */
+const RoadmapPreview = import.meta.env.DEV
+  ? React.lazy(() => import('./dev/RoadmapPreview'))
+  : null;
+
 const NAVIGATION_PAGES = [
   { label: 'Home',     to: '/'        },
   { label: 'Bio',      to: '/bio'     },
@@ -87,6 +98,10 @@ const AppContent = () => (
       <Routes>
         {/* Admin - standalone, no nav bar */}
         <Route path="/admin" element={<Admin />} />
+
+        {import.meta.env.DEV && (
+          <Route path="/__preview/roadmap" element={<RoadmapPreview />} />
+        )}
 
         <Route path="/" element={<AppLayout />}>
           <Route index             element={<Home />} />

@@ -21,7 +21,7 @@ export const HOME_FIELDS = [
   { key: 'journeyEye',   label: 'Journey - eyebrow', type: 'text',     default: 'Chapter II' },
   { key: 'journeyTitle', label: 'Journey - title',   type: 'text',     default: 'The journey so far' },
   { key: 'journeyLede',  label: 'Journey - lede',    type: 'textarea', default: 'A meandering path of schools, jobs, and small obsessions. Press a milestone to read its page.' },
-  { key: 'journeyEmpty', label: 'Journey - empty state', type: 'text', default: 'The journey is being written.' },
+  { key: 'journeyEmpty', label: 'Journey - empty state', type: 'text', default: 'The route is still being drawn.' },
 
   // ── Scene: The toolkit ──
   { key: 'toolkitEye',   label: 'Toolkit - eyebrow', type: 'text',     default: 'Chapter III' },

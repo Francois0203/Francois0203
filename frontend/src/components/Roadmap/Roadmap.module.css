@@ -1,0 +1,529 @@
+/* ─── Roadmap ──────────────────────────────────────────────────────────────────
+   The journey as a route on a map: waypoints alternating across the plane,
+   numbered in the order they happened, with a trail drawn through them.
+
+   Layout contract: .plane is the coordinate space. The SVG is pinned to it and
+   sized from its box, and every measured point is taken relative to it, so the
+   trail, the terminus labels and the traveller all share one origin with the
+   pins. .list is a normal flow child of .plane, so the plane's height is the
+   list's height and nothing has to be kept in step by hand.
+
+   Motion contract: the resting styles are the FINAL state. The pre-animation
+   state exists only inside @supports (animation-timeline: view()), so a
+   browser without scroll-driven animation renders a complete drawn map. */
+
+.wrap {
+  --pin: 2.25rem;
+  --pin-col: 3rem;
+  /* How far the waypoints sit from the plane's edges. Smaller means a wider
+     swing and a more pronounced route. */
+  --inset: 1.9fr;
+  --reach: 5fr;
+
+  position: relative;
+}
+
+.plane {
+  position: relative;
+  padding: var(--spacing-xl) 0;
+}
+
+/* ── The paper ───────────────────────────────────────────────────────────── */
+
+.paper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* The graticule pattern strokes with currentColor, so the map's ink is set
+     once here rather than threaded through the pattern definition. */
+  color: rgba(var(--accent-3-rgb), 0.5);
+}
+
+.grid { opacity: 0.055; }
+
+.contours {
+  fill: none;
+  stroke: rgba(var(--accent-3-rgb), 0.5);
+  stroke-width: 1;
+  opacity: 0.13;
+}
+
+/* The route still ahead: dashed, the way a trail is drawn on a printed map. */
+.trailTrack {
+  fill: none;
+  stroke: rgba(var(--accent-1-rgb), 0.32);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1 9;
+}
+
+/* The route already travelled. */
+.trailDrawn {
+  fill: none;
+  stroke: var(--accent-1);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 5px rgba(var(--accent-2-rgb), 0.4));
+}
+
+/* ── Compass ─────────────────────────────────────────────────────────────── */
+
+.compass {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  width: 58px;
+  height: 58px;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.compassRing {
+  fill: none;
+  stroke: rgba(var(--accent-3-rgb), 0.7);
+  stroke-width: 1;
+}
+
+.compassTick {
+  stroke: rgba(var(--accent-3-rgb), 0.7);
+  stroke-width: 1.5;
+}
+
+.compassNorth { fill: var(--accent-1); }
+.compassSouth { fill: none; stroke: rgba(var(--accent-3-rgb), 0.7); stroke-width: 1; }
+
+.compassLabel {
+  fill: rgba(var(--accent-3-rgb), 0.9);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* ── Terminus labels ─────────────────────────────────────────────────────── */
+
+/* Pinned to the measured ends of the trail, so they sit on the route rather
+   than at the corners of a box. */
+.terminus {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  background: var(--background-0);
+  color: var(--tertiary-text-color);
+  box-shadow: 0 0 0 1px rgba(var(--accent-1-rgb), 0.22);
+}
+
+.terminusStart {
+  /* The quieter of the two: where the route began is context, where it has got
+     to is the point. */
+  opacity: 0.75;
+}
+
+.terminusEnd {
+  color: var(--accent-1);
+  box-shadow: 0 0 0 1px rgba(var(--accent-1-rgb), 0.5);
+  /* Dropped clear of the tail rather than centred on it, so the trail arrives
+     at the badge instead of running through it. */
+  transform: translate(-50%, 4px);
+}
+
+/* ── The traveller ───────────────────────────────────────────────────────── */
+
+/* Rides the trail through offset-path. Hidden by default: without offset-path
+   support it would otherwise sit in the plane's corner. */
+.traveller {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-2-rgb), 0.16),
+    0 0 14px 3px rgba(var(--accent-2-rgb), 0.5);
+  offset-anchor: center;
+  offset-rotate: 0deg;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Waypoints ───────────────────────────────────────────────────────────── */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+/**
+ * Three columns, with the pin always in the middle one and the wide column
+ * swapping sides per waypoint. That swap is the whole route: it is what makes
+ * the measured spline serpentine across the plane instead of running straight
+ * down it.
+ */
+.stop {
+  display: grid;
+  align-items: center;
+  column-gap: var(--spacing-md);
+  padding: var(--spacing-lg) 0;
+}
+
+.stop[data-side='left'] {
+  grid-template-columns: var(--inset) var(--pin-col) var(--reach);
+}
+
+.stop[data-side='right'] {
+  grid-template-columns: var(--reach) var(--pin-col) var(--inset);
+}
+
+/* The pin holds column 2 on both sides; only the card moves. */
+.pinCell {
+  grid-column: 2;
+  display: grid;
+  place-items: center;
+  width: var(--pin);
+  height: var(--pin);
+  justify-self: center;
+}
+
+.stop[data-side='left'] .card  { grid-column: 3; text-align: left; align-items: flex-start; }
+.stop[data-side='right'] .card { grid-column: 1; text-align: right; align-items: flex-end; }
+
+.pin {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--pin);
+  height: var(--pin);
+  border-radius: 50%;
+  /* The page-coloured fill punches a clean gap through the trail behind it. */
+  background: var(--background-0);
+  box-shadow:
+    0 0 0 1.5px rgba(var(--accent-1-rgb), 0.45),
+    0 3px 10px rgba(var(--accent-3-rgb), 0.16);
+}
+
+/* Expands once as the waypoint is reached, like a ping on a map. */
+.pinHalo {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-2-rgb), 0.55);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pinNo {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-1);
+  line-height: 1;
+}
+
+/* ── The waypoint card ───────────────────────────────────────────────────── */
+
+/* Overrides the global <button> chrome: a block of text anchored to a pin, not
+   a centred pill. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  width: 100%;
+  /* This project has no universal border-box reset, so width:100% plus padding
+     made the card 32px wider than its grid column - enough to push a long
+     institution name off a narrow viewport. */
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  box-shadow: none;
+  white-space: normal;
+  font: inherit;
+  letter-spacing: normal;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color var(--dur-hover) var(--ease-out);
+}
+
+.card:disabled { cursor: default; }
+
+/**
+ * Label halo. The trail runs behind the labels, and on a serpentine it has to:
+ * the route leaves each pin heading for the opposite side, so it crosses the
+ * card that pin belongs to. Rather than fight the geometry, the labels get the
+ * treatment a printed map gives a place name over a road - a soft knockout in
+ * the page colour, so the text stays legible and the crossing reads as
+ * deliberate cartography rather than a collision.
+ *
+ * A stack of blurred shadows rather than -webkit-text-stroke: HTML has no
+ * paint-order, so a stroke would paint over the glyph and thicken it.
+ */
+.cardMeta,
+.cardTitle,
+.cardSub {
+  /* Four hard offsets knock a clean outline out of the trail, and the blurs
+     soften its edge so the label sits on the paper rather than on a sticker. */
+  text-shadow:
+    2px 0 0 var(--background-0), -2px 0 0 var(--background-0),
+    0 2px 0 var(--background-0), 0 -2px 0 var(--background-0),
+    0 0 5px var(--background-0),
+    0 0 9px var(--background-0),
+    0 0 14px var(--background-0);
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.45rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.stop[data-side='right'] .cardMeta { flex-direction: row-reverse; }
+
+.cardIcon { width: 0.95em; height: 0.95em; flex: none; color: var(--accent-1); }
+
+.cardPeriod {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--secondary-text-color);
+}
+
+.cardKind { white-space: nowrap; }
+
+/**
+ * display:block, not inline-flex. As a flex container the title's text became a
+ * single flex item with min-width:auto, so a long institution name could not
+ * wrap and simply ran off a narrow viewport. Block lets the text wrap and the
+ * arrow flow inline after it, which also puts the arrow at the end of the last
+ * line rather than pinned beside a one-line title.
+ */
+.cardTitle {
+  position: relative;
+  display: block;
+  font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
+  font-size: var(--font-size-lg);
+  line-height: 1.25;
+  color: var(--primary-text-color);
+  transition: color var(--dur-hover) var(--ease-out);
+}
+
+.cardArrow {
+  display: inline-block;
+  vertical-align: baseline;
+  margin-left: 0.35em;
+  width: 0.62em;
+  height: 0.62em;
+  flex: none;
+  color: var(--accent-1);
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition:
+    opacity var(--dur-hover) var(--ease-out),
+    transform var(--dur-hover) var(--ease-out);
+}
+
+.cardSub {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--secondary-text-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover:not(:disabled) { background: rgba(var(--accent-1-rgb), 0.055); }
+  .card:hover:not(:disabled) .cardTitle { color: var(--accent-1); }
+  .card:hover:not(:disabled) .cardArrow { opacity: 1; transform: translate(0, 0); }
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
+}
+
+.card:focus-visible .cardArrow { opacity: 1; transform: translate(0, 0); }
+
+.empty {
+  margin: 0;
+  padding: var(--spacing-2xl) 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+  font-style: italic;
+}
+
+/* ─── Scroll-driven motion ───────────────────────────────────────────────── */
+
+@supports (animation-timeline: view()) {
+  /* Named on the wrap so every descendant, including the SVG that precedes the
+     list in document order, is in scope. */
+  .wrap[data-scrubbed='true'] {
+    view-timeline-name: --roadmap;
+    view-timeline-axis: block;
+  }
+
+  /* pathLength="1" makes the dash arithmetic independent of the measured
+     length of the trail. */
+  .wrap[data-scrubbed='true'][data-measured='true'] .trailDrawn {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: trailDraw linear both;
+    animation-timeline: --roadmap;
+    animation-range: entry 88% exit 20%;
+  }
+
+  @keyframes trailDraw { to { stroke-dashoffset: 0; } }
+
+  .wrap[data-scrubbed='true'][data-measured='true'] .traveller {
+    offset-distance: 0%;
+    animation: travellerRide linear both, travellerFade linear both;
+    animation-timeline: --roadmap, --roadmap;
+    animation-range: entry 88% exit 20%, entry 88% entry 100%;
+  }
+
+  @keyframes travellerRide {
+    from { offset-distance: 0%; }
+    to   { offset-distance: 100%; }
+  }
+
+  @keyframes travellerFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Each waypoint arrives on its own view timeline as it comes up the
+     viewport, so it is tied to that pin rather than to a shared stagger. */
+  .wrap[data-scrubbed='true'] .pin {
+    transform: scale(0.5);
+    opacity: 0;
+    animation: pinLand linear both;
+    animation-timeline: view();
+    animation-range: entry 55% entry 92%;
+  }
+
+  @keyframes pinLand {
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .wrap[data-scrubbed='true'] .pinHalo {
+    animation: ping linear both;
+    animation-timeline: view();
+    animation-range: entry 60% entry 100%;
+  }
+
+  @keyframes ping {
+    0%   { opacity: 0.9; transform: scale(0.7); }
+    100% { opacity: 0;   transform: scale(1.9); }
+  }
+
+  .wrap[data-scrubbed='true'] .card {
+    opacity: 0;
+    animation: cardIn linear both;
+    animation-timeline: view();
+    animation-range: entry 50% entry 90%;
+  }
+
+  /* Each card slides in from the side its pin is on, so the map reads as
+     unfolding outward from the route. */
+  .wrap[data-scrubbed='true'] .stop[data-side='left'] .card  { --from: -14px; }
+  .wrap[data-scrubbed='true'] .stop[data-side='right'] .card { --from: 14px; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateX(var(--from, 0)); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+}
+
+/* ─── Fallback reveal ────────────────────────────────────────────────────── */
+
+.wrap[data-scrubbed='false'] .stop {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s var(--ease-out) calc(var(--i, 0) * 70ms),
+    transform 0.5s var(--ease-out) calc(var(--i, 0) * 70ms);
+}
+
+.wrap[data-scrubbed='false'][data-shown='true'] .stop {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .trailDrawn, .traveller, .pin, .pinHalo, .card, .stop {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .trailDrawn { stroke-dashoffset: 0 !important; }
+  .traveller, .pinHalo { display: none; }
+}
+
+:global(html[data-no-animations='true']) .trailDrawn,
+:global(html[data-no-animations='true']) .traveller,
+:global(html[data-no-animations='true']) .pin,
+:global(html[data-no-animations='true']) .pinHalo,
+:global(html[data-no-animations='true']) .card,
+:global(html[data-no-animations='true']) .stop {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+:global(html[data-no-animations='true']) .trailDrawn { stroke-dashoffset: 0 !important; }
+:global(html[data-no-animations='true']) .traveller,
+:global(html[data-no-animations='true']) .pinHalo { display: none; }
+
+/* ─── Narrow screens ─────────────────────────────────────────────────────────
+   A serpentine needs width. Below 720px the route straightens to a single
+   left-hand trail with the cards to its right: still a measured spline, still
+   drawn by the scroll, but it stops throwing text across a 320px viewport. */
+
+@media (max-width: 720px) {
+  .wrap { --pin: 1.9rem; --pin-col: 2.25rem; }
+
+  .plane { padding: var(--spacing-lg) 0; }
+
+  .stop[data-side='left'],
+  .stop[data-side='right'] {
+    grid-template-columns: var(--pin-col) minmax(0, 1fr);
+    column-gap: var(--spacing-sm);
+    padding: var(--spacing-md) 0;
+  }
+
+  .pinCell { grid-column: 1; }
+
+  .stop[data-side='left'] .card,
+  .stop[data-side='right'] .card {
+    grid-column: 2;
+    text-align: left;
+    align-items: flex-start;
+    padding-inline: var(--spacing-sm);
+  }
+
+  .stop[data-side='right'] .cardMeta { flex-direction: row; }
+
+  .compass { display: none; }
+  .cardTitle { font-size: var(--font-size-md); }
+
+  /* Both sides now enter from the left, since both sit on the same side. */
+  .wrap[data-scrubbed='true'] .stop[data-side='right'] .card { --from: -14px; }
+}
