@@ -69,7 +69,10 @@
 
 .far  { z-index: 0; }
 .mid  { z-index: 1; }
-.near { z-index: 3; }
+/* Slightly out of focus, the way anything close to the lens is. It costs one
+   static blur on a container and it is most of what stops the three layers
+   reading as one field of identical dots at three sizes. */
+.near { z-index: 3; filter: blur(0.6px); }
 
 /**
  * The flight, and the only place the three depths are given different numbers.
@@ -79,24 +82,50 @@
  * translateZ rather than scale: under the perspective above, z-travel converges
  * toward the vanishing point, which scale cannot reproduce.
  */
-.curtain[data-state='flight'] .far {
-    animation: fly 700ms var(--ease-emph) forwards;
-    --z: 90px;
-}
-
-.curtain[data-state='flight'] .mid {
-    animation: fly 700ms var(--ease-emph) forwards;
-    --z: 320px;
-}
-
+/*
+ * ease-in, which is wrong for almost every UI animation and right for this one:
+ * nothing here is responding to the reader, it is a mass accelerating away, and
+ * a launch that starts at full speed reads as a cut. The curve is shared so all
+ * three layers accelerate together and only their distances differ.
+ */
+.curtain[data-state='flight'] .far,
+.curtain[data-state='flight'] .mid,
 .curtain[data-state='flight'] .near {
-    animation: fly 700ms var(--ease-emph) forwards;
-    --z: 760px;
+    animation: fly 780ms cubic-bezier(0.55, 0, 0.85, 0.3) forwards;
 }
+
+.curtain[data-state='flight'] .far  { --z: 90px; }
+.curtain[data-state='flight'] .mid  { --z: 320px; }
+.curtain[data-state='flight'] .near { --z: 760px; }
 
 @keyframes fly {
     from { transform: translateZ(0); opacity: 1; }
     to   { transform: translateZ(var(--z)); opacity: 0; }
+}
+
+/**
+ * A slow lateral dolly while the figure is being drawn, each layer shifted by a
+ * different amount. This is the one piece of the sequence that shows the idea
+ * rather than relying on it: near stars visibly slide against the far field,
+ * which is exactly the effect the whole thing is named after. It also stops the
+ * sky being a still image for two and a half seconds.
+ */
+/* The dolly rides .drift, the flight rides .layer above it, so the two compose
+   instead of one replacing the other. */
+.drift {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    animation: dolly 9s linear infinite alternate;
+}
+
+.far  .drift { --dx: 5px; }
+.mid  .drift { --dx: 15px; }
+.near .drift { --dx: 34px; }
+
+@keyframes dolly {
+    from { transform: translate3d(calc(var(--dx) * -1), 0, 0); }
+    to   { transform: translate3d(var(--dx), 0, 0); }
 }
 
 .star {
@@ -107,9 +136,15 @@
     opacity: 0;
     /* Fade up once, then breathe. Two animations rather than one keyframe set,
        so the arrival can be eased and the breathing can loop linearly. */
+    /*
+     * The twinkle must not start until the arrival has finished. Both animate
+     * opacity, and the later declaration wins while they overlap, so running
+     * them from the same delay meant twinkle took the property on frame one and
+     * the fade-up never actually played - every star simply appeared.
+     */
     animation:
         starIn 900ms var(--delay, 0ms) var(--ease-out) forwards,
-        twinkle var(--twinkle, 3000ms) var(--delay, 0ms) ease-in-out infinite;
+        twinkle var(--twinkle, 3000ms) calc(var(--delay, 0ms) + 900ms) ease-in-out infinite;
 }
 
 @keyframes starIn {
@@ -146,10 +181,26 @@
     to   { transform: translateZ(-260px) scale(0.94); opacity: 0; }
 }
 
+/**
+ * The sky turns, very slowly. Rides .chart rather than .figure for the same
+ * reason .drift exists: .figure carries the flight, and two animations writing
+ * transform on one element means the second replaces the first.
+ *
+ * 1.2 degrees over fourteen seconds is under the threshold at which anyone
+ * consciously notices rotation, which is the point - it stops the figure being
+ * a static graphic pasted over a moving field without ever asking to be looked
+ * at.
+ */
 .chart {
     width: min(78vw, 900px);
     height: auto;
     overflow: visible;
+    animation: skyTurn 14s ease-in-out infinite alternate;
+}
+
+@keyframes skyTurn {
+    from { transform: rotate(-1.2deg) scale(0.995); }
+    to   { transform: rotate(1.2deg)  scale(1.005); }
 }
 
 /**
@@ -161,14 +212,17 @@
  * a diagram switching on instead of a shape being traced.
  */
 .edge {
-    stroke: rgba(var(--accent-1-rgb), 0.75);
+    stroke: rgba(var(--accent-1-rgb), 0.78);
     stroke-width: 1.4;
     stroke-linecap: round;
-    stroke-dasharray: 900;
-    stroke-dashoffset: 900;
+    /* The dash pattern is the edge's own length and the duration is
+       proportional to it, both computed in Intro.js, so the pen crosses every
+       stroke at one speed. linear, not ease-out: an eased stroke decelerates
+       into every star, which turns a continuous trace into nine little dashes. */
+    stroke-dasharray: var(--len, 200);
+    stroke-dashoffset: var(--len, 200);
     filter: drop-shadow(0 0 3px rgba(var(--accent-2-rgb), 0.35));
-    animation: drawEdge 420ms var(--ease-out) forwards;
-    animation-delay: calc(600ms + var(--ei, 0) * 120ms);
+    animation: drawEdge var(--dur, 140ms) var(--delay, 0ms) linear forwards;
 }
 
 @keyframes drawEdge {
@@ -180,8 +234,9 @@
     opacity: 0;
     transform-box: fill-box;
     transform-origin: center;
-    animation: nodeIn 460ms var(--ease-out) forwards;
-    animation-delay: calc(1150ms + var(--ni, 0) * 70ms);
+    /* Delay comes from the trace, not from a shared stagger: each star lights
+       at the moment the stroke reaching it lands. */
+    animation: nodeIn 420ms var(--delay, 0ms) var(--ease-out) forwards;
 }
 
 @keyframes nodeIn {
@@ -194,10 +249,22 @@
     filter: drop-shadow(0 0 5px rgba(var(--accent-2-rgb), 0.8));
 }
 
+/* Expands once as the pen reaches the star, then settles. The same gesture the
+   roadmap's pins make further down the page, which is worth more than either
+   one being clever on its own. */
 .nodeHalo {
     fill: rgba(var(--accent-2-rgb), 0.10);
     stroke: rgba(var(--accent-2-rgb), 0.30);
     stroke-width: 1;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ping 900ms var(--delay, 0ms) var(--ease-out) forwards;
+}
+
+@keyframes ping {
+    0%   { opacity: 0.95; transform: scale(0.45); }
+    70%  { opacity: 0.25; transform: scale(1.75); }
+    100% { opacity: 1;    transform: scale(1); }
 }
 
 /* ── Title ───────────────────────────────────────────────────────────────── */
@@ -244,7 +311,7 @@
     opacity: 0;
     filter: blur(14px);
     transform: scale(1.04);
-    animation: resolve 700ms 1500ms var(--ease-out) forwards;
+    animation: resolve 760ms 1760ms var(--ease-out) forwards;
 }
 
 @keyframes resolve {
@@ -261,7 +328,7 @@
     color: var(--secondary-text-color);
 
     opacity: 0;
-    animation: roleIn 520ms 1900ms var(--ease-out) forwards;
+    animation: roleIn 520ms 2180ms var(--ease-out) forwards;
 }
 
 @keyframes roleIn {
@@ -278,7 +345,7 @@
    this only matters if the panel is somehow mounted anyway - in which case it
    should sit still rather than fly. */
 @media (prefers-reduced-motion: reduce) {
-    .star, .edge, .node, .name, .role,
+    .star, .edge, .node, .nodeHalo, .chart, .name, .role, .drift,
     .curtain[data-state='flight'] .far,
     .curtain[data-state='flight'] .mid,
     .curtain[data-state='flight'] .near,

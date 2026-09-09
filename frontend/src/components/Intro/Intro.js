@@ -53,9 +53,9 @@ import styles from './Intro.module.css';
 let playedThisLoad = false;
 
 /** When the flight begins. Must match the delays in Intro.module.css. */
-const FLIGHT_AT = 2500;
+const FLIGHT_AT = 2900;
 /** Flight duration; the panel unmounts at FLIGHT_AT + FLIGHT_MS. */
-const FLIGHT_MS = 700;
+const FLIGHT_MS = 780;
 /** The shortened exit when someone skips. */
 const SKIP_MS = 220;
 
@@ -93,6 +93,60 @@ const FIGURE = [
 const EDGES = [
   [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [3, 8], [8, 6],
 ];
+
+/** When the pen starts, and how long the whole figure takes to trace. */
+const DRAW_AT = 600;
+const DRAW_MS = 1250;
+/* Each stroke starts slightly before the previous one lands. At 1.0 the pen
+ * visibly stops at every star; this keeps the trace continuous. */
+const OVERLAP = 0.86;
+
+/**
+ * Timings for the figure, derived from the geometry rather than fixed.
+ *
+ * The first version gave every edge the same 420ms and a dash pattern of 900
+ * units against edges 132 to 225 units long, so each one finished drawing in
+ * the first fifteen percent of its slot and then sat still. It read as nine
+ * lines snapping on in sequence, not as a figure being traced.
+ *
+ * Here the dash pattern is the edge's own length and the duration is
+ * proportional to it, so the pen moves at one constant speed across the whole
+ * asterism, and each stroke is scheduled to begin just before the last lands.
+ */
+const buildTiming = () => {
+  const at = (i) => [FIGURE[i][0] * 10, FIGURE[i][1] * 5.6];
+
+  const lengths = EDGES.map(([a, b]) => {
+    const [x1, y1] = at(a);
+    const [x2, y2] = at(b);
+    return Math.hypot(x2 - x1, y2 - y1);
+  });
+
+  const total = lengths.reduce((sum, l) => sum + l, 0);
+
+  let cursor = DRAW_AT;
+  const edges = lengths.map((len, i) => {
+    const dur = (len / total) * DRAW_MS;
+    const timing = { len, dur, delay: cursor };
+    cursor += dur * OVERLAP;
+    return { ...timing, pair: EDGES[i] };
+  });
+
+  /* A star lights when the pen reaches it, which is the moment the first
+     stroke touching it lands - not on a shared stagger. The origin lights as
+     the pen is set down. */
+  const nodes = FIGURE.map((_, i) => {
+    if (i === EDGES[0][0]) return DRAW_AT;
+    const arrivals = edges
+      .filter(e => e.pair.includes(i))
+      .map(e => e.delay + e.dur);
+    return arrivals.length ? Math.min(...arrivals) : DRAW_AT;
+  });
+
+  return { edges, nodes, endsAt: cursor };
+};
+
+const TIMING = buildTiming();
 
 const shouldPlay = () => {
   if (typeof window === 'undefined') return false;
@@ -218,8 +272,13 @@ const Intro = () => {
     // Decorative, and the page underneath carries all of it as real content, so
     // this is hidden from assistive tech entirely. Focus is never moved into it.
     <div className={styles.curtain} data-state={state} aria-hidden="true">
+      {/* Two nested elements per layer on purpose: the flight writes transform
+          on .layer and the dolly writes transform on .drift. On one element the
+          second animation would replace the first, snapping the layer back to
+          centre at the exact moment the flight begins. */}
       {LAYERS.map(({ key }) => (
         <div key={key} className={`${styles.layer} ${styles[key]}`}>
+          <div className={styles.drift}>
           {field.filter(s => s.layer === key).map(s => (
             <span
               key={s.id}
@@ -235,6 +294,7 @@ const Intro = () => {
               }}
             />
           ))}
+          </div>
         </div>
       ))}
 
@@ -249,18 +309,26 @@ const Intro = () => {
           fill="none"
           aria-hidden="true"
         >
-          {EDGES.map(([a, b], i) => (
+          {TIMING.edges.map(({ pair: [a, b], len, dur, delay }) => (
             <line
               key={`${a}-${b}`}
               className={styles.edge}
-              style={{ '--ei': i }}
+              style={{
+                '--len': len.toFixed(1),
+                '--dur': `${dur.toFixed(0)}ms`,
+                '--delay': `${delay.toFixed(0)}ms`,
+              }}
               x1={FIGURE[a][0] * 10} y1={FIGURE[a][1] * 5.6}
               x2={FIGURE[b][0] * 10} y2={FIGURE[b][1] * 5.6}
             />
           ))}
 
           {FIGURE.map(([x, y], i) => (
-            <g key={`${x}-${y}`} className={styles.node} style={{ '--ni': i }}>
+            <g
+              key={`${x}-${y}`}
+              className={styles.node}
+              style={{ '--delay': `${TIMING.nodes[i].toFixed(0)}ms` }}
+            >
               <circle className={styles.nodeHalo} cx={x * 10} cy={y * 5.6} r="13" />
               <circle className={styles.nodeCore} cx={x * 10} cy={y * 5.6} r="3.2" />
             </g>
