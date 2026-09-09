@@ -66,14 +66,25 @@ import styles from './Intro.module.css';
  */
 let playedThisLoad = false;
 
-/** Must match the end of the book-open in Intro.module.css. */
-const TOTAL_MS = 2460;
+/** Must match the end of the rays in Intro.module.css. */
+const TOTAL_MS = 4300;
 /** The shortened exit when someone skips. */
 const SKIP_MS = 200;
 
+/* A small screen is also the slowest device and the one most likely to be on a
+ * battery, so the ambient layers are budgeted rather than scaled. */
+const IS_SMALL = typeof window !== 'undefined' &&
+  (window.matchMedia?.('(max-width: 640px)').matches ||
+   window.matchMedia?.('(pointer: coarse)').matches);
+
 /** Embers drifting up the parchment. Enough to feel alive, few enough to stay
  *  free - each is a 3px span running one composited transform. */
-const EMBER_COUNT = 14;
+const EMBER_COUNT = IS_SMALL ? 8 : 14;
+
+/* Points of light scattered over the whole leaf, not just the card. This is
+ * what makes the opening fill the page: the card is the subject, but the
+ * parchment around it has to be alive or the viewport reads as empty margin. */
+const STAR_COUNT = IS_SMALL ? 10 : 26;
 
 /* How long to hold the sequence for the identity. Short with a warm cache -
  * only the photo is outstanding and it is almost certainly in the HTTP cache -
@@ -103,6 +114,24 @@ const buildEmbers = () =>
     drift:    `${(Math.random() - 0.5) * 90}px`,
     peak:     `${0.25 + Math.random() * 0.5}`,
   }));
+
+/* Spread over the full viewport, with the middle band thinned out so the
+ * scatter never competes with the card sitting in it. */
+const buildStars = () =>
+  Array.from({ length: STAR_COUNT }, () => {
+    let top = Math.random() * 100;
+    // Push points out of the 38-62% band where the card lives.
+    if (top > 38 && top < 62) top = top < 50 ? top - 20 : top + 20;
+    return {
+      left:     `${Math.random() * 100}%`,
+      top:      `${top}%`,
+      size:     `${1.5 + Math.random() * 2.5}px`,
+      duration: `${2600 + Math.random() * 2600}ms`,
+      delay:    `${Math.random() * 2600}ms`,
+      peak:     `${0.3 + Math.random() * 0.55}`,
+      drift:    `${(Math.random() - 0.5) * 34}px`,
+    };
+  });
 
 const Intro = () => {
   // Decided in the initialiser, not an effect, so the overlay is either in the
@@ -135,6 +164,7 @@ const Intro = () => {
 
   const timerRef = useRef(0);
   const embers = useMemo(buildEmbers, []);
+  const stars  = useMemo(buildStars, []);
 
   const finish = useCallback(() => {
     clearTimeout(timerRef.current);
@@ -269,8 +299,41 @@ const Intro = () => {
       {/* The seam of light down the fold, which flares as the book parts. */}
       <div className={styles.seam} />
 
+      {/* Rays fanning out of the opening once the halves start to part. Above
+          the leaves so the light reads as coming through the gap rather than
+          from behind the paper. */}
+      <div className={styles.rays}>
+        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+          <span key={i} className={styles.ray} style={{ '--ri': i }} />
+        ))}
+      </div>
+
       <div className={styles.stage}>
         <div className={styles.halo} />
+
+        {/* One band of light crossing the entire width of the parchment. It is
+            the beat that tells the reader the whole page is the scene, not just
+            the card in the middle of it. */}
+        <div className={styles.sweep} />
+
+        <div className={styles.constellation}>
+          {stars.map((st, i) => (
+            <span
+              key={i}
+              className={styles.star}
+              style={{
+                left:      st.left,
+                top:       st.top,
+                width:     st.size,
+                height:    st.size,
+                '--dur':   st.duration,
+                '--delay': st.delay,
+                '--peak':  st.peak,
+                '--drift': st.drift,
+              }}
+            />
+          ))}
+        </div>
 
         <div className={styles.embers}>
           {embers.map((e, i) => (
@@ -312,7 +375,23 @@ const Intro = () => {
               <span className={styles.portraitRing} />
             </div>
 
-            {name && <h1 className={styles.name}>{name}</h1>}
+            {/* Set letter by letter so the name writes itself onto the page
+                instead of arriving as a finished block. The curtain is
+                aria-hidden in full, so splitting the text costs nothing to a
+                screen reader. */}
+            {name && (
+              <h1 className={styles.name}>
+                {Array.from(name).map((ch, i) => (
+                  <span
+                    key={i}
+                    className={styles.nameChar}
+                    style={{ '--ci': i }}
+                  >
+                    {ch === ' ' ? ' ' : ch}
+                  </span>
+                ))}
+              </h1>
+            )}
 
             {/* The quill travels left to right while the rule draws behind it
                 on the same curve, so the nib stays at the leading edge of the

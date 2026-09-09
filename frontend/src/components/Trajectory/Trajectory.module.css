@@ -1,83 +1,77 @@
 /* ─── Trajectory ───────────────────────────────────────────────────────────────
-   The roadmap as a measured line: period, rail, entry. No cards.
+   The roadmap as a line that weaves down the page through every milestone.
 
-   Layout contract: every row reserves the same three columns, and the rail is
-   pinned to the middle one, so a single continuous fill can thread all of them.
-   --period-w and --rail-w are the only numbers both halves need to agree on.
+   Layout contract: the rail overlays exactly the same box as the list, so a y
+   measured against the rail is already in the SVG's coordinate space. That is
+   why .wrap carries no padding of its own - the list owns it, and .rail is
+   pinned to the wrap's edges. Break that and the curve drifts off the nodes.
 
    Motion contract: the resting styles below are the FINAL state. The animated
-   starting state only exists inside @supports (animation-timeline: view()), so
-   a browser without scroll-driven animation renders a complete, static line
+   starting state exists only inside @supports (animation-timeline: view()), so
+   a browser without scroll-driven animation renders a complete, static curve
    rather than an invisible one. */
 
 .wrap {
   --period-w: 8.5rem;
-  --rail-w: 1px;
-  --rail-col: 2.25rem;
+  --rail-col: 3.5rem;
   --node: 9px;
 
   position: relative;
-  padding: var(--spacing-sm) 0 var(--spacing-lg);
 }
 
 /* ── Rail ─────────────────────────────────────────────────────────────────── */
 
+/* Spans the full rail column, not a 1px centre line: the curve needs the width
+   to weave across. Pinned to the wrap, which is exactly the list's box. */
 .rail {
   position: absolute;
-  left: calc(var(--period-w) + var(--rail-col) / 2);
-  top: 0.75rem;
-  bottom: 1.25rem;
-  width: var(--rail-w);
+  top: 0;
+  bottom: 0;
+  left: var(--period-w);
+  width: var(--rail-col);
   pointer-events: none;
 }
 
-.railTrack,
-.railFill {
+.curve {
   position: absolute;
-  inset: 0;
-  border-radius: 1px;
-}
-
-/* The unlit track: present from the start, so the reader can see how far the
-   story runs before it has been drawn. */
-.railTrack {
-  background: linear-gradient(
-    180deg,
-    rgba(var(--accent-1-rgb), 0.05),
-    rgba(var(--accent-1-rgb), 0.16) 12%,
-    rgba(var(--accent-1-rgb), 0.16) 88%,
-    rgba(var(--accent-1-rgb), 0.05)
-  );
-}
-
-/* The lit fill. scaleY from the top is the whole animation: one composited
-   transform, no layout, no paint. */
-.railFill {
-  transform-origin: top center;
-  background: linear-gradient(
-    180deg,
-    var(--accent-3) 0%,
-    var(--accent-1) 45%,
-    var(--accent-2) 100%
-  );
-  box-shadow: 0 0 6px 0 rgba(var(--accent-2-rgb), 0.35);
-}
-
-/* The head sits at the tip of the fill and travels with it. Separate element
-   so it does not inherit the fill's vertical scale and squash. */
-.railHead {
-  position: absolute;
-  left: 50%;
   top: 0;
-  width: 5px;
-  height: 5px;
-  margin-left: -2.5px;
-  margin-top: -2.5px;
+  left: 0;
+  overflow: visible;
+}
+
+/* The unlit curve: present from the start, so the reader can see how far the
+   story runs before it has been drawn. */
+.curveTrack {
+  fill: none;
+  stroke: rgba(var(--accent-1-rgb), 0.16);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.curveFill {
+  fill: none;
+  stroke: var(--accent-1);
+  stroke-width: 2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(var(--accent-2-rgb), 0.35));
+}
+
+/* The head rides the curve itself through offset-path, so it stays on the
+   stroke rather than tracking a straight line beside it. Hidden by default:
+   without offset-path support it would otherwise sit at the rail's corner. */
+.head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--accent-2);
   box-shadow:
     0 0 0 3px rgba(var(--accent-2-rgb), 0.14),
-    0 0 10px 2px rgba(var(--accent-2-rgb), 0.45);
+    0 0 12px 2px rgba(var(--accent-2-rgb), 0.5);
+  offset-anchor: center;
+  offset-rotate: 0deg;
   opacity: 0;
 }
 
@@ -86,7 +80,8 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  /* The padding lives here, not on .wrap, so the rail and the list share a box. */
+  padding: var(--spacing-sm) 0 var(--spacing-lg);
   position: relative;
 }
 
@@ -111,7 +106,7 @@
   gap: 0.3rem;
   text-align: right;
   padding-right: var(--spacing-md);
-  padding-top: 0.1rem;
+  padding-top: 0.15rem;
 }
 
 .periodText {
@@ -134,35 +129,30 @@
 
 /* ── Node column ─────────────────────────────────────────────────────────── */
 
+/**
+ * A fixed height aligned to the first line of the entry, rather than stretching
+ * to the row: the node should sit against the title, and a tall row would drag
+ * a stretched cell's centre well below it. The component measures this box, so
+ * its height is also what decides where the curve passes.
+ */
 .nodeCell {
   position: relative;
   display: block;
-  height: 100%;
-  min-height: var(--node);
+  align-self: start;
+  height: 1.9rem;
 }
 
-/* A short measurement tick reaching from the rail toward the entry. It reads
-   as an instrument scale rather than a bullet, which is the point: the same
-   dot-and-card timeline is on every portfolio. */
-.tick {
-  position: absolute;
-  left: calc(var(--rail-col) / 2);
-  top: calc(0.75rem + var(--node) / 2);
-  width: calc(var(--rail-col) / 2 - 2px);
-  height: 1px;
-  background: rgba(var(--accent-1-rgb), 0.28);
-  transform-origin: left center;
-}
-
+/* `left` is set inline from the measured curve, so the dot sits on the stroke
+   wherever the weave has put it at that height. */
 .node {
   position: absolute;
-  left: calc(var(--rail-col) / 2);
-  top: 0.75rem;
+  top: 50%;
+  left: 50%;
   width: var(--node);
   height: var(--node);
-  margin-left: calc(var(--node) / -2);
   border-radius: 50%;
-  /* The page-coloured ring punches a clean gap through the rail behind it. */
+  transform: translate(-50%, -50%);
+  /* The page-coloured ring punches a clean gap through the curve behind it. */
   background: var(--background-0);
   box-shadow: 0 0 0 1px rgba(var(--accent-1-rgb), 0.45);
   display: grid;
@@ -202,13 +192,14 @@
 
 .entryTitle {
   position: relative;
-  font-family: var(--font-serif, Georgia, 'Times New Roman', serif);
+  font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
   font-size: var(--font-size-md);
   line-height: 1.3;
   color: var(--primary-text-color);
   display: inline-flex;
   align-items: baseline;
   gap: 0.4rem;
+  transition: color var(--dur-hover) var(--ease-out);
 }
 
 /* The affordance is an underline that grows from the left, not a border that
@@ -246,11 +237,11 @@
 
 @media (hover: hover) and (pointer: fine) {
   .entry:hover:not(:disabled) .entryTitle::after { transform: scaleX(1); }
+  .entry:hover:not(:disabled) .entryTitle { color: var(--accent-1); }
   .entry:hover:not(:disabled) .entryArrow {
     opacity: 1;
     transform: translate(0, 0);
   }
-  .entry:hover:not(:disabled) .entryTitle { color: var(--accent-1); }
 }
 
 .entry:focus-visible {
@@ -261,12 +252,6 @@
 
 .entry:focus-visible .entryTitle::after { transform: scaleX(1); }
 .entry:focus-visible .entryArrow { opacity: 1; transform: translate(0, 0); }
-
-/* Press feedback: the row answers in the frame it is pressed. */
-.entry:active:not(:disabled) .entryTitle {
-  transform: scale(0.99);
-  transition: transform var(--dur-press) var(--ease-out);
-}
 
 .empty {
   margin: 0;
@@ -279,7 +264,7 @@
 /* ─── Scroll-driven motion ─────────────────────────────────────────────────
    Everything above renders the finished state. This block, and only this
    block, introduces the pre-animation state, so an unsupporting browser is
-   never left with an invisible line. */
+   never left with an undrawn curve. */
 
 @supports (animation-timeline: view()) {
   /* Declared on the wrap, not the list: a timeline name is in scope for the
@@ -290,39 +275,20 @@
     view-timeline-axis: block;
   }
 
-  .wrap[data-scrubbed='true'] .railFill {
-    transform: scaleY(0);
-    animation: railGrow linear both;
+  /* pathLength="1" on the path makes the dash arithmetic independent of how
+     long the measured curve actually is. */
+  .wrap[data-scrubbed='true'][data-measured='true'] .curveFill {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: curveDraw linear both;
     animation-timeline: --trajectory;
-    /* Starts once the section is meaningfully on screen and completes before
-       it leaves, so the line is never still growing after the last row has
-       been read. */
+    /* Starts once the section is meaningfully on screen and completes before it
+       leaves, so the line is never still drawing after the last row is read. */
     animation-range: entry 85% exit 25%;
   }
 
-  .wrap[data-scrubbed='true'] .railHead {
-    animation: headTravel linear both, headFade linear both;
-    animation-timeline: --trajectory, --trajectory;
-    animation-range: entry 85% exit 25%, entry 85% entry 100%;
-  }
-
-  @keyframes railGrow {
-    from { transform: scaleY(0); }
-    to   { transform: scaleY(1); }
-  }
-
-  /* Percentage translate resolves against the dot's own 5px box, and animating
-     `top` would hit layout on every frame. --rail-h is published in pixels by
-     a ResizeObserver in the component, which keeps this a plain composited
-     transform. */
-  @keyframes headTravel {
-    from { transform: translateY(0); }
-    to   { transform: translateY(var(--rail-h, 0px)); }
-  }
-
-  @keyframes headFade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+  @keyframes curveDraw {
+    to { stroke-dashoffset: 0; }
   }
 
   /* Each node ignites on its own view timeline as it comes up the viewport. */
@@ -337,16 +303,27 @@
   @keyframes ignite {
     to { transform: scale(1); opacity: 1; }
   }
+}
 
-  .wrap[data-scrubbed='true'] .tick {
-    transform: scaleX(0);
-    animation: tickOut linear both;
-    animation-timeline: view();
-    animation-range: entry 60% entry 100%;
+/* offset-path is what keeps the head on the curve. Kept in its own @supports so
+   a browser with scroll timelines but no offset-path draws the line without a
+   head, rather than parking a glowing dot in the corner. */
+@supports (animation-timeline: view()) and (offset-path: path("M 0 0 L 1 1")) {
+  .wrap[data-scrubbed='true'][data-measured='true'] .head {
+    offset-distance: 0%;
+    animation: headRide linear both, headFade linear both;
+    animation-timeline: --trajectory, --trajectory;
+    animation-range: entry 85% exit 25%, entry 85% entry 100%;
   }
 
-  @keyframes tickOut {
-    to { transform: scaleX(1); }
+  @keyframes headRide {
+    from { offset-distance: 0%; }
+    to   { offset-distance: 100%; }
+  }
+
+  @keyframes headFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 }
 
@@ -368,46 +345,48 @@
 }
 
 /* ─── Reduced motion ──────────────────────────────────────────────────────
-   Reduced does not mean absent: the line and the nodes stay drawn, they just
+   Reduced does not mean absent: the curve and the nodes stay drawn, they just
    stop being tied to the scroll position. */
 
 @media (prefers-reduced-motion: reduce) {
-  .railFill,
-  .railHead,
+  .curveFill,
+  .head,
   .nodeCore,
-  .tick,
   .item {
     animation: none !important;
     transition: none !important;
-    transform: none !important;
     opacity: 1 !important;
   }
-  .railHead { display: none; }
-  .railFill { transform: scaleY(1) !important; }
+  .curveFill { stroke-dashoffset: 0 !important; }
+  .nodeCore { transform: none !important; }
+  .item { transform: none !important; }
+  .head { display: none; }
 }
 
-:global(html[data-no-animations='true']) .railFill,
-:global(html[data-no-animations='true']) .railHead,
+:global(html[data-no-animations='true']) .curveFill,
+:global(html[data-no-animations='true']) .head,
 :global(html[data-no-animations='true']) .nodeCore,
-:global(html[data-no-animations='true']) .tick,
 :global(html[data-no-animations='true']) .item {
   animation: none !important;
   transition: none !important;
-  transform: none !important;
   opacity: 1 !important;
 }
 
-:global(html[data-no-animations='true']) .railHead { display: none; }
-:global(html[data-no-animations='true']) .railFill { transform: scaleY(1) !important; }
+:global(html[data-no-animations='true']) .curveFill { stroke-dashoffset: 0 !important; }
+:global(html[data-no-animations='true']) .nodeCore { transform: none !important; }
+:global(html[data-no-animations='true']) .item { transform: none !important; }
+:global(html[data-no-animations='true']) .head { display: none; }
 
 /* ─── Narrow screens ──────────────────────────────────────────────────────
-   The period moves above the title and the rail hugs the left edge, so the
-   entry keeps its full measure instead of being squeezed into a third column. */
+   The period moves above the title and the rail narrows, so the entry keeps
+   its full measure instead of being squeezed into a third column. The weave
+   amplitude is a fraction of the rail width, so it scales with this on its
+   own - no second number to keep in step. */
 
 @media (max-width: 640px) {
   .wrap {
     --period-w: 0px;
-    --rail-col: 1.5rem;
+    --rail-col: 2rem;
   }
 
   .item {
@@ -425,9 +404,9 @@
     gap: var(--spacing-sm);
     text-align: left;
     padding-right: 0;
+    padding-top: 0;
   }
 
-  .nodeCell { grid-area: node; }
+  .nodeCell { grid-area: node; height: 1.5rem; }
   .entry { grid-area: entry; }
-  .tick { display: none; }
 }

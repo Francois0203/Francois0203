@@ -4,22 +4,30 @@
  * starts when `.started` lands - see the gate in Intro.js. All the times below
  * are relative to that.
  *
- *      0 ─ ∞      halo breathes, embers drift          (from mount)
+ *      0 ─ ∞      halo breathes, embers drift, stars twinkle   (from mount)
  * ── .started ────────────────────────────────────────────────────────────────
- *     40 ─  560   portrait settles in, unblurring
- *    300 ─  700   name rises beneath it
- *    620 ─ 1220   quill travels and signs a rule under the name
- *   1160 ─ 1460   title rises
- *   1460 ─ 1720   HOLD - the finished card simply sits there
- *   1600 ─ 2160   seam of light flares along the fold
- *   1700 ─ 1860   card fades, so it is gone before the leaf moves
- *   1780 ─ 2420   the leaf splits and swings open in perspective
- *   2460          unmounts (TOTAL_MS in Intro.js - keep the two in step)
+ *      0 ─ 1600   a band of light sweeps the full width of the parchment
+ *     60 ─  620   portrait settles in, unblurring
+ *    420 ─ 1180   the name is set letter by letter beneath it
+ *    480 ─ 1700   quill travels and signs a rule under the name
+ *   1760 ─ 2140   title rises
+ *   2140 ─ 2900   HOLD - the finished card simply sits there
+ *   2400 ─ 3400   a slow gilding shimmer crosses the card
+ *   2900 ─ 3600   seam of light flares along the fold
+ *   3080 ─ 3320   card fades, so it is gone before the leaf moves
+ *   3200 ─ 4200   the leaf splits and swings open in perspective
+ *   3300 ─ 4300   rays fan out of the opening across the whole viewport
+ *   4300          unmounts (TOTAL_MS in Intro.js - keep the two in step)
+ *
+ * The ambient layers - stars, embers, sweep - are deliberately spread over the
+ * entire viewport rather than around the card. The card is the subject, but if
+ * only the middle of the screen moves the rest reads as dead margin.
  *
  * Layer stack (back → front):
  *   z:0  .leaf ×2   the parchment, in two halves
  *   z:1  .seam      light along the fold
- *   z:2  .stage     halo, embers, and the card printed on the leaf
+ *   z:1  .rays      light through the opening
+ *   z:2  .stage     halo, embers, stars, sweep, and the card
  *
  * Every animated property is transform, opacity or filter. Nothing here touches
  * layout, so the whole sequence composites and none of it competes with the
@@ -79,8 +87,8 @@
 
 /* Gated on .started, so the book cannot begin opening while the card is still
    waiting on the name. */
-.started .leafLeft  { animation: openLeft  640ms 1780ms var(--ease-emph) forwards; }
-.started .leafRight { animation: openRight 640ms 1780ms var(--ease-emph) forwards; }
+.started .leafLeft  { animation: openLeft  1000ms 3200ms var(--ease-emph) forwards; }
+.started .leafRight { animation: openRight 1000ms 3200ms var(--ease-emph) forwards; }
 
 /* The shading on the fold is what sells it as paper with a spine. A flat colour
    rotating in perspective reads as a sliding panel; a gradient that darkens
@@ -141,7 +149,7 @@
     opacity: 0;
 }
 
-.started .seam { animation: seamFlare 560ms 1600ms var(--ease-out) forwards; }
+.started .seam { animation: seamFlare 700ms 2900ms var(--ease-out) forwards; }
 
 @keyframes seamFlare {
     0%   { opacity: 0;    transform: scaleX(1); filter: blur(0px); }
@@ -183,7 +191,7 @@
     );
     opacity: 0;
     transform: scale(0.74);
-    animation: haloBreathe 3000ms linear forwards;
+    animation: haloBreathe 4600ms linear forwards;
 }
 
 @keyframes haloBreathe {
@@ -241,7 +249,7 @@
     gap: var(--spacing-md);
     padding: 0 var(--spacing-lg);
     text-align: center;
-    animation: cardOut 160ms 1700ms var(--ease-out) forwards;
+    animation: cardOut 240ms 3080ms var(--ease-out) forwards;
 }
 
 @keyframes cardOut {
@@ -269,7 +277,7 @@
     opacity: 0;
     transform: scale(0.88) translateY(10px);
     filter: blur(6px);
-    animation: portraitIn 520ms 40ms var(--ease-out) forwards;
+    animation: portraitIn 560ms 60ms var(--ease-out) forwards;
 }
 
 @keyframes portraitIn {
@@ -345,10 +353,26 @@
     color: var(--primary-text-color);
     text-wrap: balance;
 
+    /* The block itself no longer animates - each letter does, below - so it
+       must not carry an opacity of its own or the two would multiply. */
+    opacity: 1;
+}
+
+/**
+ * Set letter by letter. 26ms apart: enough to read as writing rather than as a
+ * block arriving, short enough that a long name still finishes inside its beat.
+ * A twelve-character name lands its last letter at 420 + 286 + 460 = 1166ms.
+ *
+ * inline-block because a transform has no effect on an inline box, and the
+ * whitespace characters are non-breaking so the words keep their gaps.
+ */
+.nameChar {
+    display: inline-block;
     opacity: 0;
-    transform: translateY(14px);
-    filter: blur(4px);
-    animation: nameIn 400ms 300ms var(--ease-out) forwards;
+    transform: translateY(16px);
+    filter: blur(5px);
+    animation: nameIn 460ms var(--ease-out) forwards;
+    animation-delay: calc(420ms + var(--ci, 0) * 26ms);
 }
 
 @keyframes nameIn {
@@ -394,7 +418,7 @@
     );
     transform: scaleX(0);
     transform-origin: left center;
-    animation: draw 600ms 620ms var(--ease-in-out) forwards;
+    animation: draw 900ms 800ms var(--ease-in-out) forwards;
 }
 
 @keyframes draw {
@@ -408,7 +432,7 @@
     position: absolute;
     left: 0;
     bottom: 0;
-    animation: travel 600ms 620ms var(--ease-in-out) forwards;
+    animation: travel 900ms 800ms var(--ease-in-out) forwards;
 }
 
 @keyframes travel {
@@ -422,10 +446,10 @@
  * and a separate exit: percentages of a single 940ms run, so the states cannot
  * drift apart when the timeline is retuned.
  *
- *    0%  (280ms)   below the line, blurred - coming into focus, not popping in
- *   36%  (620ms)   landed, ready to write
- *   99%  (1210ms)  stroke complete
- *  100%  (1220ms)  lifted off the page
+ *    0%  (480ms)   below the line, blurred - coming into focus, not popping in
+ *   23%  (800ms)   landed, ready to write
+ *   99%  (1690ms)  stroke complete
+ *  100%  (1700ms)  lifted off the page
  */
 .quill {
     display: block;
@@ -434,13 +458,13 @@
     margin-bottom: 2px;
     color: var(--accent-1);
     filter: drop-shadow(0 2px 6px rgba(var(--accent-1-rgb), 0.35));
-    animation: quillLife 940ms 280ms var(--ease-out) forwards;
+    animation: quillLife 1420ms 480ms var(--ease-out) forwards;
 }
 
 @keyframes quillLife {
     0%   { opacity: 0; transform: translateY(16px)  rotate(-14deg) scale(0.92); }
-    36%  { opacity: 1; transform: translateY(0)     rotate(-8deg)  scale(1); }
-    88%  { opacity: 1; transform: translateY(0)     rotate(-8deg)  scale(1); }
+    23%  { opacity: 1; transform: translateY(0)     rotate(-8deg)  scale(1); }
+    94%  { opacity: 1; transform: translateY(0)     rotate(-8deg)  scale(1); }
     100% { opacity: 0; transform: translateY(-20px) rotate(4deg)   scale(1.04); }
 }
 
@@ -460,11 +484,176 @@
 
     opacity: 0;
     transform: translateY(10px);
-    animation: titleIn 300ms 1160ms var(--ease-out) forwards;
+    animation: titleIn 380ms 1760ms var(--ease-out) forwards;
 }
 
 @keyframes titleIn {
     to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Full-page layers ─────────────────────────────────────────────────────
+ *
+ * These three exist to make the opening belong to the whole viewport. The card
+ * is the subject, but a scene where only the middle 400px moves reads as a
+ * dialog on a blank background, which is exactly the "generic" failure.
+ *
+ * All three are transform and opacity only, and all three are budgeted: the
+ * star count halves on a small screen, the rays are a fixed seven, and the
+ * sweep is a single element. Nothing here scales with content.
+ */
+
+/* ── The sweep: one band of light crossing the full width ────────────────── */
+
+/**
+ * A wide, soft diagonal band that travels the entire parchment once, early,
+ * while the portrait is still settling. It is the first thing that tells the
+ * reader how big the stage is.
+ *
+ * 140% wide and translated by its own width, so it is fully off one edge at
+ * each end regardless of viewport - a pixel distance would leave a visible
+ * rectangle parked on an ultrawide monitor.
+ */
+.sweep {
+    position: absolute;
+    top: -20%;
+    left: 0;
+    width: 140%;
+    height: 140%;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0) rotate(-12deg);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--accent-2-rgb), 0.00) 38%,
+        rgba(var(--accent-2-rgb), 0.13) 50%,
+        rgba(var(--accent-2-rgb), 0.00) 62%,
+        transparent 100%
+    );
+}
+
+.started .sweep { animation: sweepAcross 1600ms 0ms var(--ease-in-out) forwards; }
+
+@keyframes sweepAcross {
+    0%   { opacity: 0;    transform: translate3d(-100%, 0, 0) rotate(-12deg); }
+    18%  { opacity: 1; }
+    82%  { opacity: 1; }
+    100% { opacity: 0;    transform: translate3d(100%, 0, 0)  rotate(-12deg); }
+}
+
+/* A second, much slower pass over the card only, late in the hold. The card has
+   been finished and still for 300ms by then, and a gilding shimmer is what
+   stops that hold reading as the animation having stalled. */
+.started .card::after {
+    content: '';
+    position: absolute;
+    inset: -8% -20%;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(
+        104deg,
+        transparent 42%,
+        rgba(var(--accent-2-rgb), 0.16) 50%,
+        transparent 58%
+    );
+    opacity: 0;
+    transform: translate3d(-60%, 0, 0);
+    animation: gild 1000ms 2400ms var(--ease-in-out) forwards;
+}
+
+@keyframes gild {
+    0%   { opacity: 0; transform: translate3d(-60%, 0, 0); }
+    30%  { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; transform: translate3d(60%, 0, 0); }
+}
+
+/* ── The constellation: points of light over the whole leaf ──────────────── */
+
+.constellation {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/**
+ * Each star drifts and breathes on its own loop. Randomised duration, delay and
+ * peak per point, from buildStars in Intro.js - shared values would beat in
+ * unison and read as one blinking grid rather than as scatter.
+ */
+.star {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(var(--accent-2-rgb), 0.9);
+    box-shadow: 0 0 6px 1px rgba(var(--accent-2-rgb), 0.45);
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: twinkle var(--dur, 3200ms) var(--delay, 0ms) ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%   { opacity: 0;               transform: translate3d(0, 0, 0) scale(0.6); }
+    50%  { opacity: var(--peak, 0.5); transform: translate3d(var(--drift, 0), -6px, 0) scale(1); }
+    100% { opacity: 0;               transform: translate3d(0, -12px, 0) scale(0.6); }
+}
+
+/* ── The rays: light through the opening ─────────────────────────────────── */
+
+/**
+ * Seven blades fanning from the fold as the halves part, sitting above the
+ * leaves so the light reads as coming through the gap. They outlive the leaves
+ * by 100ms, which is the whole reason TOTAL_MS is 4300 and not 4200: the last
+ * thing the reader sees is light, not a page edge leaving the frame.
+ */
+.rays {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.ray {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 150vmax;
+    margin-left: -1px;
+    transform-origin: center center;
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(var(--accent-2-rgb), 0.30) 35%,
+        rgba(var(--accent-2-rgb), 0.30) 65%,
+        transparent 100%
+    );
+    filter: blur(1px);
+    opacity: 0;
+    /* -45deg to 45deg across the seven blades, fanned around the fold. */
+    transform: translate(-50%, -50%) rotate(calc(-45deg + var(--ri, 0) * 15deg)) scaleY(0.2);
+}
+
+.started .ray {
+    animation: rayOut 1000ms var(--ease-out) forwards;
+    /* Staggered from the centre outward, so the fan opens rather than flashing. */
+    animation-delay: calc(3300ms + var(--ri, 0) * 40ms);
+}
+
+@keyframes rayOut {
+    0%   { opacity: 0;    transform: translate(-50%, -50%) rotate(calc(-45deg + var(--ri, 0) * 15deg)) scaleY(0.2); }
+    40%  { opacity: 0.85; }
+    100% { opacity: 0;    transform: translate(-50%, -50%) rotate(calc(-45deg + var(--ri, 0) * 15deg)) scaleY(1.6); }
+}
+
+/* Small screens: the sweep and the rays are the two that cost real fill rate on
+   a phone GPU, and both are the least legible there. The stars and the card
+   carry the scene on their own. */
+@media (max-width: 640px) {
+    .sweep { display: none; }
+    .ray:nth-child(n + 4) { display: none; }
+    .started .card::after { display: none; }
 }
 
 /* ── Skip ────────────────────────────────────────────────────────────────── */
