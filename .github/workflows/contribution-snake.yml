@@ -1,11 +1,16 @@
-# Renders the contribution graph as an animated SVG (a snake eating the dots)
-# and pushes it to the `output` branch, which the README reads from. Runs on a
-# schedule so the animation stays current without touching `main`.
-name: Contribution snake
+# Renders the contribution graph as animated SVGs and pushes them to the
+# `output` branch, which the README reads from. Runs on a schedule so the
+# graphics stay current without touching `main`.
+#
+# Everything the README shows is generated here and committed. That is
+# deliberate: the popular third-party card services (github-readme-stats,
+# github-readme-activity-graph) are rate-limited or out of quota often enough
+# that the profile ends up showing broken images.
+name: Contribution graphics
 
 on:
   schedule:
-    # Daily at 00:20 UTC — after GitHub has settled the previous day's contributions.
+    # Daily at 00:20 UTC, after GitHub has settled the previous day.
     - cron: '20 0 * * *'
   workflow_dispatch:
   push:
@@ -13,7 +18,7 @@ on:
 
 # Cancel an in-flight run when a newer one starts; only the latest matters.
 concurrency:
-  group: contribution-snake
+  group: contribution-graphics
   cancel-in-progress: true
 
 jobs:
@@ -23,16 +28,29 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       # Two variants, coloured with the site's own tokens (Theme.css), so the
       # README's <picture> can switch them with the viewer's GitHub theme.
-      - name: Generate animated graph
+      - name: Generate the contribution snake
         uses: Platane/snk@v3
-        id: snake
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
             dist/snake-light.svg?color_snake=%237a3e10&color_dots=%23f2e3c4,%23f5b56b,%23e07b1f,%23b8651c,%237a3e10
             dist/snake-dark.svg?color_snake=%23f5b56b&color_dots=%231c1208,%237a3e10,%23c47020,%23e89542,%23f5b56b
+
+      # Adds activity-{light,dark}.svg and stats-{light,dark}.svg alongside it.
+      - name: Render the weekly chart and stats strip
+        run: node .github/scripts/render-activity.mjs
+        env:
+          GITHUB_USER: ${{ github.repository_owner }}
 
       - name: Publish to the output branch
         uses: crazy-max/ghaction-github-pages@v4
