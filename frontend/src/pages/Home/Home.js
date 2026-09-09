@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MdArrowOutward, MdCode, MdEmail,
-  MdAutoStories, MdMenuBook, MdWork, MdSchool,
+  MdAutoStories, MdMenuBook,
 } from 'react-icons/md';
 import { FaGithub, FaLinkedin, FaLeaf, FaFeatherAlt } from 'react-icons/fa';
 import usePortfolioData from '../../hooks/usePortfolioData';
@@ -11,6 +11,7 @@ import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
 import useStudioSites from '../../hooks/useStudioSites';
 import { Modal, ShimmerButton, CursorGlowButton, GlowBorderButton, SiteShowcase } from '../../components';
+import Trajectory from '../../components/Trajectory';
 import styles from './Home.module.css';
 
 // Evaluated once at module load - avoids React overhead and is stable
@@ -117,59 +118,6 @@ const WordReveal = ({ text, inView, className, delay = 0 }) => {
         </span>
       ))}
     </span>
-  );
-};
-
-/* ─── Journey milestones ───────────────────────────────────────────────────── */
-
-// Vertical timeline. The connecting spine is drawn in CSS from the dot column,
-// so it always lines up with the dots no matter how many milestones there are.
-const Journey = ({ stops, onSelect }) => {
-  const [ref, inView] = useInView(0.15);
-  return (
-    <div ref={ref} className={`${styles.journey} ${inView ? styles.journeyVisible : ''}`}>
-      {stops.length === 0 ? (
-        <p className={styles.journeyEmpty}>The journey is being written…</p>
-      ) : (
-        <ol className={styles.journeyList}>
-          {stops.map((s, i) => {
-            const isEdu = s.kind === 'education';
-            const Icon  = isEdu ? MdSchool : MdWork;
-            return (
-              <li key={s.id ?? i} className={styles.journeyItem} style={{ '--ji': i }}>
-                <span className={styles.journeyDot} aria-hidden="true">
-                  <Icon className={styles.journeyDotIcon} />
-                  {/* Pulse only on the newest stop - on every dot it was just noise. */}
-                  {i === 0 && <span className={styles.journeyDotPulse} />}
-                </span>
-
-                {/* The whole card is the control: the lede invites you to press a
-                    milestone, and a 28px dot was far too small a target. */}
-                <button
-                  type="button"
-                  className={styles.journeyCard}
-                  onClick={() => onSelect(s)}
-                >
-                  <span className={styles.journeyMeta}>
-                    <span className={styles.journeyPeriod}>{s.period ?? '—'}</span>
-                    <span className={styles.journeyKind}>
-                      {isEdu ? 'Education' : 'Experience'}
-                    </span>
-                  </span>
-                  <span className={styles.journeyTitle}>{s.title}</span>
-                  {s.subtitle && (
-                    <span className={styles.journeySubtitle}>{s.subtitle}</span>
-                  )}
-                  <span className={styles.journeyMore}>
-                    Read this page <MdArrowOutward aria-hidden="true" />
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      )}
-    </div>
   );
 };
 
@@ -537,13 +485,20 @@ const Home = () => {
         </div>
 
         {loading
-          ? <div className={styles.journeySkel}>{[0, 1, 2].map(i => (
-              <div key={i} className={styles.journeySkelRow}>
-                <span className={styles.journeySkelDot} />
-                <span className={styles.journeySkelCard} />
+          ? <div className={styles.trajectorySkel}>{[0, 1, 2, 4].map(i => (
+              <div key={i} className={styles.trajectorySkelRow}>
+                <span className={styles.trajectorySkelPeriod} />
+                <span className={styles.trajectorySkelNode} />
+                <span className={styles.trajectorySkelText} />
               </div>
             ))}</div>
-          : <Journey stops={journey} onSelect={setOpenMilestone} />
+          : (
+            <Trajectory
+              stops={journey}
+              onSelect={setOpenMilestone}
+              emptyText={t.journeyEmpty ?? 'The journey is being written.'}
+            />
+          )
         }
       </div>
       </div>

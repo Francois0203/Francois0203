@@ -1,0 +1,433 @@
+/* ─── Trajectory ───────────────────────────────────────────────────────────────
+   The roadmap as a measured line: period, rail, entry. No cards.
+
+   Layout contract: every row reserves the same three columns, and the rail is
+   pinned to the middle one, so a single continuous fill can thread all of them.
+   --period-w and --rail-w are the only numbers both halves need to agree on.
+
+   Motion contract: the resting styles below are the FINAL state. The animated
+   starting state only exists inside @supports (animation-timeline: view()), so
+   a browser without scroll-driven animation renders a complete, static line
+   rather than an invisible one. */
+
+.wrap {
+  --period-w: 8.5rem;
+  --rail-w: 1px;
+  --rail-col: 2.25rem;
+  --node: 9px;
+
+  position: relative;
+  padding: var(--spacing-sm) 0 var(--spacing-lg);
+}
+
+/* ── Rail ─────────────────────────────────────────────────────────────────── */
+
+.rail {
+  position: absolute;
+  left: calc(var(--period-w) + var(--rail-col) / 2);
+  top: 0.75rem;
+  bottom: 1.25rem;
+  width: var(--rail-w);
+  pointer-events: none;
+}
+
+.railTrack,
+.railFill {
+  position: absolute;
+  inset: 0;
+  border-radius: 1px;
+}
+
+/* The unlit track: present from the start, so the reader can see how far the
+   story runs before it has been drawn. */
+.railTrack {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--accent-1-rgb), 0.05),
+    rgba(var(--accent-1-rgb), 0.16) 12%,
+    rgba(var(--accent-1-rgb), 0.16) 88%,
+    rgba(var(--accent-1-rgb), 0.05)
+  );
+}
+
+/* The lit fill. scaleY from the top is the whole animation: one composited
+   transform, no layout, no paint. */
+.railFill {
+  transform-origin: top center;
+  background: linear-gradient(
+    180deg,
+    var(--accent-3) 0%,
+    var(--accent-1) 45%,
+    var(--accent-2) 100%
+  );
+  box-shadow: 0 0 6px 0 rgba(var(--accent-2-rgb), 0.35);
+}
+
+/* The head sits at the tip of the fill and travels with it. Separate element
+   so it does not inherit the fill's vertical scale and squash. */
+.railHead {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow:
+    0 0 0 3px rgba(var(--accent-2-rgb), 0.14),
+    0 0 10px 2px rgba(var(--accent-2-rgb), 0.45);
+  opacity: 0;
+}
+
+/* ── Rows ─────────────────────────────────────────────────────────────────── */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: var(--period-w) var(--rail-col) minmax(0, 1fr);
+  align-items: start;
+  padding: var(--spacing-md) 0;
+}
+
+/* A hairline between rows instead of a box around each one. */
+.item + .item {
+  border-top: 1px solid rgba(var(--accent-1-rgb), 0.10);
+}
+
+/* ── Period column ───────────────────────────────────────────────────────── */
+
+.period {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: right;
+  padding-right: var(--spacing-md);
+  padding-top: 0.1rem;
+}
+
+.periodText {
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: var(--secondary-text-color);
+  white-space: nowrap;
+}
+
+.kind {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.kindEdu { color: rgba(var(--accent-3-rgb), 0.85); }
+.kindWork { color: rgba(var(--accent-1-rgb), 0.9); }
+
+/* ── Node column ─────────────────────────────────────────────────────────── */
+
+.nodeCell {
+  position: relative;
+  display: block;
+  height: 100%;
+  min-height: var(--node);
+}
+
+/* A short measurement tick reaching from the rail toward the entry. It reads
+   as an instrument scale rather than a bullet, which is the point: the same
+   dot-and-card timeline is on every portfolio. */
+.tick {
+  position: absolute;
+  left: calc(var(--rail-col) / 2);
+  top: calc(0.75rem + var(--node) / 2);
+  width: calc(var(--rail-col) / 2 - 2px);
+  height: 1px;
+  background: rgba(var(--accent-1-rgb), 0.28);
+  transform-origin: left center;
+}
+
+.node {
+  position: absolute;
+  left: calc(var(--rail-col) / 2);
+  top: 0.75rem;
+  width: var(--node);
+  height: var(--node);
+  margin-left: calc(var(--node) / -2);
+  border-radius: 50%;
+  /* The page-coloured ring punches a clean gap through the rail behind it. */
+  background: var(--background-0);
+  box-shadow: 0 0 0 1px rgba(var(--accent-1-rgb), 0.45);
+  display: grid;
+  place-items: center;
+}
+
+.nodeCore {
+  width: calc(var(--node) - 4px);
+  height: calc(var(--node) - 4px);
+  border-radius: 50%;
+  background: var(--accent-1);
+}
+
+/* ── Entry column ────────────────────────────────────────────────────────── */
+
+/* Overrides the global <button> chrome: this is a left-aligned block of text,
+   not a centred pill. */
+.entry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  text-align: left;
+  white-space: normal;
+  font: inherit;
+  letter-spacing: normal;
+  color: inherit;
+  cursor: pointer;
+}
+
+.entry:disabled { cursor: default; }
+
+.entryTitle {
+  position: relative;
+  font-family: var(--font-serif, Georgia, 'Times New Roman', serif);
+  font-size: var(--font-size-md);
+  line-height: 1.3;
+  color: var(--primary-text-color);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+/* The affordance is an underline that grows from the left, not a border that
+   lights up around a card. scaleX on a pseudo-element keeps it composited. */
+.entryTitle::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: rgba(var(--accent-1-rgb), 0.55);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-hover) var(--ease-out);
+}
+
+.entryArrow {
+  width: 0.75em;
+  height: 0.75em;
+  flex: none;
+  color: var(--accent-1);
+  opacity: 0;
+  transform: translate(-2px, 2px);
+  transition:
+    opacity var(--dur-hover) var(--ease-out),
+    transform var(--dur-hover) var(--ease-out);
+}
+
+.entrySub {
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  line-height: 1.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .entry:hover:not(:disabled) .entryTitle::after { transform: scaleX(1); }
+  .entry:hover:not(:disabled) .entryArrow {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  .entry:hover:not(:disabled) .entryTitle { color: var(--accent-1); }
+}
+
+.entry:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.entry:focus-visible .entryTitle::after { transform: scaleX(1); }
+.entry:focus-visible .entryArrow { opacity: 1; transform: translate(0, 0); }
+
+/* Press feedback: the row answers in the frame it is pressed. */
+.entry:active:not(:disabled) .entryTitle {
+  transform: scale(0.99);
+  transition: transform var(--dur-press) var(--ease-out);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--spacing-lg) 0;
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+  font-style: italic;
+}
+
+/* ─── Scroll-driven motion ─────────────────────────────────────────────────
+   Everything above renders the finished state. This block, and only this
+   block, introduces the pre-animation state, so an unsupporting browser is
+   never left with an invisible line. */
+
+@supports (animation-timeline: view()) {
+  /* Declared on the wrap, not the list: a timeline name is in scope for the
+     declaring element's descendants, and the rail is a preceding sibling of
+     the list, so naming it on the list would put the rail out of scope. */
+  .wrap[data-scrubbed='true'] {
+    view-timeline-name: --trajectory;
+    view-timeline-axis: block;
+  }
+
+  .wrap[data-scrubbed='true'] .railFill {
+    transform: scaleY(0);
+    animation: railGrow linear both;
+    animation-timeline: --trajectory;
+    /* Starts once the section is meaningfully on screen and completes before
+       it leaves, so the line is never still growing after the last row has
+       been read. */
+    animation-range: entry 85% exit 25%;
+  }
+
+  .wrap[data-scrubbed='true'] .railHead {
+    animation: headTravel linear both, headFade linear both;
+    animation-timeline: --trajectory, --trajectory;
+    animation-range: entry 85% exit 25%, entry 85% entry 100%;
+  }
+
+  @keyframes railGrow {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+
+  /* Percentage translate resolves against the dot's own 5px box, and animating
+     `top` would hit layout on every frame. --rail-h is published in pixels by
+     a ResizeObserver in the component, which keeps this a plain composited
+     transform. */
+  @keyframes headTravel {
+    from { transform: translateY(0); }
+    to   { transform: translateY(var(--rail-h, 0px)); }
+  }
+
+  @keyframes headFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Each node ignites on its own view timeline as it comes up the viewport. */
+  .wrap[data-scrubbed='true'] .nodeCore {
+    transform: scale(0.35);
+    opacity: 0.25;
+    animation: ignite linear both;
+    animation-timeline: view();
+    animation-range: entry 60% entry 95%;
+  }
+
+  @keyframes ignite {
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .wrap[data-scrubbed='true'] .tick {
+    transform: scaleX(0);
+    animation: tickOut linear both;
+    animation-timeline: view();
+    animation-range: entry 60% entry 100%;
+  }
+
+  @keyframes tickOut {
+    to { transform: scaleX(1); }
+  }
+}
+
+/* ─── Fallback reveal ──────────────────────────────────────────────────────
+   Only used when scroll-driven animation is unavailable, in which case the
+   component sets data-scrubbed="false" and drives this from one observer. */
+
+.wrap[data-scrubbed='false'] .item {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.45s var(--ease-out) calc(var(--i, 0) * 60ms),
+    transform 0.45s var(--ease-out) calc(var(--i, 0) * 60ms);
+}
+
+.wrap[data-scrubbed='false'][data-shown='true'] .item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Reduced motion ──────────────────────────────────────────────────────
+   Reduced does not mean absent: the line and the nodes stay drawn, they just
+   stop being tied to the scroll position. */
+
+@media (prefers-reduced-motion: reduce) {
+  .railFill,
+  .railHead,
+  .nodeCore,
+  .tick,
+  .item {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .railHead { display: none; }
+  .railFill { transform: scaleY(1) !important; }
+}
+
+:global(html[data-no-animations='true']) .railFill,
+:global(html[data-no-animations='true']) .railHead,
+:global(html[data-no-animations='true']) .nodeCore,
+:global(html[data-no-animations='true']) .tick,
+:global(html[data-no-animations='true']) .item {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+:global(html[data-no-animations='true']) .railHead { display: none; }
+:global(html[data-no-animations='true']) .railFill { transform: scaleY(1) !important; }
+
+/* ─── Narrow screens ──────────────────────────────────────────────────────
+   The period moves above the title and the rail hugs the left edge, so the
+   entry keeps its full measure instead of being squeezed into a third column. */
+
+@media (max-width: 640px) {
+  .wrap {
+    --period-w: 0px;
+    --rail-col: 1.5rem;
+  }
+
+  .item {
+    grid-template-columns: var(--rail-col) minmax(0, 1fr);
+    grid-template-areas:
+      'node period'
+      'node entry';
+    row-gap: 0.25rem;
+  }
+
+  .period {
+    grid-area: period;
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    text-align: left;
+    padding-right: 0;
+  }
+
+  .nodeCell { grid-area: node; }
+  .entry { grid-area: entry; }
+  .tick { display: none; }
+}

@@ -520,225 +520,59 @@
   line-height: 1.6;
 }
 
-/* ─── Journey ─────────────────────────────────────────────────────────────── */
+/* ─── Trajectory skeleton ────────────────────────────────────────
+   The loading state for the roadmap. It has to be the same three-column shape
+   the real Trajectory renders, or the layout jumps when the data lands. The
+   component owns every other roadmap style; only the skeleton stays here. */
 
-/* ─── Journey - vertical timeline ─────────────────────────────────────────────
-   The spine is a pseudo-element pinned to the dot column, so it threads the
-   dots for any number of milestones. */
-
-.journey {
-  position: relative;
-  padding: var(--spacing-md) 0 var(--spacing-lg);
-}
-
-.journeyList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: relative;
+.trajectorySkel {
+  padding: var(--spacing-sm) 0 var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
 }
 
-/* Dashed spine - keeps the hand-drawn feel of the old dashed path, but
-   actually connects the dots. Dot is 34px, so its centre sits at 17px. */
-.journeyList::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  top: 17px;
-  bottom: 17px;
-  width: 2px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(var(--accent-1-rgb), 0.55) 0 5px,
-    transparent 5px 11px
-  );
-  opacity: 0;
-  transition: opacity 0.9s ease 0.15s;
-}
-.journeyVisible .journeyList::before { opacity: 1; }
-
-.journeyItem {
-  position: relative;
+.trajectorySkelRow {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: 8.5rem 2.25rem minmax(0, 1fr);
   align-items: start;
-  gap: var(--spacing-md);
-  opacity: 0;
-  transform: translateY(14px);
-  transition:
-    opacity   0.5s ease                            calc(var(--ji, 0) * 0.07s),
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)  calc(var(--ji, 0) * 0.07s);
+  padding: var(--spacing-md) 0;
 }
-.journeyVisible .journeyItem { opacity: 1; transform: translateY(0); }
 
-/* ── Dot ─────────────────────────────────────────────────────────────────── */
+.trajectorySkelRow + .trajectorySkelRow {
+  border-top: 1px solid rgba(var(--accent-1-rgb), 0.10);
+}
 
-.journeyDot {
-  position: relative;
-  z-index: 1;
-  width: 34px;
-  height: 34px;
+.trajectorySkelPeriod,
+.trajectorySkelNode,
+.trajectorySkelText {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: rgba(var(--accent-1-rgb), 0.10);
+}
+
+.trajectorySkelPeriod {
+  height: 0.85rem;
+  width: 5.5rem;
+  margin-left: auto;
+  margin-right: var(--spacing-md);
+}
+
+.trajectorySkelNode {
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--background-0);
-  background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
-  /* The page-coloured ring punches a clean gap through the spine behind it. */
-  box-shadow:
-    0 0 0 4px var(--background-0),
-    0 4px 12px rgba(var(--accent-3-rgb), 0.30);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-left: calc(1.125rem - 4.5px);
+  margin-top: 0.2rem;
 }
 
-.journeyDotIcon { width: 17px; height: 17px; }
-
-.journeyItem:hover .journeyDot { transform: scale(1.1); }
-
-.journeyDotPulse {
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(var(--accent-1-rgb), 0.5);
-  animation: dotPulse 2.6s ease-out infinite;
-  pointer-events: none;
-}
-@keyframes dotPulse {
-  0%   { transform: scale(0.85); opacity: 0.9; }
-  100% { transform: scale(1.9);  opacity: 0;   }
+.trajectorySkelText {
+  height: 1.1rem;
+  width: 62%;
 }
 
-/* ── Card ────────────────────────────────────────────────────────────────── */
-
-/* Overrides the global <button> chrome: this is a block-level card, not a
-   centred pill, so the inline-flex / centring / nowrap defaults must go. */
-.journeyCard {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  text-align: left;
-  white-space: normal;
-  gap: 3px;
-  width: 100%;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  background: var(--frosted-background);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  font-size: inherit;
-  font-weight: 400;
-  letter-spacing: normal;
-  transition:
-    border-color     220ms ease,
-    background-color 220ms ease,
-    box-shadow       220ms ease,
-    transform        220ms ease;
-}
-
-/* Needs :hover:not(:disabled) to outweigh the global button hover rule. */
-.journeyCard:hover:not(:disabled) {
-  border-color: rgba(var(--accent-1-rgb), 0.45);
-  background: rgba(var(--accent-1-rgb), 0.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-  transform: translateX(3px);
-}
-
-.journeyMeta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--spacing-sm);
-}
-
-.journeyPeriod {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--accent-3);
-  font-weight: 700;
-}
-
-.journeyKind {
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--tertiary-text-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  padding: 1px 8px;
-}
-
-.journeyTitle {
-  font-size: var(--font-size-md);
-  font-weight: 700;
-  color: var(--primary-text-color);
-  line-height: 1.3;
-}
-
-.journeySubtitle {
-  font-size: var(--font-size-sm);
-  color: var(--secondary-text-color);
-  font-style: italic;
-  line-height: 1.4;
-}
-
-/* Dimmed rather than hidden, so it is still visible on touch, where there is
-   no hover to reveal it. */
-.journeyMore {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 3px;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--accent-1);
-  opacity: 0.5;
-  transition: opacity 200ms ease;
-}
-.journeyCard:hover .journeyMore,
-.journeyCard:focus-visible .journeyMore { opacity: 1; }
-
-.journeyEmpty {
-  text-align: center;
-  font-style: italic;
-  color: var(--tertiary-text-color);
-}
-
-/* ── Skeleton - mirrors the timeline shape ───────────────────────────────── */
-
-.journeySkel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  padding-block: var(--spacing-md);
-}
-.journeySkelRow {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-items: center;
-  gap: var(--spacing-md);
-}
-.journeySkelDot {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  position: relative;
-  overflow: hidden;
-  background: var(--background-2);
-}
-.journeySkelCard {
-  height: 84px;
-  border-radius: var(--radius-lg);
-  position: relative;
-  overflow: hidden;
-  background: var(--background-2);
+@media (max-width: 640px) {
+  .trajectorySkelRow { grid-template-columns: 1.5rem minmax(0, 1fr); }
+  .trajectorySkelPeriod { display: none; }
 }
 
 /* ─── Toolkit pile ─────────────────────────────────────────────────────────── */
@@ -1188,8 +1022,8 @@
 .coverPortraitSkel::after,
 .workSkelHero::after,
 .workSkelCard::after,
-.journeySkelDot::after,
-.journeySkelCard::after,
+.trajectorySkelPeriod::after,
+.trajectorySkelText::after,
 .skillLeafSkel::after,
 .pileSkelHead::after {
   content: '';
@@ -1223,11 +1057,6 @@
 
   .scene         { padding-inline: var(--spacing-lg); }
 
-  /* Tighter rungs and a narrower card gutter so the timeline stays compact
-     on small screens. */
-  .journeyList   { gap: var(--spacing-sm); }
-  .journeyItem   { gap: var(--spacing-sm); }
-  .journeyCard   { padding: var(--spacing-sm) var(--spacing-md); }
 }
 
 @media (max-width: 520px) {
@@ -1253,7 +1082,6 @@
   .coverDividerLeaf,
   .coverPortraitLeaf { animation: none !important; }
   .coverTitleScript  { animation: none !important; }
-  .journeyDotPulse   { animation: none !important; }
   .coverPortraitRing { animation: none !important; }
 }
 
@@ -1309,19 +1137,9 @@
   /* ── Portrait leaf: no hover animation ──────────────────────────────── */
   .coverPortraitLeaf { animation: none; }
 
-  /* ── Journey dot pulse: no pulsing rings around dots ────────────────── */
-  .journeyDotPulse { display: none; }
-
   /* ── Scene entry: faster fade-in, no blur ────────────────────────────── */
   .scene {
     transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-
-  /* ── Journey items: faster stagger ──────────────────────────────────── */
-  .journeyItem {
-    transition:
-      opacity  0.25s ease         calc(var(--ji, 0) * 0.04s),
-      transform 0.25s ease        calc(var(--ji, 0) * 0.04s);
   }
 
   /* ── Skill chips: faster stagger ────────────────────────────────────── */
@@ -1334,8 +1152,8 @@
   /* ── Shimmer: slightly faster on mobile ──────────────────────────────── */
   .shimmerBar::after,
   .coverPortraitSkel::after,
-  .journeySkelDot::after,
-  .journeySkelCard::after,
+  .trajectorySkelPeriod::after,
+  .trajectorySkelText::after,
   .skillLeafSkel::after,
   .pileSkelHead::after {
     animation-duration: 1.2s;
@@ -1353,44 +1171,6 @@
   );
 }
 
-/* ─── Journey: one wide row per milestone on wide screens ─────────────────────
-   Stacked cards were ~180px tall in an 830px column. Rows use the width the
-   band already has. (Alternating sides of a centre spine saves no height -
-   still one card per grid row.) */
-
-@media (min-width: 1024px) {
-  .journeyCard {
-    display: grid;
-    grid-template-columns: 210px minmax(0, 1fr) auto;
-    /* meta and the link span both rows, so title/subtitle share one cell. */
-    grid-template-areas:
-      "meta title more"
-      "meta sub   more";
-    align-items: center;
-    column-gap: var(--spacing-xl);
-    row-gap: 0;
-    padding: var(--spacing-md) var(--spacing-lg);
-  }
-
-  .journeyMeta {
-    grid-area: meta;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .journeyTitle    { grid-area: title; }
-  .journeySubtitle { grid-area: sub; }
-
-  .journeyMore {
-    grid-area: more;
-    margin-top: 0;
-    justify-self: end;
-    white-space: nowrap;
-  }
-
-  .journeyList { gap: var(--spacing-sm); }
-}
 
 /* ─── Toolkit: columns instead of one 760px stack ──────────────────────────── */
 
