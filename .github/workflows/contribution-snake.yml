@@ -36,6 +36,15 @@ jobs:
         with:
           node-version: '20'
 
+      # Runs before snk so that `dist` is created by the runner user. The snk
+      # action executes in a Docker container as root, and sharing a directory
+      # it created that way is what broke the first run of this workflow.
+      - name: Render the weekly chart and stats strip
+        run: node .github/scripts/render-activity.mjs
+        env:
+          GITHUB_USER: ${{ github.repository_owner }}
+          OUT_DIR: dist
+
       # Two variants, coloured with the site's own tokens (Theme.css), so the
       # README's <picture> can switch them with the viewer's GitHub theme.
       - name: Generate the contribution snake
@@ -46,11 +55,8 @@ jobs:
             dist/snake-light.svg?color_snake=%237a3e10&color_dots=%23f2e3c4,%23f5b56b,%23e07b1f,%23b8651c,%237a3e10
             dist/snake-dark.svg?color_snake=%23f5b56b&color_dots=%231c1208,%237a3e10,%23c47020,%23e89542,%23f5b56b
 
-      # Adds activity-{light,dark}.svg and stats-{light,dark}.svg alongside it.
-      - name: Render the weekly chart and stats strip
-        run: node .github/scripts/render-activity.mjs
-        env:
-          GITHUB_USER: ${{ github.repository_owner }}
+      - name: List what will be published
+        run: ls -l dist
 
       - name: Publish to the output branch
         uses: crazy-max/ghaction-github-pages@v4

@@ -14,7 +14,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const USER = process.env.GITHUB_USER || 'Francois0203';
-const OUT = 'dist';
+const OUT = process.env.OUT_DIR || 'dist';
 
 const THEMES = {
   light: {
@@ -39,11 +39,17 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 /** Scrapes date and count pairs out of the public contributions fragment. */
 async function fetchDays() {
-  const res = await fetch(`https://github.com/users/${USER}/contributions`, {
-    headers: { 'User-Agent': 'contribution-chart-renderer', Accept: 'text/html' },
-  });
-  if (!res.ok) throw new Error(`contributions endpoint returned ${res.status}`);
-  const html = await res.text();
+  // Runner IPs are shared, so a single 429 or 5xx is normal. Retry before giving up.
+  let html = '';
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    const res = await fetch(`https://github.com/users/${USER}/contributions`, {
+      headers: { 'User-Agent': 'contribution-chart-renderer', Accept: 'text/html' },
+    });
+    if (res.ok) { html = await res.text(); break; }
+    console.error(`attempt ${attempt}: contributions endpoint returned ${res.status}`);
+    if (attempt === 4) throw new Error(`contributions endpoint returned ${res.status} after 4 attempts`);
+    await new Promise((r) => setTimeout(r, attempt * 3000));
+  }
 
   // Each cell carries its date and an id; the matching tool-tip carries the count.
   const counts = new Map();
@@ -56,7 +62,10 @@ async function fetchDays() {
   for (const m of html.matchAll(/data-date="(\d{4}-\d{2}-\d{2})"\s+id="(contribution-day-component-\d+-\d+)"/g)) {
     days.push({ date: m[1], count: counts.get(m[2]) ?? 0 });
   }
-  if (!days.length) throw new Error('parsed zero contribution days');
+  if (!days.length) {
+    throw new Error(`parsed zero contribution days from ${html.length} bytes of HTML`);
+  }
+  console.log(`parsed ${days.length} days from ${html.length} bytes of HTML`);
 
   days.sort((a, b) => a.date.localeCompare(b.date));
   return days;
