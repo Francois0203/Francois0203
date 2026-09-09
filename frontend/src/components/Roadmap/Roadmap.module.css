@@ -15,9 +15,10 @@
 .wrap {
   --pin: 2.25rem;
   --pin-col: 3rem;
-  /* How far the waypoints sit from the plane's edges. Smaller means a wider
-     swing and a more pronounced route. */
-  --inset: 1.9fr;
+  /* How far the waypoints sit from the plane's edges. Smaller --inset means a
+     wider swing and a more pronounced route: at 1.1fr the pins sit at roughly
+     18% and 82% of the plane, against 28% and 72% at 1.9fr. */
+  --inset: 1.1fr;
   --reach: 5fr;
 
   position: relative;
@@ -25,7 +26,7 @@
 
 .plane {
   position: relative;
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) 0;
 }
 
 /* ── The paper ───────────────────────────────────────────────────────────── */
@@ -39,13 +40,13 @@
   color: rgba(var(--accent-3-rgb), 0.5);
 }
 
-.grid { opacity: 0.055; }
+.grid { opacity: 0.13; }
 
 .contours {
   fill: none;
-  stroke: rgba(var(--accent-3-rgb), 0.5);
-  stroke-width: 1;
-  opacity: 0.13;
+  stroke: rgba(var(--accent-3-rgb), 0.75);
+  stroke-width: 1.25;
+  opacity: 0.3;
 }
 
 /* The route still ahead: dashed, the way a trail is drawn on a printed map. */
@@ -72,9 +73,9 @@
   position: absolute;
   top: var(--spacing-sm);
   right: var(--spacing-sm);
-  width: 58px;
-  height: 58px;
-  opacity: 0.32;
+  width: 62px;
+  height: 62px;
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -169,11 +170,17 @@
  * the measured spline serpentine across the plane instead of running straight
  * down it.
  */
+/**
+ * Row padding is the crossing corridor. The trail leaves each pin vertically,
+ * clears the card, and only then swings across - so this padding is not
+ * decorative spacing, it is the room the route needs to stay off the labels.
+ * Tightening it below about 20px puts the diagonal back through the text.
+ */
 .stop {
   display: grid;
   align-items: center;
   column-gap: var(--spacing-md);
-  padding: var(--spacing-lg) 0;
+  padding: 22px 0;
 }
 
 .stop[data-side='left'] {
@@ -236,14 +243,14 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.1rem;
   width: 100%;
   /* This project has no universal border-box reset, so width:100% plus padding
      made the card 32px wider than its grid column - enough to push a long
      institution name off a narrow viewport. */
   box-sizing: border-box;
   min-width: 0;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0.3rem var(--spacing-md);
   border: 0;
   border-radius: var(--radius-md);
   background: none;
@@ -318,7 +325,7 @@
   display: block;
   font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
   font-size: var(--font-size-lg);
-  line-height: 1.25;
+  line-height: 1.2;
   color: var(--primary-text-color);
   transition: color var(--dur-hover) var(--ease-out);
 }
@@ -340,7 +347,7 @@
 
 .cardSub {
   font-size: var(--font-size-sm);
-  line-height: 1.5;
+  line-height: 1.4;
   color: var(--secondary-text-color);
 }
 

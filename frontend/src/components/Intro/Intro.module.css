@@ -1,702 +1,142 @@
 /* ==================== Intro ====================
  *
- * Two clocks. The parchment, halo and embers start on mount; everything else
- * starts when `.started` lands - see the gate in Intro.js. All the times below
- * are relative to that.
+ * A loading panel, not a title sequence. Three elements: a hairline rule that
+ * tracks real progress, the name, and a counter. Nothing else, and no timed
+ * choreography - the length of this is however long the site takes to load.
  *
- *      0 ─ ∞      halo breathes, embers drift, stars twinkle   (from mount)
- * ── .started ────────────────────────────────────────────────────────────────
- *      0 ─ 1600   a band of light sweeps the full width of the parchment
- *     60 ─  620   portrait settles in, unblurring
- *    420 ─ 1180   the name is set letter by letter beneath it
- *    480 ─ 1700   quill travels and signs a rule under the name
- *   1760 ─ 2140   title rises
- *   2140 ─ 2900   HOLD - the finished card simply sits there
- *   2400 ─ 3400   a slow gilding shimmer crosses the card
- *   2900 ─ 3600   seam of light flares along the fold
- *   3080 ─ 3320   card fades, so it is gone before the leaf moves
- *   3200 ─ 4200   the leaf splits and swings open in perspective
- *   3300 ─ 4300   rays fan out of the opening across the whole viewport
- *   4300          unmounts (TOTAL_MS in Intro.js - keep the two in step)
+ * States, set by Intro.js on [data-state]:
+ *   loading    the panel is up, the bar is driven from the rAF loop
+ *   lifting    the load finished; the panel slides off the top   (560ms)
+ *   skipping   the reader gave input; the panel fades out fast   (220ms)
  *
- * The ambient layers - stars, embers, sweep - are deliberately spread over the
- * entire viewport rather than around the card. The card is the subject, but if
- * only the middle of the screen moves the rest reads as dead margin.
+ * The panel is opaque and covers everything, but the page renders underneath it
+ * from the first frame - lifting it reveals a cover that has been sitting there
+ * the whole time, not one that starts building when the panel goes.
  *
- * Layer stack (back → front):
- *   z:0  .leaf ×2   the parchment, in two halves
- *   z:1  .seam      light along the fold
- *   z:1  .rays      light through the opening
- *   z:2  .stage     halo, embers, stars, sweep, and the card
- *
- * Every animated property is transform, opacity or filter. Nothing here touches
- * layout, so the whole sequence composites and none of it competes with the
- * mount work happening on the main thread at the same moment.
+ * Only transform and opacity animate, so the whole thing composites and none of
+ * it competes with the mount work happening on the main thread at that moment.
  */
 
 .curtain {
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
-    overflow: hidden;   /* the leaves sweep outside the viewport as they open */
+    background: var(--background-0);
 
-    /* Transparent on purpose. The parchment belongs to .leaf, so when the two
-       halves rotate away there is nothing left in front of the cover - a
-       background here would have to be faded out separately and would grey the
-       reveal for as long as it took. */
-    background: transparent;
-
-    /* The book-open is a real 3D rotation, so the scene needs a camera. 1600px
-       is a long lens: enough convergence to read as depth, not enough to
-       distort the leaf into a wedge on a wide monitor. */
-    perspective: 1600px;
-    perspective-origin: 50% 45%;
-
-    /* The skip exit is a transition on opacity, so it cannot collide with the
-       transform animations already running underneath it. Giving .skipping its
-       own `animation` would replace them mid-flight and snap the leaves back to
-       closed before fading - re-hiding a cover the reader had just watched
-       appear. */
-    opacity: 1;
-    transition: opacity 200ms linear;
-}
-
-/* ── The leaf, in two halves ─────────────────────────────────────────────── */
-
-/**
- * Each half is anchored on its *outer* edge, so the two inner edges are free
- * and swing toward the reader as they part - the way a book actually opens.
- * Anchoring on the inner edges would fold the halves outward like shutters.
- *
- * calc(50% + 1px) so the two overlap by a hair at the fold. At exactly 50% a
- * fractional viewport width leaves a sub-pixel seam that shows the cover
- * through it as a bright hairline before anything has opened.
- */
-.leaf {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: calc(50% + 1px);
-    background-color: var(--background-0);
-    backface-visibility: hidden;
-    will-change: transform;
-}
-
-.leafLeft  { left: 0;  transform-origin: left center; }
-.leafRight { right: 0; transform-origin: right center; }
-
-/* Gated on .started, so the book cannot begin opening while the card is still
-   waiting on the name. */
-.started .leafLeft  { animation: openLeft  1000ms 3200ms var(--ease-emph) forwards; }
-.started .leafRight { animation: openRight 1000ms 3200ms var(--ease-emph) forwards; }
-
-/* The shading on the fold is what sells it as paper with a spine. A flat colour
-   rotating in perspective reads as a sliding panel; a gradient that darkens
-   toward the crease reads as a page under tension. */
-.leaf::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-}
-
-.leafLeft::after  { background: linear-gradient(to right, transparent 62%, rgba(0, 0, 0, 0.16) 100%); }
-.leafRight::after { background: linear-gradient(to left,  transparent 62%, rgba(0, 0, 0, 0.16) 100%); }
-
-/**
- * 102deg, a little past square, so each half finishes fully edge-on and
- * slightly behind the plane rather than parked at a visible 90deg wall.
- *
- * Opacity is held at 1 until 70% and only then released: fading a rotating
- * surface from the start makes it read as dissolving rather than turning, and
- * the whole point is that this is a physical object.
- */
-@keyframes openLeft {
-    0%   { transform: rotateY(0deg);    opacity: 1; }
-    70%  { opacity: 1; }
-    100% { transform: rotateY(-102deg); opacity: 0; }
-}
-
-@keyframes openRight {
-    0%   { transform: rotateY(0deg);   opacity: 1; }
-    70%  { opacity: 1; }
-    100% { transform: rotateY(102deg); opacity: 0; }
-}
-
-/* ── Seam of light along the fold ────────────────────────────────────────── */
-
-/**
- * Sits between the leaves and the card. Absent until the halves begin to part,
- * then flares - the light getting in through the opening - and is gone by the
- * time they are edge-on.
- */
-.seam {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    margin-left: -1px;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(var(--accent-2-rgb), 0.9) 18%,
-        rgba(var(--accent-2-rgb), 0.9) 82%,
-        transparent 100%
-    );
-    opacity: 0;
-}
-
-.started .seam { animation: seamFlare 700ms 2900ms var(--ease-out) forwards; }
-
-@keyframes seamFlare {
-    0%   { opacity: 0;    transform: scaleX(1); filter: blur(0px); }
-    45%  { opacity: 0.95; transform: scaleX(3); filter: blur(3px); }
-    100% { opacity: 0;    transform: scaleX(9); filter: blur(9px); }
-}
-
-/* ── Everything printed on the leaf ──────────────────────────────────────── */
-
-.stage {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-}
+    justify-content: space-between;
 
-/**
- * A soft warm bloom behind the card, echoing the .warmSpot layer the cover
- * renders underneath - so opening the book does not swap one atmosphere for a
- * different one.
- *
- * This one runs from mount rather than from .started, so a first visit waiting
- * on the network has something alive on screen instead of a flat sheet.
- */
-.halo {
-    position: absolute;
-    width: min(64vw, 780px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(
-        circle,
-        rgba(var(--accent-1-rgb), 0.16) 0%,
-        rgba(var(--accent-1-rgb), 0.06) 40%,
-        transparent 72%
-    );
-    opacity: 0;
-    transform: scale(0.74);
-    animation: haloBreathe 4600ms linear forwards;
-}
-
-@keyframes haloBreathe {
-    0%   { opacity: 0;   transform: scale(0.74); }
-    18%  { opacity: 1;   transform: scale(1); }
-    100% { opacity: 0.4; transform: scale(1.14); }
-}
-
-/* ── Embers ──────────────────────────────────────────────────────────────── */
-
-.embers {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-}
-
-/**
- * Each ember rises the full height of the viewport with a little lateral
- * drift, its own duration and its own start offset - all supplied per element
- * from JS. Sharing one timing would turn fourteen embers into one fourteen-wide
- * comb moving up the screen.
- *
- * translate3d, not top/left: this is the only long-running loop in the scene
- * and it has to stay off the main thread.
- */
-.ember {
-    position: absolute;
-    bottom: -12px;
-    border-radius: 50%;
-    background: rgb(var(--accent-2-rgb));
-    opacity: 0;
     will-change: transform, opacity;
-    animation: emberRise var(--dur) var(--delay) linear infinite;
+    transform: translateY(0);
+    opacity: 1;
 }
 
-@keyframes emberRise {
-    0%   { opacity: 0;           transform: translate3d(0, 0, 0); }
-    12%  { opacity: var(--peak); }
-    78%  { opacity: var(--peak); }
-    100% { opacity: 0;           transform: translate3d(var(--drift), -100vh, 0); }
+/* Off the top rather than a fade: the page is already behind it, so sliding the
+   panel away reads as uncovering the site. A fade reads as the site appearing,
+   which is the thing that is not happening. */
+.curtain[data-state='lifting'] {
+    transform: translateY(-100%);
+    transition: transform 560ms var(--ease-emph);
 }
 
-/* ── The card ────────────────────────────────────────────────────────────── */
+/* Someone who has started reading has told you the intro is over. Fade, and
+   fast: a 560ms slide is too much ceremony to put in front of that. */
+.curtain[data-state='skipping'] {
+    opacity: 0;
+    transition: opacity 220ms linear;
+}
 
-/**
- * Fades as one object. Fading the portrait, name and rule individually would
- * stagger their exits against the leaf beginning to turn, and the card would
- * appear to slide off the page it is printed on.
- */
-.card {
+/* ── Progress rule ───────────────────────────────────────────────────────── */
+
+.track {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: 0 var(--spacing-lg);
-    text-align: center;
-    animation: cardOut 240ms 3080ms var(--ease-out) forwards;
-}
-
-@keyframes cardOut {
-    to { opacity: 0; }
-}
-
-/* ── Portrait ────────────────────────────────────────────────────────────── */
-
-.portrait {
-    position: relative;
-    width: 104px;
-    height: 104px;
-    flex: none;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
+    height: 2px;
+    width: 100%;
+    background: rgba(var(--accent-1-rgb), 0.12);
     overflow: hidden;
-    background: var(--accent-1-background);
-    box-shadow: 0 10px 30px -12px rgba(var(--accent-1-rgb), 0.55);
-
-    /* Settles in from slightly small and out of focus. Starting from scale(0)
-       or from opacity alone has no physical analogue - it either pops into
-       being or slides in flat; a small offset with a little blur reads as
-       coming into focus. */
-    opacity: 0;
-    transform: scale(0.88) translateY(10px);
-    filter: blur(6px);
-    animation: portraitIn 560ms 60ms var(--ease-out) forwards;
-}
-
-@keyframes portraitIn {
-    to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 
 /**
- * Stacked over the monogram rather than swapped with it. Held at opacity 0
- * until identity.js confirms the image has decoded, then crossfaded in - so it
- * can never appear as a half-painted band, and a photo that arrives late fades
- * over the initials instead of replacing an element and relaying out the disc.
- *
- * 420ms and `ease`, slower and softer than the rest of the card: this is the
- * one transition that may land at an unpredictable moment, and a slow crossfade
- * is far harder to catch out than a quick one.
+ * scaleX from the left edge. The transform is written directly by the loop in
+ * Intro.js, once per frame, and nothing here transitions it: a CSS transition
+ * on top of a per-frame write would lag the bar behind its own number.
  */
-.portraitImg {
+.bar {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 420ms ease;
-}
-
-.portraitImgReady {
-    opacity: 1;
-}
-
-/* Monogram, for when there is no photo or it has not arrived yet. A designed
-   state, not a placeholder: initials in the cover's own serif. */
-.portraitFallback {
-    position: absolute;
-    inset: 0;
-    font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
-    font-size: 2.1rem;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: var(--accent-1);
-    display: grid;
-    place-items: center;
-}
-
-/* A hairline ring inside the edge, so the portrait sits *in* the page rather
-   than on top of it. Drawn as an overlay rather than a border so it does not
-   eat into the image. */
-.portraitRing {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1px solid rgba(var(--accent-1-rgb), 0.4);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* ── Name ────────────────────────────────────────────────────────────────── */
-
-/**
- * The cover's serif, tracked wide and set in caps - the treatment the site
- * already uses for `the portfolio of` above the name. clamp() because this is
- * the one element whose length is entirely out of the design's hands.
- */
-.name {
-    margin: 0;
-    font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
-    font-size: clamp(1.35rem, 4.2vw, 2.1rem);
-    font-weight: 400;
-    letter-spacing: 0.16em;
-    text-indent: 0.16em;   /* re-centres against the trailing letter-space */
-    line-height: 1.15;
-    color: var(--primary-text-color);
-    text-wrap: balance;
-
-    /* The block itself no longer animates - each letter does, below - so it
-       must not carry an opacity of its own or the two would multiply. */
-    opacity: 1;
-}
-
-/**
- * Set letter by letter. 26ms apart: enough to read as writing rather than as a
- * block arriving, short enough that a long name still finishes inside its beat.
- * A twelve-character name lands its last letter at 420 + 286 + 460 = 1166ms.
- *
- * inline-block because a transform has no effect on an inline box, and the
- * whitespace characters are non-breaking so the words keep their gaps.
- */
-.nameChar {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(16px);
-    filter: blur(5px);
-    animation: nameIn 460ms var(--ease-out) forwards;
-    animation-delay: calc(420ms + var(--ci, 0) * 26ms);
-}
-
-@keyframes nameIn {
-    to { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
-
-/* ── The signature stroke ────────────────────────────────────────────────── */
-
-/**
- * --line-w is declared here so the rule's width and the quill's travel distance
- * come from one number. They have to agree exactly, or the nib drifts off the
- * end of the line it is supposed to be drawing.
- */
-.penLine {
-    --line-w: min(64vw, 260px);
-    position: relative;
-    display: block;
-    width: var(--line-w);
-    height: 40px;
-}
-
-/**
- * Drawn from the left, because it is being written rather than revealed - a
- * rule that grows from the centre outward is a nice effect, but nothing is
- * drawing it.
- *
- * The easing and timing are identical to .penTravel below. That is the whole
- * trick: two elements on the same curve over the same window stay locked
- * together, so the nib sits on the leading edge of the ink every frame. Change
- * one and you must change the other.
- */
-.rule {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        rgba(var(--accent-1-rgb), 0.3) 0%,
-        var(--accent-1) 12%,
-        var(--accent-1) 100%
-    );
-    transform: scaleX(0);
     transform-origin: left center;
-    animation: draw 900ms 800ms var(--ease-in-out) forwards;
-}
-
-@keyframes draw {
-    to { transform: scaleX(1); }
-}
-
-/* Travel only. The quill's own fade and lift live on .quill, one level down -
-   two animations on one element both writing `transform` would mean the later
-   one silently wins. */
-.penTravel {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    animation: travel 900ms 800ms var(--ease-in-out) forwards;
-}
-
-@keyframes travel {
-    /* Stops short of the full width by the nib's own offset, so the tip lands
-       on the end of the line rather than past it. */
-    to { transform: translateX(calc(var(--line-w) - 18px)); }
-}
-
-/**
- * One keyframe set for the quill's whole life rather than an entry animation
- * and a separate exit: percentages of a single 940ms run, so the states cannot
- * drift apart when the timeline is retuned.
- *
- *    0%  (480ms)   below the line, blurred - coming into focus, not popping in
- *   23%  (800ms)   landed, ready to write
- *   99%  (1690ms)  stroke complete
- *  100%  (1700ms)  lifted off the page
- */
-.quill {
-    display: block;
-    width: 30px;
-    height: 30px;
-    margin-bottom: 2px;
-    color: var(--accent-1);
-    filter: drop-shadow(0 2px 6px rgba(var(--accent-1-rgb), 0.35));
-    animation: quillLife 1420ms 480ms var(--ease-out) forwards;
-}
-
-@keyframes quillLife {
-    0%   { opacity: 0; transform: translateY(16px)  rotate(-14deg) scale(0.92); }
-    23%  { opacity: 1; transform: translateY(0)     rotate(-8deg)  scale(1); }
-    94%  { opacity: 1; transform: translateY(0)     rotate(-8deg)  scale(1); }
-    100% { opacity: 0; transform: translateY(-20px) rotate(4deg)   scale(1.04); }
-}
-
-/* ── Title ───────────────────────────────────────────────────────────────── */
-
-/* Wide tracking because it is being used as a device rather than as prose; at
-   normal spacing a short line at this size reads as a stray label. */
-.title {
-    margin: 0;
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-    letter-spacing: 0.38em;
-    text-indent: 0.38em;
-    text-transform: uppercase;
-    color: var(--secondary-text-color);
-    text-wrap: balance;
-
-    opacity: 0;
-    transform: translateY(10px);
-    animation: titleIn 380ms 1760ms var(--ease-out) forwards;
-}
-
-@keyframes titleIn {
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Full-page layers ─────────────────────────────────────────────────────
- *
- * These three exist to make the opening belong to the whole viewport. The card
- * is the subject, but a scene where only the middle 400px moves reads as a
- * dialog on a blank background, which is exactly the "generic" failure.
- *
- * All three are transform and opacity only, and all three are budgeted: the
- * star count halves on a small screen, the rays are a fixed seven, and the
- * sweep is a single element. Nothing here scales with content.
- */
-
-/* ── The sweep: one band of light crossing the full width ────────────────── */
-
-/**
- * A wide, soft diagonal band that travels the entire parchment once, early,
- * while the portrait is still settling. It is the first thing that tells the
- * reader how big the stage is.
- *
- * 140% wide and translated by its own width, so it is fully off one edge at
- * each end regardless of viewport - a pixel distance would leave a visible
- * rectangle parked on an ultrawide monitor.
- */
-.sweep {
-    position: absolute;
-    top: -20%;
-    left: 0;
-    width: 140%;
-    height: 140%;
-    pointer-events: none;
-    opacity: 0;
-    transform: translate3d(-100%, 0, 0) rotate(-12deg);
+    transform: scaleX(0);
     background: linear-gradient(
         90deg,
-        transparent 0%,
-        rgba(var(--accent-2-rgb), 0.00) 38%,
-        rgba(var(--accent-2-rgb), 0.13) 50%,
-        rgba(var(--accent-2-rgb), 0.00) 62%,
-        transparent 100%
+        var(--accent-3) 0%,
+        var(--accent-1) 60%,
+        var(--accent-2) 100%
     );
 }
 
-.started .sweep { animation: sweepAcross 1600ms 0ms var(--ease-in-out) forwards; }
+/* ── Foot ────────────────────────────────────────────────────────────────── */
 
-@keyframes sweepAcross {
-    0%   { opacity: 0;    transform: translate3d(-100%, 0, 0) rotate(-12deg); }
-    18%  { opacity: 1; }
-    82%  { opacity: 1; }
-    100% { opacity: 0;    transform: translate3d(100%, 0, 0)  rotate(-12deg); }
+.foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-2xl);
 }
 
-/* A second, much slower pass over the card only, late in the hold. The card has
-   been finished and still for 300ms by then, and a gilding shimmer is what
-   stops that hold reading as the animation having stalled. */
-.started .card::after {
-    content: '';
-    position: absolute;
-    inset: -8% -20%;
-    pointer-events: none;
-    border-radius: inherit;
-    background: linear-gradient(
-        104deg,
-        transparent 42%,
-        rgba(var(--accent-2-rgb), 0.16) 50%,
-        transparent 58%
-    );
-    opacity: 0;
-    transform: translate3d(-60%, 0, 0);
-    animation: gild 1000ms 2400ms var(--ease-in-out) forwards;
+.who {
+    font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
+    font-size: var(--font-size-md);
+    letter-spacing: 0.08em;
+    color: var(--secondary-text-color);
+    /* The name is the quiet half of this pair: the counter is what is changing,
+       and two things competing for attention on a panel this sparse is one too
+       many. */
+    opacity: 0.75;
 }
 
-@keyframes gild {
-    0%   { opacity: 0; transform: translate3d(-60%, 0, 0); }
-    30%  { opacity: 1; }
-    70%  { opacity: 1; }
-    100% { opacity: 0; transform: translate3d(60%, 0, 0); }
-}
-
-/* ── The constellation: points of light over the whole leaf ──────────────── */
-
-.constellation {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
+.count {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15em;
+    color: var(--accent-1);
+    line-height: 1;
 }
 
 /**
- * Each star drifts and breathes on its own loop. Randomised duration, delay and
- * peak per point, from buildStars in Intro.js - shared values would beat in
- * unison and read as one blinking grid rather than as scatter.
+ * Tabular figures, and a min-width of three characters. Without both, the
+ * counter's own width changes as it passes 9 and 99, and the whole block
+ * shuffles sideways twice on the way up.
  */
-.star {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(var(--accent-2-rgb), 0.9);
-    box-shadow: 0 0 6px 1px rgba(var(--accent-2-rgb), 0.45);
-    opacity: 0;
-    will-change: transform, opacity;
-    animation: twinkle var(--dur, 3200ms) var(--delay, 0ms) ease-in-out infinite;
+.num {
+    font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
+    font-size: clamp(3rem, 11vw, 6rem);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+    min-width: 3ch;
+    text-align: right;
 }
 
-@keyframes twinkle {
-    0%   { opacity: 0;               transform: translate3d(0, 0, 0) scale(0.6); }
-    50%  { opacity: var(--peak, 0.5); transform: translate3d(var(--drift, 0), -6px, 0) scale(1); }
-    100% { opacity: 0;               transform: translate3d(0, -12px, 0) scale(0.6); }
+.pct {
+    font-size: var(--font-size-md);
+    letter-spacing: 0.1em;
+    opacity: 0.55;
 }
 
-/* ── The rays: light through the opening ─────────────────────────────────── */
-
-/**
- * Seven blades fanning from the fold as the halves part, sitting above the
- * leaves so the light reads as coming through the gap. They outlive the leaves
- * by 100ms, which is the whole reason TOTAL_MS is 4300 and not 4200: the last
- * thing the reader sees is light, not a page edge leaving the frame.
- */
-.rays {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.ray {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 2px;
-    height: 150vmax;
-    margin-left: -1px;
-    transform-origin: center center;
-    background: linear-gradient(
-        180deg,
-        transparent 0%,
-        rgba(var(--accent-2-rgb), 0.30) 35%,
-        rgba(var(--accent-2-rgb), 0.30) 65%,
-        transparent 100%
-    );
-    filter: blur(1px);
-    opacity: 0;
-    /* -45deg to 45deg across the seven blades, fanned around the fold. */
-    transform: translate(-50%, -50%) rotate(calc(-45deg + var(--ri, 0) * 15deg)) scaleY(0.2);
-}
-
-.started .ray {
-    animation: rayOut 1000ms var(--ease-out) forwards;
-    /* Staggered from the centre outward, so the fan opens rather than flashing. */
-    animation-delay: calc(3300ms + var(--ri, 0) * 40ms);
-}
-
-@keyframes rayOut {
-    0%   { opacity: 0;    transform: translate(-50%, -50%) rotate(calc(-45deg + var(--ri, 0) * 15deg)) scaleY(0.2); }
-    40%  { opacity: 0.85; }
-    100% { opacity: 0;    transform: translate(-50%, -50%) rotate(calc(-45deg + var(--ri, 0) * 15deg)) scaleY(1.6); }
-}
-
-/* Small screens: the sweep and the rays are the two that cost real fill rate on
-   a phone GPU, and both are the least legible there. The stars and the card
-   carry the scene on their own. */
 @media (max-width: 640px) {
-    .sweep { display: none; }
-    .ray:nth-child(n + 4) { display: none; }
-    .started .card::after { display: none; }
+    .foot {
+        padding: var(--spacing-lg);
+    }
 }
 
-/* ── Skip ────────────────────────────────────────────────────────────────── */
-
-/**
- * Any input cuts the whole thing short: the scene fades out over 200ms, taking
- * everything on it at whatever stage it had reached.
- *
- * Exiting fast matters more the longer the intro runs. Slow where the user is
- * deciding, fast where the system is responding - and a skip is nothing but a
- * response.
- */
-.skipping {
-    opacity: 0;
-}
-
-/**
- * `animation-play-state: paused`, not `animation: none`. Clearing an animation
- * drops the element back to its *base* style - for the portrait that is
- * invisible and blurred, and for the leaves it is fully closed - so a skip
- * would slam the book shut and blink the card out one frame before the fade
- * even started. Pausing freezes every element exactly where it had got to and
- * lets the fade carry the whole scene out intact.
- */
-.skipping .leaf,
-.skipping .seam,
-.skipping .halo,
-.skipping .ember,
-.skipping .card,
-.skipping .portrait,
-.skipping .name,
-.skipping .rule,
-.skipping .penTravel,
-.skipping .quill,
-.skipping .title {
-    animation-play-state: paused;
-}
-
-/**
- * Intro.js does not render this component at all under reduced motion, so this
- * block is a backstop for the case where the preference changes mid-animation.
- * It removes the overlay immediately rather than animating it away.
- */
+/* Belt and braces. Intro.js already returns null under either preference, so
+   this only matters if the panel is somehow mounted anyway - in which case it
+   should sit still rather than slide. */
 @media (prefers-reduced-motion: reduce) {
-    .curtain { display: none; }
+    .curtain[data-state='lifting'] {
+        transition: opacity 160ms linear;
+        transform: none;
+        opacity: 0;
+    }
 }

@@ -38,29 +38,41 @@ const SUPPORTS_SCROLL_TIMELINE =
   CSS.supports('animation-timeline: view()');
 
 /**
- * Catmull-Rom through the waypoints as cubic beziers. 1/4 rather than the
- * textbook 1/6: a route on a map should overshoot and bend around its
- * waypoints, not take the shortest polite curve between them.
+ * Builds the trail explicitly rather than fitting a spline through the points.
+ *
+ * A Catmull-Rom fit was the first attempt and it was wrong for this shape. The
+ * route now has three collinear points per waypoint (enter above, sit on the
+ * pin, leave below), and a spline derives each tangent from the neighbours -
+ * which are far away horizontally - so it threw big loops out past every
+ * right-hand pin before curving back.
+ *
+ * The geometry here is a switchback: a straight vertical run through each
+ * waypoint, joined by an S-bend whose control points share their endpoint's x.
+ * That makes horizontal overshoot impossible - the curve is bounded by the two
+ * pins it runs between - while keeping the joins tangent-continuous, so the
+ * corners stay smooth.
  */
-const TENSION = 4;
+const buildRoute = (legs) => {
+  if (legs.length === 0) return '';
 
-const splinePath = (pts) => {
-  if (pts.length === 0) return '';
-  if (pts.length === 1) return `M ${pts[0][0]} ${pts[0][1]}`;
+  const first = legs[0];
+  let d = `M ${first.x.toFixed(2)} ${first.top.toFixed(2)}`;
+  d += ` L ${first.x.toFixed(2)} ${first.bottom.toFixed(2)}`;
 
-  let d = `M ${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
-  for (let i = 0; i < pts.length - 1; i += 1) {
-    const p0 = pts[i - 1] || pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] || p2;
-    const c1x = p1[0] + (p2[0] - p0[0]) / TENSION;
-    const c1y = p1[1] + (p2[1] - p0[1]) / TENSION;
-    const c2x = p2[0] - (p3[0] - p1[0]) / TENSION;
-    const c2y = p2[1] - (p3[1] - p1[1]) / TENSION;
-    d += ` C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)},`
-       + ` ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`;
+  for (let i = 1; i < legs.length; i += 1) {
+    const a = legs[i - 1];
+    const b = legs[i];
+    // Handle length scales with the gap, so a tight row bends tightly and a
+    // loose one sweeps. Clamped so it never collapses to a corner or balloons.
+    const gap = Math.max(1, b.top - a.bottom);
+    const k = Math.min(80, Math.max(18, gap * 0.85));
+
+    d += ` C ${a.x.toFixed(2)} ${(a.bottom + k).toFixed(2)},`
+       + ` ${b.x.toFixed(2)} ${(b.top - k).toFixed(2)},`
+       + ` ${b.x.toFixed(2)} ${b.top.toFixed(2)}`;
+    d += ` L ${b.x.toFixed(2)} ${b.bottom.toFixed(2)}`;
   }
+
   return d;
 };
 
@@ -131,6 +143,7 @@ const Roadmap = ({ stops = [], onSelect, emptyText = 'The route is still being d
   const planeRef = useRef(null);
   const listRef = useRef(null);
   const pinRefs = useRef([]);
+  const cardRefs = useRef([]);
 
   /** { w, h, d } - the plane's box and the fitted trail. */
   const [geom, setGeom] = useState(null);
@@ -145,30 +158,53 @@ const Roadmap = ({ stops = [], onSelect, emptyText = 'The route is still being d
     const h = planeBox.height;
     if (w < 2 || h < 2) return;
 
-    const pts = [];
-    pinRefs.current.slice(0, stops.length).forEach((pin) => {
-      if (!pin) return;
+    /*
+     * One leg per waypoint: the x of its pin, and the y it is entered and left
+     * at. The trail runs straight down each leg and S-bends between them, so
+     * the crossing to the opposite side happens in the gap between cards and
+     * never over a label. The vertical runs sit in the pin column, which holds
+     * no text by construction.
+     */
+    const CLEARANCE = 10;
+    const legs = [];
+    const count = Math.min(stops.length, pinRefs.current.length);
+
+    for (let i = 0; i < count; i += 1) {
+      const pin = pinRefs.current[i];
+      if (!pin) continue;
+
       // Measured against the plane, so the numbers are already in the SVG's
       // coordinate space and no scroll offset can leak in.
-      const box = pin.getBoundingClientRect();
-      pts.push([
-        box.left - planeBox.left + box.width / 2,
-        box.top - planeBox.top + box.height / 2,
-      ]);
-    });
+      const pinBox = pin.getBoundingClientRect();
+      const x = pinBox.left - planeBox.left + pinBox.width / 2;
+      const y = pinBox.top - planeBox.top + pinBox.height / 2;
 
-    if (pts.length === 0) return;
+      const card = cardRefs.current[i];
+      const cardBox = card ? card.getBoundingClientRect() : null;
+      const cardTop = cardBox ? cardBox.top - planeBox.top : y;
+      const cardBottom = cardBox ? cardBox.bottom - planeBox.top : y;
 
-    // The trail runs on past the first and last pin, so the route reads as
+      legs.push({
+        x,
+        y,
+        top: Math.min(y, cardTop - CLEARANCE),
+        bottom: Math.max(y, cardBottom + CLEARANCE),
+      });
+    }
+
+    if (legs.length === 0) return;
+
+    // The trail runs on past the first and last waypoint, so the route reads as
     // arriving from somewhere and continuing, not as starting on a dot.
-    const first = pts[0];
-    const last = pts[pts.length - 1];
-    const lead = [first[0], Math.max(6, first[1] - 46)];
+    const lead = [legs[0].x, Math.max(6, legs[0].top - 26)];
     // Longer than the lead: the end badge sits below the tail rather than on
     // it, so the trail needs room to arrive before the label starts.
-    const tail = [last[0], Math.min(h - 6, last[1] + 62)];
+    const tail = [legs[legs.length - 1].x, Math.min(h - 6, legs[legs.length - 1].bottom + 40)];
 
-    setGeom({ w, h, d: splinePath([lead, ...pts, tail]), lead, tail });
+    legs[0].top = lead[1];
+    legs[legs.length - 1].bottom = tail[1];
+
+    setGeom({ w, h, d: buildRoute(legs), lead, tail });
   }, [stops.length]);
 
   useLayoutEffect(() => { measure(); }, [measure, stops]);
@@ -288,6 +324,7 @@ const Roadmap = ({ stops = [], onSelect, emptyText = 'The route is still being d
 
                 <button
                   type="button"
+                  ref={(el) => { cardRefs.current[i] = el; }}
                   className={styles.card}
                   onClick={handleSelect(s)}
                   disabled={!onSelect}
