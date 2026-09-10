@@ -1,0 +1,114 @@
+/* ─── Reveal ───────────────────────────────────────────────────────────────────
+ *
+ * One entrance for the whole site.
+ *
+ * Home had a hand-staggered cascade, the Roadmap had its own, and Bio, Projects
+ * and Connect had nothing at all - their content simply appeared. This is the
+ * shared vocabulary: mark an element `data-reveal`, flip `data-reveal-shown`
+ * when hooks/useReveal fires, and set `--i` on children that should follow one
+ * another in.
+ *
+ * Two rules it obeys:
+ *
+ *   Only transform and opacity. No blur, no filter. A staggered `filter: blur()`
+ *   across many elements means many simultaneous blur passes, and at the 2-4px
+ *   people reach for it is barely perceptible anyway - it costs far more than
+ *   it reads.
+ *
+ *   The resting state is the FINISHED state. The hidden state only applies
+ *   while `[data-reveal]` is present and not yet shown, so a failure to
+ *   observe, a disabled observer, or a browser without IntersectionObserver
+ *   leaves content visible rather than permanently invisible.
+ */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-rise, 16px));
+  transition:
+    opacity var(--reveal-dur, 620ms) var(--ease-out) var(--reveal-delay, 0ms),
+    transform var(--reveal-dur, 620ms) var(--ease-out) var(--reveal-delay, 0ms);
+}
+
+[data-reveal-shown] [data-reveal],
+[data-reveal-shown][data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger. Children set `--i` and inherit the step, so a section chooses its
+   own rhythm by setting `--reveal-step` once rather than numbering delays by
+   hand - which is how Home ended up with six literal delays and Not Found with
+   seven. Capped so a long list cannot run for several seconds: past the tenth
+   item everything arrives together. */
+[data-reveal] {
+  --reveal-delay: calc(min(var(--i, 0), 10) * var(--reveal-step, 60ms));
+}
+
+/* Variants. */
+[data-reveal='fade']  { --reveal-rise: 0px; }
+[data-reveal='left']  { transform: translateX(calc(var(--reveal-rise, 16px) * -1)); }
+[data-reveal='right'] { transform: translateX(var(--reveal-rise, 16px)); }
+
+[data-reveal-shown] [data-reveal='left'],
+[data-reveal-shown] [data-reveal='right'] { transform: none; }
+
+/* ─── Scroll progress ─────────────────────────────────────────────────────────
+ * A hairline across the top of the viewport tracking how far down the document
+ * the reader is. Zero JavaScript: `animation-timeline: scroll()` binds the
+ * animation to the nearest scrollport's progress, so it is driven by the
+ * compositor and there is no scroll listener anywhere.
+ *
+ * Nothing renders it unless the browser supports it - the element is hidden by
+ * default and only revealed inside the @supports block, so unsupporting
+ * browsers get no stuck empty bar. */
+
+.scrollProgress {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scrollProgress {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: var(--z-sticky);
+    pointer-events: none;
+    transform-origin: left center;
+    transform: scaleX(0);
+    background: linear-gradient(
+      90deg,
+      var(--accent-3) 0%,
+      var(--accent-1) 55%,
+      var(--accent-2) 100%
+    );
+    animation: scrollProgressGrow linear both;
+    animation-timeline: scroll();
+  }
+
+  @keyframes scrollProgressGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+}
+
+/* ─── Reduced motion ──────────────────────────────────────────────────────────
+ * Reveals become instant rather than absent: the content still has to arrive,
+ * it just does not travel. The progress bar keeps working - it is information,
+ * not decoration, and it does not move on its own. */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+[data-no-animations='true'] [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}

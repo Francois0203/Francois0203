@@ -7,6 +7,7 @@ import { ErrorBoundary } from './components';
 import './styles/Theme.css';
 import './styles/Wrappers.css';
 import './styles/Components.css';
+import './styles/Reveal.css';
 import './styles/lenis.css';
 
 function ErrorBoundaryWrapper({ children }) {

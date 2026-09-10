@@ -95,7 +95,21 @@ export const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
        * `content`, so this only covers the page-level case.
        */
       if (!scoped && typeof ResizeObserver !== 'undefined') {
-        resizeObserver = new ResizeObserver(() => lenis?.resize());
+        /*
+         * Coalesced to one call per frame. A height change that arrives in the
+         * middle of a scroll gesture re-measures the scroll limits under the
+         * reader, and anything that mutates height repeatedly - a lazy image
+         * settling, a font swapping, a grid reflowing - would otherwise fire
+         * this once per mutation and lurch the position each time.
+         */
+        let pending = 0;
+        resizeObserver = new ResizeObserver(() => {
+          if (pending) return;
+          pending = requestAnimationFrame(() => {
+            pending = 0;
+            lenis?.resize();
+          });
+        });
         resizeObserver.observe(document.body);
       }
     };

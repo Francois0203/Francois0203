@@ -1,0 +1,170 @@
+/* ─── TechGrid ─────────────────────────────────────────────────────────────────
+ *
+ * Skills as marks rather than as a list of nouns.
+ *
+ * The colour is carried by [data-family] on each section, which sets a local
+ * --tint. Every tile inside reads that one variable, so the three families are
+ * one declaration apart and nothing repeats a colour literal:
+ *
+ *   data   cool  - analysis, statistics, modelling
+ *   dev    warm  - languages, frameworks, infrastructure
+ *   craft  quiet - the professional skills, which are neither
+ */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xl);
+}
+
+.family {
+  --tint: var(--accent-1);
+  --tint-rgb: var(--accent-1-rgb);
+}
+
+.family[data-family='data'] {
+  --tint: var(--data-1);
+  --tint-rgb: var(--data-1-rgb);
+}
+
+.family[data-family='dev'] {
+  --tint: var(--accent-1);
+  --tint-rgb: var(--accent-1-rgb);
+}
+
+.family[data-family='craft'] {
+  --tint: var(--tertiary-text-color);
+  /* No rgb token for the text scale, so the quiet family borrows the warm one
+     at a low alpha for its washes and relies on --tint for anything solid. */
+  --tint-rgb: var(--accent-3-rgb);
+}
+
+/* ── Family heading ──────────────────────────────────────────────────────── */
+
+.familyName {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 var(--spacing-lg);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tint);
+}
+
+.familyRule {
+  width: clamp(1.25rem, 3vw, 2.5rem);
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.familyCount {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--tertiary-text-color);
+  letter-spacing: 0.08em;
+}
+
+/* ── The grid ────────────────────────────────────────────────────────────── */
+
+/* auto-fill rather than a fixed column count, so the same rule serves a family
+   of three and a family of fourteen without a media query per breakpoint. */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: var(--spacing-md) 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--background-1);
+  text-align: center;
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+/**
+ * The mark.
+ *
+ * A wash of the family tint behind it rather than a flat fill, so the icon sits
+ * in its own light. currentColor on the glyph means the wash and the mark are
+ * one colour by construction.
+ */
+.mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  color: var(--tint);
+  background:
+    radial-gradient(
+      75% 75% at 50% 30%,
+      rgba(var(--tint-rgb), 0.16) 0%,
+      rgba(var(--tint-rgb), 0.05) 70%,
+      transparent 100%
+    );
+  transition: transform var(--transition-base);
+}
+
+.mark svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: block;
+}
+
+.label {
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--secondary-text-color);
+  /* Two lines, so "Statistical Modelling" does not make its tile taller than
+     the rest of the row. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover {
+    border-color: rgba(var(--tint-rgb), 0.5);
+    background: rgba(var(--tint-rgb), 0.06);
+    transform: translateY(-3px);
+  }
+
+  /* A few degrees, not a spin. Enough to acknowledge the pointer. */
+  .tile:hover .mark { transform: rotate(-6deg) scale(1.08); }
+  .tile:hover .label { color: var(--primary-text-color); }
+}
+
+/* ── Reveal ──────────────────────────────────────────────────────────────────
+   The tiles opt into the shared primitive in styles/Reveal.css, which owns the
+   hidden state and the --i stagger. Only the distance is set here: a tile
+   travels less than a section does, or twenty-eight of them arriving reads as
+   a wave rather than a cascade. */
+
+.tile,
+.familyName {
+  --reveal-rise: 10px;
+  --reveal-dur: 460ms;
+}
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(5.25rem, 1fr)); }
+  .mark { width: 2.5rem; height: 2.5rem; }
+  .mark svg { width: 1.35rem; height: 1.35rem; }
+}

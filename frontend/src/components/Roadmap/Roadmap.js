@@ -1,353 +1,256 @@
-import {
-  useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState,
-} from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { MdArrowOutward, MdSchool, MdWork } from 'react-icons/md';
+import { getLenis } from '../../hooks/useMomentumScroll';
 import styles from './Roadmap.module.css';
 
 /**
- * The journey as a route on a map.
+ * The journey, travelled sideways.
  *
- * Waypoints alternate across the width, numbered in the order they happened,
- * and a trail is drawn through them from the first to the present one. The
- * reader travels it by scrolling: the trail draws, each waypoint lights as the
- * trail reaches it, and a traveller rides the line.
+ * The section pins to the viewport and, as you keep scrolling down, the route
+ * advances horizontally through the waypoints - then releases and normal
+ * scrolling resumes. You move along the route rather than past a list of it.
  *
- * ── Why the trail is measured, not authored ──────────────────────────────────
- * The waypoints sit wherever their rows put them, and row heights depend on
- * content, font and viewport, so a hand-drawn path would only line up at one
- * width. The component measures each marker after layout and fits a spline
- * through the centres, which is why the trail always passes exactly through
- * the pins. Measuring happens in a layout effect and on a ResizeObserver -
- * never on scroll, never per frame.
+ * ── The choreography, and why it is built this way ───────────────────────────
+ * The first version panned at a constant rate and each panel's only response to
+ * its own position was a weak fade. It worked and it read as nothing: linear
+ * motion has no character. What gives a pinned pan life is that each panel does
+ * something as a function of where it is, and that different depths move at
+ * different rates.
  *
- * ── Motion ───────────────────────────────────────────────────────────────────
- * Scrubbed by scroll with CSS scroll-driven animation, so there is no scroll
- * listener and no rAF loop. Drawing a line means animating stroke-dashoffset,
- * which paints rather than composites: a deliberate trade, and it is two thin
- * paths in one layer. Everything else - pins, labels, the traveller - is
- * transform and opacity.
+ * So: layers at 25% / 100% / 120% of the pan (far haze, the panels, a trail
+ * head that runs ahead), and each panel turns to face you as it reaches centre,
+ * dwells there, then turns away - with its number and its text counter-drifting
+ * against the direction of travel, which is what actually reads as depth.
  *
- * Where scroll-driven animation is unsupported the trail is drawn in full and
- * the waypoints fade in from a single IntersectionObserver, which is a
- * complete map rather than a broken one.
+ * ── Why every panel is driven from ONE timeline ──────────────────────────────
+ * The obvious approach is `animation-timeline: view(inline)` per panel, letting
+ * each measure its own position. That does not work here, and the reason is
+ * worth writing down: a view progress timeline is computed from the subject's
+ * LAYOUT position inside the scrollport, and these panels are moved by
+ * `transform`. Their layout position never changes, so such a timeline would
+ * sit at one progress value forever.
+ *
+ * Instead every panel shares the section's `--journey` timeline and takes its
+ * own slice of it via `animation-range`. Panel `i` is centred when the pan is
+ * `i / (n - 1)` of the way along, which is known arithmetic - so the slice is
+ * computed once at render as a static inline string and the compositor does the
+ * rest. Still no scroll listener, no rAF, no per-frame JS.
+ *
+ * Descendants pick the same slice up through `animation-range: inherit`, so
+ * text inside a panel can stagger against its own arrival without needing a
+ * second computed value per element.
+ *
+ * ── Degrading ────────────────────────────────────────────────────────────────
+ * Pinning is opt-in and three things opt out: no scroll-driven animation
+ * support (Firefox today), viewports under 900px, and reduced motion. In all
+ * three the section is a native horizontal scroller with snapping - swipeable,
+ * arrow-key scrollable, and with the trail drawn in full rather than empty.
  */
 
-const SUPPORTS_SCROLL_TIMELINE =
-  typeof CSS !== 'undefined' &&
-  typeof CSS.supports === 'function' &&
-  CSS.supports('animation-timeline: view()');
+/** How much of the gap to a neighbouring waypoint one panel's slice spans.
+ *  Above 1 the panels' choreography overlaps slightly, which keeps the motion
+ *  continuous instead of handing off in visible steps. */
+const SLICE = 1.15;
 
-/**
- * Builds the trail explicitly rather than fitting a spline through the points.
- *
- * A Catmull-Rom fit was the first attempt and it was wrong for this shape. The
- * route now has three collinear points per waypoint (enter above, sit on the
- * pin, leave below), and a spline derives each tangent from the neighbours -
- * which are far away horizontally - so it threw big loops out past every
- * right-hand pin before curving back.
- *
- * The geometry here is a switchback: a straight vertical run through each
- * waypoint, joined by an S-bend whose control points share their endpoint's x.
- * That makes horizontal overshoot impossible - the curve is bounded by the two
- * pins it runs between - while keeping the joins tangent-continuous, so the
- * corners stay smooth.
- */
-const buildRoute = (legs) => {
-  if (legs.length === 0) return '';
-
-  const first = legs[0];
-  let d = `M ${first.x.toFixed(2)} ${first.top.toFixed(2)}`;
-  d += ` L ${first.x.toFixed(2)} ${first.bottom.toFixed(2)}`;
-
-  for (let i = 1; i < legs.length; i += 1) {
-    const a = legs[i - 1];
-    const b = legs[i];
-    // Handle length scales with the gap, so a tight row bends tightly and a
-    // loose one sweeps. Clamped so it never collapses to a corner or balloons.
-    const gap = Math.max(1, b.top - a.bottom);
-    const k = Math.min(80, Math.max(18, gap * 0.85));
-
-    d += ` C ${a.x.toFixed(2)} ${(a.bottom + k).toFixed(2)},`
-       + ` ${b.x.toFixed(2)} ${(b.top - k).toFixed(2)},`
-       + ` ${b.x.toFixed(2)} ${b.top.toFixed(2)}`;
-    d += ` L ${b.x.toFixed(2)} ${b.bottom.toFixed(2)}`;
-  }
-
-  return d;
-};
-
-/** Fallback reveal for browsers without scroll-driven animation. */
-const useReveal = (enabled) => {
-  const ref = useRef(null);
-  const [shown, setShown] = useState(!enabled);
-
-  useEffect(() => {
-    if (!enabled) return undefined;
-    const el = ref.current;
-    if (!el) return undefined;
-
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
-        setShown(true);
-        obs.disconnect();
-      },
-      { threshold: 0.08, rootMargin: '0px 0px -6% 0px' },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [enabled]);
-
-  return [ref, shown];
-};
-
-/* ─── Map furniture ─────────────────────────────────────────────────────────
-   Static decoration, drawn once and never animated. It is what separates a
-   route on a map from a wavy line beside a list, and it costs nothing to
-   render because none of it moves. */
-
-const Graticule = () => (
-  <defs>
-    <pattern id="rm-grid" width="52" height="52" patternUnits="userSpaceOnUse">
-      <path d="M 52 0 L 0 0 0 52" fill="none" stroke="currentColor" strokeWidth="1" />
-    </pattern>
-    <radialGradient id="rm-vignette" cx="50%" cy="50%" r="72%">
-      <stop offset="55%" stopColor="#000" stopOpacity="0" />
-      <stop offset="100%" stopColor="#000" stopOpacity="0.10" />
-    </radialGradient>
-  </defs>
-);
-
-const Compass = () => (
-  <svg className={styles.compass} viewBox="0 0 64 64" aria-hidden="true">
-    <circle cx="32" cy="32" r="26" className={styles.compassRing} />
-    <circle cx="32" cy="32" r="20" className={styles.compassRing} />
-    {/* Cardinal ticks, then the needle: north filled, south hollow. */}
-    {[0, 90, 180, 270].map((a) => (
-      <line
-        key={a}
-        x1="32" y1="4" x2="32" y2="11"
-        className={styles.compassTick}
-        transform={`rotate(${a} 32 32)`}
-      />
-    ))}
-    <polygon points="32,10 37,32 32,28 27,32" className={styles.compassNorth} />
-    <polygon points="32,54 27,32 32,36 37,32" className={styles.compassSouth} />
-    <text x="32" y="49" className={styles.compassLabel} textAnchor="middle">N</text>
-  </svg>
-);
-
-const Roadmap = ({ stops = [], onSelect, emptyText = 'The route is still being drawn.' }) => {
-  const [ref, shown] = useReveal(!SUPPORTS_SCROLL_TIMELINE);
-
-  const planeRef = useRef(null);
-  const listRef = useRef(null);
-  const pinRefs = useRef([]);
-  const cardRefs = useRef([]);
-
-  /** { w, h, d } - the plane's box and the fitted trail. */
-  const [geom, setGeom] = useState(null);
-
-  const measure = useCallback(() => {
-    const plane = planeRef.current;
-    const list = listRef.current;
-    if (!plane || !list) return;
-
-    const planeBox = plane.getBoundingClientRect();
-    const w = planeBox.width;
-    const h = planeBox.height;
-    if (w < 2 || h < 2) return;
-
-    /*
-     * One leg per waypoint: the x of its pin, and the y it is entered and left
-     * at. The trail runs straight down each leg and S-bends between them, so
-     * the crossing to the opposite side happens in the gap between cards and
-     * never over a label. The vertical runs sit in the pin column, which holds
-     * no text by construction.
-     */
-    const CLEARANCE = 10;
-    const legs = [];
-    const count = Math.min(stops.length, pinRefs.current.length);
-
-    for (let i = 0; i < count; i += 1) {
-      const pin = pinRefs.current[i];
-      if (!pin) continue;
-
-      // Measured against the plane, so the numbers are already in the SVG's
-      // coordinate space and no scroll offset can leak in.
-      const pinBox = pin.getBoundingClientRect();
-      const x = pinBox.left - planeBox.left + pinBox.width / 2;
-      const y = pinBox.top - planeBox.top + pinBox.height / 2;
-
-      const card = cardRefs.current[i];
-      const cardBox = card ? card.getBoundingClientRect() : null;
-      const cardTop = cardBox ? cardBox.top - planeBox.top : y;
-      const cardBottom = cardBox ? cardBox.bottom - planeBox.top : y;
-
-      legs.push({
-        x,
-        y,
-        top: Math.min(y, cardTop - CLEARANCE),
-        bottom: Math.max(y, cardBottom + CLEARANCE),
-      });
-    }
-
-    if (legs.length === 0) return;
-
-    // The trail runs on past the first and last waypoint, so the route reads as
-    // arriving from somewhere and continuing, not as starting on a dot.
-    const lead = [legs[0].x, Math.max(6, legs[0].top - 26)];
-    // Longer than the lead: the end badge sits below the tail rather than on
-    // it, so the trail needs room to arrive before the label starts.
-    const tail = [legs[legs.length - 1].x, Math.min(h - 6, legs[legs.length - 1].bottom + 40)];
-
-    legs[0].top = lead[1];
-    legs[legs.length - 1].bottom = tail[1];
-
-    setGeom({ w, h, d: buildRoute(legs), lead, tail });
-  }, [stops.length]);
-
-  useLayoutEffect(() => { measure(); }, [measure, stops]);
-
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list || typeof ResizeObserver === 'undefined') return undefined;
-    const obs = new ResizeObserver(() => measure());
-    obs.observe(list);
-    return () => obs.disconnect();
-  }, [measure]);
+const Roadmap = ({
+  stops = [],
+  onSelect,
+  heading,
+  emptyText = 'The route is still being drawn.',
+}) => {
+  const outerRef = useRef(null);
+  const trackRef = useRef(null);
 
   const handleSelect = useCallback((stop) => () => onSelect?.(stop), [onSelect]);
 
-  // The traveller rides the trail itself, so it stays on the route rather than
-  // tracking a straight line beside it.
-  const travellerStyle = useMemo(
-    () => (geom ? { offsetPath: `path("${geom.d}")` } : undefined),
-    [geom],
-  );
+  /**
+   * Each panel's slice of the journey timeline. Computed once per data change,
+   * never per frame.
+   */
+  const ranges = useMemo(() => {
+    const last = Math.max(1, stops.length - 1);
+    const half = (100 / last) * SLICE;
+
+    return stops.map((_, i) => {
+      const centre = (i / last) * 100;
+      const from = centre - half;
+      const to = centre + half;
+
+      /*
+       * The first and last panels reach outside the `contain` phase.
+       *
+       * Panel 0 is centred at progress 0, so a slice centred on it would need
+       * to start at a negative percentage. Clamping it to 0 instead breaks the
+       * mapping: the panel would sit at its keyframe 0% - turned away, text at
+       * opacity 0 - at the exact moment the reader first sees it. Measured that
+       * on the first pass.
+       *
+       * `entry` and `exit` are the phases either side of `contain`, covering
+       * the section scrolling into and out of view. Borrowing from them gives
+       * the first panel somewhere real to turn *from* as the section arrives,
+       * and the last somewhere to turn away *to* as it leaves - with one
+       * keyframe set rather than three.
+       */
+      if (i === 0) return `entry 55% contain ${to.toFixed(2)}%`;
+      if (i === last) return `contain ${from.toFixed(2)}% exit 45%`;
+
+      return `contain ${from.toFixed(2)}% contain ${to.toFixed(2)}%`;
+    });
+  }, [stops]);
+
+  /**
+   * Scroll the page to the point where the pan has reached waypoint `i`.
+   *
+   * Progress across the pinned range maps linearly to scroll position between
+   * the section's top and the point where its bottom clears the viewport.
+   */
+  const goTo = useCallback((i) => {
+    const el = outerRef.current;
+    if (!el || stops.length < 2) return;
+
+    const rect = el.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
+    const travel = Math.max(1, rect.height - window.innerHeight);
+    const target = Math.round(top + (i / (stops.length - 1)) * travel);
+
+    // Lenis owns the page scroll when it is running; going through the window
+    // instead would fight it and land somewhere else.
+    const lenis = getLenis();
+    if (lenis) lenis.scrollTo(target);
+    else window.scrollTo({ top: target, behavior: 'smooth' });
+  }, [stops.length]);
+
+  /*
+   * Arrow keys on the track.
+   *
+   * Only meaningful in the native-scroller fallback, where the <ol> is a real
+   * scroll container - without this you could not move it at all without
+   * tabbing through every card in turn. In pinned mode there is nothing to
+   * scroll, so the guard makes this a no-op and the page scroll drives the pan.
+   */
+  const onTrackKeyDown = useCallback((e) => {
+    const el = trackRef.current;
+    if (!el || el.scrollWidth <= el.clientWidth) return;
+
+    const page = el.clientWidth * 0.8;
+    const delta =
+      e.key === 'ArrowRight' ? page
+        : e.key === 'ArrowLeft' ? -page
+          : e.key === 'Home' ? -el.scrollLeft
+            : e.key === 'End' ? el.scrollWidth
+              : 0;
+
+    if (!delta) return;
+    e.preventDefault();
+    el.scrollBy({ left: delta, behavior: 'smooth' });
+  }, []);
 
   if (stops.length === 0) {
     return <p className={styles.empty}>{emptyText}</p>;
   }
 
+  const last = Math.max(1, stops.length - 1);
+
   return (
-    <div
-      ref={ref}
-      className={styles.wrap}
-      data-shown={shown ? 'true' : 'false'}
-      data-scrubbed={SUPPORTS_SCROLL_TIMELINE ? 'true' : 'false'}
-      data-measured={geom ? 'true' : 'false'}
-    >
-      <div ref={planeRef} className={styles.plane}>
-        {/* Everything in here is decoration; the list underneath carries all
-            of the actual content. */}
-        <svg
-          className={styles.paper}
-          width={geom?.w ?? 0}
-          height={geom?.h ?? 0}
-          viewBox={geom ? `0 0 ${geom.w} ${geom.h}` : '0 0 1 1'}
-          fill="none"
-          aria-hidden="true"
-        >
-          <Graticule />
-          <rect width="100%" height="100%" fill="url(#rm-grid)" className={styles.grid} />
+    <div ref={outerRef} className={styles.outer} style={{ '--n': stops.length }}>
+      <div className={styles.pin}>
+        {/* Far distance, panning at a quarter of the route's rate. Two things
+            moving at different speeds is the whole of parallax. */}
+        <div className={styles.horizon} aria-hidden="true">
+          <span className={styles.haze} />
+          <span className={styles.grid} />
+        </div>
 
-          {/* Contours: three soft closed curves, the way elevation reads on a
-              printed map. Fixed shapes scaled to the plane, so they cost one
-              paint and never reflow. */}
-          {geom && (
-            <g className={styles.contours}>
-              <ellipse cx={geom.w * 0.22} cy={geom.h * 0.24} rx={geom.w * 0.20} ry={geom.h * 0.11} />
-              <ellipse cx={geom.w * 0.22} cy={geom.h * 0.24} rx={geom.w * 0.13} ry={geom.h * 0.07} />
-              <ellipse cx={geom.w * 0.79} cy={geom.h * 0.68} rx={geom.w * 0.22} ry={geom.h * 0.12} />
-              <ellipse cx={geom.w * 0.79} cy={geom.h * 0.68} rx={geom.w * 0.14} ry={geom.h * 0.075} />
-              <ellipse cx={geom.w * 0.79} cy={geom.h * 0.68} rx={geom.w * 0.07} ry={geom.h * 0.035} />
-            </g>
-          )}
-
-          {geom && (
-            <>
-              {/* The route not yet travelled: a dashed trail, the way a path is
-                  drawn on a map. */}
-              <path className={styles.trailTrack} d={geom.d} />
-              {/* The route travelled, drawn by the scroll. */}
-              <path className={styles.trailDrawn} d={geom.d} pathLength="1" />
-            </>
-          )}
-
-          <rect width="100%" height="100%" fill="url(#rm-vignette)" />
-        </svg>
-
-        <Compass />
-
-        {geom && (
-          <>
-            <span
-              className={`${styles.terminus} ${styles.terminusStart}`}
-              style={{ left: `${geom.lead[0]}px`, top: `${geom.lead[1]}px` }}
-              aria-hidden="true"
-            >
-              Start
-            </span>
-            <span
-              className={`${styles.terminus} ${styles.terminusEnd}`}
-              style={{ left: `${geom.tail[0]}px`, top: `${geom.tail[1]}px` }}
-              aria-hidden="true"
-            >
-              Here
-            </span>
-            <span className={styles.traveller} style={travellerStyle} aria-hidden="true" />
-          </>
+        {/* Context that survives the pin: once the section takes the viewport,
+            the page's own heading has scrolled away. */}
+        {heading && (
+          <p className={styles.caption} aria-hidden="true">
+            <span className={styles.captionRule} />
+            {heading}
+          </p>
         )}
 
-        <ol ref={listRef} className={styles.list}>
+        <div className={styles.rail} aria-hidden="true">
+          <span className={styles.railTrack} />
+          <span className={styles.railFill} />
+          {/* Runs at 120%, so it pulls ahead of the panels rather than sitting
+              among them. */}
+          <span className={styles.traveller} />
+        </div>
+
+        <ol
+          ref={trackRef}
+          className={styles.track}
+          tabIndex={0}
+          onKeyDown={onTrackKeyDown}
+          aria-label="The journey, in order"
+        >
           {stops.map((s, i) => {
             const isEdu = s.kind === 'education';
             const Icon = isEdu ? MdSchool : MdWork;
-            // Waypoints alternate across the plane, which is what turns a
-            // column of rows into a route with a shape.
-            const side = i % 2 === 0 ? 'left' : 'right';
 
             return (
               <li
                 key={s.id ?? i}
                 className={styles.stop}
-                data-side={side}
-                style={{ '--i': i }}
+                /* This panel's slice of the journey. Descendants inherit it. */
+                style={{ animationRange: ranges[i] }}
               >
-                <span className={styles.pinCell} ref={(el) => { pinRefs.current[i] = el; }}>
-                  <span className={styles.pin} aria-hidden="true">
-                    <span className={styles.pinHalo} />
-                    <span className={styles.pinNo}>{i + 1}</span>
-                  </span>
+                <span className={styles.ghost} aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+
+                <span className={styles.waypoint} aria-hidden="true">
+                  <Icon className={styles.waypointIcon} />
                 </span>
 
                 <button
                   type="button"
-                  ref={(el) => { cardRefs.current[i] = el; }}
                   className={styles.card}
                   onClick={handleSelect(s)}
                   disabled={!onSelect}
                 >
-                  <span className={styles.cardMeta}>
-                    <Icon className={styles.cardIcon} aria-hidden="true" />
-                    <span className={styles.cardKind}>
-                      {isEdu ? 'Education' : 'Experience'}
+                  {/* The counter-drift rides this wrapper, so the card's own
+                      border and shadow stay put while its contents shift. */}
+                  <span className={styles.cardInner}>
+                    <span className={styles.meta}>
+                      <span className={styles.kind}>
+                        {isEdu ? 'Education' : 'Experience'}
+                      </span>
+                      {s.period && <span className={styles.period}>{s.period}</span>}
                     </span>
-                    {s.period && <span className={styles.cardPeriod}>{s.period}</span>}
-                  </span>
 
-                  <span className={styles.cardTitle}>
-                    {s.title}
-                    <MdArrowOutward className={styles.cardArrow} aria-hidden="true" />
-                  </span>
+                    <span className={styles.title}>
+                      {s.title}
+                      <MdArrowOutward className={styles.arrow} aria-hidden="true" />
+                    </span>
 
-                  {s.subtitle && <span className={styles.cardSub}>{s.subtitle}</span>}
+                    {s.subtitle && <span className={styles.sub}>{s.subtitle}</span>}
+                    {s.description && <span className={styles.desc}>{s.description}</span>}
+                  </span>
                 </button>
               </li>
             );
           })}
         </ol>
+
+        <nav className={styles.dots} aria-label="Jump to a waypoint">
+          {stops.map((s, i) => {
+            const to = (i / last) * 100;
+            return (
+              <button
+                key={s.id ?? i}
+                type="button"
+                className={styles.dot}
+                style={{ animationRange: `contain ${Math.max(0, to - 7)}% contain ${to}%` }}
+                onClick={() => goTo(i)}
+                aria-label={`${i + 1}. ${s.title}`}
+              >
+                <span className={styles.dotMark} />
+              </button>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );

@@ -3,6 +3,37 @@ import { createPortal } from 'react-dom';
 
 import styles from '../components/Tooltip/Tooltip.module.css';
 
+/* ─── PORTAL SURFACE ──────────────────────────────────────────────────────────
+   Declared once, at module scope, so React sees one stable component type.
+   Hidden at (0,0) until the first position is calculated, to avoid a flash. */
+const TooltipSurface = ({
+  isVisible, isExiting, isAnimatingIn, placement, position, surfaceRef, children,
+}) => {
+  if (!isVisible && !isExiting) return null;
+
+  const tooltipClasses = [
+    styles.tooltip,
+    styles[placement],
+    isAnimatingIn && !isExiting ? styles.visible : '',
+    isExiting ? styles.exit : '',
+  ].filter(Boolean).join(' ');
+
+  return createPortal(
+    <div
+      ref={surfaceRef}
+      className={tooltipClasses}
+      style={{
+        left: position.x,
+        top: position.y,
+        visibility: position.x === 0 && position.y === 0 ? 'hidden' : 'visible',
+      }}
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+};
+
 // ─── HOOK ────────────────────────────────────────────────────────────────────
 // Manages tooltip visibility, animated entry/exit, and viewport-aware placement.
 export const useTooltip = () => {
@@ -88,15 +119,34 @@ export const useTooltip = () => {
   }, [isVisible, calculatePosition]);
 
   useEffect(() => {
-    if (isVisible && triggerRef.current) {
-      const handleReposition = () => calculatePosition(triggerRef.current);
-      window.addEventListener('resize', handleReposition);
-      window.addEventListener('scroll', handleReposition, true);
-      return () => {
-        window.removeEventListener('resize', handleReposition);
-        window.removeEventListener('scroll', handleReposition, true);
-      };
-    }
+    if (!isVisible || !triggerRef.current) return undefined;
+
+    /*
+     * Coalesced into one rAF and marked passive.
+     *
+     * calculatePosition does two getBoundingClientRect() reads and two
+     * setState calls, and this was wired to `scroll` in the capture phase -
+     * so it fired for scrolls on any element, unthrottled, forcing a
+     * synchronous layout and a React render per scroll event for as long as
+     * the tooltip was open. Capture is still needed (the trigger may sit in a
+     * nested scroller), but one recalculation per frame is enough.
+     */
+    let frame = 0;
+    const handleReposition = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (triggerRef.current) calculatePosition(triggerRef.current);
+      });
+    };
+
+    window.addEventListener('resize', handleReposition, { passive: true });
+    window.addEventListener('scroll', handleReposition, { capture: true, passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', handleReposition);
+      window.removeEventListener('scroll', handleReposition, { capture: true });
+    };
   }, [isVisible, calculatePosition]);
 
   // ─── TRIGGER PROPS ──────────────────────────────────────────────────────────
@@ -108,33 +158,33 @@ export const useTooltip = () => {
     onBlur: hideTooltip,
   };
 
-  // ─── PORTAL ──────────────────────────────────────────────────────────────────
-  // Hidden at (0,0) until first position is calculated to avoid flash.
-  const TooltipPortal = ({ children }) => {
-    if (!isVisible && !isExiting) return null;
-
-    const tooltipClasses = [
-      styles.tooltip,
-      styles[placement],
-      isAnimatingIn && !isExiting ? styles.visible : '',
-      isExiting ? styles.exit : ''
-    ].filter(Boolean).join(' ');
-
-    return createPortal(
-      <div
-        ref={tooltipRef}
-        className={tooltipClasses}
-        style={{
-          left: position.x,
-          top: position.y,
-          visibility: position.x === 0 && position.y === 0 ? 'hidden' : 'visible',
-        }}
+  // ─── PORTAL ──────────────────────────────────────────────────────────────
+  /*
+   * Bound to this hook's current state, but the component itself lives at
+   * module scope (see TooltipSurface below).
+   *
+   * It used to be declared here, inside the hook body, which made it a NEW
+   * component type on every render of whatever consumed the hook. React
+   * compares types by identity, so it unmounted and remounted the entire
+   * portal subtree on each consumer render instead of updating it - throwing
+   * away the tooltip's DOM, and its running enter animation, mid-flight. That
+   * is a correctness bug that happened to also cost frames.
+   */
+  const TooltipPortal = useCallback(
+    ({ children }) => (
+      <TooltipSurface
+        isVisible={isVisible}
+        isExiting={isExiting}
+        isAnimatingIn={isAnimatingIn}
+        placement={placement}
+        position={position}
+        surfaceRef={tooltipRef}
       >
         {children}
-      </div>,
-      document.body
-    );
-  };
+      </TooltipSurface>
+    ),
+    [isVisible, isExiting, isAnimatingIn, placement, position],
+  );
 
   return {
     triggerProps,

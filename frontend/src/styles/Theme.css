@@ -30,10 +30,16 @@
     --radius-xl: 1rem;            /* 16px */
     --radius-full: 9999px;
 
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 250ms ease;
-    --transition-slow: 350ms ease;
+    /* Transitions.
+       These three carry the easing as well as the duration, and about ninety-five
+       declarations across the site use them - so whatever curve is written here is
+       the site's actual motion, whatever the tokens twenty lines below say.
+       They used to end in bare `ease`, which meant almost nothing on the site used
+       --ease-out at all. They now reference it, so the curve and the durations stay
+       in one place and every consumer upgrades at once. */
+    --transition-fast: 150ms var(--ease-out);
+    --transition-base: 250ms var(--ease-out);
+    --transition-slow: 350ms var(--ease-out);
 
     /* ─── MOTION ────────────────────────────────────────────────────────────── */
     /* The built-in CSS easings are too weak to read as intentional. These are
@@ -89,93 +95,131 @@
        opening title card is the only thing on screen while it plays. */
     --z-intro: 1100;
 
-    /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
+    /* ─── COLOR PALETTE ───────────────────────────────────────────────────────
+     *
+     * Charcoal for dark, beige for light, one warm accent, one cool accent.
+     *
+     * What this replaced and why: every ground, border and text colour on the
+     * site used to be a warm brown, and the accent was warm too. So a screen
+     * had exactly one hue on it and nothing to contrast against - which is
+     * what "bland" meant. It could not be fixed by adding motion, because the
+     * problem was that everything was the same colour.
+     *
+     * The structure now:
+     *   grounds   neutral. Charcoal in dark, beige in light. Neutral ground is
+     *             what lets an accent read as an accent rather than as more of
+     *             the background.
+     *   warm      the brand. Headings, prose, calls to action, the manuscript
+     *             character of the site. Darker in light mode, because burnt
+     *             orange on beige needs more depth to hold contrast than it
+     *             does against charcoal.
+     *   cool      the work. Charts, statistics, technology, numbers - anything
+     *             that belongs to "data scientist" rather than to "storyteller".
+     *             Warm against cool is the largest contrast available without
+     *             adding a third hue.
+     */
 
-    /* - Text: Light Mode (deep coffee → warm cocoa) - */
-    --primary-text-color-light: #2a1810;         /* Deep coffee brown */
-    --secondary-text-color-light: #5c3a1f;       /* Warm chestnut */
-    --tertiary-text-color-light: #8a6a48;        /* Muted brown */
-    --disabled-color-light: #b8a487;             /* Warm cream-gray */
+    /* - Text: Light Mode (near-black on beige, faintly warm) - */
+    --primary-text-color-light: #1f1d19;
+    --secondary-text-color-light: #4a453d;
+    --tertiary-text-color-light: #756e63;
+    --disabled-color-light: #a8a094;
 
-    /* - Text: Dark Mode (warm cream → ochre) - */
-    --primary-text-color-dark: #f7e8cd;          /* Warm cream */
-    --secondary-text-color-dark: #d8b986;        /* Warm tan */
-    --tertiary-text-color-dark: #a08866;         /* Muted ochre */
-    --disabled-color-dark: #5a4a32;              /* Deep warm dim */
+    /* - Text: Dark Mode (warm off-white on charcoal) - */
+    --primary-text-color-dark: #f2efe9;
+    --secondary-text-color-dark: #b8b2a8;
+    --tertiary-text-color-dark: #857f75;
+    --disabled-color-dark: #55504a;
 
     /* - Status Colors - */
-    --error-color: #b8391c;                      /* Burnt sienna - autumn red */
-    --warning-color: #d4882a;                    /* Autumn amber */
-    --success-color: #6b8c3a;                    /* Olive moss - autumn green */
-    --info-color: #b8651c;                       /* Burnt orange - unified with accent */
+    --error-color: #c0442a;
+    --warning-color: #d4882a;
+    --success-color: #4f9d76;
+    --info-color: #1b9aaa;
 
     /* - Status Backgrounds: Light Mode - */
-    --success-background-color-light: #f4f0db;   /* Barely olive */
-    --warning-background-color-light: #fdf2db;   /* Barely amber */
-    --error-background-color-light: #fbeee5;     /* Barely sienna */
-    --info-background-color-light: #fdf2db;      /* Barely orange */
+    --success-background-color-light: #e8f2ec;
+    --warning-background-color-light: #f8efdc;
+    --error-background-color-light: #f8e8e3;
+    --info-background-color-light: #e4f1f2;
 
     /* - Status Backgrounds: Dark Mode - */
-    --success-background-color-dark: #1a1e0a;    /* Deep moss */
-    --warning-background-color-dark: #28190a;    /* Deep amber */
-    --error-background-color-dark: #2a1108;      /* Deep sienna */
-    --info-background-color-dark: #2a1808;       /* Deep orange */
+    --success-background-color-dark: #14211b;
+    --warning-background-color-dark: #241c0e;
+    --error-background-color-dark: #241310;
+    --info-background-color-dark: #10201f;
 
-    /* - Accent: Burnt Orange & Pumpkin Gold (Light Mode) - */
-    --accent-1-light: #b8651c;        /* Burnt orange - primary action */
-    --accent-2-light: #e07b1f;        /* Bright pumpkin - highlight */
-    --accent-3-light: #7a3e10;        /* Deep umber - pressed / deep */
-    --accent-hover-light: #8a4a14;    /* Rich amber - hover state */
+    /* - Warm accent: the brand. Darker in light mode, per the note above. - */
+    --accent-1-light: #9a4e12;
+    --accent-2-light: #c26516;
+    --accent-3-light: #6b350c;
+    --accent-hover-light: #7d3f0e;
 
-    /* - Accent: Autumn Gold & Maple (Dark Mode) - */
-    --accent-1-dark: #e89542;         /* Warm pumpkin gold - primary on dark */
-    --accent-2-dark: #f5b56b;         /* Bright maple - lighter highlights */
-    --accent-3-dark: #c47020;         /* Deep amber - mid tone */
-    --accent-hover-dark: #f5b56b;     /* Maple - hover brightness */
+    --accent-1-dark: #e89542;
+    --accent-2-dark: #f5b56b;
+    --accent-3-dark: #c47020;
+    --accent-hover-dark: #f5b56b;
 
-    /* - Accent RGB (for rgba() usage) - */
-    --accent-1-rgb-light: 184, 101, 28;
-    --accent-2-rgb-light: 224, 123, 31;
-    --accent-3-rgb-light: 122, 62, 16;
+    --accent-1-rgb-light: 154, 78, 18;
+    --accent-2-rgb-light: 194, 101, 22;
+    --accent-3-rgb-light: 107, 53, 12;
 
     --accent-1-rgb-dark: 232, 149, 66;
     --accent-2-rgb-dark: 245, 181, 107;
     --accent-3-rgb-dark: 196, 112, 32;
 
-    /* - Leaf / Maple accent (cross-mode, used for decorative touches) - */
-    --leaf-color-light: #c4471c;      /* Maple red - autumn leaf */
-    --leaf-color-dark:  #e06030;      /* Bright maple - autumn leaf on dark */
+    /* - Cool accent: the data. Same three-step shape as the warm scale, so a
+         component can swap one for the other without restructuring. - */
+    --data-1-light: #10796f;
+    --data-2-light: #0d6169;
+    --data-3-light: #14958a;
+
+    --data-1-dark: #2ec4b6;
+    --data-2-dark: #7fdbda;
+    --data-3-dark: #1b9aaa;
+
+    --data-1-rgb-light: 16, 121, 111;
+    --data-2-rgb-light: 13, 97, 105;
+    --data-3-rgb-light: 20, 149, 138;
+
+    --data-1-rgb-dark: 46, 196, 182;
+    --data-2-rgb-dark: 127, 219, 218;
+    --data-3-rgb-dark: 27, 154, 170;
+
+    /* - Decorative maple accent, kept for the leaf motifs - */
+    --leaf-color-light: #a83a18;
+    --leaf-color-dark:  #e06030;
     --leaf-color: var(--leaf-color-light);
 
     /* - Accent Backgrounds: Light Mode - */
-    --accent-1-background-light: #fdf2db;        /* Barely pumpkin */
-    --accent-2-background-light: #f8d8a8;        /* Warm honey tint */
-    --accent-3-background-light: #ecb878;        /* Stronger amber tint */
+    --accent-1-background-light: #f6eee2;
+    --accent-2-background-light: #efdcc4;
+    --accent-3-background-light: #e2c4a0;
 
     /* - Accent Backgrounds: Dark Mode - */
-    --accent-1-background-dark: #1f1408;         /* Deep warm pumpkin */
-    --accent-2-background-dark: #2a1c0d;         /* Warmer amber surface */
-    --accent-3-background-dark: #3a2814;         /* Deeper amber surface */
+    --accent-1-background-dark: #221a12;
+    --accent-2-background-dark: #2c2118;
+    --accent-3-background-dark: #3a2b1d;
 
-    /* - Backgrounds: Light Mode (cream → toasted parchment) - */
-    --background-0-light: #f7eed8;               /* Warm parchment - page canvas */
-    --background-1-light: #fdf6e3;               /* Cream parchment - primary surface */
-    --background-2-light: #f0e0bc;               /* Toasted beige - elevated surface */
-    --background-3-light: #e6d099;               /* Warm sand */
-    --background-4-light: #dac08c;               /* Golden sand - dividers, subtle cards */
-    --frosted-background-light: rgba(253, 246, 227, 0.86);
-    --border-color-light: #dcbe8e;               /* Warm sand border */
-    --border-color-hover-light: #c89e62;         /* Toasted border hover */
+    /* - Backgrounds: Light Mode (beige, warm but not brown) - */
+    --background-0-light: #f2ece1;               /* Beige - page canvas */
+    --background-1-light: #faf7f1;               /* Near-white surface */
+    --background-2-light: #e9e2d5;               /* Elevated surface */
+    --background-3-light: #dcd3c4;               /* Raised surface */
+    --background-4-light: #cbc1af;               /* Dividers, subtle cards */
+    --frosted-background-light: rgba(250, 247, 241, 0.86);
+    --border-color-light: #d6ccbb;
+    --border-color-hover-light: #b9ab95;
 
-    /* - Backgrounds: Dark Mode (deep walnut → coffee bean) - */
-    --background-0-dark: #120a04;                /* Deep walnut - page canvas */
-    --background-1-dark: #1c1208;                /* Coffee bean - primary surface */
-    --background-2-dark: #281c0e;                /* Warm dark elevated surface */
-    --background-3-dark: #342612;                /* Warm raised surface */
-    --background-4-dark: #44321c;                /* Warm high-elevation card */
-    --frosted-background-dark: rgba(28, 18, 8, 0.88);
-    --border-color-dark: #44321c;                /* Warm subtle dark border */
-    --border-color-hover-dark: #5a4226;          /* Warm slightly visible */
+    /* - Backgrounds: Dark Mode (charcoal, a touch warm so the accent sits) - */
+    --background-0-dark: #121214;                /* Charcoal - page canvas */
+    --background-1-dark: #1a1a1e;                /* Primary surface */
+    --background-2-dark: #222227;                /* Elevated surface */
+    --background-3-dark: #2b2b31;                /* Raised surface */
+    --background-4-dark: #35353d;                /* High-elevation card */
+    --frosted-background-dark: rgba(26, 26, 30, 0.88);
+    --border-color-dark: #2e2e35;
+    --border-color-hover-dark: #45454f;
 
     /* - Applied Colors (Default: Light Mode) - */
     color-scheme: light;   /* tells the browser to paint native UI (scrollbars!) light */
@@ -201,6 +245,13 @@
     --accent-1-rgb: var(--accent-1-rgb-light);
     --accent-2-rgb: var(--accent-2-rgb-light);
     --accent-3-rgb: var(--accent-3-rgb-light);
+
+    --data-1: var(--data-1-light);
+    --data-2: var(--data-2-light);
+    --data-3: var(--data-3-light);
+    --data-1-rgb: var(--data-1-rgb-light);
+    --data-2-rgb: var(--data-2-rgb-light);
+    --data-3-rgb: var(--data-3-rgb-light);
 
     --accent-1-background: var(--accent-1-background-light);
     --accent-2-background: var(--accent-2-background-light);
@@ -239,6 +290,13 @@
     --accent-1-rgb: var(--accent-1-rgb-dark);
     --accent-2-rgb: var(--accent-2-rgb-dark);
     --accent-3-rgb: var(--accent-3-rgb-dark);
+
+    --data-1: var(--data-1-dark);
+    --data-2: var(--data-2-dark);
+    --data-3: var(--data-3-dark);
+    --data-1-rgb: var(--data-1-rgb-dark);
+    --data-2-rgb: var(--data-2-rgb-dark);
+    --data-3-rgb: var(--data-3-rgb-dark);
 
     --accent-1-background: var(--accent-1-background-dark);
     --accent-2-background: var(--accent-2-background-dark);

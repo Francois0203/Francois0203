@@ -50,10 +50,25 @@ const DOT_COUNT = 4;
 const Loading = ({ message = 'Loading', showVerse = true }) => {
   const [currentVerse, setCurrentVerse] = useState(0);
   const [verseVisible, setVerseVisible] = useState(true);
-  const { blobRefs, onMouseMove } = useBlobPhysics(BLOB_DEFS);
+  const { blobRefs } = useBlobPhysics(BLOB_DEFS);
 
   useEffect(() => {
-    if (!showVerse) return;
+    if (!showVerse) return undefined;
+
+    /*
+     * Reduced motion stops the rotation entirely.
+     *
+     * The cross-fade is CSS and the global net in Theme.css flattens it, but
+     * the swap itself is a setInterval - so under reduced motion the text used
+     * to keep changing out from under the reader with no transition at all,
+     * which is worse than either animating it or leaving it alone. Content
+     * that replaces itself on a timer is motion, whether or not it is animated.
+     */
+    if (
+      document.documentElement.dataset.noAnimations === 'true' ||
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) return undefined;
+
     let swapTimeout;
     const interval = setInterval(() => {
       setVerseVisible(false);
@@ -66,7 +81,7 @@ const Loading = ({ message = 'Loading', showVerse = true }) => {
   }, [showVerse]);
 
   return (
-    <div className={styles.wrapper} onMouseMove={onMouseMove}>
+    <div className={styles.wrapper}>
       <div className={styles.blobField} aria-hidden="true">
         {BLOB_DEFS.map((_, i) => (
           <div key={i} ref={el => { blobRefs.current[i] = el; }} className={BLOB_CLASSES[i].join(' ')} />

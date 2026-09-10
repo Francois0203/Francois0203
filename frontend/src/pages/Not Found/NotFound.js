@@ -42,12 +42,26 @@ const NotFound = () => {
   const navigate = useNavigate();
   const [currentSaying, setCurrentSaying] = useState(0);
   const [sayingVisible, setSayingVisible]  = useState(true);
-  const { blobRefs, onMouseMove } = useBlobPhysics(BLOB_DEFS, { withRotation: true, maxSpeed: 18 });
+  const { blobRefs } = useBlobPhysics(BLOB_DEFS, { withRotation: true, maxSpeed: 18 });
 
   const handleGoHome = () => navigate('/');
   const handleGoBack = () => window.history.length > 1 ? navigate(-1) : navigate('/');
 
   useEffect(() => {
+    /*
+     * Reduced motion stops the rotation entirely.
+     *
+     * The cross-fade is CSS and the global net in Theme.css flattens it, but
+     * the swap itself is a setInterval - so under reduced motion the text used
+     * to keep changing out from under the reader with no transition at all,
+     * which is worse than either animating it or leaving it alone. Content
+     * that replaces itself on a timer is motion, whether or not it is animated.
+     */
+    if (
+      document.documentElement.dataset.noAnimations === 'true' ||
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) return undefined;
+
     let swapTimeout;
     const interval = setInterval(() => {
       setSayingVisible(false);
@@ -60,7 +74,7 @@ const NotFound = () => {
   }, []);
 
   return (
-    <div className={styles.root} onMouseMove={onMouseMove}>
+    <div className={styles.root}>
       <div className={styles.blobField} aria-hidden="true">
         {BLOB_DEFS.map((_, i) => (
           <div key={i} ref={el => { blobRefs.current[i] = el; }} className={BLOB_CLASSES[i].join(' ')} />

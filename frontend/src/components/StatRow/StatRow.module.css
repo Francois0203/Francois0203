@@ -1,0 +1,67 @@
+/* ─── StatRow ──────────────────────────────────────────────────────────────────
+ *
+ * Figures, set large, in the cool scale.
+ *
+ * Cool because these are measurements. The palette's split is warm for who he
+ * is and cool for what he does, and a count of technologies is squarely the
+ * second - see the note at the top of styles/Theme.css.
+ */
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--spacing-lg) var(--spacing-xl);
+  margin: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  /* A hairline per figure rather than a box around each: at this size the rule
+     is enough to group the label with its number. */
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-sm);
+
+  --reveal-rise: 12px;
+  --reveal-dur: 520ms;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.value {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.1em;
+  color: var(--data-1);
+  line-height: 1;
+}
+
+/**
+ * Tabular figures, and a fixed minimum width.
+ *
+ * Without both, the counter's own width changes as it passes 9 and 99, so every
+ * figure in the row shuffles sideways while it counts and the whole grid
+ * reflows on the way up.
+ */
+.number {
+  font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  min-width: 2ch;
+}
+
+.suffix {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  color: var(--data-3);
+  opacity: 0.8;
+}

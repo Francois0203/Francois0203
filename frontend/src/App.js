@@ -2,8 +2,10 @@ import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider, Intro } from './components';
+import SiteFooter from './components/SiteFooter';
 import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
 import { ContentProvider } from './context/ContentContext';
+import { NAVIGATION_PAGES } from './content/navigation';
 import styles from './App.module.css';
 
 /*
@@ -16,13 +18,6 @@ import styles from './App.module.css';
 const RoadmapPreview = import.meta.env.DEV
   ? React.lazy(() => import('./dev/RoadmapPreview'))
   : null;
-
-const NAVIGATION_PAGES = [
-  { label: 'Home',     to: '/'        },
-  { label: 'Bio',      to: '/bio'     },
-  { label: 'Projects', to: '/projects'},
-  { label: 'Connect',  to: '/connect' },
-];
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -67,6 +62,12 @@ const AppLayout = () => {
           way back from /admin does not replay it. */}
       <Intro />
 
+      {/* Reading progress. Driven entirely by animation-timeline: scroll(), so
+          there is no scroll listener behind it - the compositor advances it.
+          styles/Reveal.css hides it where that is unsupported rather than
+          leaving a bar that never fills. */}
+      <div className="scrollProgress" aria-hidden="true" />
+
       <div className={styles.app}>
         <NavigationBar
           links={navigationLinks}
@@ -82,6 +83,12 @@ const AppLayout = () => {
           <Suspense fallback={<Loading />}>
             <Outlet />
           </Suspense>
+
+          {/* Inside the keyed wrapper, so it participates in the page
+              transition rather than sitting still while the page changes
+              above it. It reads the route itself for the "next page" pointer,
+              so it re-renders with the page either way. */}
+          <SiteFooter />
         </div>
       </div>
     </ContentProvider>

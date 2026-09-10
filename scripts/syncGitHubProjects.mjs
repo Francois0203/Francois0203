@@ -6,8 +6,8 @@
  * into  githubProjects/{owner}_{repo}.
  *
  * Required env vars
- *   GH_PAT           — GitHub Personal Access Token (repo read)
- *   SERVICE_ACCOUNT  — Firebase Admin service-account JSON. Omit for a local
+ *   GH_PAT - GitHub Personal Access Token (repo read)
+ *   SERVICE_ACCOUNT - Firebase Admin service-account JSON. Omit for a local
  *                      run to use application-default credentials instead.
  *
  * Node ≥18 required (uses native fetch).

@@ -12,15 +12,29 @@
   box-shadow:
     var(--shadow-lg),
     inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  /*
+   * No transform in this transition, and none on hover.
+   *
+   * This card keeps its backdrop-filter, because a live website really does
+   * pass behind it and the blur is doing visible work. But moving a
+   * backdrop-filter element re-blurs the region behind it for every frame of
+   * the transition, and this card CONTAINS a cross-origin iframe - its own
+   * compositor surface, which has to be re-composited when an ancestor moves.
+   * A 3px lift was costing a re-blur plus an iframe re-composite for 250ms on
+   * every mouse-over. The border and shadow carry the hover instead.
+   */
   transition:
     border-color var(--transition-base),
-    box-shadow   var(--transition-base),
-    transform    var(--transition-base);
+    box-shadow   var(--transition-base);
 }
 
-.card:hover {
-  border-color: rgba(var(--accent-1-rgb), 0.35);
-  transform: translateY(-3px);
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    border-color: rgba(var(--accent-1-rgb), 0.35);
+    box-shadow:
+      var(--shadow-xl),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
 }
 
 /* ── Browser chrome ─────────────────────────────────────────────────────────── */

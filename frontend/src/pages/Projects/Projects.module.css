@@ -12,59 +12,54 @@
   width: 100%;
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────── */
+/* ── Scene 1: the title card ────────────────────────────────────────────────
+   Matches the Home hero: cool eyebrow, serif heading at display scale, one
+   positioning line, then the figures. The old chapter eyebrow and gradient
+   text-fill heading are gone - see content/copy/projects.js. */
 
-.header {
-  margin-bottom: var(--spacing-xl);
+.hero {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: clamp(2rem, 8vh, 6rem) 0 clamp(2.5rem, 7vh, 5rem);
 }
 
-.chapterEyebrow {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: 10px;
-  margin: 0 0 var(--spacing-sm);
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 0.78rem;
-  color: var(--accent-3);
-}
-.chapterMark {
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-style: normal;
-}
-.chapterDash { opacity: 0.55; }
-.chapterName {
-  color: var(--accent-1);
+.heroEyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
   font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  /* The cool counter-colour, as on Home: this page is the evidence, and the
+     evidence is data-flavoured. */
+  color: var(--data-1);
 }
 
 .heading {
-  margin-top: 0;
-  margin-bottom: var(--spacing-xs);
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-style: italic;
-  background: linear-gradient(120deg, var(--primary-text-color) 0%, var(--leaf-color) 55%, var(--accent-1) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header p {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  color: var(--secondary-text-color);
   margin: 0;
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  /* Clamped rather than fixed so the longest editable heading still fits on a
+     phone without wrapping into four lines. */
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--primary-text-color);
 }
 
-/* ── Sections ─────────────────────────────────────────────────────────────────
-   Client sites and personal repos get separate headed sections: identical cards
-   would read as identical achievements. */
+.heroLede {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  line-height: 1.5;
+  color: var(--secondary-text-color);
+}
+
+.heroStats {
+  width: 100%;
+  max-width: 34rem;
+  margin-top: 0.75rem;
+}
 
 .section { margin-bottom: var(--spacing-3xl); }
 .section:last-of-type { margin-bottom: var(--spacing-xl); }
@@ -76,14 +71,6 @@
   margin-bottom: var(--spacing-lg);
   padding-bottom: var(--spacing-sm);
   border-bottom: 1px solid var(--border-color);
-}
-
-.sectionEye {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--accent-3);
 }
 
 .sectionTitle {
@@ -138,16 +125,18 @@
   gap: var(--spacing-lg);
   /* Rows sized to the tallest card, cards stretch - so all are equal height. */
   grid-auto-rows: 1fr;
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 1200px;
+  /*
+   * content-visibility: auto with contain-intrinsic-size: 1px 1200px was here.
+   * 1200px is a guess at the height of an N-row grid, so the document height
+   * jumped whenever the grid skipped or unskipped, which re-measured Lenis
+   * mid-scroll and made the scroll position lurch.
+   */
 }
 
 /* ── Card ────────────────────────────────────────────────────────────────── */
 
 .card {
   background: var(--frosted-background);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -159,8 +148,7 @@
     inset 0 -1px 0 rgba(0, 0, 0, 0.04);
   transition:
     border-color var(--transition-base),
-    box-shadow   var(--transition-base),
-    transform    var(--transition-base);
+    box-shadow   var(--transition-base);
   contain: layout paint;
 }
 
@@ -170,7 +158,6 @@
     -webkit-backdrop-filter: none;
     background: var(--background-1);
   }
-  .card:hover { transform: none; }
 }
 
 .card:hover {
@@ -556,65 +543,39 @@
 
 /* ── Next-chapter footer ─────────────────────────────────────────────────── */
 
-.nextChapter {
-  margin-top: var(--spacing-3xl);
-  padding-top: var(--spacing-xl);
-  border-top: 1px solid var(--border-color);
+/* ── Reveal wrappers ────────────────────────────────────────────────────────
+ *
+ * Each card is wrapped in a div so it can carry `data-reveal` and its own
+ * stagger index. That wrapper becomes the grid item, which quietly broke the
+ * equal-height behaviour above: `grid-auto-rows: 1fr` still stretches the
+ * wrapper, but a card inside it sizes to its own content and leaves the rest of
+ * the row empty. Passing the stretch through restores it.
+ *
+ * Scoped to direct children of the two grids so it cannot affect the reveal
+ * wrappers used elsewhere on the page, which are not grid items.
+ */
+.grid > [data-reveal],
+.showcaseGrid > [data-reveal] {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  text-align: center;
+  min-width: 0;
 }
 
-.nextChapterLabel {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-size: 0.78rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+.grid > [data-reveal] > *,
+.showcaseGrid > [data-reveal] > * {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ── Filter readout ───────────────────────────────────────────────────────
+   Reserves its line whether or not a filter is active, so switching languages
+   does not shift the grid down by one line of text. */
+
+.filterStatus {
+  min-height: 1.4rem;
+  margin: 0 0 var(--spacing-md);
+  font-size: 0.8125rem;
   color: var(--tertiary-text-color);
 }
-
-.nextChapterBtn {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: var(--spacing-md) var(--spacing-2xl);
-  background: rgba(var(--accent-1-rgb), 0.06);
-  border: 1px solid rgba(var(--accent-1-rgb), 0.30);
-  border-radius: var(--radius-xl);
-  cursor: pointer;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-.nextChapterBtn:hover {
-  background: rgba(var(--accent-1-rgb), 0.12);
-  border-color: rgba(var(--accent-1-rgb), 0.55);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(var(--accent-3-rgb), 0.18);
-}
-
-.nextChapterTitle {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-weight: 700;
-  color: var(--accent-1);
-  font-size: var(--font-size-md);
-}
-
-.nextChapterHint {
-  font-size: var(--font-size-xs);
-  color: var(--tertiary-text-color);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.nextChapterHint svg { font-size: 1em; }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
@@ -636,8 +597,6 @@
     padding-inline: var(--spacing-md);
     padding-bottom: var(--spacing-xl);
   }
-  /* Push next-chapter footer above the fixed mobile nav circle (64px + 24px gap) */
-  .nextChapter { padding-bottom: 100px; }
 }
 
 @media (max-width: 600px) {

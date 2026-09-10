@@ -34,13 +34,27 @@
 
 /* ========== AMBIENT GLOW SQUARES ========== */
 
+  /*
+   * No border-radius morph, and no border-radius in will-change.
+   *
+   * These carry filter: blur(90-100px) on elements up to 620px wide. A blurred
+   * element that only translates is rasterised once and then composited - but
+   * border-radius changes the clip geometry, which invalidates that raster, so
+   * an infinite radius morph meant re-rasterising and re-blurring three very
+   * large surfaces on every frame, forever. And will-change: border-radius is
+   * worse than useless: the property is not compositable, so the hint promoted
+   * a layer that still had to be repainted.
+   *
+   * The motion is unaffected - the JS physics in useBlobPhysics still drifts
+   * them - and at a 90px blur the shape change was not visible anyway.
+   */
 .ambientSquare {
   position: absolute;
   top: 0;
   left: 0;
   filter: blur(90px);
   opacity: 0.28;
-  will-change: transform, border-radius;
+  will-change: transform;
   pointer-events: none;
 }
 
@@ -49,8 +63,6 @@
   height: 480px;
   background: radial-gradient(ellipse at 40% 40%, var(--accent-1), var(--accent-2) 55%, transparent 80%);
   border-radius: 10%;
-  animation: ambientMorph1 52s ease-in-out infinite;
-  animation-delay: -8s;
 }
 
 .ambient2 {
@@ -58,8 +70,6 @@
   height: 380px;
   background: radial-gradient(ellipse at 60% 60%, var(--accent-2), var(--accent-3) 50%, transparent 80%);
   border-radius: 20% 8% 20% 8%;
-  animation: ambientMorph2 62s ease-in-out infinite;
-  animation-delay: -32s;
 }
 
 .ambient3 {
@@ -67,8 +77,6 @@
   height: 320px;
   background: radial-gradient(ellipse at 50% 50%, var(--accent-3), var(--accent-1) 55%, transparent 80%);
   border-radius: 8% 20% 8% 20%;
-  animation: ambientMorph3 46s ease-in-out infinite;
-  animation-delay: -18s;
 }
 
 @keyframes ambientMorph1 {
@@ -99,9 +107,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  --cursor-x: -500px;
-  --cursor-y: -500px;
-  will-change: transform, border-radius;
+  will-change: transform;
   pointer-events: none;
   background: linear-gradient(
     160deg,
@@ -117,7 +123,7 @@
   inset: 0;
   border-radius: inherit;
   background: radial-gradient(
-    circle 200px at var(--cursor-x, -500px) var(--cursor-y, -500px),
+    circle 220px at 32% 26%,
     rgba(var(--accent-1-rgb), 0.30) 0%,
     rgba(var(--accent-1-rgb), 0.10) 45%,
     transparent 70%
@@ -135,7 +141,7 @@
   pointer-events: none;
   z-index: 2;
   background: radial-gradient(
-    circle 160px at var(--cursor-x, -500px) var(--cursor-y, -500px),
+    circle 180px at 32% 26%,
     rgba(var(--accent-2-rgb), 0.95) 0%,
     rgba(var(--accent-1-rgb), 0.45) 40%,
     rgba(var(--accent-1-rgb), 0.10) 65%,
@@ -155,8 +161,6 @@
   width: 260px;
   height: 260px;
   border-radius: 6%;
-  backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
-  -webkit-backdrop-filter: blur(18px) saturate(160%) brightness(1.06);
   border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow:
     var(--shadow-md),
@@ -170,8 +174,6 @@
   width: 300px;
   height: 300px;
   border-radius: 20% 6% 18% 8%;
-  backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
-  -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.05);
   border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow:
     var(--shadow-lg),
@@ -185,8 +187,6 @@
   width: 220px;
   height: 220px;
   border-radius: 8% 24% 6% 20%;
-  backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
-  -webkit-backdrop-filter: blur(14px) saturate(150%) brightness(1.07);
   border: 1px solid rgba(255, 255, 255, 0.32);
   box-shadow:
     var(--shadow-sm),

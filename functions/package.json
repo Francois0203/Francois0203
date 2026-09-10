@@ -1,6 +1,6 @@
 {
   "name": "portfolio-functions",
-  "description": "Cloud Functions for the portfolio — emails on new contact messages",
+  "description": "Cloud Functions for the portfolio - emails on new contact messages",
   "type": "commonjs",
   "main": "index.js",
   "private": true,

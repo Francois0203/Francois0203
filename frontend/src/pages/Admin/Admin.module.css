@@ -62,8 +62,6 @@
   padding: var(--spacing-sm) var(--spacing-lg);
   border-bottom: 1px solid var(--border-color);
   background: var(--frosted-background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
   z-index: var(--z-sticky);
 }

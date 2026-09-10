@@ -108,6 +108,36 @@ const LiveFrame = ({ site, name }) => {
     return () => obs.disconnect();
   }, [phase, request]);
 
+  /*
+   * Unload a frame that has been scrolled well clear of the viewport.
+   *
+   * MAX_CONCURRENT throttles how many frames LOAD at once, but nothing ever
+   * tore one down, so a scroll to the bottom of /projects left every site
+   * simultaneously live - one full browsing context each, with its own rAF
+   * loops, fonts, scripts and animations, all competing for this page's main
+   * thread and compositor. That is a cost that grows with the number of
+   * projects and is paid for frames nobody is looking at.
+   *
+   * The margin is deliberately much larger than the load margin (1200px out
+   * versus 400px in) so the two cannot oscillate while scrolling slowly past a
+   * card. Dropping back to 'idle' re-arms the loader above, and the framed site
+   * is almost always still in the HTTP cache, so coming back is quick.
+   *
+   * A frame the reader has clicked into is never unloaded - they are using it.
+   */
+  useEffect(() => {
+    if (phase !== 'ready' || live) return undefined;
+    const el = viewportRef.current;
+    if (!el) return undefined;
+
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) setPhase('idle');
+    }, { rootMargin: '1200px 0px' });
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [phase, live]);
+
   // Scale the 1440px-wide frame down to whatever width the card actually got.
   useEffect(() => {
     const el = viewportRef.current;

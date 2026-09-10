@@ -110,7 +110,23 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
     return { description: fallback, features: [], techStack: [] };
   }
 
-  const lines = markdown.split('\n');
+  /*
+   * HTML comments are removed before anything else, and before the text is
+   * split into lines.
+   *
+   * The per-line tag strip cannot touch these. A comment that opens on one line
+   * and closes on another leaves a first line containing no '>' at all, so it
+   * survives every later clean-up and gets collected as prose. The live symptom
+   * was a repository card whose description began "<!-- Palette and layout
+   * mirror the live site" - an authoring note presented as the project summary.
+   *
+   * [\s\S] rather than '.' so the match spans newlines, and non-greedy so two
+   * separate comments are not merged into one match, taking the real text
+   * between them with it.
+   */
+  const source = markdown.replace(/<!--[\s\S]*?-->/g, '');
+
+  const lines = source.split('\n');
 
   // ── Description ──────────────────────────────────────────────────────────
   // Walk from the top, skip the h1 and any decorative HTML/badge lines,
@@ -163,7 +179,7 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
     : fallback;
 
   // ── Sections ──────────────────────────────────────────────────────────────
-  const sections = parseSections(markdown);
+  const sections = parseSections(source);
 
   // If no description found at the top level, try the first "About" section
   if (!description && !fallback) {
@@ -218,6 +234,10 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
 
   let techStack = [];
   if (techSec) {
+    /* The en dash in this character class is deliberate and must stay: it is
+       matching separators in OTHER people's README files, not our own prose.
+       A project-wide dash sweep rewrote it to `[--:...]` once, which is a
+       character RANGE from '-' to ':' and therefore split on digits. */
     const fromList = extractListItems(techSec.content)
       .map(item => stripMarkdown(item.split(/[-–:·|]/)[0]).trim())
       .filter(Boolean);

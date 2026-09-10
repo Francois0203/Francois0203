@@ -181,8 +181,6 @@ a.contactItem:hover {
 
 .card {
   background: var(--frosted-background);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
@@ -469,68 +467,6 @@ a.contactItem:hover {
   margin: 0;
 }
 
-/* ── Next-chapter footer ─────────────────────────────────────────────────── */
-
-.nextChapter {
-  margin-top: var(--spacing-3xl);
-  padding-top: var(--spacing-xl);
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  text-align: center;
-}
-
-.nextChapterLabel {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-size: 0.78rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--tertiary-text-color);
-}
-
-.nextChapterBtn {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: var(--spacing-md) var(--spacing-2xl);
-  background: rgba(var(--accent-1-rgb), 0.06);
-  border: 1px solid rgba(var(--accent-1-rgb), 0.30);
-  border-radius: var(--radius-xl);
-  cursor: pointer;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-.nextChapterBtn:hover {
-  background: rgba(var(--accent-1-rgb), 0.12);
-  border-color: rgba(var(--accent-1-rgb), 0.55);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(var(--accent-3-rgb), 0.18);
-}
-
-.nextChapterTitle {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-weight: 700;
-  color: var(--accent-1);
-  font-size: var(--font-size-md);
-}
-
-.nextChapterHint {
-  font-size: var(--font-size-xs);
-  color: var(--tertiary-text-color);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.nextChapterHint svg { font-size: 1em; }
-
 /* ── Skeleton - compositor-only shimmer ──────────────────────────────────── */
 
 @keyframes shimmer {
@@ -582,8 +518,6 @@ a.contactItem:hover {
     padding-inline: var(--spacing-md);
     padding-bottom: var(--spacing-xl);
   }
-  /* Push next-chapter footer above the fixed mobile nav circle (64px + 24px gap) */
-  .nextChapter { padding-bottom: 100px; }
   .content {
     grid-template-columns: 1fr;
   }

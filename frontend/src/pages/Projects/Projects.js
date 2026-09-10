@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 import { Modal, LightWaveButton, SiteShowcase } from '../../components';
+import LangBar from '../../components/LangBar';
+import StatRow from '../../components/StatRow';
 import { useGitHubProjects, useStudioSites } from '../../hooks';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
@@ -10,20 +12,28 @@ import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { parseReadme } from './parseReadme';
 import ReadmeRenderer from './ReadmeRenderer';
 import styles from './Projects.module.css';
+import useReveal from '../../hooks/useReveal';
+import { langColor } from './langColors';
 
-// ─── Language colour map ──────────────────────────────────────────────────────
+// ─── Figures ─────────────────────────────────────────────────────────────────
 
-const LANG_COLORS = {
-  JavaScript: '#f7df1e', TypeScript: '#3178c6', Python:  '#3572a5',
-  Go:         '#00add8', Rust:       '#dea584', Java:    '#b07219',
-  'C#':       '#178600', 'C++':      '#f34b7d', C:       '#555555',
-  HTML:       '#e34c26', CSS:        '#563d7c', SCSS:    '#c6538c',
-  Swift:      '#fa7343', Kotlin:     '#a97bff', Ruby:    '#701516',
-  PHP:        '#4f5d95', Shell:      '#89e051', Dart:    '#00b4ab',
-  R:          '#198ce7', Vue:        '#41b883', Svelte:  '#ff3e00',
+/**
+ * The counts under the heading, all read off the live data.
+ *
+ * Each figure is omitted when it cannot be derived rather than shown as a zero:
+ * "0 stars" is a claim, whereas an absent figure is simply an absent figure.
+ */
+const buildStats = ({ sites, projects }) => {
+  const stars = projects.reduce((a, p) => a + (p.stars ?? 0), 0);
+  const languages = new Set(projects.map(p => p.language).filter(Boolean)).size;
+
+  return [
+    sites.length > 0 && { label: 'Live sites', value: sites.length },
+    projects.length > 0 && { label: 'Repositories', value: projects.length },
+    languages > 0 && { label: 'Languages', value: languages },
+    stars > 0 && { label: 'Stars', value: stars },
+  ].filter(Boolean);
 };
-
-const langColor = (lang) => LANG_COLORS[lang] ?? 'var(--accent-1)';
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -185,37 +195,60 @@ const Projects = () => {
   const { overrides } = useSiteCopy();
   const t = resolveGroup(PROJECTS_FIELDS, overrides.projects);
 
+  /* The language chosen in the chart's legend, or null for everything. The
+     chart is the control, so there is no separate filter bar to keep in sync. */
+  const [lang, setLang] = useState(null);
+
+  const repos = projects ?? [];
+
+  const shown = useMemo(
+    () => (lang ? repos.filter(p => p.language === lang) : repos),
+    [repos, lang],
+  );
+
+  const stats = useMemo(
+    () => buildStats({ sites, projects: repos }),
+    [sites, repos],
+  );
+
+  const [heroRef, heroShown] = useReveal();
+  const [studioRef, studioInView] = useReveal({ threshold: 0.12 });
+  const [codeRef, codeInView] = useReveal({ threshold: 0.08 });
+
   return (
     <section className={styles.page}>
       <div className={styles.container}>
 
-        <header className={styles.header}>
-          <p className={styles.chapterEyebrow}>
-            <span className={styles.chapterMark}>{t.chapterMark}</span>
-            <span className={styles.chapterDash} aria-hidden="true">-</span>
-            <span className={styles.chapterName}>{t.chapterName}</span>
-          </p>
-          <h1 className={styles.heading}>{t.heading}</h1>
-          <p>
-            {loading || sitesLoading
-              ? 'Fetching projects from the bench…'
-              : [
-                  sites.length > 0
-                    ? `${sites.length} live ${sites.length === 1 ? 'site' : 'sites'}`
-                    : null,
-                  projects?.length
-                    ? `${projects.length} ${projects.length === 1 ? 'repository' : 'repositories'}`
-                    : null,
-                ].filter(Boolean).join(' · ')}
-          </p>
+        {/* ── Scene 1 ── the title card ───────────────────────────────── */}
+        <header
+          ref={heroRef}
+          className={styles.hero}
+          data-reveal-shown={heroShown ? '' : undefined}
+          style={{ '--reveal-step': '90ms' }}
+        >
+          <p className={styles.heroEyebrow} data-reveal style={{ '--i': 0 }}>{t.eyebrow}</p>
+          <h1 className={styles.heading} data-reveal style={{ '--i': 1 }}>{t.heading}</h1>
+          <p className={styles.heroLede} data-reveal style={{ '--i': 2 }}>{t.lede}</p>
+
+          {/* The figures replace the old "2 live sites · 14 repositories" line,
+              which said the same thing without ever being read as a number. */}
+          {stats.length > 0 && (
+            <div className={styles.heroStats} data-reveal style={{ '--i': 3 }}>
+              <StatRow stats={stats} />
+            </div>
+          )}
         </header>
 
-        {/* ── Client work ── live embeds of the sites in the studio org ── */}
-        <section className={styles.section}>
+        {/* ── Scene 2 ── the live sites ───────────────────────────────── */}
+        <section
+          ref={studioRef}
+          className={styles.section}
+          data-reveal-shown={studioInView ? '' : undefined}
+          style={{ '--reveal-step': '80ms' }}
+        >
           <div className={styles.sectionHead}>
-            <span className={styles.sectionEye}>{t.studioEye}</span>
-            <h2 className={styles.sectionTitle}>{t.studioTitle}</h2>
-            <p className={styles.sectionLede}>{t.studioLede}</p>
+            <h2 className={styles.sectionTitle} data-reveal style={{ '--i': 0 }}>{t.studioTitle}</h2>
+            <p className={styles.sectionLede} data-reveal style={{ '--i': 1 }}>{t.studioLede}</p>
           </div>
 
           {sitesError ? (
@@ -228,19 +261,42 @@ const Projects = () => {
                 ? Array.from({ length: 2 }).map((_, i) => <SkeletonShowcase key={i} />)
                 : sites.length === 0
                   ? <div className={styles.emptyCard}><p>{t.studioEmpty}</p></div>
-                  : sites.map(p => <SiteShowcase key={p.id} project={p} />)
+                  /* Each showcase reveals on its own index. This grid had no
+                     entrance at all, so two live sites simply appeared. */
+                  : sites.map((p, i) => (
+                    <div key={p.id} data-reveal style={{ '--i': i + 2 }}>
+                      <SiteShowcase project={p} />
+                    </div>
+                  ))
               }
             </div>
           )}
         </section>
 
-        {/* ── Code & experiments ── the personal repos ─────────────────── */}
-        <section className={styles.section}>
+        {/* ── Scene 3 ── the repositories, with the language mix ─────── */}
+        <section
+          ref={codeRef}
+          className={styles.section}
+          data-reveal-shown={codeInView ? '' : undefined}
+          style={{ '--reveal-step': '55ms' }}
+        >
           <div className={styles.sectionHead}>
-            <span className={styles.sectionEye}>{t.codeEye}</span>
-            <h2 className={styles.sectionTitle}>{t.codeTitle}</h2>
-            <p className={styles.sectionLede}>{t.codeLede}</p>
+            <h2 className={styles.sectionTitle} data-reveal style={{ '--i': 0 }}>{t.codeTitle}</h2>
+            <p className={styles.sectionLede} data-reveal style={{ '--i': 1 }}>{t.codeLede}</p>
           </div>
+
+          {!loading && repos.length > 0 && (
+            <LangBar projects={repos} onSelect={setLang} active={lang} />
+          )}
+
+          {/* Announced, because clicking a legend chip changes a grid that may
+              be below the fold - a filter with no feedback reads as a page that
+              lost its content. */}
+          <p className={styles.filterStatus} role="status">
+            {lang
+              ? `Showing ${shown.length} ${shown.length === 1 ? 'repository' : 'repositories'} in ${lang}.`
+              : ''}
+          </p>
 
           {error ? (
             <div className={styles.errorCard}>
@@ -250,32 +306,21 @@ const Projects = () => {
             <div className={styles.grid}>
               {loading
                 ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                : projects?.length === 0
-                  ? <div className={styles.emptyCard}><p>No projects configured yet.</p></div>
-                  : projects?.map(p => (
-                    <ProjectCard key={p.id} project={p} onReadme={setSelected} />
+                : shown.length === 0
+                  ? <div className={styles.emptyCard}><p>{t.codeEmpty}</p></div>
+                  /* The densest region on the site, and previously the only one
+                     with no entrance whatsoever. The index is capped so a
+                     fourteenth card does not wait most of a second. */
+                  : shown.map((p, i) => (
+                    <div key={p.id} data-reveal style={{ '--i': Math.min(i, 8) + 2 }}>
+                      <ProjectCard project={p} onReadme={setSelected} />
+                    </div>
                   ))
               }
             </div>
           )}
         </section>
 
-        {/* ── Next chapter ─────────────────────────────────────────── */}
-        <footer className={styles.nextChapter}>
-          <span className={styles.nextChapterLabel}>{t.nextChapterLabel}</span>
-          <button
-            type="button"
-            className={styles.nextChapterBtn}
-            onClick={() => navigate('/connect')}
-          >
-            <span className={styles.nextChapterTitle}>
-              {t.nextChapterTitle}
-            </span>
-            <span className={styles.nextChapterHint}>
-              {t.nextChapterHint}<MdArrowOutward aria-hidden="true" />
-            </span>
-          </button>
-        </footer>
       </div>
 
       <Modal

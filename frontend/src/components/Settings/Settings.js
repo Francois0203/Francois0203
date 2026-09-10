@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { IoSettingsSharp } from 'react-icons/io5';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import { BsLightningFill, BsPauseFill } from 'react-icons/bs';
-import { useAnimations } from '../../hooks';
+import { useAnimations, usePointerGlow } from '../../hooks';
 
 import styles from "./Settings.module.css";
 
@@ -19,18 +19,10 @@ const BUBBLES = [
 // Circular glass cog button with cursor-following glow when closed.
 
 const TriggerButton = ({ isOpen, onClick, size }) => {
-  const ref = useRef(null);
-  const [glowPos, setGlowPos]   = useState({ x: 50, y: 50 });
-  const [hovered, setHovered]   = useState(false);
-
-  const handleMouseMove = useCallback((e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    setGlowPos({
-      x: ((e.clientX - r.left) / r.width)  * 100,
-      y: ((e.clientY - r.top)  / r.height) * 100,
-    });
-  }, []);
+  // Glow position is written straight to this element from one rAF; `hovered`
+  // stays as state because it flips at most twice per hover.
+  const { ref, glowHandlers } = usePointerGlow();
+  const [hovered, setHovered] = useState(false);
 
   const iconSize = Math.round(size * 0.46);
 
@@ -43,12 +35,10 @@ const TriggerButton = ({ isOpen, onClick, size }) => {
         width:  size,
         height: size,
         // CSS custom properties consumed by the ::before glow layer
-        '--glow-x':    `${glowPos.x}%`,
-        '--glow-y':    `${glowPos.y}%`,
         '--glow-show': (!isOpen && hovered) ? '1' : '0',
       }}
       onClick={onClick}
-      onMouseMove={handleMouseMove}
+      {...glowHandlers}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label={isOpen ? 'Close settings' : 'Open settings'}

@@ -1,152 +1,65 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getLenis } from '../../hooks/useMomentumScroll';
 import { useContent } from '../../context/ContentContext';
 import { readName, writeName } from './identity';
 import styles from './Intro.module.css';
 
 /**
- * The opening: a parallax star field that resolves into a constellation, then
- * flies through it into the site.
+ * The opening: liquid glass floods the viewport, then drains away.
  *
- * ── Why stars, and why parallax ──────────────────────────────────────────────
- * Not decoration picked for looking expensive. Parallax - the apparent shift of
- * a near star against far ones as the observer moves - is how astronomers
- * measure distance, and astronomical data processing is the MSc this portfolio
- * is about. So the depth is the subject: three layers of stars fly out at three
- * different rates, and the nearest ones streak past while the far field barely
- * moves. Lift the idea out and the subject goes with it, which is the test this
- * site's design has to pass.
+ * The site is briefly visible, sharp. Glass rises from below the fold behind a
+ * rippling meniscus, decelerating as it reaches level. The name surfaces as the
+ * water passes it. A specular highlight travels across the surface. Then the
+ * level drops and drains off the bottom, leaving the site.
  *
- * The constellation is nine stars joined into an asterism that climbs left to
- * right, then breaks into a loop - a route between fixed points, which is the
- * same gesture the roadmap further down the page makes.
+ * ── What "liquid glass" is made of, and what each part costs ─────────────────
+ * Translucency and blur is `backdrop-filter`. The specular highlight is a
+ * gradient that moves. The rim and the chromatic edge are static inset
+ * shadows. True refraction - the lensing that displaces what is behind the
+ * glass - needs an SVG displacement map used as a backdrop-filter, which is
+ * Chrome-only and rebuilds that map whenever the geometry changes. It is not
+ * used here.
  *
- * ── The sequence ─────────────────────────────────────────────────────────────
- *      0 -  900   the field fades up, layer by layer, and drifts
- *    600 - 1700   the constellation draws itself between the nine stars
- *   1150 - 1900   each joined star flares as the line reaches it
- *   1500 - 2200   the name resolves out of blur beneath it
- *   2200 - 2500   hold
- *   2500 - 3200   flight: the three layers accelerate outward at their own
- *                 rates, the constellation recedes, the panel dissolves
- *   3200         unmounts
+ * ── The rules this obeys, and why ────────────────────────────────────────────
+ * `backdrop-filter` costs a full re-blur of everything behind it on every
+ * frame in which it, or anything behind it, moves. So:
  *
- * ── Cost ─────────────────────────────────────────────────────────────────────
- * Every moving thing is a transform or an opacity on its own element, so the
- * whole sequence composites. The flight scales three containers rather than
- * ~70 stars individually - one transform per layer per frame, not seventy. The
- * star count halves on a small screen. There is no JS timeline at all: the only
- * JS is one timer for the flight and one for the unmount.
+ *   1. There is exactly ONE backdrop-filter element - the water body.
+ *   2. Its geometry never animates. No border-radius morph, no clip-path
+ *      animation, no width or height. Only transform and opacity.
+ *   3. The liquid is in FRONT of the glass, not in it: the meniscus is two
+ *      wave overlays translating horizontally at different speeds. Two phases
+ *      beating against each other is what reads as a moving water surface, and
+ *      transform-only means each rasterises once.
  *
- * ── Rules ────────────────────────────────────────────────────────────────────
+ * Rule 2 is not theoretical. pages/Loading had three glass blobs each carrying
+ * backdrop-filter while being translated every frame AND morphing their
+ * border-radius on an infinite loop, and it is the Suspense fallback for every
+ * route, so it paid that bill on every navigation.
+ *
+ * ── One animation, not a timeline ────────────────────────────────────────────
+ * The tide is a single CSS animation whose keyframes carry their own timing
+ * functions, so the rise can decelerate, the hold can be still, and the drain
+ * can accelerate - without a JS timeline. The only JS clock is one timer for
+ * the unmount.
+ *
+ * ── Rules carried over ───────────────────────────────────────────────────────
  *   1. Once per page load. A refresh, a fresh tab or a direct URL replays it;
- *      moving between routes inside the app does not. Hence a module-scoped
- *      flag: AppLayout unmounts when you open /admin and mounts again on the
- *      way back, and neither is a load.
- *   2. Any input skips it, fast.
- *   3. It never gates the content. The page renders underneath from the first
- *      frame; this is purely an overlay.
- *   4. It does not exist under reduced motion, or with the site's Motion
- *      toggle off. A full-viewport flight is the largest motion on the site.
+ *      moving between routes does not. Hence the module-scoped flag: AppLayout
+ *      unmounts on /admin and mounts again on the way back, and neither is a
+ *      load.
+ *   2. Any input skips it.
+ *   3. It never gates the content - the page is rendered underneath from the
+ *      first frame; this is purely an overlay.
+ *   4. It does not exist under reduced motion or the site's Motion toggle.
  */
 
 let playedThisLoad = false;
 
-/** When the flight begins. Must match the delays in Intro.module.css. */
-const FLIGHT_AT = 2900;
-/** Flight duration; the panel unmounts at FLIGHT_AT + FLIGHT_MS. */
-const FLIGHT_MS = 780;
+/** Total run. Must match the `tide` keyframes in Intro.module.css. */
+const TOTAL_MS = 3100;
 /** The shortened exit when someone skips. */
 const SKIP_MS = 220;
-
-/* A small screen is also the slowest device and the one most likely to be on a
- * battery, so the field is budgeted rather than scaled. */
-const IS_SMALL = typeof window !== 'undefined' &&
-  (window.matchMedia?.('(max-width: 640px)').matches ||
-   window.matchMedia?.('(pointer: coarse)').matches);
-
-/* Three depths. `z` drives both how bright and how fast: the near layer is the
- * one that streaks past, the far layer barely moves, and that difference is the
- * parallax the whole thing is built on. */
-const LAYERS = [
-  { key: 'far',  count: IS_SMALL ? 26 : 64, z: 0.35 },
-  { key: 'mid',  count: IS_SMALL ? 12 : 28, z: 0.75 },
-  { key: 'near', count: IS_SMALL ? 5  : 11, z: 1.35 },
-];
-
-/**
- * The asterism, in a 1000x560 box. Hand-placed rather than random: a random
- * walk reads as a scribble, and the one thing a constellation has to look like
- * is a shape someone once decided was worth naming.
- *
- * Percentages, so the figure scales with the viewport and never needs
- * measuring - which is what keeps this whole component free of layout reads.
- */
-const FIGURE = [
-  [12, 71], [25, 59], [33, 34], [47, 45], [56, 23],
-  [69, 38], [77, 64], [89, 54], [62, 75],
-];
-
-/* Index pairs, so the chain can branch. A single polyline would force the
- * figure to be one unbroken path, and an asterism that never forks reads as a
- * zigzag rather than a shape. */
-const EDGES = [
-  [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [3, 8], [8, 6],
-];
-
-/** When the pen starts, and how long the whole figure takes to trace. */
-const DRAW_AT = 600;
-const DRAW_MS = 1250;
-/* Each stroke starts slightly before the previous one lands. At 1.0 the pen
- * visibly stops at every star; this keeps the trace continuous. */
-const OVERLAP = 0.86;
-
-/**
- * Timings for the figure, derived from the geometry rather than fixed.
- *
- * The first version gave every edge the same 420ms and a dash pattern of 900
- * units against edges 132 to 225 units long, so each one finished drawing in
- * the first fifteen percent of its slot and then sat still. It read as nine
- * lines snapping on in sequence, not as a figure being traced.
- *
- * Here the dash pattern is the edge's own length and the duration is
- * proportional to it, so the pen moves at one constant speed across the whole
- * asterism, and each stroke is scheduled to begin just before the last lands.
- */
-const buildTiming = () => {
-  const at = (i) => [FIGURE[i][0] * 10, FIGURE[i][1] * 5.6];
-
-  const lengths = EDGES.map(([a, b]) => {
-    const [x1, y1] = at(a);
-    const [x2, y2] = at(b);
-    return Math.hypot(x2 - x1, y2 - y1);
-  });
-
-  const total = lengths.reduce((sum, l) => sum + l, 0);
-
-  let cursor = DRAW_AT;
-  const edges = lengths.map((len, i) => {
-    const dur = (len / total) * DRAW_MS;
-    const timing = { len, dur, delay: cursor };
-    cursor += dur * OVERLAP;
-    return { ...timing, pair: EDGES[i] };
-  });
-
-  /* A star lights when the pen reaches it, which is the moment the first
-     stroke touching it lands - not on a shared stagger. The origin lights as
-     the pen is set down. */
-  const nodes = FIGURE.map((_, i) => {
-    if (i === EDGES[0][0]) return DRAW_AT;
-    const arrivals = edges
-      .filter(e => e.pair.includes(i))
-      .map(e => e.delay + e.dur);
-    return arrivals.length ? Math.min(...arrivals) : DRAW_AT;
-  });
-
-  return { edges, nodes, endsAt: cursor };
-};
-
-const TIMING = buildTiming();
 
 const shouldPlay = () => {
   if (typeof window === 'undefined') return false;
@@ -156,46 +69,48 @@ const shouldPlay = () => {
   return true;
 };
 
-/* Randomised per mount rather than hand-picked: values chosen by hand betray
- * the grid they were chosen on, and an evenly spread field reads as a dot
- * screen rather than as sky. */
-const buildField = () =>
-  LAYERS.flatMap(({ key, count, z }) =>
-    Array.from({ length: count }, (_, i) => ({
-      id: `${key}-${i}`,
-      layer: key,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      /*
-       * Depth is expressed as a narrow multiplier, not as a raw factor of z.
-       * Scaling size straight by z put the far layer at 0.3px - below a device
-       * pixel - so two thirds of the field rendered as nothing at all. The
-       * spread here still reads as depth while every star stays visible.
-       */
-      size: `${((1.1 + Math.random() * 1.7) * (0.62 + z * 0.4)).toFixed(2)}px`,
-      delay: `${Math.random() * 700}ms`,
-      twinkle: `${2200 + Math.random() * 2600}ms`,
-      peak: ((0.32 + Math.random() * 0.5) * (0.58 + z * 0.34)).toFixed(3),
-    })),
-  );
+/**
+ * Four periods of a wave across a 2400-unit box, closed downward into a solid.
+ *
+ * Four rather than one so the element can be 200% wide and loop by translating
+ * exactly one period - 600 units, a quarter of its own width - which is
+ * seamless because the path is periodic. A single period stretched to 200%
+ * would visibly snap back.
+ */
+const WAVE = [
+  'M0,40',
+  'C100,10 200,10 300,40 C400,70 500,70 600,40',
+  'C700,10 800,10 900,40 C1000,70 1100,70 1200,40',
+  'C1300,10 1400,10 1500,40 C1600,70 1700,70 1800,40',
+  'C1900,10 2000,10 2100,40 C2200,70 2300,70 2400,40',
+  'L2400,120 L0,120 Z',
+].join(' ');
+
+const Wave = ({ className }) => (
+  <svg
+    className={className}
+    viewBox="0 0 2400 120"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <path d={WAVE} />
+  </svg>
+);
 
 const Intro = () => {
   // Decided in the initialiser, not an effect, so the overlay is either in the
   // very first paint or never in the tree at all.
   const [playing, setPlaying] = useState(shouldPlay);
-  const [state, setState] = useState('show');
+  const [skipping, setSkipping] = useState(false);
 
   const { data } = useContent();
-  const field = useMemo(buildField, []);
   const timerRef = useRef(0);
-  const flightRef = useRef(0);
   const doneRef = useRef(false);
 
   /*
-   * The cached name is captured once, in a ref, so it cannot change under the
-   * reader mid-sequence. A repeat visit shows it in the first frame; a
-   * first-ever visit shows it as soon as the data lands, which is well before
-   * the name's own reveal at 1500ms.
+   * Captured once, so the name cannot change under the reader mid-sequence. A
+   * repeat visit has it in the first frame; a first visit picks it up when the
+   * data lands, which is well before the name's own reveal at 700ms.
    */
   const cachedName = useRef(readName());
   const liveName = data?.personal?.name ?? null;
@@ -204,7 +119,6 @@ const Intro = () => {
 
   const finish = useCallback(() => {
     clearTimeout(timerRef.current);
-    clearTimeout(flightRef.current);
     setPlaying(false);
   }, []);
 
@@ -213,9 +127,8 @@ const Intro = () => {
   const skip = useCallback(() => {
     if (doneRef.current) return;
     doneRef.current = true;
-    setState('skipping');
+    setSkipping(true);
     clearTimeout(timerRef.current);
-    clearTimeout(flightRef.current);
     timerRef.current = setTimeout(finish, SKIP_MS);
   }, [finish]);
 
@@ -227,10 +140,10 @@ const Intro = () => {
     /*
      * Lenis is created by useMomentumScroll in AppLayout, whose effect runs
      * after this one - effects fire child-first - so getLenis() is null right
-     * now. One frame's delay is enough for it to exist. Stopping it matters:
-     * body overflow alone does not reach Lenis, which scrolls by transform off
-     * its own virtual scroll, so a wheel during the intro would scroll the page
-     * unseen and the reveal would land halfway down the site.
+     * now. One frame's delay is enough. Stopping it matters: body overflow
+     * alone does not reach Lenis, which scrolls by transform off its own
+     * virtual scroll, so a wheel during the intro would scroll the page unseen
+     * and the reveal would land halfway down the site.
      */
     const lenisId = requestAnimationFrame(() => getLenis()?.stop());
     const prevOverflow = document.body.style.overflow;
@@ -242,19 +155,11 @@ const Intro = () => {
     window.addEventListener('pointerdown', skip, opts);
     window.addEventListener('keydown', skip, opts);
 
-    // Two timers, and that is the entire JS timeline: the choreography is CSS,
-    // which runs off the main thread while the app is still mounting.
-    flightRef.current = setTimeout(() => {
-      if (doneRef.current) return;
-      doneRef.current = true;
-      setState('flight');
-      timerRef.current = setTimeout(finish, FLIGHT_MS);
-    }, FLIGHT_AT);
+    timerRef.current = setTimeout(() => { doneRef.current = true; finish(); }, TOTAL_MS);
 
     return () => {
       cancelAnimationFrame(lenisId);
       clearTimeout(timerRef.current);
-      clearTimeout(flightRef.current);
       window.removeEventListener('wheel', skip);
       window.removeEventListener('touchstart', skip);
       window.removeEventListener('pointerdown', skip);
@@ -271,74 +176,31 @@ const Intro = () => {
   return (
     // Decorative, and the page underneath carries all of it as real content, so
     // this is hidden from assistive tech entirely. Focus is never moved into it.
-    <div className={styles.curtain} data-state={state} aria-hidden="true">
-      {/* Two nested elements per layer on purpose: the flight writes transform
-          on .layer and the dolly writes transform on .drift. On one element the
-          second animation would replace the first, snapping the layer back to
-          centre at the exact moment the flight begins. */}
-      {LAYERS.map(({ key }) => (
-        <div key={key} className={`${styles.layer} ${styles[key]}`}>
-          <div className={styles.drift}>
-          {field.filter(s => s.layer === key).map(s => (
-            <span
-              key={s.id}
-              className={styles.star}
-              style={{
-                left: s.left,
-                top: s.top,
-                width: s.size,
-                height: s.size,
-                '--delay': s.delay,
-                '--twinkle': s.twinkle,
-                '--peak': s.peak,
-              }}
-            />
-          ))}
-          </div>
+    <div
+      className={styles.curtain}
+      data-state={skipping ? 'skipping' : 'playing'}
+      aria-hidden="true"
+    >
+      {/* Everything rides this one element, so the tide is a single transform
+          rather than several kept in sync. */}
+      <div className={styles.body}>
+        <div className={styles.water}>
+          <span className={styles.specular} />
         </div>
-      ))}
 
-      {/* The figure sits in its own layer so the flight can push it back while
-          the near stars rush forward - the two moving opposite ways is what
-          sells the depth. */}
-      <div className={styles.figure}>
-        <svg
-          className={styles.chart}
-          viewBox="0 0 1000 560"
-          preserveAspectRatio="xMidYMid meet"
-          fill="none"
-          aria-hidden="true"
-        >
-          {TIMING.edges.map(({ pair: [a, b], len, dur, delay }) => (
-            <line
-              key={`${a}-${b}`}
-              className={styles.edge}
-              style={{
-                '--len': len.toFixed(1),
-                '--dur': `${dur.toFixed(0)}ms`,
-                '--delay': `${delay.toFixed(0)}ms`,
-              }}
-              x1={FIGURE[a][0] * 10} y1={FIGURE[a][1] * 5.6}
-              x2={FIGURE[b][0] * 10} y2={FIGURE[b][1] * 5.6}
-            />
-          ))}
+        {/* The meniscus straddles the top edge of the body. Two phases at
+            different speeds and amplitudes; neither is in sync with the other,
+            which is what stops it reading as a repeating graphic. */}
+        <div className={styles.surface}>
+          <Wave className={styles.waveBack} />
+          <Wave className={styles.waveFront} />
+          <span className={styles.crest} />
+        </div>
 
-          {FIGURE.map(([x, y], i) => (
-            <g
-              key={`${x}-${y}`}
-              className={styles.node}
-              style={{ '--delay': `${TIMING.nodes[i].toFixed(0)}ms` }}
-            >
-              <circle className={styles.nodeHalo} cx={x * 10} cy={y * 5.6} r="13" />
-              <circle className={styles.nodeCore} cx={x * 10} cy={y * 5.6} r="3.2" />
-            </g>
-          ))}
-        </svg>
-      </div>
-
-      <div className={styles.title}>
-        <h1 className={styles.name}>{name ?? ''}</h1>
-        <p className={styles.role}>Data Scientist &middot; Researcher &middot; Developer</p>
+        <div className={styles.title}>
+          <h1 className={styles.name}>{name ?? ''}</h1>
+          <p className={styles.role}>Data Scientist &middot; Researcher &middot; Developer</p>
+        </div>
       </div>
     </div>
   );

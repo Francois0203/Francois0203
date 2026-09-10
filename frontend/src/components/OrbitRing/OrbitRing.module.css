@@ -1,0 +1,216 @@
+/* ─── OrbitRing ────────────────────────────────────────────────────────────────
+ *
+ * The portrait with the stack in orbit. See the header of OrbitRing.js for the
+ * positioning trick and the cost.
+ */
+
+.orbit {
+  --size: min(78vw, 420px);
+  --radius: calc(var(--size) / 2 - 1.55rem);
+
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  justify-self: center;
+  display: grid;
+  place-items: center;
+}
+
+/* ── Guide circles ───────────────────────────────────────────────────────── */
+
+.track,
+.trackInner {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px dashed rgba(var(--accent-1-rgb), 0.16);
+  pointer-events: none;
+}
+
+.track { inset: 1.1rem; }
+
+.trackInner {
+  inset: 22%;
+  border-style: solid;
+  border-color: rgba(var(--data-1-rgb), 0.14);
+}
+
+/* ── Portrait ────────────────────────────────────────────────────────────── */
+
+.portrait {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(var(--accent-1-rgb), 0.28),
+    0 18px 50px -18px rgba(0, 0, 0, 0.55);
+  /* Pops in first, and lands with a slight overshoot so it arrives rather than
+     fades. */
+  animation: pop 760ms 120ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.portraitImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── The ring ────────────────────────────────────────────────────────────── */
+
+.ring {
+  position: absolute;
+  inset: 0;
+  animation: spin 44s linear infinite;
+}
+
+/* Pointing at the orbit stops it, so a satellite can actually be looked at.
+   Both the ring and every counter-rotation have to pause together or the icons
+   start tumbling. */
+@media (hover: hover) and (pointer: fine) {
+  .orbit:hover .ring,
+  .orbit:hover .satInner { animation-play-state: paused; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* The counter-spin, on `rotate` so it composes with the static placement
+   correction in `.satInner`'s own `transform`. */
+@keyframes unspin {
+  to { rotate: -360deg; }
+}
+
+/**
+ * Placed by rotating about the centre and then pushing outward along the new
+ * axis - no trigonometry needed. The pop is staggered around the ring, so the
+ * satellites arrive one after another like a dial filling.
+ */
+.sat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3.1rem;
+  height: 3.1rem;
+  margin: -1.55rem 0 0 -1.55rem;
+  transform: rotate(var(--angle)) translateY(calc(var(--radius) * -1));
+  animation: satPop 620ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(320ms + var(--i, 0) * 90ms);
+}
+
+@keyframes satPop {
+  from {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(calc(var(--radius) * -0.35)) scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateY(calc(var(--radius) * -1)) scale(1);
+  }
+}
+
+/**
+ * Counter-rotates at the same rate, so the icon stays upright while its
+ * position goes round. Without this every logo tumbles, which reads as broken
+ * rather than as orbiting.
+ *
+ * Two rotations have to be undone here, not one, and missing the second is a
+ * subtle bug worth naming: `.sat` uses `rotate(var(--angle))` to *place* the
+ * satellite on the circle, and that rotation applies to this child as well.
+ * Cancelling only the ring's spin therefore leaves every icon tilted by its own
+ * placement angle forever - the satellite at 0deg looks correct and the one at
+ * 90deg lies on its side.
+ *
+ * So the placement angle is undone statically in `transform`, and the ring's
+ * spin is undone with the independent `rotate` property. They have to live in
+ * different properties: an animation on `transform` replaces the base
+ * `transform` outright, whereas `rotate` composes with it. Keeping the static
+ * correction out of the keyframes also means it survives motion being off,
+ * which is the state the tilt was most obvious in.
+ */
+.satInner {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--background-1);
+  color: var(--accent-1);
+  transform: rotate(calc(var(--angle, 0deg) * -1));
+  animation: unspin 44s linear infinite;
+  transition:
+    scale var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.sat[data-tone='cool'] .satInner { color: var(--data-1); }
+
+.satInner svg {
+  width: 1.45rem;
+  height: 1.45rem;
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* `scale`, not `transform: scale()`, for the same reason as the counter-spin
+     above: a `transform` here would drop the placement correction and snap the
+     icon back to being tilted the moment you point at it. */
+  .sat:hover .satInner {
+    scale: 1.28;
+    border-color: currentColor;
+    background: var(--background-2);
+  }
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.86); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Narrow screens ─────────────────────────────────────────────────────────
+   Fewer satellites rather than smaller ones: eight 3rem tiles around a 280px
+   circle touch each other, and a ring of overlapping logos reads as clutter. */
+
+@media (max-width: 640px) {
+  .orbit { --size: min(86vw, 300px); }
+  .sat { width: 2.5rem; height: 2.5rem; margin: -1.25rem 0 0 -1.25rem; }
+  .satInner svg { width: 1.15rem; height: 1.15rem; }
+  .sat:nth-child(even) { display: none; }
+}
+
+/* ── Motion off ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .ring, .satInner, .portrait, .sat {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  /* Both the placement transform and its correction are still needed, which is
+     why these restate them rather than setting `transform: none`. */
+  .sat { transform: rotate(var(--angle)) translateY(calc(var(--radius) * -1)); }
+  .satInner { transform: rotate(calc(var(--angle, 0deg) * -1)); rotate: 0deg; }
+  .portrait { transform: none; }
+}
+
+:global([data-no-animations='true']) .ring,
+:global([data-no-animations='true']) .satInner,
+:global([data-no-animations='true']) .portrait,
+:global([data-no-animations='true']) .sat {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+:global([data-no-animations='true']) .sat {
+  transform: rotate(var(--angle)) translateY(calc(var(--radius) * -1));
+}
+
+:global([data-no-animations='true']) .satInner {
+  transform: rotate(calc(var(--angle, 0deg) * -1));
+  rotate: 0deg;
+}
+
+:global([data-no-animations='true']) .portrait { transform: none; }

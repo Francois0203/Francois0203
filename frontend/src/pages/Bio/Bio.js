@@ -6,6 +6,7 @@ import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { BIO_FIELDS } from '../../content/copy/bio';
 import styles from './Bio.module.css';
+import useReveal from '../../hooks/useReveal';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ const itemLabel = (s) => (typeof s === 'string' ? s : s?.name ?? s?.title ?? Str
 
 const period = (e) =>
   e.period || e.dates ||
-  (e.start ? `${e.start}${e.end ? ` – ${e.end}` : ' – Present'}` : null);
+  (e.start ? `${e.start}${e.end ? ` - ${e.end}` : ' - Present'}` : null);
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -72,6 +73,9 @@ const TimelineEntry = ({ title, subtitle, p, current, description, tags }) => (
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const Bio = () => {
+  // One observer for the page; the sections stagger off --i. See
+  // styles/Reveal.css - this page previously had no entrance at all.
+  const [revealRef, revealed] = useReveal();
   const { data, loading, error } = usePortfolioData();
   const navigate = useNavigate();
   const { overrides } = useSiteCopy();
@@ -112,10 +116,15 @@ const Bio = () => {
 
   return (
     <section className={styles.page}>
-      <div className={styles.container}>
+      <div
+        ref={revealRef}
+        className={styles.container}
+        data-reveal-shown={revealed ? '' : undefined}
+        style={{ '--reveal-step': '70ms' }}
+      >
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
-        <header className={styles.header}>
+        <header className={styles.header} data-reveal style={{ "--i": 0 }}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
             <span className={styles.chapterDash} aria-hidden="true">-</span>
@@ -207,7 +216,7 @@ const Bio = () => {
         <div className={styles.content}>
 
           {/* ── Sidebar ───────────────────────────────────────────────────── */}
-          <aside className={styles.sidebar}>
+          <aside className={styles.sidebar} data-reveal style={{ "--i": 1 }}>
 
             {/* About */}
             <div className={styles.card}>
@@ -276,7 +285,7 @@ const Bio = () => {
           </aside>
 
           {/* ── Main ──────────────────────────────────────────────────────── */}
-          <main className={styles.main}>
+          <main className={styles.main} data-reveal style={{ "--i": 2 }}>
 
             {/* Experience */}
             <div className={styles.section}>
@@ -354,21 +363,6 @@ const Bio = () => {
         </div>
 
         {/* ── Next chapter ─────────────────────────────────────────────── */}
-        <footer className={styles.nextChapter}>
-          <span className={styles.nextChapterLabel}>{t.nextChapterLabel}</span>
-          <button
-            type="button"
-            className={styles.nextChapterBtn}
-            onClick={() => navigate('/projects')}
-          >
-            <span className={styles.nextChapterTitle}>
-              {t.nextChapterTitle}
-            </span>
-            <span className={styles.nextChapterHint}>
-              {t.nextChapterHint} <MdArrowOutward aria-hidden="true" />
-            </span>
-          </button>
-        </footer>
       </div>
     </section>
   );

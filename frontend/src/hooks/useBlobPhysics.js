@@ -4,21 +4,22 @@ import { useRef, useEffect } from 'react';
  * Shared blob physics engine used by Loading and NotFound pages.
  *
  * blobDefs - array of { r, sx, sy, vx, vy, rotSpeed? }
- * options  - { withRotation, glassFrom, maxSpeed }
+ * options  - { withRotation, maxSpeed }
  *   withRotation - enables angle integration and adds rotate() to transform
- *   glassFrom    - blobs at index >= this get --cursor-x/y CSS vars (cursor-reactive)
  *   maxSpeed     - velocity cap in px/s (default 20)
+ *
+ * There was a `glassFrom` option, and a mousemove handler feeding it, which
+ * published the cursor position relative to each blob to drive a
+ * cursor-reactive specular gradient. Both are gone: the value changed every
+ * frame purely because the blob moved, which repainted a full-size radial
+ * gradient per blob per frame with the pointer completely still. The highlight
+ * is now fixed within each blob. Callers no longer need to attach onMouseMove.
  */
-const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpeed = 20 } = {}) => {
+const useBlobPhysics = (blobDefs, { withRotation = false, maxSpeed = 20 } = {}) => {
   const blobRefs   = useRef([]);
   const physicsRef = useRef(null);
   const rafRef     = useRef(null);
   const nudgeTimer = useRef(null);
-  const mouseRef   = useRef({ x: -1000, y: -1000 });
-
-  const onMouseMove = (e) => {
-    mouseRef.current = { x: e.clientX, y: e.clientY };
-  };
 
   useEffect(() => {
     const noAnim =
@@ -107,18 +108,26 @@ const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpee
         if (speed < 2)        { const a = Math.random() * Math.PI * 2; b.vx += Math.cos(a) * 4; b.vy += Math.sin(a) * 4; }
       });
 
-      // Write to DOM
-      const mouse = mouseRef.current;
+      /*
+       * Write to DOM. One transform per blob and nothing else.
+       *
+       * This used to also write --cursor-x/--cursor-y, the cursor position
+       * expressed relative to each blob's own origin, which the glass rules
+       * fed into `radial-gradient(... at var(--cursor-x) var(--cursor-y))`.
+       * Because the blob's origin moves every frame, that value changed every
+       * frame even with the pointer completely still, so three blobs x two
+       * pseudo-elements repainted a full-size radial gradient sixty times a
+       * second - and the ::after additionally ran mask-composite over the
+       * result. The specular highlight is now a fixed position within each
+       * blob, which is also better optics: a highlight on a drifting object
+       * travels with the object.
+       */
       bs.forEach((b, i) => {
         const el = blobRefs.current[i];
         if (!el) return;
         el.style.transform = withRotation
           ? `translate(${b.x}px, ${b.y}px) rotate(${b.angle}deg)`
           : `translate(${b.x}px, ${b.y}px)`;
-        if (i >= glassFrom) {
-          el.style.setProperty('--cursor-x', `${mouse.x - b.x}px`);
-          el.style.setProperty('--cursor-y', `${mouse.y - b.y}px`);
-        }
       });
 
       rafRef.current = requestAnimationFrame(tick);
@@ -153,7 +162,7 @@ const useBlobPhysics = (blobDefs, { withRotation = false, glassFrom = 3, maxSpee
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { blobRefs, onMouseMove };
+  return { blobRefs };
 };
 
 export default useBlobPhysics;

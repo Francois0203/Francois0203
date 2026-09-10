@@ -156,7 +156,7 @@
   /* Closing transition */
   transition:
     transform 0.28s cubic-bezier(0.4, 0, 1, 1),
-    opacity   0.18s ease-in;
+    opacity   0.18s var(--ease-out);
 }
 
 .bubbleAnchorOpen {

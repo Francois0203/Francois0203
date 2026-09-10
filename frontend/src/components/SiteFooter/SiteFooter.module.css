@@ -1,0 +1,256 @@
+/* ── Site footer ────────────────────────────────────────────────────────────
+   Mounted once in the app layout, so this is the only footer on the site.
+   Dense on purpose, to match the pages above it: three short columns rather
+   than a tall stack with air between the rows. */
+
+.footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 3rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--background-1);
+}
+
+.inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(0.75rem, 2vw, 1.5rem) clamp(1.25rem, 2vw, 2rem);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+/* ── The next page ──────────────────────────────────────────────────────────
+   The largest thing in the footer, because on a page a visitor has just
+   finished reading, "where do I go now" is the only question left. */
+
+.next {
+  display: grid;
+  gap: 0.15rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(var(--accent-1-rgb), 0.06), transparent 70%),
+    var(--background-2);
+  text-decoration: none;
+  transition:
+    border-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.nextLabel {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--data-1);
+}
+
+.nextTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  color: var(--primary-text-color);
+}
+
+.nextTitle svg {
+  width: 0.8em;
+  height: 0.8em;
+  color: var(--accent-1);
+  transition: transform var(--transition-base);
+}
+
+.nextBlurb {
+  font-size: 0.875rem;
+  color: var(--secondary-text-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .next:hover {
+    border-color: rgba(var(--accent-1-rgb), 0.45);
+    transform: translateY(-2px);
+  }
+  /* The arrow leads, which is the whole point of an outward arrow. */
+  .next:hover .nextTitle svg { transform: translate(3px, -3px); }
+}
+
+.next:active { transform: translateY(0) scale(0.995); }
+
+/* ── Call to action ─────────────────────────────────────────────────────── */
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+.ctaTitle {
+  margin: 0;
+  font-family: 'Georgia', 'Cormorant Garamond', serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  line-height: 1.15;
+  color: var(--primary-text-color);
+}
+
+.ctaText {
+  margin: 0;
+  flex: 1 1 22ch;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--secondary-text-color);
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  /* Clears the 44px minimum target without relying on line-height. */
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--accent-1);
+  color: var(--background-0);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ctaButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px -14px rgba(var(--accent-1-rgb), 0.65);
+  }
+}
+
+.ctaButton:active { transform: translateY(0) scale(0.985); }
+
+/* ── Columns ────────────────────────────────────────────────────────────── */
+
+.columns {
+  display: grid;
+  /* auto-fit so two columns collapse to one row rather than leaving an empty
+     third track when a section has no data to show. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.column { min-width: 0; }
+
+.columnHeading {
+  margin: 0 0 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tertiary-text-color);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.link,
+.plain {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* 44px rows, so every one of these is a real target on a phone. */
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+  color: var(--secondary-text-color);
+  text-decoration: none;
+  /* Long email addresses and locations wrap instead of widening the column. */
+  overflow-wrap: anywhere;
+}
+
+.link svg,
+.plain svg {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--accent-1);
+}
+
+.plain { color: var(--tertiary-text-color); }
+.plain svg { color: var(--tertiary-text-color); }
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--accent-1);
+    /* Deliberately no underline: styles/Components.css underlines every `a` on
+       hover, and a column of links that all underline reads as noise. */
+    text-decoration: none;
+  }
+}
+
+.link:active { color: var(--accent-1); }
+
+.link:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* The page you are on is stated, not just styled, via aria-current in the
+   markup. This is the visible half of the same fact. */
+.link[aria-current='page'] {
+  color: var(--primary-text-color);
+  font-weight: 600;
+}
+
+/* The social column has twice as many rows as the others, and as the tallest
+   column it set the footer's height while the rest sat half empty. Flowing it
+   into as many sub-columns as fit trades that vertical space for horizontal
+   space the footer already had. */
+.socialList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0 0.75rem;
+}
+
+/* ── Small print ────────────────────────────────────────────────────────── */
+
+.fine {
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  color: var(--tertiary-text-color);
+}
+
+/* ── Narrow ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .ctaButton { width: 100%; justify-content: center; }
+  /* Clear the fixed mobile nav circle (64px, plus a gap). */
+  .inner { padding-bottom: 6.5rem; }
+}
+
+/* ── Motion off ─────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .next,
+  .nextTitle svg,
+  .ctaButton { transition: none; }
+}
+
+:global([data-no-animations='true']) .next,
+:global([data-no-animations='true']) .nextTitle svg,
+:global([data-no-animations='true']) .ctaButton { transition: none; }

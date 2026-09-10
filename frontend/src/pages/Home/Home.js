@@ -1,26 +1,69 @@
-import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  MdArrowOutward, MdCode, MdEmail,
-  MdAutoStories, MdMenuBook,
+  MdArrowOutward, MdBolt, MdSchool, MdLocationOn, MdWork,
+  MdMusicNote, MdFitnessCenter, MdHiking, MdSportsTennis, MdTranslate, MdInterests,
 } from 'react-icons/md';
-import { FaGithub, FaLinkedin, FaLeaf, FaFeatherAlt } from 'react-icons/fa';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
+import useReveal from '../../hooks/useReveal';
+import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
-import useStudioSites from '../../hooks/useStudioSites';
-import { Modal, ShimmerButton, CursorGlowButton, GlowBorderButton, SiteShowcase } from '../../components';
+import { Modal, SiteShowcase } from '../../components';
 import Roadmap from '../../components/Roadmap';
+import TechGrid from '../../components/TechGrid';
+import StatRow from '../../components/StatRow';
+import OrbitRing from '../../components/OrbitRing';
 import styles from './Home.module.css';
 
-// Evaluated once at module load - avoids React overhead and is stable
-// across the page lifetime. Coarse-pointer (touch) also implies mobile.
-const IS_MOBILE = typeof window !== 'undefined' &&
-  (window.matchMedia('(max-width: 767px)').matches ||
-   window.matchMedia('(pointer: coarse)').matches);
-
-/* ─── Helpers ─────────────────────────────────────────────────────────────── */
+/**
+ * Home, as one dense mosaic.
+ *
+ * ── What this replaced, and why ────────────────────────────────────────
+ * The previous version was six full-viewport "scenes", each carrying a single
+ * idea and joined by scroll-driven motion. The structure itself was the
+ * problem: `min-height: 100svh` per scene means a screen of air is guaranteed
+ * around every element, so the page could only ever read as sparse. Tightening
+ * the spacing inside it would not have helped - six viewport-tall sections with
+ * tight padding is still six viewport-tall sections.
+ *
+ * So the model is inverted. Everything that was a scene is now a tile in one
+ * grid, sized to its own content, packed against its neighbours on a 12 column
+ * grid with a 12px gutter. The first screen now carries the name, the portrait,
+ * the live status, the figures, what he is doing right now and the start of the
+ * stack, where it previously carried a name and a single sentence.
+ *
+ * Density is the point, so the rules are:
+ *   1. No tile has a viewport-relative minimum height. Tiles are as tall as
+ *      their content and no taller.
+ *   2. `grid-auto-flow: dense`, so a short tile backfills a gap left by a tall
+ *      neighbour instead of leaving a hole.
+ *   3. Every tile earns its place with real data. A tile that cannot be
+ *      populated is not rendered at all, rather than rendered empty - which is
+ *      how the layout stays packed when a field is missing.
+ *
+ * ── What is deliberately kept ──────────────────────────────────────────
+ * The journey stays a full-bleed pinned section that pans horizontally as you
+ * scroll, because that is the one part of the page that was asked for by name.
+ * It is the single exception to rule 1: pinning requires a scroll distance to
+ * pin through. The serif, the warm accent and the cool data counter-colour are
+ * kept too.
+ *
+ * ── The motion rules, unchanged and learned the hard way ───────────────
+ *   1. One-shot cascades are class-triggered transitions via hooks/useReveal,
+ *      not scroll-driven animations, because `animation-delay` is inert on a
+ *      scroll-driven animation - there is no wall-clock time for it to consume,
+ *      so a stagger cannot be expressed as a delay.
+ *   2. Nothing animates an ancestor of a live iframe. An ancestor with
+ *      `opacity < 1` forces a cross-origin frame to rasterise into its parent
+ *      layer, so the work tile opts out.
+ *   3. Transform and opacity only.
+ *   4. Every hidden starting state is scoped to `prefers-reduced-motion:
+ *      no-preference`. Elements that are only visible while an animation runs
+ *      render as an empty page the moment animations do not run.
+ */
 
 const itemLabel = (s) =>
   typeof s === 'string' ? s : s?.name ?? s?.title ?? String(s);
@@ -38,151 +81,12 @@ const flattenSkills = (skills) => {
     .flatMap(([name, arr]) => arr.map(i => ({ label: itemLabel(i), group: name })));
 };
 
-const useInView = (threshold = 0.15) => {
-  const ref = useRef(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } },
-      { threshold }
-    );
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, inView];
-};
-
-/* ─── Leaf SVG ─────────────────────────────────────────────────────────────── */
-
-const MapleLeaf = ({ className, style }) => (
-  <svg viewBox="0 0 64 64" className={className} style={style} aria-hidden="true">
-    <path
-      d="M32 4 L36 14 L46 9 L42 20 L54 20 L46 28 L58 32 L46 36 L54 44 L42 44 L46 55 L36 50 L32 60 L28 50 L18 55 L22 44 L10 44 L18 36 L6 32 L18 28 L10 20 L22 20 L18 9 L28 14 Z"
-      fill="currentColor"
-    />
-  </svg>
-);
-
-/* ─── Drifting motes overlay (fixed) ───────────────────────────────────────── */
-
-// Fewer particles on mobile: less DOM, less GPU work
-const MOTE_COUNT = IS_MOBILE ? 0 : 8;
-
-const DriftingMotes = () => {
-  const motes = useMemo(() => Array.from({ length: MOTE_COUNT }, (_, i) => ({
-    i,
-    left:     Math.round(Math.random() * 100),
-    size:     6  + Math.round(Math.random() * 8),
-    duration: 22 + Math.round(Math.random() * 18),
-    delay:    -Math.round(Math.random() * 30),
-    drift:    (Math.random() * 36 - 18).toFixed(1),
-    opacity:  (0.35 + Math.random() * 0.35).toFixed(2),
-  })), []);
-
-  if (motes.length === 0) return null;
-
-  return (
-    <div className={styles.moteField} aria-hidden="true">
-      {motes.map(m => (
-        <span
-          key={m.i}
-          className={styles.mote}
-          style={{
-            left:               `${m.left}%`,
-            width:              `${m.size}px`,
-            height:             `${m.size}px`,
-            animationDuration:  `${m.duration}s`,
-            animationDelay:     `${m.delay}s`,
-            '--drift':          `${m.drift}vw`,
-            '--moteOpacity':    m.opacity,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-/* ─── Word-by-word reveal ──────────────────────────────────────────────────── */
-
-const WordReveal = ({ text, inView, className, delay = 0 }) => {
-  if (!text) return null;
-  return (
-    <span className={className}>
-      {text.split(' ').map((w, i) => (
-        <span
-          key={i}
-          className={`${styles.word} ${inView ? styles.wordVisible : ''}`}
-          style={{ '--wi': i, '--wd': `${delay}s` }}
-        >
-          {w}&nbsp;
-        </span>
-      ))}
-    </span>
-  );
-};
-
-/* ─── Pile of skill leaves ─────────────────────────────────────────────────── */
-
-// Groups the flattened skills back into their categories, preserving the order
-// they arrive in. `flattenSkills` already resolves each skill's `group` - the
-// previous pile discarded it and rendered all 28 as one undifferentiated blob.
-const groupSkills = (skills) => {
-  const out = [];
-  const byName = new Map();
-  for (const s of skills) {
-    const name = s.group ?? null;
-    let g = byName.get(name);
-    if (!g) { g = { name, items: [] }; byName.set(name, g); out.push(g); }
-    g.items.push(s);
-  }
-  return out;
-};
-
-const SkillPile = ({ skills }) => {
-  const [ref, inView] = useInView(0.10);
-  if (skills.length === 0) return null;
-  const groups = groupSkills(skills);
-
-  // Continuous index across groups so the reveal staggers down the whole
-  // section rather than restarting at every heading.
-  let n = -1;
-
-  return (
-    <div ref={ref} className={`${styles.pile} ${inView ? styles.pileVisible : ''}`}>
-      {groups.map((g, gi) => (
-        <div key={g.name ?? gi} className={styles.pileGroup}>
-          {g.name && (
-            <p className={styles.pileGroupHead}>
-              <FaLeaf className={styles.pileGroupLeaf} aria-hidden="true" />
-              <span className={styles.pileGroupName}>{g.name}</span>
-              <span className={styles.pileGroupRule} aria-hidden="true" />
-              <span className={styles.pileGroupCount}>{g.items.length}</span>
-            </p>
-          )}
-          <ul className={styles.pileChips}>
-            {g.items.map((s, i) => {
-              n += 1;
-              return (
-                <li key={i} className={styles.skillChip} style={{ '--si': n }}>
-                  {s.label}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-/* ─── Helper: derive journey from experience + education ───────────────────── */
-
 const toJourney = ({ experience = [], education = [] }) => {
   const ex = experience.map(e => ({
     id:       `exp-${e.id}`,
     title:    e.company || e.employer || e.organisation || 'Role',
     subtitle: e.role || e.position || e.title,
-    period:   e.period || e.dates || (e.start ? `${e.start}${e.end ? ` – ${e.end}` : ' – Present'}` : null),
+    period:   e.period || e.dates || (e.start ? `${e.start}${e.end ? ` - ${e.end}` : ' - Present'}` : null),
     description: e.description || e.summary,
     tags:     e.tech || e.technologies || e.stack || e.tags,
     kind:     'experience',
@@ -192,79 +96,144 @@ const toJourney = ({ experience = [], education = [] }) => {
     id:       `edu-${e.id}`,
     title:    e.institution || e.school || e.university || 'Education',
     subtitle: [e.degree || e.qualification, e.field || e.major].filter(Boolean).join(' - '),
-    period:   e.period || e.dates || (e.start ? `${e.start}${e.end ? ` – ${e.end}` : ' – Present'}` : null),
+    period:   e.period || e.dates || (e.start ? `${e.start}${e.end ? ` - ${e.end}` : ' - Present'}` : null),
     description: e.description || e.summary,
     tags:     e.tags,
     kind:     'education',
     order:    e.order ?? 0,
   }));
   /*
-   * Chronological, because the roadmap is now a route: you travel it from the
-   * first waypoint to the present one, so it cannot be ordered newest-first
-   * the way a CV list is.
+   * Strictly chronological. The journey is a route: you travel it from the
+   * first waypoint to where you are now, so nothing here may depend on a
+   * curated display rank.
    *
-   * The period strings are free text off Firestore ("2021 - 2023", "May 2026 -
-   * Present", "During Matric Year"), so the first four-digit year in the
-   * string is the only reliable key. Entries with no year at all are the
-   * school-era ones, which belong at the start; they fall back to the curated
-   * `order` field reversed, which is a recency rank.
+   * The first version of this sorted on the first four-digit year in the period
+   * string, which is not enough precision. "May 2026 - Present" (Shareforce)
+   * and "2026 - Present" (the MSc) both resolve to 2026, so the two most
+   * recent entries tied and fell back to the `order` field - which is a
+   * newest-first display rank, not a date. They could therefore appear in the
+   * wrong order, and did.
+   *
+   * `startKey` resolves to year * 12 + month so ties are broken by real dates,
+   * and it prefers an explicit `start` field when a record has one, which is
+   * the escape hatch for anything the free-text period cannot express.
    */
-  const startYear = (p) => {
-    const m = /(19|20)\d{2}/.exec(p ?? '');
-    return m ? Number(m[0]) : null;
+  const MONTHS = [
+    'january', 'february', 'march', 'april', 'may', 'june',
+    'july', 'august', 'september', 'october', 'november', 'december',
+  ];
+
+  const startKey = (record) => {
+    const text = String(record.start || record.period || '');
+    const year = /\b(19|20)\d{2}\b/.exec(text);
+    if (!year) return null;
+
+    // Only a month that appears BEFORE the year belongs to the start date:
+    // "January 2025 - April 2026" starts in January, not April.
+    const head = text.slice(0, year.index).toLowerCase();
+    const month = MONTHS.findIndex(m => head.includes(m.slice(0, 3)));
+
+    return Number(year[0]) * 12 + (month >= 0 ? month : 0);
   };
 
   return [...ex, ...ed]
-    .map(s => ({ ...s, year: startYear(s.period) }))
+    .map(s => ({ ...s, key: startKey(s) }))
     .sort((a, b) => {
-      if (a.year !== b.year) {
-        if (a.year === null) return -1;
-        if (b.year === null) return 1;
-        return a.year - b.year;
+      if (a.key !== null && b.key !== null) return a.key - b.key;
+
+      /*
+       * Undated entries are the school-era ones - "During Matric Year",
+       * "Completed" - and they all precede the first dated record. Within them,
+       * experience before education: the jobs run through the matric year and
+       * the certificate is awarded at the end of it. `order` reversed is the
+       * last resort, so the result is always deterministic.
+       */
+      if (a.key === null && b.key === null) {
+        if (a.kind !== b.kind) return a.kind === 'experience' ? -1 : 1;
+        return b.order - a.order;
       }
-      // Same year, or both undated: the curated order runs newest-first, so
-      // reversing it keeps the pair in the order they actually happened.
-      return b.order - a.order;
+      return a.key === null ? -1 : 1;
     });
 };
 
-/* ─── Main page ───────────────────────────────────────────────────────────── */
+/**
+ * The figures for scene 2, derived from real data only.
+ *
+ * A portfolio that calls itself a data scientist's cannot put invented numbers
+ * on its front page, so each of these is counted from Firestore or the synced
+ * project list. Anything that cannot be derived is omitted rather than
+ * estimated, which is why this returns a filtered list rather than a fixed set.
+ */
+const buildStats = ({ experience, education, skills, sites, projects }) => {
+  // The earliest four-digit year on record is where the story starts. The
+  // school-era entries carry no year by design, so they are simply absent here.
+  const years = (() => {
+    const found = [...experience, ...education]
+      .map(e => /\b(19|20)\d{2}\b/.exec(String(e.period ?? '')))
+      .filter(Boolean)
+      .map(m => Number(m[0]));
 
-/* ─── Featured work ─────────────────────────────────────────────────────────────
-   The lead site gets the full band width (embed left, story right); the next two
-   sit side by side beneath it. Nothing here is a fixed list - the cards are
-   whatever the studio org currently has flagged `featured` in its manifests. */
+    if (found.length === 0) return null;
+    return new Date().getFullYear() - Math.min(...found);
+  })();
 
-const WorkSkeleton = () => (
-  <div className={styles.workSkel} aria-hidden="true">
-    <span className={`${styles.workSkelHero} ${styles.shimmerBar}`} />
-    <div className={styles.workSkelRow}>
-      <span className={`${styles.workSkelCard} ${styles.shimmerBar}`} />
-      <span className={`${styles.workSkelCard} ${styles.shimmerBar}`} />
-    </div>
-  </div>
+  const shipped = (sites?.length ?? 0) + (projects?.length ?? 0);
+
+  return [
+    years !== null && { label: 'Years in', value: years, suffix: 'yrs' },
+    skills.length > 0 && { label: 'Technologies', value: skills.length },
+    education.length > 0 && { label: 'Qualifications', value: education.length },
+    shipped > 0 && { label: 'Things shipped', value: shipped },
+  ].filter(Boolean);
+};
+
+/**
+ * An icon for each interest, matched on the interest's own name.
+ *
+ * Keyed on a normalised name and not on array position, so reordering the list
+ * in Firestore cannot silently give squash a guitar. Anything unmatched falls
+ * back to a generic mark rather than to no mark, which would leave one chip in
+ * a row of five sitting at a different height.
+ */
+const INTEREST_ICONS = {
+  guitar: MdMusicNote,
+  music: MdMusicNote,
+  gym: MdFitnessCenter,
+  weights: MdFitnessCenter,
+  hiking: MdHiking,
+  squash: MdSportsTennis,
+  tennis: MdSportsTennis,
+};
+
+const interestIcon = (name) =>
+  INTEREST_ICONS[String(name).trim().toLowerCase()] ?? MdInterests;
+
+/* ─── Tiles ────────────────────────────────────────────────────────────────── */
+
+/**
+ * One cell of the mosaic.
+ *
+ * `span` and `rows` are written into the grid as custom properties rather than
+ * as a class per size, because the sizes are a layout decision made at the call
+ * site and there are a dozen of them. The media queries in the stylesheet
+ * override `--span` wholesale at narrow widths, so no tile needs to know how it
+ * collapses.
+ */
+const Tile = ({
+  span = 4, rows = 1, tone, id, label, className = '', children,
+}) => (
+  <section
+    id={id}
+    className={`${styles.tile} ${className}`}
+    data-tone={tone}
+    style={{ '--span': span, '--rows': rows }}
+  >
+    {label && <h2 className={styles.tileLabel}>{label}</h2>}
+    {children}
+  </section>
 );
 
-const FeaturedWork = ({ items, loading, emptyText }) => {
-  if (loading) return <WorkSkeleton />;
-
-  if (items.length === 0) {
-    return <p className={styles.workEmpty}>{emptyText}</p>;
-  }
-
-  const [lead, ...rest] = items;
-
-  return (
-    <div className={styles.workLayout}>
-      <SiteShowcase project={lead} variant="hero" className={styles.workLead} />
-      {rest.length > 0 && (
-        <div className={styles.workRow}>
-          {rest.map(p => <SiteShowcase key={p.id} project={p} />)}
-        </div>
-      )}
-    </div>
-  );
-};
+/* ─── Page ─────────────────────────────────────────────────────────────────── */
 
 const Home = () => {
   const { data, loading } = usePortfolioData();
@@ -272,351 +241,344 @@ const Home = () => {
   const { featured: featuredSites, loading: sitesLoading } = useStudioSites({ featuredLimit: 3 });
   const t = resolveGroup(HOME_FIELDS, overrides.home);
   const navigate = useNavigate();
-  const pageRef  = useRef(null);
 
   const [openMilestone, setOpenMilestone] = useState(null);
 
-  /* Cursor warm-spot - skip entirely on touch / coarse pointers */
-  useEffect(() => {
-    const page = pageRef.current;
-    if (!page) return;
-    if (typeof window === 'undefined') return;
-    const coarse = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-    const small  = window.matchMedia('(max-width: 768px)').matches;
-    if (coarse || small) return;
+  const personal = data?.personal ?? {};
+  const contact = data?.contact ?? {};
+  const social = data?.social ?? [];
+  const github = social.find(s => (s.key || '').toLowerCase() === 'github');
+  const linkedin = social.find(s => (s.key || '').toLowerCase() === 'linkedin');
 
-    let raf = 0;
-    let lastX = 0, lastY = 0;
-    const apply = () => {
-      raf = 0;
-      page.style.setProperty('--cx', `${lastX}px`);
-      page.style.setProperty('--cy', `${lastY}px`);
+  const githubUser = github?.url ? github.url.replace(/\/$/, '').split('/').pop() : null;
+  const photoUrl = personal.photoUrl || (githubUser ? `https://github.com/${githubUser}.png` : null);
+
+  const journey = useMemo(() => toJourney(data ?? {}), [data]);
+  const skills = useMemo(() => flattenSkills(data?.skills), [data]);
+
+  /* The two live commitments, which is what "now" means on this page. Both are
+     found by the same "present" test the journey ordering uses, so this tile
+     cannot disagree with the waypoints further down. */
+  const now = useMemo(() => {
+    const present = /present/i;
+    return {
+      role: (data?.experience ?? []).find(e => present.test(String(e.period ?? ''))),
+      study: (data?.education ?? []).find(e => present.test(String(e.period ?? ''))),
     };
-    const onMove = (e) => {
-      lastX = e.clientX; lastY = e.clientY;
-      if (!raf) raf = requestAnimationFrame(apply);
-    };
-    window.addEventListener('pointermove', onMove, { passive: true });
-    return () => {
-      window.removeEventListener('pointermove', onMove);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+  }, [data]);
 
-  /* Refs for scene reveals */
-  const [coverRef,   coverInView]   = useInView(0.20);
-  const [workRef,    workInView]    = useInView(0.08);
-  const [journeyRef, journeyInView] = useInView(0.10);
-  const [pileSecRef, pileSecInView] = useInView(0.10);
-  const [endRef,     endInView]     = useInView(0.20);
+  /* firebase/firestore.js unwraps the interests document to its `items` array
+     before it reaches here, so `data.interests` is already the list. The object
+     form is still accepted because that is the shape stored in Firestore, and
+     reading it wrongly is a silently empty tile rather than an error. */
+  const interests = useMemo(() => {
+    const raw = data?.interests;
+    const list = Array.isArray(raw) ? raw : raw?.items ?? [];
+    return list.map(itemLabel).filter(Boolean);
+  }, [data]);
 
-  const personal   = data?.personal ?? {};
-  const social     = data?.social   ?? [];
-  const skills     = flattenSkills(data?.skills);
-  const journey    = useMemo(() => toJourney(data ?? {}), [data]);
-  const github     = social.find(s => (s.key || '').toLowerCase() === 'github');
-  const linkedin   = social.find(s => (s.key || '').toLowerCase() === 'linkedin');
-  const githubUser = github?.url?.replace(/\/$/, '').split('/').pop() ?? null;
-  const photoUrl   = personal.photoUrl || (githubUser ? `https://github.com/${githubUser}.png` : null);
+  const languages = useMemo(
+    () => (personal.languages ?? []).map(itemLabel).filter(Boolean),
+    [personal],
+  );
 
-  const opening = personal.bio
-    ?? personal.summary
-    ?? 'Welcome, traveler. Pull up a chair, pour something warm, and let me tell you who I am.';
+  const badges = useMemo(() => [
+    contact.availability?.status === 'open' && { Icon: MdBolt, text: t.availabilityLabel, tone: 'cool' },
+    contact.location && {
+      Icon: MdLocationOn,
+      /* The last two parts of the address. "Irene, Centurion, South Africa" is
+         a home address; "Centurion, South Africa" is a location. */
+      text: String(contact.location).split(',').slice(-2).map(s => s.trim()).join(', '),
+      tone: 'warm',
+    },
+  ].filter(Boolean), [contact, t.availabilityLabel]);
 
-  // The drop-cap is the first letter of the (editable) opening paragraph itself,
-  // not a separate hardcoded glyph - so editing the copy changes the drop-cap too.
-  const coverText    = `${t.coverProseInvite} ${opening}`.trimStart();
-  const coverDropcap = coverText.charAt(0);
-  const coverRest    = coverText.slice(1);
+  const stats = useMemo(() => buildStats({
+    experience: data?.experience ?? [],
+    education: data?.education ?? [],
+    skills,
+    sites: featuredSites ?? [],
+    projects: data?.projects ?? [],
+  }), [data, skills, featuredSites]);
+
+  /* Two observers, one per region. Every tile in the mosaic is within a screen
+     or two of the top, so a per-tile observer would buy nothing but bookkeeping. */
+  const [gridRef, gridShown] = useReveal({ threshold: 0.02 });
+  const [lowerRef, lowerShown] = useReveal({ threshold: 0.04 });
 
   return (
-    <div
-      ref={pageRef}
-      className={styles.page}
-      style={{ '--cx': '-500px', '--cy': '-500px' }}
-    >
-      {/* Atmospheric layers */}
-      <div className={styles.warmSpot} aria-hidden="true" />
-      <div className={styles.parchment} aria-hidden="true" />
-      <div className={styles.coffeeStains} aria-hidden="true" />
-      <DriftingMotes />
+    <div className={styles.page}>
+      {/* One ambient wash, fixed, statically painted. */}
+      <div className={styles.ambient} aria-hidden="true" />
 
-      {/* ── Band 1 ── Cover · narrative left, portrait rail right ─────── */}
-      <section className={`${styles.band} ${styles.bandCover}`}>
-      <div className={styles.bandInner}>
-      <div ref={coverRef} className={styles.cover}>
+      <div
+        ref={gridRef}
+        className={styles.mosaic}
+        data-reveal-shown={gridShown ? '' : undefined}
+        style={{ '--reveal-step': '45ms' }}
+      >
+        {/* ── Identity ─────────────────────────────────────────────────── */}
+        <Tile span={7} rows={2} className={styles.tIdentity}>
+          <div data-reveal style={{ '--i': 0 }}>
+            <p className={styles.eyebrow}>{t.heroLede}</p>
 
-      {/* Left column. Wrapping the narrative explicitly beats placing six
-          separate children on a grid: `grid-row: 1 / -1` on the portrait rail
-          silently spanned a single row (there are no explicit rows to count
-          back from), which dropped the two columns into different row bands. */}
-      <div className={styles.coverNarrative}>
+            {/* Word by word, so the name lands as a sequence rather than a
+                block. A real CSS delay is fine here: this is a mount
+                animation, not a scrubbed one. */}
+            <h1 className={styles.name}>
+              {(personal.name ?? '').split(' ').filter(Boolean).map((word, i) => (
+                <span key={`${word}-${i}`} className={styles.nameWord} style={{ '--i': i }}>
+                  {word}
+                </span>
+              ))}
+            </h1>
 
-        <div className={styles.coverFlourish} aria-hidden="true">
-          <FaFeatherAlt />
-          <span className={styles.coverFlourishLine} />
-        </div>
+            <p className={styles.statement}>{t.heroStatement}</p>
+          </div>
 
-        <p className={styles.coverEyebrow}>{t.coverEyebrow}</p>
-
-        <h1 className={styles.coverTitleLine}>
-          <span className={styles.coverTitleSerif}>{t.coverTitleSerif}</span>
-          {loading
-            ? <span className={`${styles.coverTitleSkel} ${styles.shimmerBar}`} aria-hidden="true" />
-            : (
-              <span className={styles.coverTitleScript}>
-                {personal.name ?? 'a friendly stranger'}
-              </span>
-            )
-          }
-        </h1>
-
-        {loading
-          ? (
-            <p className={styles.coverByline} aria-hidden="true">
-              <span className={`${styles.coverBySkel} ${styles.shimmerBar}`} />
-            </p>
-          )
-          : (
-            <p className={styles.coverByline}>
-              <span className={styles.coverByLabel}>{t.coverByLabel}</span>
-              {personal.title && (
-                <>
-                  <span className={styles.coverByDot} aria-hidden="true">·</span>
-                  <span className={styles.coverByRole}>{personal.title}</span>
-                </>
-              )}
-            </p>
-          )
-        }
-
-        <div className={styles.coverDivider} aria-hidden="true">
-          <MapleLeaf className={styles.coverDividerLeaf} />
-        </div>
-
-        {loading
-          ? (
-            <div className={styles.coverOpeningSkel} aria-hidden="true">
-              <span className={`${styles.openingLine} ${styles.shimmerBar}`} />
-              <span className={`${styles.openingLine} ${styles.shimmerBar}`} style={{ width: '94%' }} />
-              <span className={`${styles.openingLine} ${styles.shimmerBar}`} style={{ width: '78%' }} />
-            </div>
-          )
-          : (
-            <div className={styles.coverOpening}>
-              {coverDropcap && <span className={styles.coverDropcap}>{coverDropcap}</span>}
-              <WordReveal
-                text={coverRest}
-                inView={coverInView}
-                className={styles.coverProse}
-                delay={0.2}
-              />
-            </div>
-          )
-        }
-
-      </div>
-
-        {/* Right rail: portrait + invitation */}
-        <div className={styles.coverPortraitRow}>
-          {(loading || photoUrl) && (
-            <div className={styles.coverPortrait}>
-              {loading
-                ? <span className={styles.coverPortraitSkel} />
-                : (
-                  <>
-                    <img src={photoUrl} alt={personal.name ?? 'Profile'} className={styles.coverPortraitImg} />
-                    <span className={styles.coverPortraitRing} aria-hidden="true" />
-                    <span className={styles.coverPortraitLeaf} aria-hidden="true">
-                      <MapleLeaf />
-                    </span>
-                  </>
-                )
-              }
-            </div>
+          {badges.length > 0 && (
+            <ul className={styles.badges} data-reveal style={{ '--i': 1 }}>
+              {badges.map(({ Icon, text, tone }, i) => (
+                <li key={text} className={styles.badge} data-tone={tone} style={{ '--i': i }}>
+                  <Icon aria-hidden="true" />
+                  {text}
+                </li>
+              ))}
+            </ul>
           )}
 
-          <div className={styles.coverInvite}>
-            <p className={styles.coverInviteText}>
-              {t.coverInviteText}
-            </p>
-            <div className={styles.coverCtas}>
-              <ShimmerButton onClick={() => navigate('/bio')}>
-                {t.coverCtaPrimary} <MdAutoStories aria-hidden="true" />
-              </ShimmerButton>
-              <CursorGlowButton onClick={() => navigate('/projects')}>
-                {t.coverCtaSecondary}
-              </CursorGlowButton>
-            </div>
+          <div className={styles.actions} data-reveal style={{ '--i': 2 }}>
+            <button type="button" className={styles.ctaPrimary} onClick={() => navigate('/projects')}>
+              {t.heroCtaPrimary}
+              <MdArrowOutward aria-hidden="true" />
+            </button>
+            <button type="button" className={styles.ctaGhost} onClick={() => navigate('/connect')}>
+              {t.heroCtaSecondary}
+            </button>
 
-            {!loading && (github || linkedin) && (
-              <div className={styles.coverSocials}>
-                {github && (
-                  <a href={github.url} target="_blank" rel="noopener noreferrer" className={styles.coverSocialLink}>
-                    <FaGithub aria-hidden="true" />
-                    GitHub
-                  </a>
-                )}
-                {linkedin && (
-                  <a href={linkedin.url} target="_blank" rel="noopener noreferrer" className={styles.coverSocialLink}>
-                    <FaLinkedin aria-hidden="true" />
-                    LinkedIn
-                  </a>
-                )}
-              </div>
+            {github && (
+              <a
+                href={github.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.iconLink}
+                aria-label="GitHub"
+              >
+                <FaGithub aria-hidden="true" />
+              </a>
+            )}
+            {linkedin && (
+              <a
+                href={linkedin.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.iconLink}
+                aria-label="LinkedIn"
+              >
+                <FaLinkedin aria-hidden="true" />
+              </a>
             )}
           </div>
-        </div>
+        </Tile>
 
-      </div>
-      </div>
-      </section>
-
-      {/* ── Band 2 ── Featured work · content sits right ──────────────── */}
-      <section className={`${styles.band} ${styles.bandAlt}`}>
-      <div className={styles.bandInner}>
-      <div ref={workRef} className={`${styles.scene} ${workInView ? styles.sceneVisible : ''}`}>
-        <div className={`${styles.sceneHead} ${styles.sceneHeadRight}`}>
-          <span className={styles.sceneEye}>{t.workEye}</span>
-          <h2 className={styles.sceneTitle}>{t.workTitle}</h2>
-          <p className={styles.sceneLede}>{t.workLede}</p>
-        </div>
-
-        <FeaturedWork
-          items={featuredSites}
-          loading={sitesLoading}
-          emptyText={t.workEmpty}
-        />
-
-        {featuredSites.length > 0 && (
-          <div className={styles.workCta}>
-            <ShimmerButton onClick={() => navigate('/projects')}>
-              {t.workCta} <MdArrowOutward aria-hidden="true" />
-            </ShimmerButton>
+        {/* ── Portrait ─────────────────────────────────────────────────── */}
+        <Tile span={5} rows={2} className={styles.tPortrait}>
+          <div className={styles.portraitFrame} data-reveal style={{ '--i': 1 }}>
+            <OrbitRing photoUrl={photoUrl} name={personal.name} />
           </div>
+        </Tile>
+
+        {/* ── Figures ──────────────────────────────────────────────────── */}
+        {stats.length > 0 && (
+          <Tile span={7} className={styles.tStats}>
+            <div data-reveal style={{ '--i': 3 }}>
+              <StatRow stats={stats} />
+            </div>
+          </Tile>
+        )}
+
+        {/* ── Right now ────────────────────────────────────────────────── */}
+        {(now.role || now.study) && (
+          <Tile span={5} label={t.nowTitle} tone="cool" className={styles.tNow}>
+            <ul className={styles.nowList} data-reveal style={{ '--i': 4 }}>
+              {now.role && (
+                <li className={styles.nowItem}>
+                  <MdWork className={styles.nowIcon} aria-hidden="true" />
+                  <span>
+                    <strong>{now.role.role || now.role.position || now.role.title}</strong>
+                    {(now.role.company || now.role.employer) && (
+                      <span className={styles.nowAt}>{now.role.company || now.role.employer}</span>
+                    )}
+                  </span>
+                </li>
+              )}
+              {now.study && (
+                <li className={styles.nowItem}>
+                  <MdSchool className={styles.nowIcon} aria-hidden="true" />
+                  <span>
+                    <strong>{now.study.degree || now.study.qualification}</strong>
+                    {(now.study.institution || now.study.university) && (
+                      <span className={styles.nowAt}>
+                        {now.study.institution || now.study.university}
+                      </span>
+                    )}
+                  </span>
+                </li>
+              )}
+            </ul>
+          </Tile>
+        )}
+
+        {/* ── The statement ─────────────────────────────────────────────
+               One row, seven columns. This tile used to span two rows beside
+               the stack, and grid stretched it to the stack's full height:
+               measured at 1007px tall for four lines of text, which was most
+               of the empty space on the page. */}
+        <Tile span={7} id="about" label={t.statementTitle} className={styles.tAbout}>
+          <p className={styles.body} data-reveal style={{ '--i': 5 }}>{t.statementBody}</p>
+        </Tile>
+
+        {/* ── Outside work ─────────────────────────────────────────────────
+               Fills the rest of that row with real data rather than with air.
+               Rendered only when there is something to put in it. */}
+        {(interests.length > 0 || languages.length > 0) && (
+          <Tile span={5} label={t.offTitle} className={styles.tOff}>
+            {interests.length > 0 && (
+              <ul className={styles.chips} data-reveal style={{ '--i': 6 }}>
+                {interests.map((name, i) => {
+                  const Icon = interestIcon(name);
+                  return (
+                    <li key={name} className={styles.chip} style={{ '--i': i }}>
+                      <Icon aria-hidden="true" />
+                      {name}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {languages.length > 0 && (
+              <p className={styles.langs} data-reveal style={{ '--i': 7 }}>
+                <MdTranslate aria-hidden="true" />
+                {languages.join(', ')}
+              </p>
+            )}
+          </Tile>
+        )}
+
+        {/* ── The stack ───────────────────────────────────────────────────
+               Full width, which is a density decision rather than an emphasis
+               one: the same 28 marks in three families measured 1007px tall in
+               a seven column tile and roughly half that across twelve, because
+               each family's row holds nearly twice as many. */}
+        {(loading || skills.length > 0) && (
+          <Tile span={12} id="capabilities" label={t.toolkitTitle} className={styles.tStack}>
+            {loading
+              ? (
+                <div className={styles.techSkel} aria-hidden="true">
+                  {Array.from({ length: 18 }, (_, i) => (
+                    <span key={i} className={styles.techSkelTile} />
+                  ))}
+                </div>
+              )
+              : <TechGrid skills={skills} />
+            }
+          </Tile>
         )}
       </div>
-      </div>
+
+      {/* ── The work ─────────────────────────────────────────────────────
+             Outside the mosaic, because these are live cross-origin iframes:
+             animating an ancestor of one forces its compositor surface to be
+             re-composited every frame, so the cards themselves never move. */}
+      <section
+        ref={lowerRef}
+        className={styles.band}
+        data-reveal-shown={lowerShown ? '' : undefined}
+        style={{ '--reveal-step': '60ms' }}
+      >
+        <header className={styles.bandHead}>
+          <div>
+            <h2 className={styles.bandTitle} data-reveal style={{ '--i': 0 }}>{t.workTitle}</h2>
+            <p className={styles.bandLede} data-reveal style={{ '--i': 1 }}>{t.workLede}</p>
+          </div>
+          <button
+            type="button"
+            className={styles.ctaGhost}
+            onClick={() => navigate('/projects')}
+            data-reveal
+            style={{ '--i': 2 }}
+          >
+            {t.workCta}
+            <MdArrowOutward aria-hidden="true" />
+          </button>
+        </header>
+
+        {sitesLoading
+          ? (
+            <div className={styles.workGrid} aria-hidden="true">
+              {[0, 1, 2].map(i => <span key={i} className={styles.workSkelCard} />)}
+            </div>
+          )
+          : featuredSites.length === 0
+            ? <p className={styles.empty}>{t.workEmpty}</p>
+            : (
+              <div className={styles.workGrid}>
+                {featuredSites.map(site => (
+                  <SiteShowcase key={site.id} project={site} />
+                ))}
+              </div>
+            )
+        }
       </section>
 
-      {/* ── Band 3 ── The Journey · content sits left ─────────────────── */}
-      <section className={styles.band}>
-      <div className={styles.bandInner}>
-      <div ref={journeyRef} className={`${styles.scene} ${styles.sceneLeft} ${journeyInView ? styles.sceneVisible : ''}`}>
-        <div className={styles.sceneHead}>
-          <span className={styles.sceneEye}>{t.journeyEye}</span>
-          <h2 className={styles.sceneTitle}>{t.journeyTitle}</h2>
-          <p className={styles.sceneLede}>
-            {t.journeyLede}
-          </p>
-        </div>
+      {/* ── The journey ──────────────────────────────────────────────────
+             The one part of the page that keeps a scroll length of its own: it
+             pins and pans by 100cqw, so it has to be full bleed and it has to
+             have a distance to pin through. */}
+      <section className={styles.journeyBand}>
+        <header className={styles.bandHead}>
+          <div>
+            <h2 className={styles.bandTitle}>{t.journeyTitle}</h2>
+            <p className={styles.bandLede}>{t.journeyLede}</p>
+          </div>
+        </header>
 
         {loading
-          ? <div className={styles.roadmapSkel}>{[0, 1, 2, 3].map(i => (
-              <div
-                key={i}
-                className={styles.roadmapSkelRow}
-                data-side={i % 2 === 0 ? 'left' : 'right'}
-              >
-                <span className={styles.roadmapSkelPin} />
-                <span className={styles.roadmapSkelCard} />
-              </div>
-            ))}</div>
+          ? (
+            <div className={styles.roadmapSkel} aria-hidden="true">
+              {[0, 1, 2].map(i => <div key={i} className={styles.roadmapSkelCard} />)}
+            </div>
+          )
           : (
             <Roadmap
               stops={journey}
               onSelect={setOpenMilestone}
-              emptyText={t.journeyEmpty ?? 'The route is still being drawn.'}
+              heading={t.journeyTitle}
+              emptyText={t.journeyEmpty}
             />
           )
         }
-      </div>
-      </div>
       </section>
 
-      {/* ── Band 4 ── The Toolkit · content sits right ────────────────── */}
-      {(loading || skills.length > 0) && (
-      <section className={`${styles.band} ${styles.bandAlt}`}>
-      <div className={styles.bandInner}>
-        <div ref={pileSecRef} className={`${styles.scene} ${styles.sceneRight} ${pileSecInView ? styles.sceneVisible : ''}`}>
-          <div className={`${styles.sceneHead} ${styles.sceneHeadRight}`}>
-            <span className={styles.sceneEye}>{t.toolkitEye}</span>
-            <h2 className={styles.sceneTitle}>{t.toolkitTitle}</h2>
-            <p className={styles.sceneLede}>
-              {t.toolkitLede}
-            </p>
-          </div>
-
-          {loading
-            ? (
-              <div className={styles.pile}>
-                {[[72, 56, 88, 64, 80], [92, 50, 68, 76, 60, 84], [70, 88, 54]].map((widths, gi) => (
-                  <div key={gi} className={styles.pileGroup}>
-                    <span className={styles.pileSkelHead} />
-                    <ul className={styles.pileChips}>
-                      {widths.map((w, i) => (
-                        <li key={i} className={styles.skillLeafSkel} style={{ width: w }} />
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            )
-            : <SkillPile skills={skills} />
-          }
-        </div>
-      </div>
-      </section>
-      )}
-
-      {/* ── Band 5 ── Epilogue · the one place centring is the point ──── */}
-      <section ref={endRef} className={`${styles.band} ${styles.scene} ${styles.sceneEnd} ${endInView ? styles.sceneVisible : ''}`}>
-        <div className={styles.endCard}>
-          <span className={styles.endOrnament} aria-hidden="true">
-            <MapleLeaf />
-            <span className={styles.endOrnamentLine} />
-            <MapleLeaf />
-          </span>
-          <h2 className={styles.endTitle}>{t.endTitlePre}<em>{t.endTitleEm}</em></h2>
-          <p className={styles.endText}>
-            {t.endText}
-          </p>
-          {/* One primary, two supporting. This row previously ran two solid
-              buttons beside a glass one, which gave the reader three equally
-              loud options and no answer to "so what now". Getting in touch is
-              the action this page exists to produce, so it takes the accent -
-              and it is the only place on the site running the travelling
-              border, which stops that effect becoming wallpaper. */}
-          <div className={styles.endCtas}>
-            <GlowBorderButton tone="solid" onClick={() => navigate('/connect')}>
-              <MdEmail aria-hidden="true" /> Write a letter
-            </GlowBorderButton>
-            <CursorGlowButton onClick={() => navigate('/bio')}>
-              <MdMenuBook aria-hidden="true" /> Read the Bio
-            </CursorGlowButton>
-            <CursorGlowButton onClick={() => navigate('/projects')}>
-              <MdCode aria-hidden="true" /> See projects
-            </CursorGlowButton>
-          </div>
-        </div>
-      </section>
-
-      <div className={styles.pageFade} aria-hidden="true" />
-
-      {/* ── Modals ───────────────────────────────────────────────────── */}
-      <Modal open={!!openMilestone} onClose={() => setOpenMilestone(null)} title={openMilestone?.title} size="md">
+      <Modal
+        open={!!openMilestone}
+        onClose={() => setOpenMilestone(null)}
+        title={openMilestone?.title}
+        size="md"
+      >
         {openMilestone && (
           <div className={styles.milestoneModal}>
-            <span className={`${styles.milestoneKind} ${styles[`milestoneKind_${openMilestone.kind}`]}`}>
+            <span className={styles.milestoneKind}>
               {openMilestone.kind === 'education' ? 'Education' : 'Experience'}
             </span>
             {openMilestone.subtitle && <p className={styles.milestoneSub}>{openMilestone.subtitle}</p>}
-            {openMilestone.period   && <p className={styles.milestonePeriod}>{openMilestone.period}</p>}
+            {openMilestone.period && <p className={styles.milestonePeriod}>{openMilestone.period}</p>}
             {openMilestone.description && <p className={styles.milestoneDesc}>{openMilestone.description}</p>}
             {openMilestone.tags?.length > 0 && (
               <div className={styles.milestoneTags}>
-                {openMilestone.tags.map((t, i) => (
-                  <span key={i} className={styles.milestoneTag}>{t}</span>
+                {openMilestone.tags.map((tag, i) => (
+                  <span key={i} className={styles.milestoneTag}>{tag}</span>
                 ))}
               </div>
             )}

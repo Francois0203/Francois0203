@@ -2,6 +2,8 @@ export * from './useTheme';
 export * from './useTooltip';
 export * from './useAnimations';
 export { default as useBlobPhysics }     from './useBlobPhysics';
+export { default as usePointerGlow }     from './usePointerGlow';
+export { default as useReveal }          from './useReveal';
 export { default as usePortfolioData }   from './usePortfolioData';
 export { default as useSiteCopy }        from './useSiteCopy';
 export { default as useGitHubProjects }  from './useGitHubProjects';

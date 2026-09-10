@@ -51,10 +51,48 @@ const STOPS = [
   },
 ];
 
+/*
+ * Full width, no wrapper. The route pins and pans by `100vw - 100%` of its
+ * track, so constraining it here would make the preview lie about where the
+ * pan ends.
+ *
+ * A measurement probe publishes the pan geometry into document.title so a
+ * headless --dump-dom can check the arithmetic; see
+ * memory/headless-visual-checks.md.
+ */
+const Probe = () => {
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      const outer = document.querySelector('[class*="outer"]');
+      const track = document.querySelector('ol[class*="track"]');
+      const pin = document.querySelector('[class*="pin"]:not([class*="pinIcon"])');
+      if (!outer || !track) { document.title = 'probe: not found'; return; }
+      const stops = track.children.length;
+      const cs = getComputedStyle(track);
+      const declared = cs.getPropertyValue('--overflow').trim();
+      const first = track.children[0];
+      document.title = [
+        'pinW=' + (pin && Math.round(pin.getBoundingClientRect().width)),
+        'trackW=' + Math.round(track.scrollWidth),
+        'realOverflow=' + Math.round(track.scrollWidth - (pin ? pin.getBoundingClientRect().width : 0)),
+        'declared=' + declared,
+        'stops=' + stops,
+        'trackAnim=' + cs.animationName,
+        'stopAnim=' + (first && getComputedStyle(first).animationName),
+        'stopRange=' + (first && getComputedStyle(first).animationRange),
+        'metaRangeInherited=' + (first && getComputedStyle(first.querySelector('[class*=meta]')).animationRange),
+      ].join(' | ');
+    }, 900);
+  }
+  return null;
+};
+
 const RoadmapPreview = () => (
-  <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem 1.5rem' }}>
-    <Roadmap stops={STOPS} onSelect={() => {}} />
-  </div>
+  <>
+    <Probe />
+    <Roadmap stops={STOPS} onSelect={() => {}} heading="The journey so far" />
+    <div style={{ height: '60vh' }} />
+  </>
 );
 
 export default RoadmapPreview;

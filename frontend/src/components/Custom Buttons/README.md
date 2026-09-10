@@ -1,8 +1,8 @@
 # Custom Buttons
 
 Four buttons that exist because the global `button` system in
-`styles/Components.css` deliberately does not do effects. Everything ordinary —
-admin forms, toolbars, table rows — uses the global variants (`btn-primary`,
+`styles/Components.css` deliberately does not do effects. Everything ordinary - 
+admin forms, toolbars, table rows - uses the global variants (`btn-primary`,
 `btn-secondary`, `btn-outline`, `btn-ghost`, `btn-danger`, `btn-success`, plus
 `btn-sm` / `btn-lg` / `btn-icon` / `btn-block`). These four are for the handful
 of places on the public site where a button is also a piece of the composition.
@@ -11,8 +11,8 @@ All four share the same contract:
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `children` | `ReactNode` | – | Label and/or icons |
-| `onClick` | `function` | – | Click handler |
+| `children` | `ReactNode` | - | Label and/or icons |
+| `onClick` | `function` | - | Click handler |
 | `disabled` | `boolean` | `false` | Disables interaction, stops the effect, dims the button |
 | `type` | `string` | `'button'` | Native `type` attribute |
 | `className` | `string` | `''` | Merged onto the root `<button>` |
@@ -54,7 +54,7 @@ per component:
   tapped.
 - **Pointer effects are gated** on `motionAllowed()`, checked at interaction
   time, not at mount. It returns false for touch pointers, for
-  `prefers-reduced-motion`, and for the site's own Reduce Animations switch —
+  `prefers-reduced-motion`, and for the site's own Reduce Animations switch - 
   which the previous versions ignored entirely, because the switch works by
   killing CSS transitions and these effects were driven from JS.
 - **Reduced motion keeps the button and drops the travel.** Each module has a
@@ -108,7 +108,7 @@ extra `tone` prop: `'glass'` (default) or `'solid'`.
 - No JavaScript, and no animated `@property --angle`. Animating an angle inside
   a `conic-gradient` rebuilds the gradient on the main thread every frame. This
   spins an oversized square carrying a *static* conic gradient, clipped to a 1px
-  masked ring — one composited `transform`, off the main thread.
+  masked ring - one composited `transform`, off the main thread.
 - The spinner is 150% of the button's width so its corners clear the ring on a
   wide button; below that the light stutters at the ends.
 - `linear` timing. Any easing on a loop makes the light hesitate at the same
@@ -135,7 +135,7 @@ right on leave. Pure CSS.
   left and back out to the left, so the light appeared to change its mind.
 - Mechanism: `scaleX(0)` with `transform-origin: right` at rest, `scaleX(1)`
   with `transform-origin: left` on hover. `transform-origin` is not in the
-  transition list, so it snaps while `scaleX` interpolates — which is what turns
+  transition list, so it snaps while `scaleX` interpolates - which is what turns
   two opposite scale animations into one continuous left-to-right pass.
 - The label colour flips on a 170ms delay entering and no delay leaving, so it
   changes once the fill is most of the way across rather than while half the
@@ -157,7 +157,7 @@ around the border.
 - Two radial gradients, not five: one tight spotlight, one wide falloff. The
   previous version recomputed four gradients per frame for a difference that is
   not visible.
-- The border ring uses the CSS mask punch-out technique — fill the box, fill the
+- The border ring uses the CSS mask punch-out technique - fill the box, fill the
   content-box, composite the second out of the first, and only the 1px padding
   gap survives.
 - Both positions are seeded at the entry point on `pointerenter`. Without that

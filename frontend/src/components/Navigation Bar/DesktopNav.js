@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+import { usePointerGlow } from "../../hooks";
 import styles from "./DesktopNav.module.css";
 
 // --- COMPONENT ----------------------------------------------------------------
@@ -14,7 +15,6 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
   const capsuleRef = useRef(null);
   const linkRefs   = useRef([]);
 
-  const [glowPos,    setGlowPos]    = useState({ x: 50, y: 50 });
   const [hovered,    setHovered]    = useState(false);
   const [pillStyle,  setPillStyle]  = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -74,16 +74,16 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
 
   // --- CURSOR TRACKING --------------------------------------------------------
 
-  const handleMouseMove = useCallback((e) => {
-    const el = capsuleRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    setGlowPos({
-      x: ((e.clientX - r.left) / r.width)  * 100,
-      y: ((e.clientY - r.top)  / r.height) * 100,
-    });
-    setHovered(true);
-  }, []);
+  /*
+   * Glow position now comes from usePointerGlow, which measures the capsule
+   * once on enter and writes --glow-x/--glow-y straight to it from a single
+   * rAF. What was here read getBoundingClientRect() and called setGlowPos on
+   * every mousemove: a forced layout plus a React render per pointer sample,
+   * on a fixed element mounted on every page, and because the values were
+   * inline custom properties on the <nav>, every descendant's computed style
+   * was invalidated with them.
+   */
+  const { glowHandlers } = usePointerGlow(capsuleRef);
 
   // --- PILL: SNAP TO ACTIVE ROUTE ---------------------------------------------
   // useEffect (not useLayoutEffect) so the browser paints the old pill position
@@ -200,13 +200,11 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
       className={[styles.capsule, isDragging ? styles.capsuleDragging : ""].filter(Boolean).join(" ")}
       aria-label="Desktop navigation"
       style={{
-        "--glow-x":    `${glowPos.x}%`,
-        "--glow-y":    `${glowPos.y}%`,
         "--glow-show": hovered ? "1" : "0",
       }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseMove={glowHandlers.onPointerMove}
+      onMouseEnter={(e) => { glowHandlers.onPointerEnter(e); setHovered(true); }}
+      onMouseLeave={(e) => { glowHandlers.onPointerLeave(e); setHovered(false); }}
       onPointerDown={handleNavPointerDown}
       onPointerMove={handleNavPointerMove}
       onPointerUp={handleNavPointerUp}

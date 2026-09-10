@@ -10,6 +10,7 @@ import {
   LuBriefcase,
 } from "react-icons/lu";
 
+import { usePointerGlow } from "../../hooks";
 import styles from "./MobileNav.module.css";
 
 // ─── ICON MAP ────────────────────────────────────────────────────────────────
@@ -107,18 +108,10 @@ function computeArcPosition(slot, maxVisible, radius, spanDeg) {
 // Circular glass button with cursor rim glow. Hamburger morphs to ✕ when open.
 
 const TriggerButton = ({ isOpen, onClick }) => {
-  const ref = useRef(null);
-  const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
+  // See hooks/usePointerGlow: measured once per hover, written from one rAF.
+  const { ref, glowHandlers } = usePointerGlow();
   const [hovered, setHovered] = useState(false);
 
-  const handleMouseMove = useCallback((e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    setGlowPos({
-      x: ((e.clientX - r.left) / r.width)  * 100,
-      y: ((e.clientY - r.top)  / r.height) * 100,
-    });
-  }, []);
 
   return (
     <button
@@ -126,12 +119,10 @@ const TriggerButton = ({ isOpen, onClick }) => {
       type="button"
       className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ""}`}
       style={{
-        "--glow-x":    `${glowPos.x}%`,
-        "--glow-y":    `${glowPos.y}%`,
         "--glow-show": !isOpen && hovered ? "1" : "0",
       }}
       onClick={onClick}
-      onMouseMove={handleMouseMove}
+      {...glowHandlers}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -149,19 +140,10 @@ const TriggerButton = ({ isOpen, onClick }) => {
 
 const LinkBubble = ({ link, position, opacity, isDragging, isOpen, isActive, delay, onClick }) => {
   const [hovered, setHovered] = useState(false);
-  const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
-  const ref = useRef(null);
+  const { ref, glowHandlers } = usePointerGlow();
 
   const Icon = useMemo(() => resolveIcon(link), [link]);
 
-  const handleMouseMove = useCallback((e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    setGlowPos({
-      x: ((e.clientX - r.left) / r.width)  * 100,
-      y: ((e.clientY - r.top)  / r.height) * 100,
-    });
-  }, []);
 
   return (
     // flex-direction: column-reverse → label sits visually above the bubble
@@ -190,12 +172,10 @@ const LinkBubble = ({ link, position, opacity, isDragging, isOpen, isActive, del
           hovered  ? styles.bubbleHovered : "",
         ].filter(Boolean).join(" ")}
         style={{
-          "--glow-x":    `${glowPos.x}%`,
-          "--glow-y":    `${glowPos.y}%`,
           "--glow-show": hovered ? "1" : "0",
         }}
         onClick={() => isOpen && onClick(link)}
-        onMouseMove={handleMouseMove}
+        {...glowHandlers}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         tabIndex={isOpen ? 0 : -1}

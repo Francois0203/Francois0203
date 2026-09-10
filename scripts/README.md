@@ -25,14 +25,14 @@ back a Firestore handle.
 a repo's Firebase Hosting url. It says that in its own tree, and three ways are
 tried in order:
 
-1. **`.showcase.json` at the repo root** — the good path. Multiple sites, client
+1. **`.showcase.json` at the repo root** - the good path. Multiple sites, client
    name, tagline, ordering, featured flag. Copy `showcase.template.json`.
-2. **The repo's GitHub `homepage` field** (Settings → Website) — one url, no
+2. **The repo's GitHub `homepage` field** (Settings → Website) - one url, no
    extra metadata. Fine for a simple one-site repo.
-3. **`.firebaserc` + `firebase.json`** — derives `https://<site>.web.app` from
+3. **`.firebaserc` + `firebase.json`** - derives `https://<site>.web.app` from
    the hosting config, so a plain Firebase repo works with no manifest at all.
    Hosting *targets* are read too, which is how a project with two apps is
-   picked up. A **custom domain is invisible** to this path — those need
+   picked up. A **custom domain is invisible** to this path - those need
    option 1 or 2.
 
 A repo none of the three finds a url for still syncs, and shows up in
@@ -56,13 +56,13 @@ Every field is optional. Minimum useful version:
 }
 ```
 
-- `sites` — up to 4. Two or more render as tabs inside the browser chrome on the
+- `sites` - up to 4. Two or more render as tabs inside the browser chrome on the
   card. A bare string is accepted as shorthand for `{ url }`.
-- `featured: true` — opts the site into the home page (max 3). If **no** repo is
+- `featured: true` - opts the site into the home page (max 3). If **no** repo is
   flagged, the home page falls back to the first three by `order`, so it is never
   empty by accident.
-- `order` — ascending, default `100`. This is the display order on both pages.
-- `name`, `client`, `tagline`, `description`, `stack`, `tags` — card copy.
+- `order` - ascending, default `100`. This is the display order on both pages.
+- `name`, `client`, `tagline`, `description`, `stack`, `tags` - card copy.
 
 Edit the manifest, re-run the workflow, done. There is nothing to change in the
 portfolio repo and nothing to edit in the admin panel.
@@ -71,7 +71,7 @@ portfolio repo and nothing to edit in the admin panel.
 
 The cards hold **real live iframes**, so each url is probed once per sync for
 whether it actually permits framing (`X-Frame-Options`, CSP `frame-ancestors`)
-and the verdict is stored per url. A site that refuses is never framed — it gets
+and the verdict is stored per url. A site that refuses is never framed - it gets
 a card explaining why with a link out, instead of a blank white panel.
 
 The probe is deliberately pessimistic: a `frame-ancestors` list it cannot

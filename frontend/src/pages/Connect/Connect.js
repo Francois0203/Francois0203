@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { FaGithub, FaLinkedin, FaTwitter, FaInstagram, FaYoutube, FaEnvelope, FaGlobe, FaFacebook, FaHeart } from 'react-icons/fa';
-import { SiOrcid, SiHackerrank, SiCodewars } from 'react-icons/si';
+import { FaHeart } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
+/* Shared with the site footer, which lists the same platforms. */
+import { getSocialIcon } from '../../content/socialIcons';
 import { useToast } from '../../components';
 import { submitContactForm } from '../../firebase/firestore';
 import usePortfolioData from '../../hooks/usePortfolioData';
@@ -9,26 +10,12 @@ import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { CONNECT_FIELDS } from '../../content/copy/connect';
 import styles from './Connect.module.css';
+import useReveal from '../../hooks/useReveal';
 
 const EMPTY_FORM    = { name: '', email: '', message: '' };
 const EMPTY_ERRORS  = { name: '',  email: '',  message: ''  };
 const EMPTY_TOUCHED = { name: false, email: false, message: false };
 
-const SOCIAL_ICONS = {
-  github:     FaGithub,
-  linkedin:   FaLinkedin,
-  twitter:    FaTwitter,
-  x:          FaTwitter,
-  instagram:  FaInstagram,
-  youtube:    FaYoutube,
-  email:      FaEnvelope,
-  facebook:   FaFacebook,
-  orcid:      SiOrcid,
-  hackerrank: SiHackerrank,
-  codewars:   SiCodewars,
-};
-
-const getSocialIcon = (key = '') => SOCIAL_ICONS[(key || '').toLowerCase()] ?? FaGlobe;
 
 const validate = ({ name, email, message }) => ({
   name:    !name.trim()    ? 'Name is required'              : '',
@@ -111,12 +98,20 @@ const Connect = () => {
   const showSocialCol = social === null || (Array.isArray(social) && social.length > 0);
   const showRightCol  = donation?.enabled || showSocialCol;
 
+  // See styles/Reveal.css. This page had no entrance at all before.
+  const [revealRef, revealed] = useReveal();
+
   return (
     <section className={styles.page}>
 
-      <div className={styles.container}>
+      <div
+        ref={revealRef}
+        className={styles.container}
+        data-reveal-shown={revealed ? '' : undefined}
+        style={{ '--reveal-step': '80ms' }}
+      >
 
-        <header className={styles.header}>
+        <header className={styles.header} data-reveal style={{ '--i': 0 }}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
             <span className={styles.chapterDash} aria-hidden="true">-</span>
