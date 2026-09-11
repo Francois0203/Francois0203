@@ -13,4 +13,6 @@ export const FOOTER_FIELDS = [
   { key: 'navHeading',    label: 'Column heading - pages',   type: 'text', default: 'Pages' },
   { key: 'reachHeading',  label: 'Column heading - contact', type: 'text', default: 'Reach me' },
   { key: 'socialHeading', label: 'Column heading - social',  type: 'text', default: 'Elsewhere' },
+
+  { key: 'topLabel', label: 'Back to top - label', type: 'text', default: 'Back to top' },
 ];

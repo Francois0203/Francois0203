@@ -3,7 +3,7 @@ import { FaHeart } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
 /* Shared with the site footer, which lists the same platforms. */
 import { getSocialIcon } from '../../content/socialIcons';
-import { useToast } from '../../components';
+import { useToast, Parallax } from '../../components';
 import { submitContactForm } from '../../firebase/firestore';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
@@ -111,6 +111,12 @@ const Connect = () => {
         style={{ '--reveal-step': '80ms' }}
       >
 
+        {/* Wrapped rather than converted, for the reason set out in
+            components/Parallax/Parallax.js: the header's entrance is a
+            transform transition and the drift is an inline transform, so they
+            have to be two elements. `.headerLayer` keeps the wrapper from
+            shrinking, since `.container` is a flex column. */}
+        <Parallax className={styles.headerLayer} rate={0.06} max={56}>
         <header className={styles.header} data-reveal style={{ '--i': 0 }}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
@@ -120,6 +126,7 @@ const Connect = () => {
           <h1 className={styles.heading}>{t.heading}</h1>
           <p>{t.intro}</p>
         </header>
+        </Parallax>
 
         <div className={`${styles.grid} ${!showRightCol ? styles.gridSingle : ''}`}>
 

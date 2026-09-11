@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
-import { NavigationBar, Settings, ToastProvider, Intro } from './components';
+import { NavigationBar, Settings, ToastProvider, Intro, ParallaxBackdrop } from './components';
 import SiteFooter from './components/SiteFooter';
 import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
 import { ContentProvider } from './context/ContentContext';
@@ -19,16 +19,85 @@ const RoadmapPreview = import.meta.env.DEV
   ? React.lazy(() => import('./dev/RoadmapPreview'))
   : null;
 
+const FooterPreview = import.meta.env.DEV
+  ? React.lazy(() => import('./dev/FooterPreview'))
+  : null;
+
+const ParallaxPreview = import.meta.env.DEV
+  ? React.lazy(() => import('./dev/ParallaxPreview'))
+  : null;
+
+/*
+ * Where a navigation lands.
+ *
+ * The top, unless the URL names somewhere else. This used to force position 0
+ * unconditionally, which quietly made every fragment on the site dead: Home
+ * carries `id="about"` and `id="capabilities"` and the footer carries
+ * `id="site-footer"`, so /#about is a link someone can reasonably send or
+ * bookmark, and it landed at the top of the page every time - the browser's own
+ * jump to the anchor happens first and was then overwritten.
+ *
+ * Landing on an anchor is not a single action here, because the page is not
+ * finished when it first paints - see the settling logic below.
+ */
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
+    const lenis = getLenis();
+
+    if (hash) {
+      const id = hash.slice(1);
+      const align = () => {
+        const target = document.getElementById(id);
+        if (!target) return false;
+        if (lenis) lenis.scrollTo(target, { immediate: true });
+        else target.scrollIntoView();
+        return true;
+      };
+
+      /*
+       * Aligned again as the page settles, which on this site it always does:
+       * every page fills in from Firestore after first paint, so an anchor
+       * measured at mount is measured against a skeleton and everything below
+       * it then moves by thousands of pixels. Aligning once is how a link to
+       * #site-footer lands in the middle of the experience list instead.
+       *
+       * Bounded hard, and abandoned the instant the reader takes over. Nothing
+       * is more hostile than a page that keeps pulling the scroll back while
+       * someone is trying to read it, so any wheel, touch or key ends this
+       * immediately - even mid-settle, and even if the anchor is still wrong.
+       */
+      align();
+
+      let observer = null;
+      const stop = () => {
+        observer?.disconnect();
+        observer = null;
+        clearTimeout(timer);
+        window.removeEventListener('wheel', stop);
+        window.removeEventListener('touchstart', stop);
+        window.removeEventListener('keydown', stop);
+      };
+      const timer = setTimeout(stop, 2000);
+
+      window.addEventListener('wheel', stop, { passive: true });
+      window.addEventListener('touchstart', stop, { passive: true });
+      window.addEventListener('keydown', stop);
+
+      if (typeof ResizeObserver !== 'undefined') {
+        observer = new ResizeObserver(() => { align(); });
+        observer.observe(document.body);
+      }
+
+      return stop;
+    }
+
     // Both, not one or the other: Lenis keeps its own scroll position, so
     // resetting only the window leaves it convinced the page is still scrolled
     // down, and the first wheel notch on the new page jumps back there.
-    const lenis = getLenis();
     if (lenis) lenis.scrollTo(0, { immediate: true });
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, hash]);
   return null;
 };
 
@@ -69,6 +138,13 @@ const AppLayout = () => {
       <div className="scrollProgress" aria-hidden="true" />
 
       <div className={styles.app}>
+        {/* The site's ground, four layers deep, mounted here rather than per
+            page so the depth is continuous across a navigation instead of one
+            backdrop being swapped for another. It is fixed and z-index 0;
+            .pageContent below is z-index 2, so nothing in it can fall behind
+            the backdrop. */}
+        <ParallaxBackdrop />
+
         <NavigationBar
           links={navigationLinks}
           onNavigate={handleNavigate}
@@ -108,6 +184,14 @@ const AppContent = () => (
 
         {import.meta.env.DEV && (
           <Route path="/__preview/roadmap" element={<RoadmapPreview />} />
+        )}
+
+        {import.meta.env.DEV && (
+          <Route path="/__preview/footer" element={<FooterPreview />} />
+        )}
+
+        {import.meta.env.DEV && (
+          <Route path="/__preview/parallax" element={<ParallaxPreview />} />
         )}
 
         <Route path="/" element={<AppLayout />}>

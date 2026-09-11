@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
 import { MdArrowOutward } from 'react-icons/md';
-import { Modal, LightWaveButton, SiteShowcase } from '../../components';
+import { Modal, LightWaveButton, SiteShowcase, Parallax } from '../../components';
 import LangBar from '../../components/LangBar';
 import StatRow from '../../components/StatRow';
 import { useGitHubProjects, useStudioSites } from '../../hooks';
@@ -219,7 +219,12 @@ const Projects = () => {
     <section className={styles.page}>
       <div className={styles.container}>
 
-        {/* ── Scene 1 ── the title card ───────────────────────────────── */}
+        {/* ── Scene 1 ── the title card ─────────────────────────────────
+             Wrapped rather than converted: the header already owns a ref (the
+             reveal observer's) and hooks/useParallax needs one of its own.
+             The wrapper is a plain block inside a plain block, so it changes
+             nothing about the layout. */}
+        <Parallax rate={0.07} max={64}>
         <header
           ref={heroRef}
           className={styles.hero}
@@ -238,6 +243,7 @@ const Projects = () => {
             </div>
           )}
         </header>
+        </Parallax>
 
         {/* ── Scene 2 ── the live sites ───────────────────────────────── */}
         <section
@@ -246,10 +252,10 @@ const Projects = () => {
           data-reveal-shown={studioInView ? '' : undefined}
           style={{ '--reveal-step': '80ms' }}
         >
-          <div className={styles.sectionHead}>
+          <Parallax className={styles.sectionHead} rate={0.045} max={48}>
             <h2 className={styles.sectionTitle} data-reveal style={{ '--i': 0 }}>{t.studioTitle}</h2>
             <p className={styles.sectionLede} data-reveal style={{ '--i': 1 }}>{t.studioLede}</p>
-          </div>
+          </Parallax>
 
           {sitesError ? (
             <div className={styles.errorCard}>
@@ -280,10 +286,10 @@ const Projects = () => {
           data-reveal-shown={codeInView ? '' : undefined}
           style={{ '--reveal-step': '55ms' }}
         >
-          <div className={styles.sectionHead}>
+          <Parallax className={styles.sectionHead} rate={0.045} max={48}>
             <h2 className={styles.sectionTitle} data-reveal style={{ '--i': 0 }}>{t.codeTitle}</h2>
             <p className={styles.sectionLede} data-reveal style={{ '--i': 1 }}>{t.codeLede}</p>
-          </div>
+          </Parallax>
 
           {!loading && repos.length > 0 && (
             <LangBar projects={repos} onSelect={setLang} active={lang} />

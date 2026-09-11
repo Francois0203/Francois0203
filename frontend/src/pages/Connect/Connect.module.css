@@ -24,6 +24,12 @@
 
 /* ── Header ──────────────────────────────────────────────────────────────────── */
 
+/* The parallax wrapper around the header. `.container` is a flex column, so
+   without this the wrapper - not the header inside it - is the flex item, and
+   it would inherit the default `flex-shrink: 1` that the header explicitly
+   opts out of. */
+.headerLayer { flex-shrink: 0; }
+
 .header {
   flex-shrink: 0;
   margin-bottom: var(--spacing-lg);

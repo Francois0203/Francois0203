@@ -11,7 +11,7 @@ import useReveal from '../../hooks/useReveal';
 import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
-import { Modal, SiteShowcase } from '../../components';
+import { Modal, SiteShowcase, Parallax } from '../../components';
 import Roadmap from '../../components/Roadmap';
 import TechGrid from '../../components/TechGrid';
 import StatRow from '../../components/StatRow';
@@ -308,8 +308,9 @@ const Home = () => {
 
   return (
     <div className={styles.page}>
-      {/* One ambient wash, fixed, statically painted. */}
-      <div className={styles.ambient} aria-hidden="true" />
+      {/* The ambient wash that used to sit here is now the far layer of
+          components/Parallax/ParallaxBackdrop, mounted once in the app layout
+          so every page has a ground and so the ground moves. */}
 
       <div
         ref={gridRef}
@@ -497,7 +498,13 @@ const Home = () => {
         data-reveal-shown={lowerShown ? '' : undefined}
         style={{ '--reveal-step': '60ms' }}
       >
-        <header className={styles.bandHead}>
+        {/* The band heading rides slightly behind the cards below it, which
+            is what puts the two on different planes. It is safe here and only
+            here in this band: the drift is a transform, and a transform on an
+            ancestor of the live cross-origin iframes in `.workGrid` would
+            force every one of them to re-composite on every frame. The heading
+            is their sibling, not their ancestor. */}
+        <Parallax as="header" className={styles.bandHead} rate={0.05} max={56}>
           <div>
             <h2 className={styles.bandTitle} data-reveal style={{ '--i': 0 }}>{t.workTitle}</h2>
             <p className={styles.bandLede} data-reveal style={{ '--i': 1 }}>{t.workLede}</p>
@@ -512,7 +519,7 @@ const Home = () => {
             {t.workCta}
             <MdArrowOutward aria-hidden="true" />
           </button>
-        </header>
+        </Parallax>
 
         {sitesLoading
           ? (
@@ -537,12 +544,16 @@ const Home = () => {
              pins and pans by 100cqw, so it has to be full bleed and it has to
              have a distance to pin through. */}
       <section className={styles.journeyBand}>
-        <header className={styles.bandHead}>
+        {/* Same again, and again as a sibling rather than a wrapper: the
+            Roadmap below pins with `position: sticky`, and a transformed
+            ancestor becomes its containing block, which would quietly stop it
+            pinning at all. */}
+        <Parallax as="header" className={styles.bandHead} rate={0.05} max={56}>
           <div>
             <h2 className={styles.bandTitle}>{t.journeyTitle}</h2>
             <p className={styles.bandLede}>{t.journeyLede}</p>
           </div>
-        </header>
+        </Parallax>
 
         {loading
           ? (

@@ -5,6 +5,7 @@ import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import { resolveGroup } from '../../content/copy/resolve';
 import { BIO_FIELDS } from '../../content/copy/bio';
+import { Parallax } from '../../components';
 import styles from './Bio.module.css';
 import useReveal from '../../hooks/useReveal';
 
@@ -123,7 +124,13 @@ const Bio = () => {
         style={{ '--reveal-step': '70ms' }}
       >
 
-        {/* ── Header ──────────────────────────────────────────────────────── */}
+        {/* ── Header ────────────────────────────────────────────────────────
+             Wrapped, not converted: the header carries `[data-reveal]`, whose
+             entrance is a transform transition, and hooks/useParallax owns the
+             inline transform of whatever element it is given. The two must
+             never be the same element - as a parent and child they compose
+             instead, and the header still makes its own entrance. */}
+        <Parallax rate={0.06} max={56}>
         <header className={styles.header} data-reveal style={{ "--i": 0 }}>
           <p className={styles.chapterEyebrow}>
             <span className={styles.chapterMark}>{t.chapterMark}</span>
@@ -211,6 +218,7 @@ const Bio = () => {
             )}
           </div>
         </header>
+        </Parallax>
 
         {/* ── Content ─────────────────────────────────────────────────────── */}
         <div className={styles.content}>

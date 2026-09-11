@@ -281,7 +281,10 @@
   background: rgba(var(--accent-1-rgb), 0.12);
   border: 1px solid rgba(var(--accent-1-rgb), 0.35);
 }
-.blockedLink:hover { border-color: var(--accent-1); }
+/* `text-decoration` because this is an anchor shaped like a button, and the
+   global `a:hover` rule in styles/Components.css underlines every anchor on
+   the site. The same fix as `.next` and `.ctaButton` in the site footer. */
+.blockedLink:hover { border-color: var(--accent-1); text-decoration: none; }
 
 .retryBtn {
   color: var(--tertiary-text-color);

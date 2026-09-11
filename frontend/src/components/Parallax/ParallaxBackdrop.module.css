@@ -1,0 +1,184 @@
+/* ── Parallax backdrop ──────────────────────────────────────────────────────
+   Four fixed layers behind the whole site. See ParallaxBackdrop.js for which
+   layer is which and why the rates are spaced the way they are; this file is
+   only what they are made of.
+
+   Two rules the paint has to obey, both of them about cost:
+
+     1. Each plate is rasterised once and then only transformed. Nothing here
+        animates a gradient stop, a filter or a colour - the transform is the
+        entire animation, so all four layers stay on the compositor and the
+        main thread does no work per frame beyond four style writes.
+
+     2. No `backdrop-filter`, no `blur()`, no `mix-blend-mode`. The page this
+        replaced had a cursor spotlight, a dot texture and four blend-mode
+        coffee rings over the full viewport, and that is what "the site feels
+        heavy" was. Soft edges here come from gradient falloff, which is free
+        once painted, rather than from a filter, which is not.              */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  /* Behind the page, which App.module.css lifts to z-index 2. Zero rather than
+     a negative index: a negative one would put it behind the root background
+     as well, and the washes would not be visible at all. */
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* The masked frame. Static - it never receives a transform, so the fade it
+   applies stays pinned to the viewport. */
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* The moving plate. Taller than the viewport in both directions so that a
+   layer translating by a few hundred pixels never brings its own edge into
+   view. */
+.plate {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -35vh;
+  height: 190vh;
+  /* These four elements are the only things on the site that transform on
+     every frame of a scroll, so they are the only place `will-change` is
+     justified - it is a promise to keep a layer alive, and a promise that is
+     expensive when made for something that rarely moves. */
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* ── 1. The wash ────────────────────────────────────────────────────────────
+   The horizon: the warm accent at the top left, the cool data colour opposite.
+   This is the layer Home used to carry on its own as `.ambient`, now shared by
+   every page and moving. */
+
+.wash {
+  background:
+    radial-gradient(62rem 42rem at 12% 4%, rgba(var(--accent-1-rgb), 0.11), transparent 64%),
+    radial-gradient(48rem 34rem at 92% 20%, rgba(var(--data-1-rgb), 0.08), transparent 62%),
+    radial-gradient(52rem 40rem at 50% 96%, rgba(var(--accent-3-rgb), 0.07), transparent 66%);
+}
+
+/* ── 2. The lattice ─────────────────────────────────────────────────────────
+   A 72px rule grid - the same number the plate's `period` is set to in the
+   component, and they must not drift apart: the wrap is only invisible while
+   the translation resets by exactly one tile.
+
+   Drawn with `repeating-linear-gradient` rather than a background-size tile so
+   the 1px lines stay 1px. A tiled `background-image` is resampled on a
+   fractional device pixel ratio and the lines shimmer as the layer moves. */
+
+.gridLayer {
+  /* Fades to nothing well before the edges, so the lattice reads as texture
+     under the content rather than as a frame around it. */
+  -webkit-mask-image: radial-gradient(130% 95% at 50% 24%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
+  mask-image: radial-gradient(130% 95% at 50% 24%, #000 0%, rgba(0, 0, 0, 0.45) 45%, transparent 78%);
+}
+
+.grid {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(var(--accent-1-rgb), 0.09) 0 1px,
+      transparent 1px 72px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(var(--accent-1-rgb), 0.07) 0 1px,
+      transparent 1px 72px
+    );
+}
+
+/* ── 3. The orbs ────────────────────────────────────────────────────────────
+   Three blooms between the lattice and the reader. Slower than the lattice on
+   purpose: it puts them behind it, and a near layer that is larger and slower
+   than the texture in front of it is how a sky reads. */
+
+.orbs {
+  background:
+    radial-gradient(20rem 20rem at 78% 12%, rgba(var(--accent-2-rgb), 0.10), transparent 68%),
+    radial-gradient(26rem 26rem at 8% 52%, rgba(var(--data-2-rgb), 0.09), transparent 70%),
+    radial-gradient(22rem 22rem at 62% 84%, rgba(var(--accent-1-rgb), 0.09), transparent 68%);
+}
+
+/* ── 4. The motes ───────────────────────────────────────────────────────────
+   A 26px dot field, the nearest and fastest layer. Its period matches the
+   component's, for the same reason the lattice's does.
+
+   The dots are the one thing here small enough to read as individual objects,
+   which is what gives the scroll a sense of speed; kept very faint, because at
+   any real opacity a moving dot field over body text is unreadable. */
+
+.motesLayer {
+  -webkit-mask-image: radial-gradient(120% 80% at 50% 40%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(120% 80% at 50% 40%, #000 0%, transparent 72%);
+}
+
+.motes {
+  background-image: radial-gradient(
+    circle at center,
+    rgba(var(--accent-1-rgb), 0.22) 0 1px,
+    transparent 1.4px
+  );
+  background-size: 26px 26px;
+}
+
+/* ── Light mode ─────────────────────────────────────────────────────────────
+   The same structure at lower strength. The dark palette's hairlines are a
+   warm light on charcoal, which is forgiving; in light mode they are a dark
+   warm on beige, where the identical alpha reads as a ruled notebook page
+   behind the text. */
+
+:global([data-theme='light']) .grid {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(var(--accent-1-rgb), 0.055) 0 1px,
+      transparent 1px 72px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(var(--accent-1-rgb), 0.045) 0 1px,
+      transparent 1px 72px
+    );
+}
+
+:global([data-theme='light']) .motes {
+  background-image: radial-gradient(
+    circle at center,
+    rgba(var(--accent-1-rgb), 0.14) 0 1px,
+    transparent 1.4px
+  );
+}
+
+/* ── Narrow ─────────────────────────────────────────────────────────────────
+   A phone has neither the width for the lattice to read as a lattice nor the
+   GPU budget to spend on four full-screen composited layers, so the two
+   textured ones are dropped and the two diffuse ones stay. The hook still
+   drives them; the plates are simply not painted. */
+
+@media (max-width: 720px) {
+  .gridLayer,
+  .motesLayer { display: none; }
+}
+
+/* ── Motion off ─────────────────────────────────────────────────────────────
+   hooks/useParallax already stops the loop and clears the transforms under
+   both `prefers-reduced-motion` and the in-app Motion toggle, so the layers
+   are left exactly where they were laid out. They stay visible: they are the
+   site's ground, and someone who has asked for less motion has not asked for
+   a flat grey page. The lattice and the motes do come off, because a static
+   dot field is texture nobody chose. */
+
+@media (prefers-reduced-motion: reduce) {
+  .gridLayer,
+  .motesLayer { display: none; }
+}
+
+:global([data-no-animations='true']) .gridLayer,
+:global([data-no-animations='true']) .motesLayer { display: none; }

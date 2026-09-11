@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { MdArrowOutward, MdEmail, MdLocationOn, MdPhone } from 'react-icons/md';
+import { MdArrowOutward, MdArrowUpward, MdEmail, MdLocationOn, MdPhone } from 'react-icons/md';
 import { NAVIGATION_PAGES, nextPage } from '../../content/navigation';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
+import { getLenis } from '../../hooks/useMomentumScroll';
 import { resolveGroup } from '../../content/copy/resolve';
 import { FOOTER_FIELDS } from '../../content/copy/footer';
 import { getSocialIcon } from '../../content/socialIcons';
@@ -49,32 +50,53 @@ const SiteFooter = () => {
   const next = nextPage(pathname);
   const year = new Date().getFullYear();
 
+  /* Through Lenis when momentum scrolling is on, so the return glides the way
+     the rest of the site's scrolling does. window.scrollTo is the fallback,
+     not the primary path: called while Lenis is running it fights the
+     scroller, exactly as it did in App.js's ScrollToTop before that was
+     taught about both. */
+  const toTop = () => {
+    const lenis = getLenis();
+    if (lenis) lenis.scrollTo(0);
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className={styles.footer}>
+    /* `id` so the footer is addressable: `/bio#site-footer` jumps straight to
+       it, which is the only way to get it into a headless screenshot (see
+       dev/FooterPreview) and is a reasonable skip target besides. */
+    <footer id="site-footer" className={styles.footer}>
       <div className={styles.inner}>
 
-        {/* ── The way forward ──────────────────────────────────────────────
-             Omitted rather than guessed at on a route that is not one of the
-             four pages, which is the 404. */}
-        {next && (
-          <Link to={next.to} className={styles.next}>
-            <span className={styles.nextLabel}>{t.nextLabel}</span>
-            <span className={styles.nextTitle}>
-              {next.label}
-              <MdArrowOutward aria-hidden="true" />
-            </span>
-            <span className={styles.nextBlurb}>{next.blurb}</span>
-          </Link>
-        )}
+        {/* ── The lead row ─────────────────────────────────────────────────
+             The way forward and the invitation, side by side. They answer the
+             same question - "and now?" - so stacking them made the footer read
+             as two separate endings and cost a third of its height. */}
+        <div className={styles.lead}>
 
-        {/* ── The call to action, and the availability statement ─────────── */}
-        <div className={styles.cta}>
-          <h2 className={styles.ctaTitle}>{t.ctaTitle}</h2>
-          <p className={styles.ctaText}>{t.ctaText}</p>
-          <Link to="/connect" className={styles.ctaButton}>
-            <MdEmail aria-hidden="true" />
-            {t.ctaButton}
-          </Link>
+          {/* Omitted rather than guessed at on a route that is not one of the
+              four pages, which is the 404. The grid is `auto-fit`, so the call
+              to action simply takes the full width when that happens. */}
+          {next && (
+            <Link to={next.to} className={styles.next}>
+              <span className={styles.nextLabel}>{t.nextLabel}</span>
+              <span className={styles.nextTitle}>
+                {next.label}
+                <MdArrowOutward aria-hidden="true" />
+              </span>
+              <span className={styles.nextBlurb}>{next.blurb}</span>
+            </Link>
+          )}
+
+          {/* ── The call to action, and the availability statement ───────── */}
+          <div className={styles.cta}>
+            <h2 className={styles.ctaTitle}>{t.ctaTitle}</h2>
+            <p className={styles.ctaText}>{t.ctaText}</p>
+            <Link to="/connect" className={styles.ctaButton}>
+              <MdEmail aria-hidden="true" />
+              {t.ctaButton}
+            </Link>
+          </div>
         </div>
 
         <div className={styles.columns}>
@@ -163,9 +185,22 @@ const SiteFooter = () => {
           )}
         </div>
 
-        <p className={styles.fine}>
-          {personal.name ? `${personal.name}, ${year}` : year}
-        </p>
+        <div className={styles.fine}>
+          <p className={styles.fineName}>
+            {personal.name && (
+              <>
+                {personal.name}
+                <span className={styles.fineDot} aria-hidden="true" />
+              </>
+            )}
+            {year}
+          </p>
+
+          <button type="button" className={styles.toTop} onClick={toTop}>
+            <MdArrowUpward aria-hidden="true" />
+            {t.topLabel}
+          </button>
+        </div>
       </div>
     </footer>
   );

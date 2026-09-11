@@ -26,19 +26,14 @@
 }
 
 /* ── Ambient ────────────────────────────────────────────────────────────────
-   One layer, fixed, painted once and never animated. The page it replaced
-   carried a cursor spotlight, a dot texture and four coffee rings, all
-   `mix-blend-mode`, all full-viewport, all compositing every frame. */
-
-.ambient {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(60rem 40rem at 12% -10%, rgba(var(--accent-1-rgb), 0.10), transparent 65%),
-    radial-gradient(45rem 32rem at 92% 8%, rgba(var(--data-1-rgb), 0.07), transparent 60%);
-}
+   Gone from this file. It was one fixed, static layer of two radial washes -
+   the only page on the site that had a ground at all - and it is now the
+   first of the four layers in components/Parallax/ParallaxBackdrop, which is
+   mounted once in the app layout. Two reasons it had to move rather than be
+   duplicated: every other page had a flat ground, and a wash pinned to the
+   viewport is, while scrolling, the one thing on screen that is provably not
+   moving. Keeping this copy as well would simply have painted the warm wash
+   twice. */
 
 /* ── The mosaic ─────────────────────────────────────────────────────────── */
 
