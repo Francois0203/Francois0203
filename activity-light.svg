@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="260" viewBox="0 0 940 260" role="img" aria-label="Contributions per week over the past year for Francois0203: 1,109 in total">
+  <title>Contributions per week, past year</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fdf6e3"/><stop offset="100%" stop-color="#f7eed8"/>
+    </linearGradient>
+    <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5b56b" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#e07b1f" stop-opacity="0.04"/>
+    </linearGradient>
+    <clipPath id="wipe"><rect id="wiperect" x="0" y="0" width="940" height="260"/></clipPath>
+  </defs>
+  <style>
+    .ttl { font: 600 15px Georgia, 'Times New Roman', serif; fill: #2a1810; }
+    .sub { font: 400 11.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #8a6a4a; letter-spacing: .04em; }
+    .ax  { font: 400 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #8a6a4a; }
+    .pk  { font: 600 10.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #7a3e10; }
+
+    /* The wipe reveals the plot left to right; the line draws itself in step. */
+    #wiperect { animation: wipe 1900ms cubic-bezier(.22,.61,.36,1) forwards; }
+    @keyframes wipe { from { width: 0; } to { width: 940px; } }
+
+    #line { stroke-dasharray: 4000; stroke-dashoffset: 4000;
+            animation: draw 1900ms cubic-bezier(.22,.61,.36,1) forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    #area { opacity: 0; animation: fade 1500ms 400ms ease-out forwards; }
+    @keyframes fade { to { opacity: 1; } }
+
+    .peak { opacity: 0; animation: fade 600ms 2000ms ease-out forwards; }
+    .head { opacity: 0; animation: rise 700ms ease-out forwards; }
+    .head.b { animation-delay: 120ms; }
+    @keyframes rise { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      #wiperect, #line, #area, .peak, .head { animation: none; }
+      #wiperect { width: 940px; }
+      #line { stroke-dashoffset: 0; }
+      #area, .peak, .head { opacity: 1; }
+    }
+  </style>
+
+  <rect width="940" height="260" fill="url(#bg)"/>
+  <text x="24" y="28" class="ttl head">Contributions per week</text>
+  <text x="24" y="44" class="sub head b">PAST YEAR &#183; 1,109 CONTRIBUTIONS</text>
+
+  <g><line x1="40" y1="226.0" x2="916" y2="226.0" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="229.5" class="ax" text-anchor="end">0</text><line x1="40" y1="197.7" x2="916" y2="197.7" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="201.2" class="ax" text-anchor="end">25</text><line x1="40" y1="169.3" x2="916" y2="169.3" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="172.8" class="ax" text-anchor="end">50</text><line x1="40" y1="141.0" x2="916" y2="141.0" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="144.5" class="ax" text-anchor="end">75</text><line x1="40" y1="112.7" x2="916" y2="112.7" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="116.2" class="ax" text-anchor="end">100</text><line x1="40" y1="84.3" x2="916" y2="84.3" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="87.8" class="ax" text-anchor="end">125</text><line x1="40" y1="56.0" x2="916" y2="56.0" stroke="#e3d3b4" stroke-width="1"/><text x="32" y="59.5" class="ax" text-anchor="end">150</text></g>
+  <g><text x="40.0" y="246" class="ax" text-anchor="middle">Sep</text><text x="107.4" y="246" class="ax" text-anchor="middle">Oct</text><text x="174.8" y="246" class="ax" text-anchor="middle">Nov</text><text x="259.0" y="246" class="ax" text-anchor="middle">Dec</text><text x="326.4" y="246" class="ax" text-anchor="middle">Jan</text><text x="393.8" y="246" class="ax" text-anchor="middle">Feb</text><text x="461.2" y="246" class="ax" text-anchor="middle">Mar</text><text x="545.4" y="246" class="ax" text-anchor="middle">Apr</text><text x="612.8" y="246" class="ax" text-anchor="middle">May</text><text x="697.0" y="246" class="ax" text-anchor="middle">Jun</text><text x="764.4" y="246" class="ax" text-anchor="middle">Jul</text><text x="831.8" y="246" class="ax" text-anchor="middle">Aug</text><text x="916.0" y="246" class="ax" text-anchor="middle">Sep</text></g>
+
+  <g clip-path="url(#wipe)">
+    <path id="area" d="M 40 222.6 C 42.8 222.8, 51.2 223.2, 56.8 223.7 C 62.5 224.3, 68.1 225.6, 73.7 226.0 C 79.3 226.4, 84.9 226.0, 90.5 226.0 C 96.2 226.0, 101.8 226.2, 107.4 226.0 C 113.0 225.8, 118.6 224.9, 124.2 224.9 C 129.8 224.9, 135.5 225.8, 141.1 226.0 C 146.7 226.2, 152.3 226.0, 157.9 226.0 C 163.5 226.0, 169.2 227.7, 174.8 226.0 C 180.4 224.3, 186.0 218.4, 191.6 215.8 C 197.2 213.2, 202.8 212.8, 208.5 210.1 C 214.1 207.5, 219.7 197.3, 225.3 199.9 C 230.9 202.6, 236.5 245.5, 242.2 226.0 C 247.8 206.5, 253.4 101.0, 259.0 83.2 C 264.6 65.4, 270.2 101.7, 275.8 119.5 C 281.5 137.2, 287.1 179.2, 292.7 189.7 C 298.3 200.3, 303.9 176.9, 309.5 182.9 C 315.2 189.0, 320.8 229.0, 326.4 226.0 C 332.0 223.0, 337.6 169.1, 343.2 164.8 C 348.8 160.5, 354.5 195.4, 360.1 199.9 C 365.7 204.5, 371.3 198.2, 376.9 192.0 C 382.5 185.8, 388.2 161.4, 393.8 162.5 C 399.4 163.7, 405.0 191.8, 410.6 198.8 C 416.2 205.8, 421.8 202.6, 427.5 204.5 C 433.1 206.4, 438.7 212.0, 444.3 210.1 C 449.9 208.2, 455.5 192.4, 461.2 193.1 C 466.8 193.9, 472.4 218.3, 478.0 214.7 C 483.6 211.1, 489.2 179.3, 494.8 171.6 C 500.5 163.9, 506.1 165.0, 511.7 168.2 C 517.3 171.4, 522.9 188.6, 528.5 190.9 C 534.2 193.1, 539.8 183.9, 545.4 181.8 C 551.0 179.7, 556.6 178.6, 562.2 178.4 C 567.8 178.2, 573.5 173.3, 579.1 180.7 C 584.7 188.0, 590.3 215.0, 595.9 222.6 C 601.5 230.2, 607.2 225.4, 612.8 226.0 C 618.4 226.6, 624.0 230.0, 629.6 226.0 C 635.2 222.0, 640.8 203.3, 646.5 202.2 C 652.1 201.1, 657.7 220.0, 663.3 219.2 C 668.9 218.4, 674.5 196.7, 680.2 197.7 C 685.8 198.6, 691.4 220.1, 697.0 224.9 C 702.6 229.6, 708.2 226.0, 713.8 226.0 C 719.5 226.0, 725.1 225.4, 730.7 224.9 C 736.3 224.3, 741.9 222.6, 747.5 222.6 C 753.2 222.6, 758.8 227.7, 764.4 224.9 C 770.0 222.0, 775.6 209.4, 781.2 205.6 C 786.8 201.8, 792.5 203.0, 798.1 202.2 C 803.7 201.4, 809.3 200.9, 814.9 201.1 C 820.5 201.3, 826.2 203.1, 831.8 203.3 C 837.4 203.5, 843.0 202.0, 848.6 202.2 C 854.2 202.4, 859.8 204.8, 865.5 204.5 C 871.1 204.1, 876.7 199.4, 882.3 199.9 C 887.9 200.5, 893.5 210.3, 899.2 207.9 C 904.8 205.4, 913.2 189.0, 916.0 185.2 L 916.0 226 L 40 226 Z" fill="url(#areaFill)"/>
+    <path id="line" d="M 40 222.6 C 42.8 222.8, 51.2 223.2, 56.8 223.7 C 62.5 224.3, 68.1 225.6, 73.7 226.0 C 79.3 226.4, 84.9 226.0, 90.5 226.0 C 96.2 226.0, 101.8 226.2, 107.4 226.0 C 113.0 225.8, 118.6 224.9, 124.2 224.9 C 129.8 224.9, 135.5 225.8, 141.1 226.0 C 146.7 226.2, 152.3 226.0, 157.9 226.0 C 163.5 226.0, 169.2 227.7, 174.8 226.0 C 180.4 224.3, 186.0 218.4, 191.6 215.8 C 197.2 213.2, 202.8 212.8, 208.5 210.1 C 214.1 207.5, 219.7 197.3, 225.3 199.9 C 230.9 202.6, 236.5 245.5, 242.2 226.0 C 247.8 206.5, 253.4 101.0, 259.0 83.2 C 264.6 65.4, 270.2 101.7, 275.8 119.5 C 281.5 137.2, 287.1 179.2, 292.7 189.7 C 298.3 200.3, 303.9 176.9, 309.5 182.9 C 315.2 189.0, 320.8 229.0, 326.4 226.0 C 332.0 223.0, 337.6 169.1, 343.2 164.8 C 348.8 160.5, 354.5 195.4, 360.1 199.9 C 365.7 204.5, 371.3 198.2, 376.9 192.0 C 382.5 185.8, 388.2 161.4, 393.8 162.5 C 399.4 163.7, 405.0 191.8, 410.6 198.8 C 416.2 205.8, 421.8 202.6, 427.5 204.5 C 433.1 206.4, 438.7 212.0, 444.3 210.1 C 449.9 208.2, 455.5 192.4, 461.2 193.1 C 466.8 193.9, 472.4 218.3, 478.0 214.7 C 483.6 211.1, 489.2 179.3, 494.8 171.6 C 500.5 163.9, 506.1 165.0, 511.7 168.2 C 517.3 171.4, 522.9 188.6, 528.5 190.9 C 534.2 193.1, 539.8 183.9, 545.4 181.8 C 551.0 179.7, 556.6 178.6, 562.2 178.4 C 567.8 178.2, 573.5 173.3, 579.1 180.7 C 584.7 188.0, 590.3 215.0, 595.9 222.6 C 601.5 230.2, 607.2 225.4, 612.8 226.0 C 618.4 226.6, 624.0 230.0, 629.6 226.0 C 635.2 222.0, 640.8 203.3, 646.5 202.2 C 652.1 201.1, 657.7 220.0, 663.3 219.2 C 668.9 218.4, 674.5 196.7, 680.2 197.7 C 685.8 198.6, 691.4 220.1, 697.0 224.9 C 702.6 229.6, 708.2 226.0, 713.8 226.0 C 719.5 226.0, 725.1 225.4, 730.7 224.9 C 736.3 224.3, 741.9 222.6, 747.5 222.6 C 753.2 222.6, 758.8 227.7, 764.4 224.9 C 770.0 222.0, 775.6 209.4, 781.2 205.6 C 786.8 201.8, 792.5 203.0, 798.1 202.2 C 803.7 201.4, 809.3 200.9, 814.9 201.1 C 820.5 201.3, 826.2 203.1, 831.8 203.3 C 837.4 203.5, 843.0 202.0, 848.6 202.2 C 854.2 202.4, 859.8 204.8, 865.5 204.5 C 871.1 204.1, 876.7 199.4, 882.3 199.9 C 887.9 200.5, 893.5 210.3, 899.2 207.9 C 904.8 205.4, 913.2 189.0, 916.0 185.2" fill="none" stroke="#b8651c" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g class="peak">
+    <circle cx="259.0" cy="83.2" r="3.5" fill="#7a3e10"/>
+    <text x="259.0" y="73.2" class="pk" text-anchor="middle">126</text>
+  </g>
+</svg>
