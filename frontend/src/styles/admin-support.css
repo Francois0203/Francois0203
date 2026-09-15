@@ -1,0 +1,133 @@
+/* Everything /admin needs that the public site does not.
+
+   The admin's stylesheets were written against the previous design system and
+   still name its tokens. Rather than rewrite six hundred lines of CSS that
+   works, the old names are aliased onto the new ones here, so /admin picks up
+   the autumn palette, the type and the radii for free. A separate sheet, so it
+   is obvious this exists for one route and can go when the admin is rebuilt. */
+
+:root {
+    --primary-text-color: var(--ink);
+    --secondary-text-color: var(--ink-2);
+    --tertiary-text-color: var(--ink-3);
+    --disabled-color: var(--ink-3);
+
+    --background-0: var(--ground);
+    --background-1: var(--ground-2);
+    --background-2: color-mix(in srgb, var(--ink) 5%, var(--ground-2));
+    --background-3: color-mix(in srgb, var(--ink) 9%, var(--ground-2));
+    --frosted-background: color-mix(in srgb, var(--ground) 72%, transparent);
+
+    --border-color: var(--rule);
+    --border-color-hover: var(--rule-strong);
+
+    --accent-1: var(--live);
+    --accent-2: var(--live-2);
+    --accent-3: var(--live-2);
+    --accent-hover: var(--live-2);
+    --accent-1-rgb: var(--live-rgb);
+
+    --error-color: #e0614a;
+    --success-color: var(--live);
+
+    --font-size-xs: 0.75rem;
+    --font-size-sm: var(--text-sm);
+    --font-size-base: var(--text-md);
+    --font-size-md: var(--text-md);
+    --font-size-lg: var(--text-lg);
+    --font-size-xl: var(--text-xl);
+    --font-size-2xl: var(--display-sm);
+
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+
+    --radius-sm: 3px;
+    --radius-md: var(--r-slab);
+    --radius-lg: var(--r-slab);
+    --radius-xl: var(--r-slab);
+    --radius-full: var(--r-control);
+
+    --transition-fast: var(--t-fast) var(--ease);
+    --transition-base: var(--t) var(--ease);
+
+    --shadow-md: 0 4px 10px -2px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 14px 34px -14px rgba(0, 0, 0, 0.5);
+    --shadow-xl: var(--glass-cast);
+
+    --z-sticky: 40;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 1rem;
+}
+
+.input-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink-2);
+}
+
+/* Marks itself until it has a value. */
+.input-container:has(input[required]):not(:has(input[required]:valid))::after,
+.input-container:has(textarea[required]):not(:has(textarea[required]:valid))::after {
+    content: 'Required';
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.btn-outline,
+.btn-success,
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.5rem;
+    padding: 0 1.1rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--r-control);
+    background: none;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 600;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+    transition:
+        color var(--t) var(--ease),
+        border-color var(--t) var(--ease),
+        background-color var(--t) var(--ease);
+}
+
+.btn-outline:hover { border-color: var(--live); color: var(--live); }
+
+.btn-success {
+    border-color: transparent;
+    background: var(--live);
+    color: var(--on-live);
+}
+
+.btn-success:hover { background: var(--live-2); }
+
+.btn-danger { border-color: color-mix(in srgb, #e0614a 55%, transparent); color: #e0614a; }
+.btn-danger:hover { background: color-mix(in srgb, #e0614a 14%, transparent); }
+
+.btn-outline:disabled,
+.btn-success:disabled,
+.btn-danger:disabled { opacity: 0.45; cursor: not-allowed; }

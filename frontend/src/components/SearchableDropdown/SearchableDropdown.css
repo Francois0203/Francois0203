@@ -1,0 +1,54 @@
+/* Not a module: react-select emits its own class names. */
+
+.sd__control {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 0.75rem;
+    background: color-mix(in srgb, var(--ground-2) 70%, transparent);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-slab);
+    cursor: pointer;
+    transition: border-color var(--t-fast) var(--ease);
+}
+
+.sd__control:hover { border-color: var(--rule-strong); }
+.sd__control--is-focused { border-color: var(--live); }
+
+.sd__value-container { display: flex; align-items: center; gap: 0.35rem; flex: 1; }
+.sd__single-value { color: var(--ink); }
+.sd__placeholder { color: var(--ink-3); }
+.sd__input-container { color: var(--ink); }
+
+.sd__indicators { display: flex; align-items: center; gap: 0.25rem; color: var(--ink-3); }
+.sd__indicator { display: flex; padding: 0.25rem; cursor: pointer; }
+.sd__indicator:hover { color: var(--ink); }
+.sd__indicator-separator { display: none; }
+
+.sd__menu {
+    z-index: var(--z-overlay);
+    margin-top: 0.35rem;
+    padding: 0.25rem;
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--r-slab);
+    background: var(--glass);
+    box-shadow: var(--glass-top), var(--glass-cast);
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
+    overflow: hidden;
+}
+
+.sd__menu-list { max-height: 15rem; overflow-y: auto; }
+
+.sd__option {
+    padding: 0.55rem 0.7rem;
+    border-radius: 2px;
+    font-size: var(--text-sm);
+    color: var(--ink-2);
+    cursor: pointer;
+}
+
+.sd__option--is-focused { color: var(--ink); background: color-mix(in srgb, var(--live) 12%, transparent); }
+.sd__option--is-selected { color: var(--on-live); background: var(--live); }
+
+.sd__no-options-message { padding: 0.75rem; font-size: var(--text-sm); color: var(--ink-3); }

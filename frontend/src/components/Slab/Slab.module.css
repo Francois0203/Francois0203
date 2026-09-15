@@ -1,0 +1,92 @@
+/* Heavy glass: lit top edge, dark bottom edge, a warm cast through the body
+   and a real shadow. It should read as glass in a screenshot, not only in
+   motion. */
+
+.slab {
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--r-slab);
+    border: 1px solid var(--glass-edge);
+    background: var(--glass);
+    box-shadow:
+        var(--glass-top),
+        var(--glass-bottom),
+        var(--glass-cast);
+}
+
+.live {
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
+}
+
+/* The specular corner: what makes the border read as a thickness. */
+.slab::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+        130% 100% at 4% -18%,
+        rgba(255, 255, 255, 0.14),
+        transparent 52%
+    );
+}
+
+:global([data-theme='light']) .slab::before {
+    background: radial-gradient(
+        130% 100% at 4% -18%,
+        rgba(255, 255, 255, 0.75),
+        transparent 52%
+    );
+}
+
+/* One transform on one pseudo-element, so a live slab keeps its geometry. */
+.sheen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(
+        104deg,
+        transparent 34%,
+        rgba(255, 255, 255, 0.16) 48%,
+        transparent 62%
+    );
+    transform: translateX(-70%);
+    transition:
+        transform 900ms var(--ease),
+        opacity var(--t) var(--ease);
+}
+
+.sheen:hover::after,
+.sheen:focus-within::after {
+    opacity: 1;
+    transform: translateX(70%);
+}
+
+.interactive {
+    transition:
+        transform var(--t) var(--ease),
+        border-color var(--t) var(--ease),
+        box-shadow var(--t) var(--ease);
+}
+
+.interactive:hover,
+.interactive:focus-within {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--live) 55%, transparent);
+    box-shadow:
+        var(--glass-top),
+        var(--glass-bottom),
+        0 34px 90px -30px rgba(0, 0, 0, 0.95);
+}
+
+.interactive:active {
+    transform: translateY(0);
+    transition-duration: var(--t-fast);
+}

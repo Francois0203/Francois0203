@@ -1,0 +1,289 @@
+.foot {
+    position: relative;
+    z-index: var(--z-page);
+    margin-top: var(--block);
+    padding: clamp(2rem, 5vh, 3.5rem) var(--gutter) 1.25rem;
+    background: var(--deep);
+    overflow: hidden;
+}
+
+/* The field runs behind the page, so a hard edge here would cut it dead. */
+.foot::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: -1px 0 auto;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--deep));
+    pointer-events: none;
+}
+
+.inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+}
+
+/* The invitation and the way forward: one offer, two ways to take it up. */
+
+.top {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+    padding-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.call {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.callTitle {
+    margin: 0;
+    max-width: 12ch;
+    font-family: var(--font-display);
+    font-size: var(--display-md);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
+}
+
+.callText {
+    margin: 0;
+    max-width: 40ch;
+    font-size: var(--text-md);
+    color: var(--ink-2);
+}
+
+/* The largest target here. The fill sweeps up, so it reads as being lit. */
+.next {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 0.15rem;
+    padding: clamp(1rem, 2.2vw, 1.4rem);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-slab);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--t) var(--ease);
+}
+
+.next::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--live);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 420ms var(--ease);
+}
+
+.next:hover::before,
+.next:focus-visible::before { transform: scaleY(1); }
+.next:hover { border-color: transparent; }
+
+.nextLabel {
+    grid-column: 1;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    transition: color var(--t) var(--ease);
+}
+
+.nextName {
+    grid-column: 1;
+    grid-row: 2;
+    font-family: var(--font-display);
+    font-size: var(--display-sm);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
+    transition: color var(--t) var(--ease);
+}
+
+.nextBlurb {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: var(--text-sm);
+    color: var(--ink-3);
+    transition: color var(--t) var(--ease);
+}
+
+.nextArrow {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--rule-strong);
+    color: var(--live);
+    transition:
+        transform var(--t) var(--ease),
+        color var(--t) var(--ease),
+        border-color var(--t) var(--ease);
+}
+
+.nextArrow svg { width: 20px; height: 20px; }
+
+.next:hover .nextLabel,
+.next:hover .nextBlurb { color: color-mix(in srgb, var(--on-live) 70%, transparent); }
+.next:hover .nextName { color: var(--on-live); }
+
+.next:hover .nextArrow {
+    transform: translateX(5px);
+    color: var(--on-live);
+    border-color: color-mix(in srgb, var(--on-live) 45%, transparent);
+}
+
+/* ── One strip instead of three columns ─────────────────────────────────── */
+
+.strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    flex-wrap: wrap;
+    padding: clamp(0.75rem, 2vw, 1.1rem) 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+}
+
+.pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+/* Four small targets you can flick between beat four words in a column. */
+.page {
+    position: relative;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-control);
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition:
+        color var(--t) var(--ease),
+        background-color var(--t) var(--ease),
+        border-color var(--t) var(--ease),
+        transform var(--t) var(--ease);
+}
+
+.page:hover {
+    transform: translateY(-2px);
+    color: var(--on-live);
+    background: var(--live);
+    border-color: transparent;
+}
+
+.page[aria-current='page'] {
+    color: var(--live);
+    border-color: color-mix(in srgb, var(--live) 55%, transparent);
+}
+
+.reach {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+}
+
+.link {
+    position: relative;
+    font-size: var(--text-sm);
+    color: var(--ink-2);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+}
+
+.link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: var(--live);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t) var(--ease);
+}
+
+.link:hover { color: var(--live); }
+.link:hover::after { transform: scaleX(1); }
+
+@media (pointer: coarse) {
+    .link { padding: 0.5rem 0; }
+}
+
+/* ── Small print ────────────────────────────────────────────────────────── */
+
+.fine {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 0.9rem;
+}
+
+.fine p {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    color: var(--ink-3);
+}
+
+.toTop {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: color var(--t) var(--ease);
+}
+
+.topArrow {
+    display: inline-flex;
+    transition: transform var(--t) var(--ease);
+}
+
+.topArrow svg { width: 14px; height: 14px; }
+
+.toTop:hover { color: var(--live); }
+.toTop:hover .topArrow { transform: translateY(-3px); }
+
+/* ── Narrow ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 560px) {
+    .strip { flex-direction: column; align-items: flex-start; }
+}

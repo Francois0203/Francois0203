@@ -1,0 +1,61 @@
+.dock {
+    position: fixed;
+    right: var(--gutter);
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-modal);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: min(360px, calc(100vw - 2rem));
+    pointer-events: none;
+}
+
+.toast {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2px 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.75rem 0.75rem 0;
+    pointer-events: auto;
+    overflow: hidden;
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--r-slab);
+    background: var(--glass);
+    box-shadow: var(--glass-top), var(--glass-cast);
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
+    animation: toastIn 340ms var(--ease) both;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px); }
+}
+
+/* Tone is a rule down the leading edge, not a coloured panel. */
+.rule {
+    align-self: stretch;
+    background: var(--live);
+}
+
+.toast[data-tone='error'] .rule { background: #e0614a; }
+.toast[data-tone='success'] .rule { background: var(--live); }
+
+.toast p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--ink);
+}
+
+.toast button {
+    display: inline-flex;
+    padding: 0.25rem;
+    border: 0;
+    background: none;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: color var(--t) var(--ease);
+}
+
+.toast button:hover { color: var(--ink); }
+.toast button svg { width: 15px; height: 15px; }

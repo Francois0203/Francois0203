@@ -98,32 +98,20 @@ function findSection(sections, pattern) {
 
 // ─── Main export ─────────────────────────────────────────────────────────────
 
-/**
- * Parses a README (markdown + HTML mix) into structured card data.
- *
- * @param {string} markdown  Raw README content
- * @param {object} opts      { fallback }
- * @returns {{ description, features, techStack }}
+/*
+ * Pulls a short description, a feature list and a tech stack out of a
+ * README. Everything here is defensive: these are other people's files and
+ * any section may be missing, malformed or enormous.
  */
 export function parseReadme(markdown, { fallback = '' } = {}) {
   if (!markdown?.trim()) {
     return { description: fallback, features: [], techStack: [] };
   }
 
-  /*
-   * HTML comments are removed before anything else, and before the text is
-   * split into lines.
-   *
-   * The per-line tag strip cannot touch these. A comment that opens on one line
-   * and closes on another leaves a first line containing no '>' at all, so it
-   * survives every later clean-up and gets collected as prose. The live symptom
-   * was a repository card whose description began "<!-- Palette and layout
-   * mirror the live site" - an authoring note presented as the project summary.
-   *
-   * [\s\S] rather than '.' so the match spans newlines, and non-greedy so two
-   * separate comments are not merged into one match, taking the real text
-   * between them with it.
-   */
+  /* Removed before the split into lines: a comment spanning two lines leaves
+     a first line with no closing tag, so it survives every later clean-up and
+     gets collected as prose. Non-greedy, or two comments merge into one match
+     and take the real text between them. */
   const source = markdown.replace(/<!--[\s\S]*?-->/g, '');
 
   const lines = source.split('\n');

@@ -10,8 +10,8 @@ name: Contribution graphics
 
 on:
   schedule:
-    # Daily at 00:20 UTC, after GitHub has settled the previous day.
-    - cron: '20 0 * * *'
+    # Monthly, on the 1st at 00:20 UTC.
+    - cron: '20 0 1 * *'
   workflow_dispatch:
   push:
     branches: [main]

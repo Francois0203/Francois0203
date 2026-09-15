@@ -1,0 +1,244 @@
+.sentinel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-nav);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 68px;
+    padding: 0 var(--gutter);
+    padding-top: env(safe-area-inset-top, 0px);
+    border-bottom: 1px solid transparent;
+    transition:
+        background-color var(--t) var(--ease),
+        border-color var(--t) var(--ease),
+        backdrop-filter var(--t) var(--ease);
+}
+
+/* The backing is the only state this bar has. */
+.stuck {
+    border-bottom-color: var(--rule);
+    background: color-mix(in srgb, var(--ground) 62%, transparent);
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
+}
+
+.mark {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    color: var(--ink);
+    text-decoration: none;
+    line-height: 1;
+}
+
+.mark span {
+    display: inline-block;
+    transition: color var(--t) var(--ease);
+}
+
+.mark:hover span { color: var(--live); }
+
+/* ── Routes ─────────────────────────────────────────────────────────────── */
+
+.routes {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    margin-left: auto;
+}
+
+.route {
+    position: relative;
+    padding: 0.4rem 0;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color var(--t) var(--ease);
+}
+
+.route::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--live);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t) var(--ease);
+}
+
+.route:hover { color: var(--ink); }
+.route:hover::after { transform: scaleX(1); }
+
+.active { color: var(--live); }
+.active::after { transform: scaleX(1); }
+
+/* ── Controls ───────────────────────────────────────────────────────────── */
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.75rem;
+}
+
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--r-control);
+    background: none;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: color var(--t) var(--ease), background-color var(--t) var(--ease);
+}
+
+.icon svg { width: 17px; height: 17px; }
+
+.icon:hover {
+    color: var(--live);
+    background: color-mix(in srgb, var(--live) 12%, transparent);
+}
+
+.iconOn { color: var(--live); }
+
+/* ── The menu button and its overlay ────────────────────────────────────── */
+
+.menu {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.bars,
+.barsOpen {
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 1.5px;
+    background: currentColor;
+    transition: background-color var(--t-fast) var(--ease);
+}
+
+.bars::before,
+.bars::after,
+.barsOpen::before,
+.barsOpen::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform var(--t) var(--ease);
+}
+
+.bars::before { transform: translateY(-6px); }
+.bars::after { transform: translateY(6px); }
+
+.barsOpen { background: transparent; }
+.barsOpen::before { transform: rotate(45deg); }
+.barsOpen::after { transform: rotate(-45deg); }
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px var(--gutter) 0;
+    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
+}
+
+.overlayOpen { display: flex; }
+
+.overlay nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.big {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.35rem 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 13vw, 4.5rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(18px);
+}
+
+.overlayOpen .big {
+    animation: bigIn 520ms var(--ease) forwards;
+    animation-delay: calc(var(--i) * 70ms);
+}
+
+@keyframes bigIn {
+    to { opacity: 1; transform: none; }
+}
+
+.bigIndex {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    color: var(--live);
+}
+
+.bigActive { color: var(--live); }
+
+/* ── Narrow ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+    .bar { height: 60px; gap: 0.5rem; }
+    .routes { display: none; }
+    .controls { margin-left: auto; }
+    .menu { display: inline-flex; }
+}
+
+@media (min-width: 761px) {
+    .overlay,
+    .overlayOpen { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .big { opacity: 1; transform: none; animation: none; }
+}

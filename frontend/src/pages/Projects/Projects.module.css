@@ -1,609 +1,201 @@
-/* ── Page shell ──────────────────────────────────────────────────────────── */
-
 .page {
-  min-height: 100svh;
-  padding: 4rem var(--spacing-4xl) var(--spacing-2xl);
-  box-sizing: border-box;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(68px + var(--block)) var(--gutter) 0;
 }
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
+.head {
+    padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
-/* ── Scene 1: the title card ────────────────────────────────────────────────
-   Matches the Home hero: cool eyebrow, serif heading at display scale, one
-   positioning line, then the figures. The old chapter eyebrow and gradient
-   text-fill heading are gone - see content/copy/projects.js. */
-
-.hero {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.9rem;
-  padding: clamp(2rem, 8vh, 6rem) 0 clamp(2.5rem, 7vh, 5rem);
+.eyebrow {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
 }
 
-.heroEyebrow {
-  margin: 0;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  /* The cool counter-colour, as on Home: this page is the evidence, and the
-     evidence is data-flavoured. */
-  color: var(--data-1);
+/* em, not ch: the cap has to be relative to the display size, or it
+   resolves against the body size and slices the heading in half. */
+.title { margin: 0; max-width: 11em; font-size: var(--display-lg); line-height: 0.9; }
+
+.lede {
+    margin: 1.5rem 0 0;
+    max-width: 46ch;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--ink-2);
 }
 
-.heading {
-  margin: 0;
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  /* Clamped rather than fixed so the longest editable heading still fits on a
-     phone without wrapping into four lines. */
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  line-height: 0.98;
-  letter-spacing: -0.02em;
-  color: var(--primary-text-color);
-}
-
-.heroLede {
-  margin: 0;
-  max-width: 34ch;
-  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
-  line-height: 1.5;
-  color: var(--secondary-text-color);
-}
-
-.heroStats {
-  width: 100%;
-  max-width: 34rem;
-  margin-top: 0.75rem;
-}
-
-.section { margin-bottom: var(--spacing-3xl); }
-.section:last-of-type { margin-bottom: var(--spacing-xl); }
+.block { padding-top: var(--block); }
 
 .sectionHead {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
 }
 
-.sectionTitle {
-  margin: 0;
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: clamp(1.5rem, 3vw, 2.1rem);
-  font-weight: 700;
-  color: var(--primary-text-color);
+.sectionHead p {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-lg);
+    color: var(--ink-2);
 }
 
-.sectionLede {
-  margin: 0;
-  max-width: 68ch;
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  font-size: var(--font-size-sm);
-  color: var(--tertiary-text-color);
-  line-height: 1.65;
+.note {
+    padding: 2rem 0;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-3);
 }
 
-/* Two per row at most - an embedded site needs real width. */
+.waiting { height: 280px; border-top: 1px solid var(--rule); }
 
-.showcaseGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-lg);
-  align-items: stretch;
+/* ── Filter ─────────────────────────────────────────────────────────────── */
+
+.filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
 }
 
-.skeletonShowcase {
-  display: flex;
-  flex-direction: column;
-  background: var(--frosted-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.25rem;
+    padding: 0 0.85rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-control);
+    background: none;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition:
+        color var(--t) var(--ease),
+        border-color var(--t) var(--ease),
+        background-color var(--t) var(--ease);
 }
 
-.skeletonViewport {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  background: var(--background-2);
-  border-bottom: 1px solid var(--border-color);
+.chip span { color: var(--ink-3); }
+.chip:hover { border-color: var(--rule-strong); color: var(--ink); }
+
+.chipOn {
+    border-color: transparent;
+    background: var(--live);
+    color: var(--on-live);
 }
 
-/* ── Grid ────────────────────────────────────────────────────────────────── */
+.chipOn span { color: color-mix(in srgb, var(--on-live) 70%, transparent); }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-lg);
-  /* Rows sized to the tallest card, cards stretch - so all are equal height. */
-  grid-auto-rows: 1fr;
-  /*
-   * content-visibility: auto with contain-intrinsic-size: 1px 1200px was here.
-   * 1200px is a guess at the height of an N-row grid, so the document height
-   * jumped whenever the grid skipped or unskipped, which re-measured Lenis
-   * mid-scroll and made the scroll position lurch.
-   */
+.status {
+    min-height: 1.4rem;
+    margin: 0 0 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
 }
 
-/* ── Card ────────────────────────────────────────────────────────────────── */
+/* ── Repositories ───────────────────────────────────────────────────────── */
 
-.card {
-  background: var(--frosted-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
-  transition:
-    border-color var(--transition-base),
-    box-shadow   var(--transition-base);
-  contain: layout paint;
+.repos { border-top: 1px solid var(--rule); }
+
+.repo {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: clamp(0.75rem, 3vw, 2.5rem);
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--rule);
+    transition: background-color var(--t) var(--ease);
 }
 
-@media (max-width: 768px) {
-  .card {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--background-1);
-  }
+.repo:hover { background: color-mix(in srgb, var(--live) 5%, transparent); }
+
+.repoIndex {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    color: var(--ink-3);
 }
 
-.card:hover {
-  border-color: rgba(var(--accent-1-rgb), 0.35);
-  box-shadow:
-    var(--shadow-xl),
-    0 0 0 1px rgba(var(--accent-1-rgb), 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
-  transform: translateY(-3px);
+.repoBody { min-width: 0; }
+
+.repoName {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
 }
 
-/* ── Accent strip ─────────────────────────────────────────────────────────── */
+.repoName a { color: var(--ink); text-decoration: none; }
+.repoName a:hover { color: var(--live); }
 
-.screenshotPlaceholder {
-  width: 100%;
-  height: 6px;
-  background: linear-gradient(
-    90deg,
-    rgba(var(--accent-3-rgb), 0.5),
-    rgba(var(--accent-1-rgb), 0.8),
-    rgba(var(--accent-2-rgb), 0.5)
-  );
-  flex-shrink: 0;
+.repoText {
+    margin: 0.2rem 0 0;
+    max-width: var(--measure);
+    font-size: var(--text-sm);
+    color: var(--ink-2);
 }
 
-/* ── Card body ───────────────────────────────────────────────────────────── */
-
-.cardBody {
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  flex: 1;
-  min-height: 0;
+.repoMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
 }
 
-/* ── Meta row ────────────────────────────────────────────────────────────── */
+.lang { color: var(--ember); }
 
-.cardMeta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
+.stars::before {
+    content: '';
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin-right: 0.4rem;
+    background: currentColor;
+    /* A star, drawn as a clipped square rather than as an icon, because it is
+       one glyph at one size and a whole icon import for it is not worth it. */
+    clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
 }
 
-.languageBadge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--font-size-xs);
-  color: var(--tertiary-text-color);
-  font-weight: 500;
+.private { color: var(--ink-3); }
+
+.readme {
+    padding: 0.35rem 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--ink-2);
+    cursor: pointer;
+    border-bottom: 1px solid var(--rule-strong);
+    transition: color var(--t) var(--ease), border-color var(--t) var(--ease);
 }
 
-.languageDot {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
+.readme:hover { color: var(--live); border-color: var(--live); }
 
-.metaRight {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
+@media (max-width: 760px) {
+    .repo {
+        grid-template-columns: auto minmax(0, 1fr);
+        row-gap: 0.5rem;
+    }
 
-.stars {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--font-size-xs);
-  color: var(--tertiary-text-color);
-  font-weight: 500;
-}
-
-.starsIcon { color: #e3b341; }
-
-.privatePill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--tertiary-text-color);
-  background: var(--background-3);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  padding: 1px 8px;
-  letter-spacing: 0.03em;
-}
-
-/* ── Name ────────────────────────────────────────────────────────────────── */
-
-.cardName {
-  font-size: var(--font-size-md);
-  font-weight: 700;
-  color: var(--accent-1);
-  margin: 0;
-  line-height: 1.25;
-  word-break: break-word;
-}
-
-/* ── Description ─────────────────────────────────────────────────────────── */
-
-.cardDesc {
-  font-size: var(--font-size-sm);
-  color: var(--secondary-text-color);
-  line-height: 1.65;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.cardDesc.clamp2 {
-  -webkit-line-clamp: 2;
-}
-
-/* ── Features list ───────────────────────────────────────────────────────── */
-
-.featuresLabel {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--tertiary-text-color);
-  margin: 0;
-}
-
-.featureList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.featureItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: var(--font-size-xs);
-  color: var(--secondary-text-color);
-  line-height: 1.5;
-}
-
-.featureDot {
-  width: 5px;
-  height: 5px;
-  border-radius: var(--radius-full);
-  background: var(--accent-1);
-  flex-shrink: 0;
-  margin-top: 5px;
-  opacity: 0.75;
-}
-
-/* ── Tech stack ──────────────────────────────────────────────────────────── */
-
-.techLabel {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--tertiary-text-color);
-  margin: 0;
-}
-
-.techList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.techChip {
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  color: var(--primary-text-color);
-  background: var(--background-3);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 3px 10px;
-  white-space: nowrap;
-  transition: border-color var(--transition-fast), color var(--transition-fast);
-}
-
-.card:hover .techChip {
-  border-color: rgba(var(--accent-1-rgb), 0.20);
-}
-
-/* ── GitHub topics ───────────────────────────────────────────────────────── */
-
-.topics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.topic {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--accent-1);
-  background: rgba(var(--accent-1-rgb), 0.07);
-  border: 1px solid rgba(var(--accent-1-rgb), 0.18);
-  border-radius: var(--radius-full);
-  padding: 2px 9px;
-  white-space: nowrap;
-}
-
-/* ── Divider ─────────────────────────────────────────────────────────────── */
-
-.divider {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(var(--accent-1-rgb), 0.12) 30%,
-    rgba(var(--accent-1-rgb), 0.12) 70%,
-    transparent
-  );
-  margin-top: auto;
-}
-
-/* ── Card footer ─────────────────────────────────────────────────────────── */
-
-.cardFooter {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  flex-shrink: 0;
-}
-
-.readmeBtn {
-  flex: 1;
-}
-
-.githubLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--tertiary-text-color);
-  background: var(--background-2);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs) var(--spacing-md);
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    color        var(--transition-fast),
-    border-color var(--transition-fast),
-    background   var(--transition-fast);
-}
-
-.githubLink:hover {
-  color: var(--primary-text-color);
-  border-color: rgba(var(--accent-1-rgb), 0.30);
-  background: rgba(var(--accent-1-rgb), 0.05);
-  text-decoration: none;
-  opacity: 1;
-}
-
-/* ── Skeleton - compositor-only shimmer ──────────────────────────────────── */
-
-@keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background: var(--background-2);
-  border-radius: var(--radius-sm);
-}
-
-.skeleton::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.13) 50%,
-    transparent 100%
-  );
-  animation: shimmer 1.6s ease-in-out infinite;
-}
-
-.skeletonCard {
-  background: var(--frosted-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-@media (max-width: 768px) {
-  .skeletonCard {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--background-1);
-  }
-  .skeleton::after { animation-duration: 1.2s; }
-}
-
-.skeletonStrip {
-  height: 6px;
-  position: relative;
-  overflow: hidden;
-  background: var(--background-3);
-}
-
-.skeletonStrip::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.18) 50%,
-    transparent 100%
-  );
-  animation: shimmer 1.6s ease-in-out infinite;
-}
-
-.skeletonBody {
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  flex: 1;
-  min-height: 0;
-}
-
-.skeletonMeta   { display: flex; justify-content: space-between; }
-.skeletonLang   { height: 0.75rem; width: 80px; }
-.skeletonStars  { height: 0.75rem; width: 36px; }
-.skeletonTitle  { height: 1.1rem;  width: 60%; }
-.skeletonLine1  { height: 0.8rem;  width: 100%; }
-.skeletonLine2  { height: 0.8rem;  width: 85%; }
-.skeletonLine3  { height: 0.8rem;  width: 55%; }
-
-.skeletonTags   { display: flex; gap: 6px; }
-.skeletonTag    { height: 1.4rem; width: 64px; border-radius: var(--radius-sm); }
-
-.skeletonFooter {
-  display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-top: 1px solid var(--border-color);
-}
-.skeletonBtn  { height: 2.1rem; flex: 1;   border-radius: var(--radius-md); }
-.skeletonLink { height: 2.1rem; width: 78px; border-radius: var(--radius-md); }
-
-/* ── Error / empty ───────────────────────────────────────────────────────── */
-
-.errorCard {
-  grid-column: 1 / -1;
-  background: var(--error-background-color);
-  border: 1px solid rgba(184, 57, 28, 0.28);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl);
-  text-align: center;
-  color: var(--error-color);
-}
-
-.emptyCard {
-  grid-column: 1 / -1;
-  background: var(--frosted-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-3xl);
-  text-align: center;
-  color: var(--tertiary-text-color);
-}
-
-/* ── Next-chapter footer ─────────────────────────────────────────────────── */
-
-/* ── Reveal wrappers ────────────────────────────────────────────────────────
- *
- * Each card is wrapped in a div so it can carry `data-reveal` and its own
- * stagger index. That wrapper becomes the grid item, which quietly broke the
- * equal-height behaviour above: `grid-auto-rows: 1fr` still stretches the
- * wrapper, but a card inside it sizes to its own content and leaves the rest of
- * the row empty. Passing the stretch through restores it.
- *
- * Scoped to direct children of the two grids so it cannot affect the reveal
- * wrappers used elsewhere on the page, which are not grid items.
- */
-.grid > [data-reveal],
-.showcaseGrid > [data-reveal] {
-  display: flex;
-  min-width: 0;
-}
-
-.grid > [data-reveal] > *,
-.showcaseGrid > [data-reveal] > * {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-/* ── Filter readout ───────────────────────────────────────────────────────
-   Reserves its line whether or not a filter is active, so switching languages
-   does not shift the grid down by one line of text. */
-
-.filterStatus {
-  min-height: 1.4rem;
-  margin: 0 0 var(--spacing-md);
-  font-size: 0.8125rem;
-  color: var(--tertiary-text-color);
-}
-
-/* ── Responsive ──────────────────────────────────────────────────────────── */
-
-@media (max-width: 1100px) {
-  .grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 1000px) {
-  .showcaseGrid { grid-template-columns: 1fr; }
-}
-
-@media (min-width: 861px) and (max-width: 1200px) {
-  .page { padding-inline: var(--spacing-2xl); }
-}
-
-@media (max-width: 860px) {
-  .page {
-    padding-top: 4.5rem;
-    padding-inline: var(--spacing-md);
-    padding-bottom: var(--spacing-xl);
-  }
-}
-
-@media (max-width: 600px) {
-  /* Single column - nothing to compare against, so let cards size themselves. */
-  .grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
-}
-
-@media (max-width: 480px) {
-  .page { padding-inline: var(--spacing-sm); }
+    .repoMeta { grid-column: 1 / -1; flex-wrap: wrap; }
 }

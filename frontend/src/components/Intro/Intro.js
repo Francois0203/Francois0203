@@ -1,65 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getLenis } from '../../hooks/useMomentumScroll';
-import { useContent } from '../../context/ContentContext';
-import { readName, writeName } from './identity';
+import useSiteCopy from '../../hooks/useSiteCopy';
+import { resolveGroup } from '../../content/copy/resolve';
+import { HOME_FIELDS } from '../../content/copy/home';
 import styles from './Intro.module.css';
 
-/**
- * The opening: liquid glass floods the viewport, then drains away.
+/*
+ * The opening. Embers drift in, pull into the mark, hold, then a gust takes
+ * them and the site is behind them.
  *
- * The site is briefly visible, sharp. Glass rises from below the fold behind a
- * rippling meniscus, decelerating as it reaches level. The name surfaces as the
- * water passes it. A specular highlight travels across the surface. Then the
- * level drops and drains off the bottom, leaving the site.
+ * The shape comes from drawing the mark into an offscreen canvas and keeping
+ * every pixel with ink in it, so it is the real letterforms at the real size.
  *
- * ── What "liquid glass" is made of, and what each part costs ─────────────────
- * Translucency and blur is `backdrop-filter`. The specular highlight is a
- * gradient that moves. The rim and the chromatic edge are static inset
- * shadows. True refraction - the lensing that displaces what is behind the
- * glass - needs an SVG displacement map used as a backdrop-filter, which is
- * Chrome-only and rebuilds that map whenever the geometry changes. It is not
- * used here.
- *
- * ── The rules this obeys, and why ────────────────────────────────────────────
- * `backdrop-filter` costs a full re-blur of everything behind it on every
- * frame in which it, or anything behind it, moves. So:
- *
- *   1. There is exactly ONE backdrop-filter element - the water body.
- *   2. Its geometry never animates. No border-radius morph, no clip-path
- *      animation, no width or height. Only transform and opacity.
- *   3. The liquid is in FRONT of the glass, not in it: the meniscus is two
- *      wave overlays translating horizontally at different speeds. Two phases
- *      beating against each other is what reads as a moving water surface, and
- *      transform-only means each rasterises once.
- *
- * Rule 2 is not theoretical. pages/Loading had three glass blobs each carrying
- * backdrop-filter while being translated every frame AND morphing their
- * border-radius on an infinite loop, and it is the Suspense fallback for every
- * route, so it paid that bill on every navigation.
- *
- * ── One animation, not a timeline ────────────────────────────────────────────
- * The tide is a single CSS animation whose keyframes carry their own timing
- * functions, so the rise can decelerate, the hold can be still, and the drain
- * can accelerate - without a JS timeline. The only JS clock is one timer for
- * the unmount.
- *
- * ── Rules carried over ───────────────────────────────────────────────────────
- *   1. Once per page load. A refresh, a fresh tab or a direct URL replays it;
- *      moving between routes does not. Hence the module-scoped flag: AppLayout
- *      unmounts on /admin and mounts again on the way back, and neither is a
- *      load.
- *   2. Any input skips it.
- *   3. It never gates the content - the page is rendered underneath from the
- *      first frame; this is purely an overlay.
- *   4. It does not exist under reduced motion or the site's Motion toggle.
+ * Plays once per load, any input skips it, it never gates the content, and it
+ * does not exist under reduced motion.
  */
 
 let playedThisLoad = false;
 
-/** Total run. Must match the `tide` keyframes in Intro.module.css. */
-const TOTAL_MS = 3100;
-/** The shortened exit when someone skips. */
-const SKIP_MS = 220;
+const MARK = 'FM';
+
+/* The phases, in milliseconds from the first frame. */
+const GATHER = 1500;   /* embers drift, then start pulling toward the shape */
+const HOLD = 2450;     /* the mark is formed and burning */
+const SCATTER = 3350;  /* the gust, and the overlay goes with it */
+
+const SKIP_MS = 300;
 
 const shouldPlay = () => {
   if (typeof window === 'undefined') return false;
@@ -69,139 +34,265 @@ const shouldPlay = () => {
   return true;
 };
 
-/**
- * Four periods of a wave across a 2400-unit box, closed downward into a solid.
- *
- * Four rather than one so the element can be 200% wide and loop by translating
- * exactly one period - 600 units, a quarter of its own width - which is
- * seamless because the path is periodic. A single period stretched to 200%
- * would visibly snap back.
- */
-const WAVE = [
-  'M0,40',
-  'C100,10 200,10 300,40 C400,70 500,70 600,40',
-  'C700,10 800,10 900,40 C1000,70 1100,70 1200,40',
-  'C1300,10 1400,10 1500,40 C1600,70 1700,70 1800,40',
-  'C1900,10 2000,10 2100,40 C2200,70 2300,70 2400,40',
-  'L2400,120 L0,120 Z',
-].join(' ');
+/* `freezeAt` is dev only: Chrome's virtual time budget freezes rAF, so a
+   canvas animation can only be screenshot by stepping it by hand. */
+const Intro = ({ freezeAt = null }) => {
+  const { overrides } = useSiteCopy();
+  const t = resolveGroup(HOME_FIELDS, overrides?.home);
 
-const Wave = ({ className }) => (
-  <svg
-    className={className}
-    viewBox="0 0 2400 120"
-    preserveAspectRatio="none"
-    aria-hidden="true"
-  >
-    <path d={WAVE} />
-  </svg>
-);
-
-const Intro = () => {
-  // Decided in the initialiser, not an effect, so the overlay is either in the
-  // very first paint or never in the tree at all.
-  const [playing, setPlaying] = useState(shouldPlay);
-  const [skipping, setSkipping] = useState(false);
-
-  const { data } = useContent();
-  const timerRef = useRef(0);
-  const doneRef = useRef(false);
-
-  /*
-   * Captured once, so the name cannot change under the reader mid-sequence. A
-   * repeat visit has it in the first frame; a first visit picks it up when the
-   * data lands, which is well before the name's own reveal at 700ms.
-   */
-  const cachedName = useRef(readName());
-  const liveName = data?.personal?.name ?? null;
-  const name = cachedName.current ?? liveName;
-  useEffect(() => { writeName(liveName); }, [liveName]);
+  const [play, setPlay] = useState(shouldPlay);
+  const [leaving, setLeaving] = useState(false);
+  const canvasRef = useRef(null);
+  const skipRef = useRef(() => {});
+  const timer = useRef(0);
 
   const finish = useCallback(() => {
-    clearTimeout(timerRef.current);
-    setPlaying(false);
+    playedThisLoad = true;
+    setPlay(false);
   }, []);
 
-  // Guarded on a ref rather than state: four listeners can fire in the same
-  // gesture, and reading state here would let two of them queue their own exit.
   const skip = useCallback(() => {
-    if (doneRef.current) return;
-    doneRef.current = true;
-    setSkipping(true);
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(finish, SKIP_MS);
+    setLeaving((already) => {
+      if (already) return already;
+      clearTimeout(timer.current);
+      timer.current = setTimeout(finish, SKIP_MS);
+      skipRef.current();
+      return true;
+    });
   }, [finish]);
 
   useEffect(() => {
-    if (!playing) return undefined;
-
+    if (!play) return undefined;
     playedThisLoad = true;
 
-    /*
-     * Lenis is created by useMomentumScroll in AppLayout, whose effect runs
-     * after this one - effects fire child-first - so getLenis() is null right
-     * now. One frame's delay is enough. Stopping it matters: body overflow
-     * alone does not reach Lenis, which scrolls by transform off its own
-     * virtual scroll, so a wheel during the intro would scroll the page unseen
-     * and the reveal would land halfway down the site.
-     */
-    const lenisId = requestAnimationFrame(() => getLenis()?.stop());
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d', { alpha: true });
+    if (!ctx) return undefined;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let raf = 0;
+    let start = 0;
+    let scatterAt = 0;          /* when the gust actually began, so a skip can pull it forward */
+
+    // One flat array, reused. Nothing in the loop allocates.
+    let embers = [];
+
+    const palette = { live: '#f2994a', ember: '#e0b552', glow: 'rgba(242,153,74,0.1)' };
+
+    const readPalette = () => {
+      const s = getComputedStyle(document.documentElement);
+      palette.live = s.getPropertyValue('--live').trim() || palette.live;
+      palette.ember = s.getPropertyValue('--ember').trim() || palette.ember;
+      palette.glow = s.getPropertyValue('--field-glow').trim() || palette.glow;
+    };
+
+    // Every inked pixel of the mark becomes a target.
+    const findTargets = () => {
+      const size = Math.min(width * 0.42, height * 0.52, 420);
+      const off = document.createElement('canvas');
+      off.width = Math.max(1, Math.round(width));
+      off.height = Math.max(1, Math.round(height));
+      const octx = off.getContext('2d', { willReadFrequently: true });
+      if (!octx) return [];
+
+      octx.fillStyle = '#fff';
+      octx.textAlign = 'center';
+      octx.textBaseline = 'middle';
+      octx.font = `700 ${Math.round(size)}px 'Bricolage Grotesque Variable', system-ui, sans-serif`;
+      octx.fillText(MARK, off.width / 2, off.height / 2);
+
+      const { data } = octx.getImageData(0, 0, off.width, off.height);
+
+      // Coarser on small screens, so a phone runs the same thing with fewer.
+      const step = width < 700 ? 6 : 5;
+      const found = [];
+      for (let y = 0; y < off.height; y += step) {
+        for (let x = 0; x < off.width; x += step) {
+          if (data[(y * off.width + x) * 4 + 3] > 128) found.push(x, y);
+        }
+      }
+      return found;
+    };
+
+    const build = () => {
+      const targets = findTargets();
+      const count = targets.length / 2;
+      embers = new Array(count);
+
+      for (let i = 0; i < count; i += 1) {
+        const tx = targets[i * 2];
+        const ty = targets[i * 2 + 1];
+
+        // Starts off screen, so they arrive from every direction.
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.max(width, height) * (0.55 + Math.random() * 0.5);
+
+        embers[i] = {
+          tx,
+          ty,
+          x: width / 2 + Math.cos(angle) * radius,
+          y: height / 2 + Math.sin(angle) * radius,
+          vx: 0,
+          vy: 0,
+          // Private delay and stiffness, or they all land on one frame.
+          lag: Math.random() * 0.45,
+          stiff: 0.028 + Math.random() * 0.03,
+          size: 0.8 + Math.random() * 1.5,
+          phase: Math.random() * Math.PI * 2,
+          warm: Math.random(),
+        };
+      }
+    };
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      build();
+    };
+
+    /* The gust. Takes its clock as an argument, because the dev freeze steps a
+       simulated one and performance.now() would put it in the past. */
+    const blowAway = (at = performance.now()) => {
+      if (scatterAt) return;
+      scatterAt = at;
+      for (let i = 0; i < embers.length; i += 1) {
+        const e = embers[i];
+        const dx = e.x - width / 2;
+        const dy = e.y - height / 2;
+        const d = Math.hypot(dx, dy) || 1;
+        // Outward, and up.
+        e.vx += (dx / d) * (2.2 + Math.random() * 3.4);
+        e.vy += (dy / d) * (1.6 + Math.random() * 2.4) - (2.4 + Math.random() * 3.2);
+      }
+    };
+
+    skipRef.current = blowAway;
+
+    // One frame, with no opinion about what drives it.
+    const drawFrame = (now) => {
+      if (!start) start = now;
+      const t0 = now - start;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // One glow for the whole mark: per-ember shadowBlur is ruinous here.
+      const formed = Math.min(1, Math.max(0, (t0 - GATHER * 0.55) / 900));
+      if (formed > 0 && !scatterAt) {
+        const r = Math.min(width, height) * 0.42;
+        const g = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, r);
+        g.addColorStop(0, palette.glow);
+        g.addColorStop(1, 'transparent');
+        ctx.globalAlpha = formed;
+        ctx.fillStyle = g;
+        ctx.fillRect(width / 2 - r, height / 2 - r, r * 2, r * 2);
+        ctx.globalAlpha = 1;
+      }
+
+      if (t0 > SCATTER) blowAway(now);
+
+      const scattering = scatterAt > 0;
+      const since = scattering ? now - scatterAt : 0;
+      const fade = scattering ? Math.max(0, 1 - since / 900) : 1;
+
+      for (let i = 0; i < embers.length; i += 1) {
+        const e = embers[i];
+
+        if (scattering) {
+          e.vy += 0.045;              /* the gust slows and the embers fall back */
+          e.vx *= 0.985;
+          e.x += e.vx;
+          e.y += e.vy;
+        } else {
+          // This ember's own share of the gather, so it assembles in a wave.
+          const p = (t0 / GATHER - e.lag) / (1 - e.lag);
+
+          if (p > 0) {
+            const k = e.stiff * Math.min(1, p * 1.6);
+            e.vx += (e.tx - e.x) * k;
+            e.vy += (e.ty - e.y) * k;
+            e.vx *= 0.86;
+            e.vy *= 0.86;
+          }
+
+          e.x += e.vx;
+          e.y += e.vy;
+
+          // A small idle wander, so the mark breathes.
+          if (t0 > GATHER) {
+            const s = (t0 - GATHER) * 0.0022;
+            e.x += Math.sin(s + e.phase) * 0.22;
+            e.y += Math.cos(s * 1.2 + e.phase) * 0.22;
+          }
+        }
+
+        ctx.globalAlpha = fade;
+        ctx.fillStyle = e.warm > 0.55 ? palette.live : palette.ember;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+    };
+
+    const frame = (now) => {
+      drawFrame(now);
+      raf = requestAnimationFrame(frame);
+    };
+
+    readPalette();
+    resize();
+
+    if (freezeAt !== null) {
+      // Step at a fixed 60fps interval so the still is reproducible.
+      const base = performance.now();
+      for (let k = 0; k * 16.667 <= freezeAt; k += 1) drawFrame(base + k * 16.667);
+      return () => {};
+    }
+
+    raf = requestAnimationFrame(frame);
+
+    timer.current = setTimeout(finish, SCATTER + 900);
+
+    const events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
+    events.forEach(e => window.addEventListener(e, skip, { passive: true }));
+
+    // Nothing behind an opaque screen may scroll.
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    const opts = { passive: true, once: true };
-    window.addEventListener('wheel', skip, opts);
-    window.addEventListener('touchstart', skip, opts);
-    window.addEventListener('pointerdown', skip, opts);
-    window.addEventListener('keydown', skip, opts);
+    const onResize = () => { if (!scatterAt) resize(); };
+    window.addEventListener('resize', onResize);
 
-    timerRef.current = setTimeout(() => { doneRef.current = true; finish(); }, TOTAL_MS);
+    // The font may land after the first frame; re-derive when it does.
+    document.fonts?.ready.then(() => { if (!scatterAt) build(); }).catch(() => {});
 
     return () => {
-      cancelAnimationFrame(lenisId);
-      clearTimeout(timerRef.current);
-      window.removeEventListener('wheel', skip);
-      window.removeEventListener('touchstart', skip);
-      window.removeEventListener('pointerdown', skip);
-      window.removeEventListener('keydown', skip);
-      // Restored on every path out, including an unmount mid-animation, so the
-      // site can never be left unscrollable.
+      cancelAnimationFrame(raf);
+      clearTimeout(timer.current);
+      events.forEach(e => window.removeEventListener(e, skip));
+      window.removeEventListener('resize', onResize);
       document.body.style.overflow = prevOverflow;
-      getLenis()?.start();
     };
-  }, [playing, skip, finish]);
+  }, [play, skip, finish, freezeAt]);
 
-  if (!playing) return null;
+  if (!play) return null;
 
   return (
-    // Decorative, and the page underneath carries all of it as real content, so
-    // this is hidden from assistive tech entirely. Focus is never moved into it.
     <div
-      className={styles.curtain}
-      data-state={skipping ? 'skipping' : 'playing'}
+      className={[styles.intro, leaving && styles.leaving, freezeAt !== null && styles.frozen]
+        .filter(Boolean).join(' ')}
       aria-hidden="true"
     >
-      {/* Everything rides this one element, so the tide is a single transform
-          rather than several kept in sync. */}
-      <div className={styles.body}>
-        <div className={styles.water}>
-          <span className={styles.specular} />
-        </div>
-
-        {/* The meniscus straddles the top edge of the body. Two phases at
-            different speeds and amplitudes; neither is in sync with the other,
-            which is what stops it reading as a repeating graphic. */}
-        <div className={styles.surface}>
-          <Wave className={styles.waveBack} />
-          <Wave className={styles.waveFront} />
-          <span className={styles.crest} />
-        </div>
-
-        <div className={styles.title}>
-          <h1 className={styles.name}>{name ?? ''}</h1>
-          <p className={styles.role}>Data Scientist &middot; Researcher &middot; Developer</p>
-        </div>
-      </div>
+      <canvas ref={canvasRef} className={styles.canvas} />
+      <p className={styles.caption}>{t.heroLede}</p>
     </div>
   );
 };

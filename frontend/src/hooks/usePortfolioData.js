@@ -1,12 +1,8 @@
 import { useContent } from '../context/ContentContext';
 
 /**
- * The portfolio documents (personal, contact, social, donation, skills,
- * interests, experience, education, certifications).
- *
- * The fetch itself lives in ContentProvider so it happens once per visit instead
- * of once per page mount; this hook is only the read side of it. Shape is
- * unchanged from when it fetched on its own.
+ * The portfolio documents. The fetch lives in ContentProvider so it happens
+ * once per visit rather than once per page mount; this is the read side.
  */
 const usePortfolioData = () => {
   const { data, loading, error } = useContent();

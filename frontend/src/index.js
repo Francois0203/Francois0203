@@ -4,28 +4,28 @@ import { BrowserRouter, useLocation } from 'react-router-dom';
 import App from './App';
 import { ErrorBoundary } from './components';
 
-import './styles/Theme.css';
-import './styles/Wrappers.css';
-import './styles/Components.css';
-import './styles/Reveal.css';
-import './styles/lenis.css';
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/instrument-sans';
+import '@fontsource-variable/martian-mono';
 
-function ErrorBoundaryWrapper({ children }) {
+import './styles/tokens.css';
+import './styles/base.css';
+import './styles/reveal.css';
+import './styles/admin-support.css';
+
+/* Keyed on the path, so an error on one route does not leave the whole app in
+   a failed state after navigating away from it. */
+function Boundary({ children }) {
   const location = useLocation();
-  return (
-    <ErrorBoundary resetKey={location.pathname}>
-      {children}
-    </ErrorBoundary>
-  );
+  return <ErrorBoundary resetKey={location.pathname}>{children}</ErrorBoundary>;
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ErrorBoundaryWrapper>
+      <Boundary>
         <App />
-      </ErrorBoundaryWrapper>
+      </Boundary>
     </BrowserRouter>
   </React.StrictMode>
 );

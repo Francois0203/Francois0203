@@ -1,642 +1,290 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   Home
-   ───────────────────────────────────────────────────────────────────────────
-   A packed 12 column mosaic, replacing six full-viewport scenes.
-
-   The previous stylesheet's own structure was the complaint: every section
-   carried `min-height: 100svh`, which guarantees a screen of air around each
-   element no matter how tight the padding inside it is. Nothing here has a
-   viewport-relative minimum height except the pinned journey, which needs a
-   scroll distance to pin through.
-
-   Density comes from three decisions, in order of how much they matter:
-     1. Tiles size to their content. There is no min-height anywhere below.
-     2. `grid-auto-flow: dense`, so a short tile backfills the gap left beside
-        a tall one rather than leaving a hole in the grid.
-     3. A 12px gutter and a hard page cap, so the mosaic stays a mosaic on a
-        wide monitor instead of stretching into a row of billboards.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
 .page {
-  position: relative;
-  /* Tight, and symmetric with the gutter so the outer margin reads as part of
-     the same grid rather than as a frame around it. */
-  padding: 5.5rem clamp(0.75rem, 2vw, 1.5rem) 0;
-  box-sizing: border-box;
+    position: relative;
+    z-index: var(--z-page);
 }
 
-/* ── Ambient ────────────────────────────────────────────────────────────────
-   Gone from this file. It was one fixed, static layer of two radial washes -
-   the only page on the site that had a ground at all - and it is now the
-   first of the four layers in components/Parallax/ParallaxBackdrop, which is
-   mounted once in the app layout. Two reasons it had to move rather than be
-   duplicated: every other page had a flat ground, and a wash pinned to the
-   viewport is, while scrolling, the one thing on screen that is provably not
-   moving. Keeping this copy as well would simply have painted the warm wash
-   twice. */
-
-/* ── The mosaic ─────────────────────────────────────────────────────────── */
-
-.mosaic {
-  position: relative;
-  z-index: 1;
-  max-width: 1560px;
-  margin: 0 auto;
-
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  /* `auto` rows, not a fixed track: a tile is as tall as its content. The
-     minimum only stops a one-line tile from collapsing to nothing. */
-  grid-auto-rows: minmax(5.5rem, auto);
-  grid-auto-flow: dense;
-  gap: 0.75rem;
+/* Blocks sit on the page measure. Bands break out of it and run edge to
+   edge, which is what makes them read as ground. */
+.block {
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: var(--block) var(--gutter) 0;
 }
 
-/* ── A tile ─────────────────────────────────────────────────────────────── */
-
-.tile {
-  grid-column: span var(--span, 4);
-  grid-row: span var(--rows, 1);
-
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-width: 0;
-  padding: clamp(0.9rem, 1.4vw, 1.35rem);
-  box-sizing: border-box;
-
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  /* Opaque rather than frosted. There are up to eight of these on the first
-     screen, and eight stacked backdrop-filters on one viewport is the most
-     expensive thing this page could do for an effect that is invisible behind
-     an 86% opaque surface anyway. */
-  background: var(--background-1);
-  transition:
-    border-color var(--transition-base),
-    transform var(--transition-base);
+.head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.6rem 2rem;
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
 }
 
-/* A cool-toned tile, for the data-flavoured content. Warm is the default, so
-   the two families stay legible as families. */
-.tile[data-tone='cool'] {
-  border-color: rgba(var(--data-1-rgb), 0.24);
-  background:
-    linear-gradient(180deg, rgba(var(--data-1-rgb), 0.05), transparent 60%),
-    var(--background-1);
-}
+.head h2 { grid-column: 1; }
+.head p { grid-column: 1; }
+.head > a,
+.head > button { grid-column: 2; grid-row: 1; justify-self: end; }
 
-@media (hover: hover) and (pointer: fine) {
-  .tile:hover { border-color: rgba(var(--accent-1-rgb), 0.4); }
-  .tile[data-tone='cool']:hover { border-color: rgba(var(--data-1-rgb), 0.45); }
-}
-
-.tileLabel {
-  margin: 0;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--tertiary-text-color);
-}
-
-/* ── Identity tile ──────────────────────────────────────────────────────── */
-
-.tIdentity {
-  justify-content: center;
-  gap: 1rem;
-}
-
-.eyebrow {
-  margin: 0 0 0.5rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--data-1);
-}
-
-.name {
-  margin: 0 0 0.5rem;
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  /* Two words on two lines, sized to the tile rather than to the viewport, so
-     the name fills its cell instead of pushing the layout apart. */
-  font-size: clamp(2.25rem, 5.2vw, 4.25rem);
-  line-height: 0.94;
-  letter-spacing: -0.025em;
-  color: var(--primary-text-color);
-}
-
-.nameWord { display: block; }
-
-.statement {
-  margin: 0;
-  max-width: 30ch;
-  font-size: clamp(1rem, 1.25vw, 1.2rem);
-  line-height: 1.45;
-  color: var(--secondary-text-color);
-}
-
-/* ── Badges ─────────────────────────────────────────────────────────────── */
-
-.badges {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid rgba(var(--accent-1-rgb), 0.3);
-  border-radius: 999px;
-  background: rgba(var(--accent-1-rgb), 0.08);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--accent-1);
-}
-
-.badge[data-tone='cool'] {
-  border-color: rgba(var(--data-1-rgb), 0.32);
-  background: rgba(var(--data-1-rgb), 0.09);
-  color: var(--data-1);
-}
-
-.badge svg { width: 0.85rem; height: 0.85rem; }
-
-@keyframes badgePop {
-  from { opacity: 0; transform: scale(0.6) translateY(6px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* ── Actions ────────────────────────────────────────────────────────────── */
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.ctaPrimary,
-.ctaGhost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  /* Clears the 44px minimum target on its own rather than relying on
-     line-height to get there. */
-  min-height: 2.75rem;
-  padding: 0 1.1rem;
-  border-radius: var(--radius-md);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform var(--transition-fast),
-    background-color var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.ctaPrimary {
-  border: 1px solid transparent;
-  background: var(--accent-1);
-  color: var(--background-0);
-  box-shadow: 0 10px 26px -14px rgba(var(--accent-1-rgb), 0.65);
-}
-
-.ctaGhost {
-  border: 1px solid var(--border-color);
-  background: transparent;
-  color: var(--primary-text-color);
-}
-
-.iconLink {
-  display: inline-grid;
-  place-items: center;
-  /* Square and 44px, so the two social marks are real targets rather than
-     decoration sitting next to the buttons. */
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  color: var(--secondary-text-color);
-  transition:
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.iconLink svg { width: 1.1rem; height: 1.1rem; }
-
-@media (hover: hover) and (pointer: fine) {
-  .ctaPrimary:hover { transform: translateY(-2px); }
-  .ctaGhost:hover { transform: translateY(-2px); border-color: var(--accent-1); }
-  .iconLink:hover {
-    transform: translateY(-2px);
-    color: var(--accent-1);
-    border-color: var(--accent-1);
-  }
-}
-
-/* Stated after :hover, so a press while hovered is still acknowledged: the
-   global button:active loses to these on specificity. */
-.ctaPrimary:active,
-.ctaGhost:active,
-.iconLink:active { transform: translateY(0) scale(0.985); }
-
-/* ── Portrait tile ──────────────────────────────────────────────────────── */
-
-.tPortrait {
-  padding: 0.75rem;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.portraitFrame {
-  width: 100%;
-  display: grid;
-  place-items: center;
-}
-
-/* ── Figures tile ───────────────────────────────────────────────────────── */
-
-.tStats { justify-content: center; }
-
-/* ── Right now tile ─────────────────────────────────────────────────────── */
-
-.tNow { justify-content: flex-start; }
-
-.nowList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-
-.nowItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  font-size: 0.875rem;
-  line-height: 1.4;
-  color: var(--secondary-text-color);
-}
-
-.nowItem strong {
-  display: block;
-  color: var(--primary-text-color);
-  font-weight: 600;
-}
-
-.nowAt {
-  display: block;
-  font-size: 0.8125rem;
-  color: var(--tertiary-text-color);
-}
-
-.nowIcon {
-  flex: none;
-  width: 1rem;
-  height: 1rem;
-  margin-top: 0.15rem;
-  color: var(--data-1);
-}
-
-/* ── Statement tile ─────────────────────────────────────────────────────── */
-
-.tAbout { justify-content: flex-start; }
-
-.body {
-  margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--secondary-text-color);
-}
-
-/* ── Outside work tile ──────────────────────────────────────────────────── */
-
-.tOff {
-  justify-content: flex-start;
-  gap: 0.6rem;
-}
-
-.chips {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border: 1px solid var(--border-color);
-  border-radius: 999px;
-  background: var(--background-2);
-  font-size: 0.8125rem;
-  color: var(--secondary-text-color);
-  transition: transform var(--dur-hover, 150ms) var(--ease-out);
-}
-
-.chip svg {
-  width: 0.9rem;
-  height: 0.9rem;
-  color: var(--accent-1);
-}
-
-/* Non-interactive by design, so this is the one hover that only moves: a
-   colour or border change here would read as a control that does nothing. */
-@media (hover: hover) and (pointer: fine) {
-  .chip:hover { transform: translateY(-2px); }
-}
-
-.langs {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0;
-  font-size: 0.8125rem;
-  color: var(--tertiary-text-color);
-}
-
-.langs svg { width: 0.9rem; height: 0.9rem; }
-
-/* ── Stack tile ─────────────────────────────────────────────────────────── */
-
-.tStack { justify-content: flex-start; }
-
-.techSkel {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(3.25rem, 1fr));
-  gap: 0.4rem;
-}
-
-.techSkelTile {
-  aspect-ratio: 1;
-  border-radius: var(--radius-md);
-  background: var(--background-2);
-}
-
-/* ═══ Below the mosaic ══════════════════════════════════════════════════════
-   Bands rather than tiles, because a live site embed and a pinned horizontal
-   route both need the full width. Still no viewport minimums. */
-
-.band,
-.journeyBand {
-  position: relative;
-  z-index: 1;
-  max-width: 1560px;
-  margin: 2.5rem auto 0;
-}
-
-.bandHead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.bandTitle {
-  margin: 0;
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
-  line-height: 1.1;
-  color: var(--primary-text-color);
-}
-
-.bandLede {
-  margin: 0.25rem 0 0;
-  max-width: 52ch;
-  font-size: 0.9375rem;
-  color: var(--secondary-text-color);
-}
-
-.workGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-  align-items: stretch;
-}
-
-.workSkelCard {
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  background: var(--background-1);
+.head p {
+    margin: 0;
+    max-width: var(--measure);
+    font-size: var(--text-lg);
+    color: var(--ink-2);
 }
 
 .empty {
-  margin: 0;
-  padding: 1.5rem;
-  border: 1px dashed var(--border-color);
-  border-radius: var(--radius-lg);
-  color: var(--tertiary-text-color);
+    padding: 2rem 0;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-3);
 }
 
-/* ── The journey ────────────────────────────────────────────────────────────
-   Full bleed on purpose: the Roadmap pins and pans by 100cqw, so the element
-   it pans inside has to be the width of the viewport. This is the one region
-   of the page with a scroll length of its own. */
-
-.journeyBand {
-  max-width: none;
-  margin-top: 3rem;
-  /* Cancel the page's side padding, without the 100vw trick - 100vw includes
-     the scrollbar and would overflow by its width. */
-  margin-inline: calc(clamp(0.75rem, 2vw, 1.5rem) * -1);
+.waiting {
+    height: 320px;
+    border-top: 1px solid var(--rule);
 }
 
-.journeyBand .bandHead {
-  max-width: 1560px;
-  margin-inline: auto;
-  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+/* ── 1. The opening ─────────────────────────────────────────────────────── */
+
+.open {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* A variable so a dev screenshot can flatten it. */
+    min-height: var(--hero-h, 100svh);
+    padding: calc(68px + var(--block) * 0.5) var(--gutter) clamp(2rem, 6vh, 4rem);
+    overflow: hidden;
 }
 
-.roadmapSkel {
-  display: flex;
-  gap: 0.75rem;
-  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
-  overflow: hidden;
+.role {
+    margin: 0 0 clamp(1rem, 3vh, 2rem);
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
 }
 
-.roadmapSkelCard {
-  flex: none;
-  width: min(78vw, 26rem);
-  height: 16rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  background: var(--background-1);
+/* The name is the page's only image. */
+.name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--display-xl);
+    font-weight: 600;
+    line-height: 0.84;
+    letter-spacing: -0.055em;
+    color: var(--ink);
 }
 
-/* ── Milestone modal ────────────────────────────────────────────────────── */
-
-.milestoneModal { display: flex; flex-direction: column; gap: 0.6rem; }
-
-.milestoneKind {
-  align-self: flex-start;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid rgba(var(--data-1-rgb), 0.3);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--data-1);
+/* The photograph, whole. A square box with contain, so nothing is cropped at
+   any viewport; the only softening is on the edge the type crosses. */
+.portrait {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: -1;
+    width: clamp(220px, 34vw, 480px);
+    aspect-ratio: 1 / 1;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 26%);
+    mask-image: linear-gradient(to right, transparent, #000 26%);
 }
 
-.milestoneSub {
-  margin: 0;
-  font-weight: 600;
-  color: var(--primary-text-color);
+.portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
 }
 
-.milestonePeriod {
-  margin: 0;
-  font-size: 0.8125rem;
-  color: var(--tertiary-text-color);
+.openFoot {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+    gap: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 4vw, 4rem);
+    margin-top: clamp(1.5rem, 5vh, 3rem);
+    padding-top: clamp(1rem, 3vh, 1.75rem);
+    border-top: 1px solid var(--rule);
 }
 
-.milestoneDesc {
-  margin: 0;
-  line-height: 1.6;
-  color: var(--secondary-text-color);
+.say {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    max-width: 30ch;
+    font-size: clamp(1.0625rem, 1.6vw, 1.5rem);
+    line-height: 1.35;
+    color: var(--ink);
 }
 
-.milestoneTags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-
-.milestoneTag {
-  padding: 0.2rem 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  color: var(--secondary-text-color);
+/* Left column: in the right one these landed on top of the portrait. */
+.openActions {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
 }
 
-/* ═══ Mount choreography ════════════════════════════════════════════════════
- *
- * Every hidden starting state lives here and nowhere else.
- *
- * This was wrong once and is worth spelling out: the hero elements used to be
- * `opacity: 0` unconditionally, made visible only by their own animation. So
- * the instant animations did not run - reduced motion, the site's Motion
- * toggle, a headless capture, a browser that skipped them - the page rendered
- * EMPTY. A name that only exists while an animation is playing is not an
- * animated name, it is a broken one.
- *
- * Scoping the hidden state to `no-preference` inverts the failure: the resting
- * styles above are the finished page, and motion is added for readers who want
- * it. The reveal cascade for everything below the fold is the shared primitive
- * in styles/Reveal.css, which already follows the same rule.
- */
-
-@media (prefers-reduced-motion: no-preference) {
-  .nameWord {
-    opacity: 0;
-    transform: translateY(0.16em);
-    animation: wordIn 800ms var(--ease-out) forwards;
-    animation-delay: calc(80ms + var(--i, 0) * 90ms);
-  }
-
-  .badge {
-    opacity: 0;
-    animation: badgePop 560ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    animation-delay: calc(360ms + var(--i, 0) * 90ms);
-  }
-
-  /* The tiles themselves lift in as a block. `--span` doubles as the stagger
-     seed so the wide tiles lead, which reads as the layout assembling rather
-     than as rows sliding. */
-  .tile {
-    animation: tileIn 620ms var(--ease-out) both;
-  }
+.open_available {
+    grid-column: 1;
+    grid-row: 3;
+    margin: 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
 }
 
-@keyframes wordIn {
-  to { opacity: 1; transform: translateY(0); }
+/* ── 2. The deep band ──────────────────────────────────────────────── */
+
+.band {
+    position: relative;
+    margin-top: var(--block);
+    padding: clamp(3rem, 9vh, 7rem) var(--gutter);
+    background: var(--deep);
 }
 
-@keyframes tileIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.995); }
-  to   { opacity: 1; transform: none; }
+/* Soft edges, so the field behind carries through rather than being cut.
+
+   Both are z-index 0 and the content is 1. Without that the ::after paints
+   above the content, because positioned boxes with z-index auto paint in DOM
+   order, and the bottom gradient washes out the last lines. */
+.band::before,
+.band::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: -1px 0 auto;
+    height: 90px;
+    background: linear-gradient(to bottom, transparent, var(--deep));
+    pointer-events: none;
 }
 
-/* The site's own Motion toggle is an attribute, which no media query can see,
-   so it needs its own opt-out of the block above. */
-:global([data-no-animations='true']) .nameWord,
-:global([data-no-animations='true']) .badge,
-:global([data-no-animations='true']) .tile {
-  animation: none;
-  opacity: 1;
-  transform: none;
+.band::after {
+    inset: auto 0 -1px;
+    background: linear-gradient(to top, transparent, var(--deep));
 }
 
-/* ═══ Narrow ════════════════════════════════════════════════════════════════
- *
- * These override `grid-column` and `grid-row`, not `--span` and `--rows`.
- *
- * That is not a style preference, it is the only thing that works: the span is
- * written as an inline custom property on each tile, and an inline declaration
- * beats a stylesheet rule no matter how specific or how late. Setting
- * `--span: 12` in here therefore did nothing at all, and the first phone-width
- * capture showed the tiles still sitting two across with the portrait ring
- * spilling out of its cell. Overriding the longhand the property feeds into
- * sidesteps the cascade problem entirely.
- */
-
-@media (max-width: 1080px) {
-  .tIdentity,
-  .tPortrait,
-  .tStats,
-  .tAbout,
-  .tStack {
-    grid-column: span 12;
-  }
-
-  .tNow,
-  .tOff { grid-column: span 6; }
-
-  .tile { grid-row: span 1; }
-
-  /* The first pair no longer shares a row, so the identity tile no longer
-     needs to match the portrait's height. */
-  .tIdentity { grid-row: span 1; }
-  .tPortrait { grid-row: span 1; }
-
-  .workGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Full width content inside a band. */
+.bandInner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
 }
 
-@media (max-width: 720px) {
-  .page { padding-top: 4.5rem; }
+.blockInner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    align-items: start;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+}
 
-  .tile { grid-column: span 12; }
+.statement {
+    margin: 0;
+    font-family: var(--font-display);
+    max-width: 30ch;
+    font-size: clamp(1.5rem, 2.9vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    /* Each sentence is its own clipped line. */
+    text-wrap: balance;
+}
 
-  .name { font-size: clamp(2rem, 11vw, 3rem); }
+.statement :global(.mask) + :global(.mask) { margin-top: 0.15em; }
 
-  /* Buttons go full width and the icon links share a row, so nothing is a
-     half-width target. */
-  .actions { gap: 0.45rem; }
-  .ctaPrimary,
-  .ctaGhost { flex: 1 1 100%; justify-content: center; }
-  .iconLink { flex: 0 0 auto; }
+.now {
+    margin: 0;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+}
 
-  .workGrid { grid-template-columns: 1fr; }
+.now dt { margin-bottom: 0.75rem; }
 
-  /* Clear the fixed mobile nav circle (64px, plus a gap), now that the footer
-     is the last thing on the page rather than a closing panel. */
-  .journeyBand { margin-bottom: 0; }
+.now dd {
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule);
+}
+
+.now dd:last-child { margin-bottom: 0; border-bottom: 0; padding-bottom: 0; }
+
+.now strong {
+    display: block;
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.now span {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
+}
+
+/* ── Narrow ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+    /* Full width content inside a band. */
+.bandInner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+}
+
+.blockInner { grid-template-columns: minmax(0, 1fr); align-items: start; }
+    .openFoot { grid-template-columns: minmax(0, 1fr); }
+    .openActions { grid-column: 1; }
+    /* Above the type, not behind it, with its height reserved. A faded
+       photograph under a headline is a legibility problem, not a style. */
+    .open {
+        --photo: min(38vw, 190px);
+        padding-top: calc(60px + var(--photo) + 1.5rem);
+    }
+
+    .portrait {
+        width: var(--photo);
+        top: calc(60px + 0.75rem);
+        right: 0;
+        transform: none;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+}
+
+@media (max-width: 560px) {
+    .open { min-height: var(--hero-h, 92svh); }
+    .name { line-height: 0.88; }
+}
+
+/* So the band is never a bare colour field waiting for data. */
+.stackSkeleton {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.stackSkeleton span {
+    display: block;
+    height: 190px;
+    border-top: 1px solid var(--rule);
 }

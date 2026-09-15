@@ -1,176 +1,119 @@
-/* Error Boundary */
+/* The last thing a reader sees when something has failed, so it is written in
+   the same voice as the rest of the site rather than as a system dialog. */
 
 .root {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xl);
-  background: var(--background-0);
-  box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    min-height: 100svh;
+    padding: var(--block) var(--gutter);
+    background: var(--ground);
 }
 
-.card {
-  width: 100%;
-  max-width: 460px;
-  padding: var(--spacing-2xl);
-  background: var(--frosted-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-lg);
-  text-align: center;
-  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+.inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1);    }
-}
-
-/* ── Icon ── */
-
-.iconWrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(229, 72, 77, 0.10);
-  border: 1px solid rgba(229, 72, 77, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.iconText {
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: var(--error-color);
-  line-height: 1;
-}
-
-/* ── Message ── */
-
-.message {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+.mark {
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
 }
 
 .title {
-  margin: 0;
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--primary-text-color);
+    margin: 0;
+    max-width: 11em;
+    font-family: var(--font-display);
+    font-size: var(--display-lg);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
 }
 
-.subtitle {
-  margin: 0;
-  color: var(--secondary-text-color);
-  font-size: var(--font-size-sm);
-  line-height: 1.6;
+.text {
+    margin: 1.25rem 0 0;
+    max-width: 44ch;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--ink-2);
 }
-
-/* ── Actions ── */
 
 .actions {
-  display: flex;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-  justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 2rem;
 }
 
-.btn {
-  padding: var(--spacing-sm) var(--spacing-xl);
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    filter var(--transition-fast),
-    background var(--transition-fast),
-    border-color var(--transition-fast);
+.primary,
+.ghost {
+    height: 2.875rem;
+    padding: 0 1.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--r-control);
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 600;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+        background-color var(--t) var(--ease),
+        border-color var(--t) var(--ease),
+        color var(--t) var(--ease),
+        transform var(--t-fast) var(--ease);
 }
 
-.btnPrimary {
-  background: var(--accent-1);
-  color: #fff;
-  border: 1px solid var(--accent-1);
-}
+.primary { background: var(--live); color: var(--on-live); }
+.primary:hover { background: var(--live-2); }
 
-.btnPrimary:hover  { filter: brightness(1.12); }
-.btnPrimary:active { filter: brightness(0.95); }
+.ghost { background: none; border-color: var(--rule-strong); color: var(--ink); }
+.ghost:hover { border-color: var(--live); color: var(--live); }
 
-.btnSecondary {
-  background: transparent;
-  color: var(--secondary-text-color);
-  border: 1px solid var(--border-color);
-}
+.primary:active,
+.ghost:active { transform: scale(0.98); }
 
-.btnSecondary:hover {
-  color: var(--primary-text-color);
-  border-color: var(--border-color-hover);
-  background: rgba(var(--accent-1-rgb), 0.04);
-}
-
-/* ── Technical details ── */
-
+/* Collapsed by default. A stack trace is for whoever is fixing it, not for
+   the person who ran into it. */
 .details {
-  width: 100%;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  text-align: left;
+    width: 100%;
+    max-width: 70ch;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
 }
 
-.detailsSummary {
-  display: block;
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tertiary-text-color);
-  background: var(--background-2);
-  cursor: pointer;
-  user-select: none;
+.details summary {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    cursor: pointer;
+    list-style: none;
 }
 
-.detailsSummary::-webkit-details-marker { display: none; }
+.details summary::-webkit-details-marker { display: none; }
+.details summary:hover { color: var(--ink); }
 
-.detailsBody {
-  padding: var(--spacing-md);
-  background: var(--background-1);
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.pre {
-  margin: 0;
-  font-family: 'Courier New', monospace;
-  font-size: var(--font-size-xs);
-  color: var(--secondary-text-color);
-  white-space: pre-wrap;
-  word-break: break-word;
-  line-height: 1.6;
-  max-height: 160px;
-  overflow-y: auto;
-}
-
-/* ── Responsive ── */
-
-@media (max-width: 480px) {
-  .card    { padding: var(--spacing-xl) var(--spacing-lg); }
-  .actions { flex-direction: column; width: 100%; }
-  .btn     { width: 100%; text-align: center; }
+.details pre {
+    margin: 1rem 0 0;
+    max-height: 16rem;
+    padding: 1rem;
+    overflow: auto;
+    background: var(--ground-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-slab);
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: var(--ink-3);
+    white-space: pre-wrap;
 }

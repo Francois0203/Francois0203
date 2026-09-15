@@ -1,343 +1,201 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaGithub, FaStar, FaLock } from 'react-icons/fa';
-import { MdArrowOutward } from 'react-icons/md';
-import { Modal, LightWaveButton, SiteShowcase, Parallax } from '../../components';
-import LangBar from '../../components/LangBar';
-import StatRow from '../../components/StatRow';
 import { useGitHubProjects, useStudioSites } from '../../hooks';
 import useSiteCopy from '../../hooks/useSiteCopy';
+import useReveal from '../../hooks/useReveal';
 import { resolveGroup } from '../../content/copy/resolve';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
-import { parseReadme } from './parseReadme';
+import { Modal } from '../../components';
+import LiveSite from '../../components/LiveSite';
+import Ledger from '../../components/Ledger';
 import ReadmeRenderer from './ReadmeRenderer';
+import { parseReadme } from './parseReadme';
 import styles from './Projects.module.css';
-import useReveal from '../../hooks/useReveal';
-import { langColor } from './langColors';
 
-// ─── Figures ─────────────────────────────────────────────────────────────────
-
-/**
- * The counts under the heading, all read off the live data.
+/*
+ * The work. Client sites and personal repositories stay in two sections and
+ * are never merged: equal cards would read as equal achievements.
  *
- * Each figure is omitted when it cannot be derived rather than shown as a zero:
- * "0 stars" is a claim, whereas an absent figure is simply an absent figure.
+ * Repositories are a ruled list, not a grid. Fourteen cards is a wall.
  */
-const buildStats = ({ sites, projects }) => {
-  const stars = projects.reduce((a, p) => a + (p.stars ?? 0), 0);
-  const languages = new Set(projects.map(p => p.language).filter(Boolean)).size;
+
+const buildFigures = ({ sites, repos }) => {
+  const stars = repos.reduce((a, p) => a + (p.stars ?? 0), 0);
+  const languages = new Set(repos.map(p => p.language).filter(Boolean)).size;
 
   return [
-    sites.length > 0 && { label: 'Live sites', value: sites.length },
-    projects.length > 0 && { label: 'Repositories', value: projects.length },
-    languages > 0 && { label: 'Languages', value: languages },
-    stars > 0 && { label: 'Stars', value: stars },
+    sites.length > 0 && { value: sites.length, label: 'Sites in production' },
+    repos.length > 0 && { value: repos.length, label: 'Repositories' },
+    languages > 0 && { value: languages, label: 'Languages' },
+    stars > 0 && { value: stars, label: 'Stars' },
   ].filter(Boolean);
 };
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
-const SkeletonCard = () => (
-  <div className={styles.skeletonCard}>
-    <div className={styles.skeletonStrip} />
-    <div className={styles.skeletonBody}>
-      <div className={styles.skeletonMeta}>
-        <div className={`${styles.skeleton} ${styles.skeletonLang}`} />
-        <div className={`${styles.skeleton} ${styles.skeletonStars}`} />
-      </div>
-      <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonLine1}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonLine2}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonLine3}`} />
-      <div className={styles.skeletonTags}>
-        {[72, 58, 80].map(w => (
-          <div key={w} className={`${styles.skeleton} ${styles.skeletonTag}`} style={{ width: w }} />
-        ))}
-      </div>
-    </div>
-    <div className={styles.skeletonFooter}>
-      <div className={`${styles.skeleton} ${styles.skeletonBtn}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonLink}`} />
-    </div>
-  </div>
-);
-
-// ─── Showcase skeleton ────────────────────────────────────────────────────────
-
-const SkeletonShowcase = () => (
-  <div className={styles.skeletonShowcase} aria-hidden="true">
-    <div className={styles.skeletonViewport} />
-    <div className={styles.skeletonBody}>
-      <div className={`${styles.skeleton} ${styles.skeletonLang}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonTitle}`} />
-      <div className={`${styles.skeleton} ${styles.skeletonLine2}`} />
-    </div>
-  </div>
-);
-
-// ─── Project card ─────────────────────────────────────────────────────────────
-
-const ProjectCard = ({ project, onReadme }) => {
-  const { name, description: githubDesc, url, language, stars, topics, isPrivate, readme } = project;
-
+const Repo = ({ project, onReadme, index }) => {
+  const { name, description, url, language, stars, readme, isPrivate } = project;
   const hasReadme = readme?.trim().length > 0;
 
-  // Parse README once - cheap, synchronous
-  const parsed = hasReadme
-    ? parseReadme(readme, { fallback: githubDesc ?? '' })
-    : { description: githubDesc ?? '', features: [], techStack: [] };
-
-  const { description, features, techStack } = parsed;
-
-  // Collapse description to 2 lines when features are also shown
-  const descClass = features.length > 0
-    ? `${styles.cardDesc} ${styles.clamp2}`
-    : styles.cardDesc;
+  // The README is usually a better summary than the GitHub description.
+  const summary = hasReadme
+    ? parseReadme(readme, { fallback: description ?? '' }).description
+    : description;
 
   return (
-    <div className={styles.card}>
-      {/* Accent strip */}
-      <div className={styles.screenshotPlaceholder} aria-hidden="true" />
+    <article className={styles.repo}>
+      <span className={styles.repoIndex}>{String(index + 1).padStart(2, '0')}</span>
 
-      <div className={styles.cardBody}>
-        {/* Meta row */}
-        <div className={styles.cardMeta}>
-          <span className={styles.languageBadge}>
-            {language && (
-              <>
-                <span className={styles.languageDot} style={{ background: langColor(language) }} aria-hidden="true" />
-                {language}
-              </>
-            )}
-          </span>
-          <div className={styles.metaRight}>
-            <span className={styles.stars}>
-              <FaStar className={styles.starsIcon} aria-hidden="true" />
-              {stars ?? 0}
-            </span>
-            {isPrivate && (
-              <span className={styles.privatePill}>
-                <FaLock size={9} aria-hidden="true" /> Private
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Name */}
-        <h3 className={styles.cardName}>{name}</h3>
-
-        {/* Description */}
-        {description && <p className={descClass}>{description}</p>}
-
-        {/* Features */}
-        {features.length > 0 && (
-          <>
-            <p className={styles.featuresLabel}>Features</p>
-            <ul className={styles.featureList}>
-              {features.map((f, i) => (
-                <li key={i} className={styles.featureItem}>
-                  <span className={styles.featureDot} aria-hidden="true" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {/* Tech stack from README */}
-        {techStack.length > 0 && (
-          <>
-            <p className={styles.techLabel}>Built with</p>
-            <div className={styles.techList}>
-              {techStack.map(t => (
-                <span key={t} className={styles.techChip}>{t}</span>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* GitHub topics (only if different from tech stack) */}
-        {topics?.length > 0 && (
-          <div className={styles.topics}>
-            {topics.slice(0, 5).map(t => (
-              <span key={t} className={styles.topic}>#{t}</span>
-            ))}
-          </div>
-        )}
+      <div className={styles.repoBody}>
+        <h3 className={styles.repoName}>
+          <a href={url} target="_blank" rel="noopener noreferrer">{name}</a>
+        </h3>
+        {summary && <p className={styles.repoText}>{summary}</p>}
       </div>
 
-      <div className={styles.divider} aria-hidden="true" />
-
-      {/* Footer */}
-      <div className={styles.cardFooter}>
+      <div className={styles.repoMeta}>
+        {language && <span className={styles.lang}>{language}</span>}
+        {stars > 0 && <span className={styles.stars}>{stars}</span>}
+        {isPrivate && <span className={styles.private}>Private</span>}
         {hasReadme && (
-          <LightWaveButton className={styles.readmeBtn} onClick={() => onReadme(project)}>
-            Read README
-          </LightWaveButton>
+          <button type="button" className={styles.readme} onClick={() => onReadme(project)}>
+            Readme
+          </button>
         )}
-        <a href={url} target="_blank" rel="noopener noreferrer" className={styles.githubLink}>
-          <FaGithub aria-hidden="true" />
-          GitHub
-          <MdArrowOutward aria-hidden="true" />
-        </a>
       </div>
-    </div>
+    </article>
   );
 };
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 const Projects = () => {
   const { projects, loading, error } = useGitHubProjects();
   const { sites, loading: sitesLoading, error: sitesError } = useStudioSites();
-  const [selected, setSelected] = useState(null);
-  const navigate = useNavigate();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(PROJECTS_FIELDS, overrides.projects);
 
-  /* The language chosen in the chart's legend, or null for everything. The
-     chart is the control, so there is no separate filter bar to keep in sync. */
+  const [open, setOpen] = useState(null);
   const [lang, setLang] = useState(null);
 
   const repos = projects ?? [];
+
+  // Counted across everything: a filter must not change the claim.
+  const languages = useMemo(() => {
+    const counts = new Map();
+    repos.forEach(p => {
+      if (!p.language) return;
+      counts.set(p.language, (counts.get(p.language) ?? 0) + 1);
+    });
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  }, [repos]);
 
   const shown = useMemo(
     () => (lang ? repos.filter(p => p.language === lang) : repos),
     [repos, lang],
   );
 
-  const stats = useMemo(
-    () => buildStats({ sites, projects: repos }),
-    [sites, repos],
-  );
+  const figures = useMemo(() => buildFigures({ sites, repos }), [sites, repos]);
 
-  const [heroRef, heroShown] = useReveal();
-  const [studioRef, studioInView] = useReveal({ threshold: 0.12 });
-  const [codeRef, codeInView] = useReveal({ threshold: 0.08 });
+  const [headRef, headShown] = useReveal({ threshold: 0 });
+  const [benchRef, benchShown] = useReveal({ threshold: 0.03 });
 
   return (
-    <section className={styles.page}>
-      <div className={styles.container}>
-
-        {/* ── Scene 1 ── the title card ─────────────────────────────────
-             Wrapped rather than converted: the header already owns a ref (the
-             reveal observer's) and hooks/useParallax needs one of its own.
-             The wrapper is a plain block inside a plain block, so it changes
-             nothing about the layout. */}
-        <Parallax rate={0.07} max={64}>
-        <header
-          ref={heroRef}
-          className={styles.hero}
-          data-reveal-shown={heroShown ? '' : undefined}
-          style={{ '--reveal-step': '90ms' }}
-        >
-          <p className={styles.heroEyebrow} data-reveal style={{ '--i': 0 }}>{t.eyebrow}</p>
-          <h1 className={styles.heading} data-reveal style={{ '--i': 1 }}>{t.heading}</h1>
-          <p className={styles.heroLede} data-reveal style={{ '--i': 2 }}>{t.lede}</p>
-
-          {/* The figures replace the old "2 live sites · 14 repositories" line,
-              which said the same thing without ever being read as a number. */}
-          {stats.length > 0 && (
-            <div className={styles.heroStats} data-reveal style={{ '--i': 3 }}>
-              <StatRow stats={stats} />
-            </div>
-          )}
-        </header>
-        </Parallax>
-
-        {/* ── Scene 2 ── the live sites ───────────────────────────────── */}
-        <section
-          ref={studioRef}
-          className={styles.section}
-          data-reveal-shown={studioInView ? '' : undefined}
-          style={{ '--reveal-step': '80ms' }}
-        >
-          <Parallax className={styles.sectionHead} rate={0.045} max={48}>
-            <h2 className={styles.sectionTitle} data-reveal style={{ '--i': 0 }}>{t.studioTitle}</h2>
-            <p className={styles.sectionLede} data-reveal style={{ '--i': 1 }}>{t.studioLede}</p>
-          </Parallax>
-
-          {sitesError ? (
-            <div className={styles.errorCard}>
-              <p>Could not load the client sites. Please try again later.</p>
-            </div>
-          ) : (
-            <div className={styles.showcaseGrid}>
-              {sitesLoading
-                ? Array.from({ length: 2 }).map((_, i) => <SkeletonShowcase key={i} />)
-                : sites.length === 0
-                  ? <div className={styles.emptyCard}><p>{t.studioEmpty}</p></div>
-                  /* Each showcase reveals on its own index. This grid had no
-                     entrance at all, so two live sites simply appeared. */
-                  : sites.map((p, i) => (
-                    <div key={p.id} data-reveal style={{ '--i': i + 2 }}>
-                      <SiteShowcase project={p} />
-                    </div>
-                  ))
-              }
-            </div>
-          )}
-        </section>
-
-        {/* ── Scene 3 ── the repositories, with the language mix ─────── */}
-        <section
-          ref={codeRef}
-          className={styles.section}
-          data-reveal-shown={codeInView ? '' : undefined}
-          style={{ '--reveal-step': '55ms' }}
-        >
-          <Parallax className={styles.sectionHead} rate={0.045} max={48}>
-            <h2 className={styles.sectionTitle} data-reveal style={{ '--i': 0 }}>{t.codeTitle}</h2>
-            <p className={styles.sectionLede} data-reveal style={{ '--i': 1 }}>{t.codeLede}</p>
-          </Parallax>
-
-          {!loading && repos.length > 0 && (
-            <LangBar projects={repos} onSelect={setLang} active={lang} />
-          )}
-
-          {/* Announced, because clicking a legend chip changes a grid that may
-              be below the fold - a filter with no feedback reads as a page that
-              lost its content. */}
-          <p className={styles.filterStatus} role="status">
-            {lang
-              ? `Showing ${shown.length} ${shown.length === 1 ? 'repository' : 'repositories'} in ${lang}.`
-              : ''}
-          </p>
-
-          {error ? (
-            <div className={styles.errorCard}>
-              <p>Could not load projects. Please try again later.</p>
-            </div>
-          ) : (
-            <div className={styles.grid}>
-              {loading
-                ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                : shown.length === 0
-                  ? <div className={styles.emptyCard}><p>{t.codeEmpty}</p></div>
-                  /* The densest region on the site, and previously the only one
-                     with no entrance whatsoever. The index is capped so a
-                     fourteenth card does not wait most of a second. */
-                  : shown.map((p, i) => (
-                    <div key={p.id} data-reveal style={{ '--i': Math.min(i, 8) + 2 }}>
-                      <ProjectCard project={p} onReadme={setSelected} />
-                    </div>
-                  ))
-              }
-            </div>
-          )}
-        </section>
-
-      </div>
-
-      <Modal
-        open={!!selected}
-        onClose={() => setSelected(null)}
-        title={selected?.name}
-        size="lg"
+    <div className={styles.page}>
+      <header
+        ref={headRef}
+        className={styles.head}
+        data-shown={headShown ? '' : undefined}
+        style={{ '--step': '80ms' }}
       >
-        {selected?.readme && <ReadmeRenderer markdown={selected.readme} />}
+        <p className={styles.eyebrow} data-rise style={{ '--i': 0 }}>{t.eyebrow}</p>
+        <h1 className={styles.title}>
+          <span className="mask"><span style={{ '--i': 1 }}>{t.heading}</span></span>
+        </h1>
+        <p className={styles.lede} data-rise style={{ '--i': 2 }}>{t.lede}</p>
+      </header>
+
+      {figures.length > 0 && (
+        <section className={styles.block}>
+          <Ledger figures={figures} />
+        </section>
+      )}
+
+      {/* ── Client work ─────────────────────────────────────────────────── */}
+      <section className={styles.block}>
+        <header className={styles.sectionHead}>
+          <h2>{t.studioTitle}</h2>
+          <p>{t.studioLede}</p>
+        </header>
+
+        {sitesError
+          ? <p className={styles.note}>The client sites could not be loaded.</p>
+          : sitesLoading
+            ? <div className={styles.waiting} aria-hidden="true" />
+            : sites.length === 0
+              ? <p className={styles.note}>{t.studioEmpty}</p>
+              : sites.map((site, i) => (
+                <LiveSite key={site.id} site={site} name={site.name} index={i} />
+              ))}
+      </section>
+
+      {/* ── The bench ───────────────────────────────────────────────────── */}
+      <section
+        ref={benchRef}
+        className={styles.block}
+        data-shown={benchShown ? '' : undefined}
+        style={{ '--step': '40ms' }}
+      >
+        <header className={styles.sectionHead}>
+          <h2>{t.codeTitle}</h2>
+          <p>{t.codeLede}</p>
+        </header>
+
+        {languages.length > 1 && (
+          <div className={styles.filter}>
+            <button
+              type="button"
+              className={`${styles.chip} ${lang === null ? styles.chipOn : ''}`}
+              onClick={() => setLang(null)}
+              aria-pressed={lang === null}
+            >
+              All<span>{repos.length}</span>
+            </button>
+            {languages.map(([name, count]) => (
+              <button
+                key={name}
+                type="button"
+                className={`${styles.chip} ${lang === name ? styles.chipOn : ''}`}
+                onClick={() => setLang(lang === name ? null : name)}
+                aria-pressed={lang === name}
+              >
+                {name}<span>{count}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Announced: the grid it changes may be below the fold. */}
+        <p className={styles.status} role="status">
+          {lang ? `${shown.length} of ${repos.length} repositories, in ${lang}.` : ''}
+        </p>
+
+        {error
+          ? <p className={styles.note}>The repositories could not be loaded.</p>
+          : loading
+            ? <div className={styles.waiting} aria-hidden="true" />
+            : shown.length === 0
+              ? <p className={styles.note}>{t.codeEmpty}</p>
+              : (
+                <div className={styles.repos}>
+                  {shown.map((p, i) => (
+                    <div key={p.id} data-rise style={{ '--i': Math.min(i, 10), '--rise': '12px' }}>
+                      <Repo project={p} index={i} onReadme={setOpen} />
+                    </div>
+                  ))}
+                </div>
+              )}
+      </section>
+
+      <Modal open={!!open} onClose={() => setOpen(null)} title={open?.name} size="lg">
+        {open?.readme && <ReadmeRenderer markdown={open.readme} />}
       </Modal>
-    </section>
+    </div>
   );
 };
 

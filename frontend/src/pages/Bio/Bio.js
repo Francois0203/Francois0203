@@ -1,378 +1,211 @@
-import { useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
-import { MdArrowOutward } from 'react-icons/md';
+import { useMemo } from 'react';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
+import useReveal from '../../hooks/useReveal';
+import useActiveSection from '../../hooks/useActiveSection';
+import { scrollPageTo } from '../../hooks';
 import { resolveGroup } from '../../content/copy/resolve';
 import { BIO_FIELDS } from '../../content/copy/bio';
-import { Parallax } from '../../components';
+import Stack from '../../components/Stack';
 import styles from './Bio.module.css';
-import useReveal from '../../hooks/useReveal';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const toSkillGroups = (skills) => {
-  if (!skills) return [];
-  if (Array.isArray(skills.categories)) return skills.categories;
-  if (Array.isArray(skills.items))      return [{ name: null, items: skills.items }];
-  return Object.entries(skills)
-    .filter(([, v]) => Array.isArray(v) && v.length)
-    .map(([name, items]) => ({ name, items }));
-};
+/*
+ * The record, in full. Laid out as a document: a contents column that
+ * stays with the reader, entries running beside it.
+ */
 
 const itemLabel = (s) => (typeof s === 'string' ? s : s?.name ?? s?.title ?? String(s));
 
+const flattenSkills = (skills) => {
+  if (!skills) return [];
+  if (Array.isArray(skills.categories))
+    return skills.categories.flatMap(c => (c.items ?? []).map(i => ({ label: itemLabel(i), group: c.name })));
+  if (Array.isArray(skills.items))
+    return skills.items.map(i => ({ label: itemLabel(i), group: null }));
+  return Object.entries(skills)
+    .filter(([, v]) => Array.isArray(v))
+    .flatMap(([name, arr]) => arr.map(i => ({ label: itemLabel(i), group: name })));
+};
+
 const period = (e) =>
-  e.period || e.dates ||
-  (e.start ? `${e.start}${e.end ? ` - ${e.end}` : ' - Present'}` : null);
+  e.period || e.dates || (e.start ? `${e.start}${e.end ? `, ${e.end}` : ', present'}` : null);
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
-const Skel = ({ w, h = '0.85rem' }) => (
-  <span className={styles.skel} style={{ width: w, height: h }} />
-);
-
-const SkelEntry = () => (
-  <div className={styles.entry}>
-    <div className={styles.entryDot} aria-hidden="true" />
-    <div className={styles.entryBody}>
-      <div className={styles.entryTop}>
-        <Skel w="42%" h="1rem" />
-        <Skel w="80px" />
-      </div>
-      <Skel w="32%" />
-      <Skel w="90%" />
-      <Skel w="65%" />
-    </div>
-  </div>
-);
-
-// ─── Timeline entry ───────────────────────────────────────────────────────────
-
-const TimelineEntry = ({ title, subtitle, p, current, description, tags }) => (
-  <div className={styles.entry}>
-    <div className={styles.entryDot} aria-hidden="true" />
-    <div className={styles.entryBody}>
-      <div className={styles.entryTop}>
-        <div className={styles.entryTitleRow}>
-          <span className={styles.entryTitle}>{title}</span>
-          {current && <span className={styles.presentBadge}>Present</span>}
-        </div>
-        {p && <span className={styles.entryPeriod}>{p}</span>}
-      </div>
-      {subtitle && <p className={styles.entryRole}>{subtitle}</p>}
-      {description && <p className={styles.entryDesc}>{description}</p>}
+const Entry = ({ when, what, where, note, tags }) => (
+  <article className={styles.entry}>
+    <p className={styles.when}>{when ?? 'Earlier'}</p>
+    <div className={styles.what}>
+      <h3>{what}</h3>
+      {where && <p className={styles.where}>{where}</p>}
+      {note && <p className={styles.note}>{note}</p>}
       {tags?.length > 0 && (
-        <div className={styles.tagRow}>
-          {tags.map((t, i) => <span key={i} className={styles.tag}>{t}</span>)}
-        </div>
+        <ul className={styles.tags}>
+          {tags.map((tag, i) => <li key={i}>{tag}</li>)}
+        </ul>
       )}
     </div>
-  </div>
+  </article>
 );
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+const Section = ({ id, title, children }) => {
+  const [ref, shown] = useReveal({ threshold: 0.04 });
+  return (
+    <section
+      id={id}
+      ref={ref}
+      className={styles.section}
+      data-shown={shown ? '' : undefined}
+      style={{ '--step': '60ms' }}
+    >
+      <h2 className={styles.sectionTitle}>{title}</h2>
+      {children}
+    </section>
+  );
+};
 
 const Bio = () => {
-  // One observer for the page; the sections stagger off --i. See
-  // styles/Reveal.css - this page previously had no entrance at all.
-  const [revealRef, revealed] = useReveal();
-  const { data, loading, error } = usePortfolioData();
-  const navigate = useNavigate();
+  const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(BIO_FIELDS, overrides.bio);
 
-  const personal   = data?.personal   ?? {};
-  const contact    = data?.contact    ?? {};
-  const skills     = toSkillGroups(data?.skills);
-  const interests  = data?.interests  ?? [];
+  const personal = data?.personal ?? {};
   const experience = data?.experience ?? [];
-  const education  = data?.education  ?? [];
+  const education = data?.education ?? [];
   const certifications = data?.certifications ?? [];
-  const social     = data?.social     ?? [];
 
-  const email    = personal.email    || contact.email;
-  const phone    = personal.phone    || contact.phone;
-  const location = personal.location || contact.location;
-  const linkedin  = social.find(s => (s.key || '').toLowerCase() === 'linkedin');
-  const github    = social.find(s => (s.key || '').toLowerCase() === 'github');
-  const cvUrl     = personal.cvUrl;
+  const skills = useMemo(() => flattenSkills(data?.skills), [data]);
 
-  const githubUser = github?.url
-    ? github.url.replace(/\/$/, '').split('/').pop()
-    : null;
-  const photoUrl = personal.photoUrl || (githubUser ? `https://github.com/${githubUser}.png` : null);
+  const interests = useMemo(() => {
+    const raw = data?.interests;
+    return (Array.isArray(raw) ? raw : raw?.items ?? []).map(itemLabel).filter(Boolean);
+  }, [data]);
 
-  if (!loading && error) {
-    return (
-      <section className={styles.page}>
-        <div className={styles.container}>
-          <div className={styles.errorCard}>
-            <p>Could not load portfolio data. Please try again later.</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const languages = useMemo(
+    () => (personal.languages ?? []).map(itemLabel).filter(Boolean),
+    [personal],
+  );
+
+  // Only sections with content, so no link points at an empty anchor.
+  const contents = [
+    experience.length > 0 && { id: 'experience', label: t.experienceHeading },
+    education.length > 0 && { id: 'education', label: t.educationHeading },
+    certifications.length > 0 && { id: 'certifications', label: t.certificationsHeading },
+    skills.length > 0 && { id: 'skills', label: t.skillsHeading },
+    (interests.length > 0 || languages.length > 0) && { id: 'interests', label: t.interestsHeading },
+  ].filter(Boolean);
+
+  const [headRef, headShown] = useReveal({ threshold: 0 });
+
+  /* Memoised on the joined ids: a new array identity every render would
+     restart the observer each time. */
+  const ids = useMemo(() => contents.map(c => c.id), [contents.map(c => c.id).join('|')]);
+  const active = useActiveSection(ids);
 
   return (
-    <section className={styles.page}>
-      <div
-        ref={revealRef}
-        className={styles.container}
-        data-reveal-shown={revealed ? '' : undefined}
-        style={{ '--reveal-step': '70ms' }}
+    <div className={styles.page}>
+      <header
+        ref={headRef}
+        className={styles.head}
+        data-shown={headShown ? '' : undefined}
+        style={{ '--step': '80ms' }}
       >
+        <p className={styles.eyebrow} data-rise style={{ '--i': 0 }}>{t.eyebrow}</p>
+        <h1 className={styles.title}>
+          <span className="mask"><span style={{ '--i': 1 }}>{t.heading}</span></span>
+        </h1>
+        <p className={styles.lede} data-rise style={{ '--i': 2 }}>{personal.bio || personal.summary || t.lede}</p>
+      </header>
 
-        {/* ── Header ────────────────────────────────────────────────────────
-             Wrapped, not converted: the header carries `[data-reveal]`, whose
-             entrance is a transform transition, and hooks/useParallax owns the
-             inline transform of whatever element it is given. The two must
-             never be the same element - as a parent and child they compose
-             instead, and the header still makes its own entrance. */}
-        <Parallax rate={0.06} max={56}>
-        <header className={styles.header} data-reveal style={{ "--i": 0 }}>
-          <p className={styles.chapterEyebrow}>
-            <span className={styles.chapterMark}>{t.chapterMark}</span>
-            <span className={styles.chapterDash} aria-hidden="true">-</span>
-            <span className={styles.chapterName}>{t.chapterName}</span>
-          </p>
-          <div className={styles.headerInner}>
+      <div className={styles.body}>
+        <nav className={styles.contents} aria-label="On this page">
+          <h5>Contents</h5>
+          {contents.map(c => (
+            <a
+              key={c.id}
+              href={`#${c.id}`}
+              onClick={(e) => {
+                const target = document.getElementById(c.id);
+                if (!target) return;
+                e.preventDefault();
+                scrollPageTo(target, { offset: -96 });
+              }}
+              className={styles.contentsLink}
+              data-current={c.id === active ? '' : undefined}
+              aria-current={c.id === active ? 'true' : undefined}
+            >
+              <span className={styles.tick} aria-hidden="true" />
+              {c.label}
+            </a>
+          ))}
+        </nav>
 
-            {/* Profile photo */}
-            {(loading || photoUrl) && (
-              <div className={styles.photoWrap}>
-                {loading
-                  ? <span className={`${styles.skel} ${styles.photoSkel}`} />
-                  : <img
-                      src={photoUrl}
-                      alt={personal.name ?? 'Profile'}
-                      className={styles.photo}
-                    />
-                }
-              </div>
-            )}
+        <div className={styles.record}>
+          {loading && <p className={styles.waiting}>Reading the record</p>}
 
-            <div className={styles.headerMain}>
-              {loading ? (
-                <>
-                  <Skel w="240px" h="2.4rem" />
-                  <Skel w="200px" h="1.1rem" />
-                </>
-              ) : (
-                <>
-                  <h1 className={styles.name}>{personal.name ?? 'Bio'}</h1>
-                  {personal.title && <p className={styles.titleLine}>{personal.title}</p>}
-                </>
-              )}
-            </div>
-
-          </div>
-
-          <div className={styles.contactRow}>
-            {loading ? (
-              <><Skel w="120px" /><Skel w="160px" /></>
-            ) : (
-              <>
-                {location && (
-                  <span className={styles.contactItem}>
-                    <FaMapMarkerAlt aria-hidden="true" />
-                    {location}
-                  </span>
-                )}
-                {email && (
-                  <a href={`mailto:${email}`} className={styles.contactItem}>
-                    <FaEnvelope aria-hidden="true" />
-                    {email}
-                  </a>
-                )}
-                {phone && (
-                  <a href={`tel:${phone}`} className={styles.contactItem}>
-                    <FaPhone aria-hidden="true" />
-                    {phone}
-                  </a>
-                )}
-                {linkedin && (
-                  <a
-                    href={linkedin.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.contactItem}
-                  >
-                    LinkedIn
-                    <MdArrowOutward aria-hidden="true" />
-                  </a>
-                )}
-                {cvUrl && (
-                  <a
-                    href={cvUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${styles.contactItem} ${styles.cvLink}`}
-                  >
-                    Download CV
-                    <MdArrowOutward aria-hidden="true" />
-                  </a>
-                )}
-              </>
-            )}
-          </div>
-        </header>
-        </Parallax>
-
-        {/* ── Content ─────────────────────────────────────────────────────── */}
-        <div className={styles.content}>
-
-          {/* ── Sidebar ───────────────────────────────────────────────────── */}
-          <aside className={styles.sidebar} data-reveal style={{ "--i": 1 }}>
-
-            {/* About */}
-            <div className={styles.card}>
-              <h2 className={styles.cardLabel}>{t.aboutHeading}</h2>
-              {loading ? (
-                <div className={styles.skelStack}>
-                  <Skel w="100%" /><Skel w="88%" /><Skel w="75%" /><Skel w="93%" />
+          {experience.length > 0 && (
+            <Section id="experience" title={t.experienceHeading}>
+              {experience.map((e, i) => (
+                <div key={e.id ?? i} data-rise style={{ '--i': i }}>
+                  <Entry
+                    when={period(e)}
+                    what={e.role || e.position || e.title}
+                    where={e.company || e.employer || e.organisation}
+                    note={e.description || e.summary}
+                    tags={e.tech || e.technologies || e.stack || e.tags}
+                  />
                 </div>
-              ) : (() => {
-                  const text = personal.bio ?? personal.summary ?? '-';
-                  if (!text || text.length < 2) return <p className={styles.bio}>{text}</p>;
-                  const [first, ...rest] = text;
-                  return (
-                    <p className={styles.bio}>
-                      <span className={styles.bioDropcap}>{first}</span>
-                      {rest.join('')}
-                    </p>
-                  );
-                })()
-              }
-            </div>
+              ))}
+            </Section>
+          )}
 
-            {/* Skills */}
-            {(loading || skills.length > 0) && (
-              <div className={styles.card}>
-                <h2 className={styles.cardLabel}>{t.skillsHeading}</h2>
-                {loading ? (
-                  <div className={styles.chipRow}>
-                    {[72, 56, 88, 64, 80, 50].map(w => (
-                      <Skel key={w} w={w} h="1.6rem" />
-                    ))}
-                  </div>
-                ) : (
-                  skills.map(({ name, items }) => (
-                    <div key={name ?? '_skills'} className={styles.skillGroup}>
-                      {name && <p className={styles.skillGroupLabel}>{name}</p>}
-                      <div className={styles.chipRow}>
-                        {(items ?? []).map((s, i) => (
-                          <span key={i} className={styles.chip}>{itemLabel(s)}</span>
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* Interests */}
-            {(loading || interests.length > 0) && (
-              <div className={styles.card}>
-                <h2 className={styles.cardLabel}>{t.interestsHeading}</h2>
-                {loading ? (
-                  <div className={styles.chipRow}>
-                    {[96, 80, 68, 88].map(w => <Skel key={w} w={w} h="1.6rem" />)}
-                  </div>
-                ) : (
-                  <div className={styles.chipRow}>
-                    {interests.map((item, i) => (
-                      <span key={i} className={styles.interestChip}>{itemLabel(item)}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-          </aside>
-
-          {/* ── Main ──────────────────────────────────────────────────────── */}
-          <main className={styles.main} data-reveal style={{ "--i": 2 }}>
-
-            {/* Experience */}
-            <div className={styles.section}>
-              <h2 className={styles.sectionHeading}>{t.experienceHeading}</h2>
-              <div className={styles.timeline}>
-                {loading
-                  ? [0, 1].map(i => <SkelEntry key={i} />)
-                  : experience.length === 0
-                    ? <p className={styles.empty}>No experience listed.</p>
-                    : experience.map(e => (
-                        <TimelineEntry
-                          key={e.id}
-                          title={e.company || e.employer || e.organisation}
-                          subtitle={e.role || e.position || e.title}
-                          p={period(e)}
-                          current={e.current}
-                          description={e.description || e.summary}
-                          tags={e.tech || e.technologies || e.stack || e.tags}
-                        />
-                      ))
-                }
-              </div>
-            </div>
-
-            {/* Education */}
-            <div className={styles.section}>
-              <h2 className={styles.sectionHeading}>{t.educationHeading}</h2>
-              <div className={styles.timeline}>
-                {loading
-                  ? [0, 1].map(i => <SkelEntry key={i} />)
-                  : education.length === 0
-                    ? <p className={styles.empty}>No education listed.</p>
-                    : education.map(e => (
-                        <TimelineEntry
-                          key={e.id}
-                          title={e.institution || e.school || e.university}
-                          subtitle={
-                            [e.degree || e.qualification, e.field || e.major]
-                              .filter(Boolean)
-                              .join(' - ') || null
-                          }
-                          p={period(e)}
-                          description={e.description || e.summary}
-                          tags={e.tags}
-                        />
-                      ))
-                }
-              </div>
-            </div>
-
-            {/* Certifications - hidden when empty, unlike Experience and
-                Education, so the section only appears once there is one. */}
-            {(loading || certifications.length > 0) && (
-              <div className={styles.section}>
-                <h2 className={styles.sectionHeading}>{t.certificationsHeading}</h2>
-                <div className={styles.timeline}>
-                  {loading
-                    ? [0, 1].map(i => <SkelEntry key={i} />)
-                    : certifications.map(c => (
-                        <TimelineEntry
-                          key={c.id}
-                          title={c.issuer || c.organisation}
-                          subtitle={c.credential || c.name || c.title}
-                          p={period(c)}
-                          description={c.description || c.summary}
-                          tags={c.tags}
-                        />
-                      ))
-                  }
+          {education.length > 0 && (
+            <Section id="education" title={t.educationHeading}>
+              {education.map((e, i) => (
+                <div key={e.id ?? i} data-rise style={{ '--i': i }}>
+                  <Entry
+                    when={period(e)}
+                    what={[e.degree || e.qualification, e.field || e.major].filter(Boolean).join(', ')}
+                    where={e.institution || e.school || e.university}
+                    note={e.description || e.summary}
+                  />
                 </div>
-              </div>
-            )}
+              ))}
+            </Section>
+          )}
 
-          </main>
+          {certifications.length > 0 && (
+            <Section id="certifications" title={t.certificationsHeading}>
+              {certifications.map((c, i) => (
+                <div key={c.id ?? i} data-rise style={{ '--i': i }}>
+                  <Entry
+                    when={period(c)}
+                    what={c.name || c.title}
+                    where={c.issuer || c.organisation}
+                    note={c.description}
+                  />
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {skills.length > 0 && (
+            <Section id="skills" title={t.skillsHeading}>
+              <Stack entries={skills} />
+            </Section>
+          )}
+
+          {(interests.length > 0 || languages.length > 0) && (
+            <Section id="interests" title={t.interestsHeading}>
+              <ul className={styles.chips}>
+                {interests.map(name => <li key={name}>{name}</li>)}
+                {languages.length > 0 && (
+                  <li className={styles.langs}>{languages.join(', ')}</li>
+                )}
+              </ul>
+            </Section>
+          )}
         </div>
-
-        {/* ── Next chapter ─────────────────────────────────────────────── */}
       </div>
-    </section>
+    </div>
   );
 };
 

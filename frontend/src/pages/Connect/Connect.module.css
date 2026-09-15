@@ -1,499 +1,231 @@
-/* Connect page */
-
-/* ── Page shell ──────────────────────────────────────────────────────────────── */
+/* One screen where it fits: a two column split rather than a header stacked
+   on a body, which is what took a third of the height out of it. */
 
 .page {
-  min-height: 100svh;
-  padding: 4rem var(--spacing-4xl) var(--spacing-lg);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(1.75rem, 5vw, 5rem);
+    align-items: start;
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(68px + clamp(2rem, 6vh, 4rem)) var(--gutter) 0;
 }
 
-/* ── Content container ───────────────────────────────────────────────────────── */
+/* ── The left column ────────────────────────────────────────────────────── */
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+.eyebrow {
+    margin: 0 0 0.9rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
 }
 
-/* ── Header ──────────────────────────────────────────────────────────────────── */
-
-/* The parallax wrapper around the header. `.container` is a flex column, so
-   without this the wrapper - not the header inside it - is the flex item, and
-   it would inherit the default `flex-shrink: 1` that the header explicitly
-   opts out of. */
-.headerLayer { flex-shrink: 0; }
-
-.header {
-  flex-shrink: 0;
-  margin-bottom: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+/* em, not ch: the cap has to be relative to the display size, or it resolves
+   against the body size and slices the heading in half. */
+.title {
+    margin: 0;
+    max-width: 9em;
+    font-size: var(--display-lg);
+    line-height: 0.9;
 }
 
-.chapterEyebrow {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: 10px;
-  margin: 0 0 var(--spacing-sm);
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 0.78rem;
-  color: var(--accent-3);
-}
-.chapterMark {
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-style: normal;
-}
-.chapterDash { opacity: 0.55; }
-.chapterName {
-  color: var(--accent-1);
-  font-weight: 600;
+.lede {
+    margin: 1.25rem 0 0;
+    max-width: 38ch;
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--ink-2);
 }
 
-.heading {
-  margin-top: 0;
-  margin-bottom: var(--spacing-xs);
-  font-family: 'Georgia', 'Cormorant Garamond', serif;
-  font-style: italic;
-  background: linear-gradient(
-    120deg,
-    var(--primary-text-color) 0%,
-    var(--leaf-color) 55%,
-    var(--accent-1) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Ruled rows, so they read as a record and not as a second form. */
+.details {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    /* Stretch, not baseline: baseline shrink-wraps each cell, so a label that
+       wraps to two lines ends at a different height from its value and the two
+       halves of the row rule sit at different y. */
+    align-items: stretch;
+    gap: 0;
+    margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
 }
 
-.header p {
-  font-family: 'Georgia', serif;
-  font-style: italic;
-  color: var(--secondary-text-color);
-  margin: 0;
+.details dt {
+    grid-column: 1;
+    padding: 0.55rem 1.5rem 0.55rem 0;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
 }
 
-/* ── Two-column grid ─────────────────────────────────────────────────────────── */
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: var(--spacing-xl);
-  align-items: stretch;
-  flex: 1;
-  min-height: 0;
+.details dd {
+    grid-column: 2;
+    margin: 0;
+    padding: 0.55rem 0;
+    font-size: var(--text-sm);
+    color: var(--ink-2);
 }
 
-.gridSingle {
-  grid-template-columns: minmax(0, 640px);
+.details dt,
+.details dd { border-bottom: 1px solid var(--rule); }
+
+.details dt:last-of-type,
+.details dd:last-of-type { border-bottom: 0; }
+
+.details a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color var(--t) var(--ease), border-color var(--t) var(--ease);
 }
 
-/* Right column: natural height, anchored to top of grid */
-.rightCol {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  align-self: start;
-}
+.details a:hover { color: var(--live); border-bottom-color: var(--live); }
 
-/* ── Form card stretching ────────────────────────────────────────────────────── */
+.plain { color: var(--ink-3); }
 
-.formCard {
-  display: flex;
-  flex-direction: column;
-}
+.social { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; }
 
-.formCard > form {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.fieldGrow {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.fieldGrow textarea {
-  flex: 1;
-  min-height: 120px;
-}
-
-/* ── Glass card ──────────────────────────────────────────────────────────────── */
-
-.card {
-  background: var(--frosted-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl);
-  box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
-  contain: layout paint;
-}
-
-@media (max-width: 768px) {
-  .card {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--background-1);
-  }
-}
-
-.card h2 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-lg);
-  font-size: var(--font-size-lg);
-}
-
-/* ── Form ────────────────────────────────────────────────────────────────────── */
+/* ── The form ───────────────────────────────────────────────────────────── */
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+    position: relative;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    overflow: hidden;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
+.formTitle {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--ink);
 }
 
-.field:has(input[required]) label::after,
-.field:has(textarea[required]) label::after {
-  content: ' *';
-  color: var(--error-color);
+/* Name and email share a row wherever there is space. */
+.pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0 1rem;
 }
 
-.field:has(input[required]:valid) label::after,
-.field:has(textarea[required]:valid) label::after {
-  content: none;
+.field { margin-bottom: 1rem; }
+
+.field label {
+    margin-bottom: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-2);
 }
 
-.form input,
-.form textarea {
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: var(--spacing-xs);
+.control { position: relative; }
+
+.control input,
+.control textarea {
+    background: color-mix(in srgb, var(--ground) 45%, transparent);
+    border-color: var(--rule);
 }
 
-.form textarea {
-  resize: none;
+/* Only the rule moves: recolouring the input makes every field flash. */
+.underline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--live);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 320ms var(--ease);
+    pointer-events: none;
 }
 
-.fieldError {
-  font-size: var(--font-size-sm);
-  color: var(--error-color);
-  margin-top: var(--spacing-xs);
-  line-height: 1.3;
+.control:focus-within .underline { transform: scaleX(1); }
+
+.control:focus-within input,
+.control:focus-within textarea { border-color: var(--rule-strong); }
+
+.error {
+    margin: 0.4rem 0 0;
+    font-size: var(--text-sm);
+    color: #e0614a;
 }
 
-.inputError,
-.inputError:hover {
-  border-color: var(--error-color) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 3px rgba(184, 57, 28, 0.13),
-    0 0 0 1px var(--error-color) !important;
+.field input[aria-invalid='true'],
+.field textarea[aria-invalid='true'] { border-color: #e0614a; }
+
+/* ── Sent ───────────────────────────────────────────────────────────────── */
+
+.sent {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: clamp(1rem, 3vw, 2rem) 0;
 }
 
-.formActions {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: var(--spacing-xs);
-  flex-shrink: 0;
+.burst {
+    /* Anchored to where the button was. */
+    top: auto;
+    bottom: 0;
+    height: 60%;
 }
 
-/* ── Social links ────────────────────────────────────────────────────────────── */
-
-.socialList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.sentMark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--r-control);
+    background: color-mix(in srgb, var(--live) 16%, transparent);
+    color: var(--live);
+    animation: markIn 620ms var(--ease) both;
 }
 
-.socialLink,
-.socialLink:link,
-.socialLink:visited {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  text-decoration: none;
-  color: var(--primary-text-color);
-  transition:
-    background     var(--transition-fast),
-    border-color   var(--transition-fast),
-    color          var(--transition-fast);
+.sentMark svg { width: 22px; height: 22px; }
+
+@keyframes markIn {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: none; }
 }
 
-.socialLink:hover,
-.socialLink:focus-visible {
-  background: rgba(var(--accent-1-rgb), 0.06);
-  border-color: rgba(var(--accent-1-rgb), 0.18);
-  color: var(--accent-1);
-  text-decoration: none;
-  opacity: 1;
+.sent h2 {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-display);
+    font-size: var(--display-sm);
+    font-weight: 600;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
 }
 
-.socialLink:active { opacity: 0.85; }
-
-.socialIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  background: rgba(var(--accent-1-rgb), 0.10);
-  color: var(--accent-1);
-  font-size: 1rem;
-  flex-shrink: 0;
-  transition: background var(--transition-fast);
-}
-
-.socialLink:hover .socialIcon,
-.socialLink:focus-visible .socialIcon {
-  background: rgba(var(--accent-1-rgb), 0.18);
-}
-
-.socialName {
-  flex: 1;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: inherit;
-}
-
-.socialArrow {
-  font-size: 1rem;
-  opacity: 0.35;
-  flex-shrink: 0;
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
-}
-
-.socialLink:hover .socialArrow,
-.socialLink:focus-visible .socialArrow {
-  opacity: 0.75;
-  transform: translate(2px, -2px);
-}
-
-/* ── Success state ───────────────────────────────────────────────────────────── */
-
-.success {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  flex: 1;
-  justify-content: center;
-}
-
-.success h2 {
-  margin-top: 0;
-  color: var(--success-color);
-}
-
-/* ── Skeleton shimmer - compositor-only ──────────────────────────────────────── */
-
-@keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background: var(--background-2);
-  border-radius: var(--radius-sm);
-}
-
-.skeleton::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.13) 50%,
-    transparent 100%
-  );
-  animation: shimmer 1.6s ease-in-out infinite;
-}
-
-@media (max-width: 767px) {
-  .skeleton::after { animation-duration: 1.2s; }
-}
-
-.skeletonHeading {
-  height: 1.25rem;
-  width: 55%;
-  margin-bottom: var(--spacing-lg);
-}
-
-.skeletonRow {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-sm) 0;
-}
-
-.skeletonIcon {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-}
-
-.skeletonLabel {
-  height: 0.875rem;
-  flex: 1;
-  max-width: 130px;
-}
-
-/* ── Support pill ────────────────────────────────────────────────────────────── */
-
-.supportPillOuter {
-  position: relative;
-  border-radius: 9999px;
-  padding: 2px;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(var(--accent-1-rgb), 0.10);
-}
-
-.supportPillOuter::before {
-  content: '';
-  position: absolute;
-  width: 300%;
-  aspect-ratio: 1;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(0deg);
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    transparent 25%,
-    rgba(var(--accent-1-rgb), 0.25) 38%,
-    var(--accent-1) 50%,
-    rgba(var(--accent-1-rgb), 0.25) 62%,
-    transparent 75%,
-    transparent 100%
-  );
-  animation: pillWaveSpin 3s linear infinite;
-}
-
-@keyframes pillWaveSpin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.supportPillInner {
-  position: relative;
-  z-index: 1;
-  border-radius: 9999px;
-  background: var(--frosted-background);
-}
-
-.supportPillBtn {
-  width: 100%;
-  border: none;
-  background: transparent;
-  border-radius: 9999px;
-  padding: var(--spacing-sm) var(--spacing-xl);
-  color: var(--accent-1);
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  white-space: nowrap;
-  transition: background var(--transition-fast);
-}
-
-.supportPillBtn:hover {
-  background: rgba(var(--accent-1-rgb), 0.08);
-}
-
-.supportPillBtn:active {
-  background: rgba(var(--accent-1-rgb), 0.14);
-}
-
-.supportPillBtn:focus-visible {
-  outline: 2px solid var(--accent-1);
-  outline-offset: 3px;
+.sent p {
+    margin: 0 0 0.75rem;
+    max-width: 34ch;
+    color: var(--ink-2);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .supportPillOuter::before {
-    animation: none;
-    background: rgba(var(--accent-1-rgb), 0.45);
-  }
+    .sentMark { animation: none; }
 }
 
-@media (max-width: 767px) {
-  /* Conic-gradient spin is paint-heavy - replace with a static border on mobile */
-  .supportPillOuter::before {
-    animation: none;
-    background: rgba(var(--accent-1-rgb), 0.40);
-  }
-  .supportPillInner {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--background-1);
-  }
-}
+/* ── Narrow ─────────────────────────────────────────────────────────────── */
 
-/* ── Desktop: lock to viewport height ───────────────────────────────────────── */
+@media (max-width: 900px) {
+    .page {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2rem;
+    }
 
-@media (min-width: 861px) {
-  .page {
-    height: 100svh;
-    min-height: unset;
-    overflow: hidden;
-  }
-}
-
-@media (min-width: 861px) and (max-width: 1200px) {
-  .page { padding-inline: var(--spacing-2xl); }
-}
-
-/* ── Mobile: single column, scrollable ──────────────────────────────────────── */
-
-@media (max-width: 860px) {
-  .page {
-    height: auto;
-    min-height: 100svh;
-    overflow: visible;
-    padding-top: 4.5rem;
-    padding-inline: var(--spacing-md);
-    padding-bottom: var(--spacing-xl);
-  }
-  .container { flex: none; min-height: unset; }
-  .grid      { grid-template-columns: 1fr; align-items: start; flex: none; min-height: unset; }
-  .rightCol  { align-self: unset; }
-  .formCard  { display: block; }
-  .fieldGrow textarea { min-height: 100px; }
-}
-
-@media (max-width: 480px) {
-  .card { padding: var(--spacing-lg); }
-  .page { padding-inline: var(--spacing-sm); }
+    .details { margin-top: 1.5rem; }
 }

@@ -1,142 +1,72 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const FOCUSABLE_SELECTORS = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(', ');
+/*
+ * A dialog. Focus moves in on open and returns on close, Escape closes,
+ * and the page behind cannot scroll. Live glass is affordable here because
+ * nothing behind it is moving.
+ */
+const Modal = ({ open, onClose, title, size = 'md', children }) => {
+  const panelRef = useRef(null);
+  const returnTo = useRef(null);
 
-// ─── COMPONENT ────────────────────────────────────────────────────────────────
-// Liquid-glass modal dialog. Traps focus, locks scroll, restores focus on close.
-const Modal = ({ open, onClose, children, title, size = 'md' }) => {
-  const dialogRef = useRef(null);
-  const previousFocusRef = useRef(null);
+  const close = useCallback(() => onClose?.(), [onClose]);
 
-  /* ── Scroll lock & focus management ────────────────────────────────────── */
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
 
-    // Remember the element that opened the modal so focus can be restored.
-    previousFocusRef.current = document.activeElement;
-
-    // Compensate for scrollbar disappearing so the backdrop doesn't shift.
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    returnTo.current = document.activeElement;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-    // iOS Safari ignores touch-action on fixed elements - block touchmove on
-    // the backdrop in JS so swiping the scrim never scrolls the page behind it.
-    const preventBackdropScroll = (e) => {
-      if (!dialogRef.current?.contains(e.target)) {
-        e.preventDefault();
-      }
+    const onKey = (e) => {
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key !== 'Tab') return;
+
+      // Keep tabbing inside the panel.
+      const focusable = panelRef.current?.querySelectorAll(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
-    document.addEventListener('touchmove', preventBackdropScroll, { passive: false });
 
-    // Move focus into the dialog after it has painted.
-    const raf = requestAnimationFrame(() => dialogRef.current?.focus());
+    document.addEventListener('keydown', onKey);
+    panelRef.current?.focus();
 
     return () => {
-      cancelAnimationFrame(raf);
-      document.removeEventListener('touchmove', preventBackdropScroll);
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-      previousFocusRef.current?.focus();
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+      returnTo.current?.focus?.();
     };
-  }, [open]);
+  }, [open, close]);
 
-  /* ── Keyboard: Escape to close, Tab to trap focus ─────────────────────── */
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-        return;
-      }
+  if (!open || typeof document === 'undefined') return null;
 
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusable = Array.from(
-          dialogRef.current.querySelectorAll(FOCUSABLE_SELECTORS)
-        );
-
-        if (!focusable.length) {
-          e.preventDefault();
-          return;
-        }
-
-        const first = focusable[0];
-        const last  = focusable[focusable.length - 1];
-
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    },
-    [onClose],
-  );
-
-  /* ── Backdrop click ─────────────────────────────────────────────────────── */
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
-  };
-
-  if (!open) return null;
-
-  // Portal to <body> so the fixed backdrop is centered on the viewport, never
-  // trapped by an ancestor's transform/filter (which would offset it to the page).
   return createPortal(
-    /* Backdrop - dims and blurs the page */
-    <div className={styles.backdrop} onClick={handleBackdropClick}>
-      {/* Dialog - glass panel */}
+    <div className={styles.scrim} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div
-        ref={dialogRef}
-        className={[styles.dialog, size === 'lg' ? styles.dialogLg : ''].filter(Boolean).join(' ')}
+        ref={panelRef}
+        className={`${styles.panel} ${styles[size]}`}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
+        aria-label={title}
         tabIndex={-1}
-        onKeyDown={handleKeyDown}
       >
-        {/* Close button - only dismiss affordance inside the modal */}
-        <button
-          className={styles.closeButton}
-          onClick={onClose}
-          type="button"
-          aria-label="Close"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
-            <line x1="18" y1="6"  x2="6"  y2="18" />
-            <line x1="6"  y1="6"  x2="18" y2="18" />
-          </svg>
-        </button>
-
-        {/* Header, rendered only when a title is provided */}
-        {title && (
-          <header className={styles.header}>
-            <h2 id="modal-title" className={styles.title}>{title}</h2>
-          </header>
-        )}
-
-        {/* Body - scrolls independently on overflow; opt out of momentum scroll */}
-        <div className={styles.body} data-lenis-prevent>
-          {children}
-        </div>
+        <header className={styles.head}>
+          {title && <h2 className={styles.title}>{title}</h2>}
+          <button type="button" className={styles.close} onClick={close} aria-label="Close">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="m5 5 10 10M15 5 5 15" strokeLinecap="round" />
+            </svg>
+          </button>
+        </header>
+        <div className={styles.body}>{children}</div>
       </div>
     </div>,
     document.body,

@@ -1,261 +1,228 @@
 import { useState } from 'react';
-import { FaHeart } from 'react-icons/fa';
-import { MdArrowOutward } from 'react-icons/md';
-/* Shared with the site footer, which lists the same platforms. */
-import { getSocialIcon } from '../../content/socialIcons';
-import { useToast, Parallax } from '../../components';
-import { submitContactForm } from '../../firebase/firestore';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
+import useReveal from '../../hooks/useReveal';
 import { resolveGroup } from '../../content/copy/resolve';
 import { CONNECT_FIELDS } from '../../content/copy/connect';
+import { submitContactForm } from '../../firebase/firestore';
+import { useToast } from '../../components';
+import Slab from '../../components/Slab';
+import Button from '../../components/Button';
+import Embers from '../../components/Embers';
 import styles from './Connect.module.css';
-import useReveal from '../../hooks/useReveal';
 
-const EMPTY_FORM    = { name: '', email: '', message: '' };
-const EMPTY_ERRORS  = { name: '',  email: '',  message: ''  };
-const EMPTY_TOUCHED = { name: false, email: false, message: false };
+/*
+ * The letter. Heading and real addresses on the left, form on the right.
+ *
+ * Labels above inputs, errors below, never a placeholder as a label: a
+ * placeholder vanishes the moment someone types, which is when they need
+ * it. Validation runs on submit, then per change on a touched field.
+ */
 
+const EMPTY = { name: '', email: '', message: '' };
 
 const validate = ({ name, email, message }) => ({
-  name:    !name.trim()    ? 'Name is required'              : '',
-  email:   !email.trim()   ? 'Email is required'
-         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                           ? 'Enter a valid email address'   : '',
-  message: !message.trim() ? 'Message is required'           : '',
+  name: !name.trim() ? 'Your name, so I know who I am replying to.' : '',
+  email: !email.trim()
+    ? 'An address I can reach you at.'
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ? 'That does not look like an email address.'
+      : '',
+  message: !message.trim() ? 'Say something, even if it is short.' : '',
 });
 
-const SkeletonSocialCard = () => (
-  <div className={styles.card}>
-    <div className={`${styles.skeleton} ${styles.skeletonHeading}`} />
-    {[0, 1, 2].map(i => (
-      <div key={i} className={styles.skeletonRow}>
-        <div className={`${styles.skeleton} ${styles.skeletonIcon}`} />
-        <div className={`${styles.skeleton} ${styles.skeletonLabel}`} />
-      </div>
-    ))}
+const Field = ({ id, label, error, children }) => (
+  <div className={styles.field}>
+    <label htmlFor={id}>{label}</label>
+    <div className={styles.control}>
+      {children}
+      {/* Draws in on focus. */}
+      <span className={styles.underline} aria-hidden="true" />
+    </div>
+    {error && <p className={styles.error} id={`${id}-error`}>{error}</p>}
   </div>
 );
 
 const Connect = () => {
   const { showToast } = useToast();
+  const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(CONNECT_FIELDS, overrides.connect);
-  const [form,       setForm      ] = useState(EMPTY_FORM);
-  const [errors,     setErrors    ] = useState(EMPTY_ERRORS);
-  const [touched,    setTouched   ] = useState(EMPTY_TOUCHED);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted,  setSubmitted ] = useState(false);
 
-  // Donation and socials come from the portfolio documents the layout already
-  // loaded; this page used to re-read those two on its own. `social` stays null
-  // while loading because that is what renders the skeleton card.
-  const { data, loading } = usePortfolioData();
-  const donation = loading ? undefined : (data?.donation ?? null);
-  const social   = loading ? null      : (data?.social   ?? []);
+  const [form, setForm] = useState(EMPTY);
+  const [errors, setErrors] = useState(EMPTY);
+  const [touched, setTouched] = useState({});
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleChange = (e) => {
+  const contact = data?.contact ?? {};
+  const social = data?.social ?? [];
+
+  const change = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-    if (touched[name]) {
-      setErrors(prev => ({ ...prev, [name]: validate({ ...form, [name]: value })[name] }));
-    }
+    const next = { ...form, [name]: value };
+    setForm(next);
+    if (touched[name]) setErrors(validate(next));
   };
 
-  const handleBlur = (e) => {
-    const { name } = e.target;
-    setTouched(prev => ({ ...prev, [name]: true }));
-    setErrors(prev => ({ ...prev, [name]: validate(form)[name] }));
+  const blur = (e) => {
+    setTouched(prev => ({ ...prev, [e.target.name]: true }));
+    setErrors(validate(form));
   };
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    const errs = validate(form);
-    if (Object.values(errs).some(Boolean)) {
-      setErrors(errs);
-      setTouched({ name: true, email: true, message: true });
+    const found = validate(form);
+    setErrors(found);
+    setTouched({ name: true, email: true, message: true });
+
+    if (Object.values(found).some(Boolean)) {
+      // Take them to the first thing that needs fixing.
+      document.getElementById(Object.keys(found).find(k => found[k]))?.focus();
       return;
     }
-    setSubmitting(true);
+
+    setSending(true);
     try {
       await submitContactForm(form);
-      setSubmitted(true);
-      setForm(EMPTY_FORM);
-      setErrors(EMPTY_ERRORS);
-      setTouched(EMPTY_TOUCHED);
-      showToast('success', 'Message sent', "Thanks - I'll get back to you soon.");
-    } catch (err) {
-      console.error('[Connect] submitContactForm failed:', err?.code, err?.message, err);
-      showToast('error', 'Failed to send', 'Something went wrong. Please try again.');
+      setSent(true);
+      setForm(EMPTY);
+      setTouched({});
+    } catch {
+      showToast('That did not send. Try again, or email me directly.', 'error');
     } finally {
-      setSubmitting(false);
+      setSending(false);
     }
   };
 
-  const openDonation = () =>
-    window.open(donation.link, '_blank', 'noopener,noreferrer');
-
-  const showSocialCol = social === null || (Array.isArray(social) && social.length > 0);
-  const showRightCol  = donation?.enabled || showSocialCol;
-
-  // See styles/Reveal.css. This page had no entrance at all before.
-  const [revealRef, revealed] = useReveal();
+  const [ref, shown] = useReveal({ threshold: 0 });
 
   return (
-    <section className={styles.page}>
+    <div
+      ref={ref}
+      className={styles.page}
+      data-shown={shown ? '' : undefined}
+      style={{ '--step': '70ms' }}
+    >
+      <div className={styles.side}>
+        <p className={styles.eyebrow} data-rise style={{ '--i': 0 }}>{t.eyebrow}</p>
 
-      <div
-        ref={revealRef}
-        className={styles.container}
-        data-reveal-shown={revealed ? '' : undefined}
-        style={{ '--reveal-step': '80ms' }}
-      >
+        <h1 className={styles.title}>
+          <span className="mask"><span style={{ '--i': 1 }}>{t.heading}</span></span>
+        </h1>
 
-        {/* Wrapped rather than converted, for the reason set out in
-            components/Parallax/Parallax.js: the header's entrance is a
-            transform transition and the drift is an inline transform, so they
-            have to be two elements. `.headerLayer` keeps the wrapper from
-            shrinking, since `.container` is a flex column. */}
-        <Parallax className={styles.headerLayer} rate={0.06} max={56}>
-        <header className={styles.header} data-reveal style={{ '--i': 0 }}>
-          <p className={styles.chapterEyebrow}>
-            <span className={styles.chapterMark}>{t.chapterMark}</span>
-            <span className={styles.chapterDash} aria-hidden="true">-</span>
-            <span className={styles.chapterName}>{t.chapterName}</span>
-          </p>
-          <h1 className={styles.heading}>{t.heading}</h1>
-          <p>{t.intro}</p>
-        </header>
-        </Parallax>
+        <p className={styles.lede} data-rise style={{ '--i': 2 }}>{t.intro}</p>
 
-        <div className={`${styles.grid} ${!showRightCol ? styles.gridSingle : ''}`}>
+        <dl className={styles.details} data-rise style={{ '--i': 3 }}>
+          {loading && <dd className={styles.plain}>Loading</dd>}
 
-          {/* ── Contact form ─────────────────────────────────────────────── */}
-          <div className={`${styles.card} ${styles.formCard}`}>
-            {submitted ? (
-              <div className={styles.success}>
-                <h2>Message sent</h2>
-                <p>Thanks for reaching out. I&rsquo;ll get back to you soon.</p>
-                <button type="button" onClick={() => setSubmitted(false)}>
-                  Send another
-                </button>
-              </div>
-            ) : (
-              <>
-                <h2>{t.formCardTitle}</h2>
-                <form className={styles.form} onSubmit={handleSubmit} noValidate>
-
-                  <div className={styles.field}>
-                    <label htmlFor="name">Name</label>
-                    <input
-                      id="name" name="name" type="text"
-                      value={form.name}
-                      onChange={handleChange} onBlur={handleBlur}
-                      placeholder="Your name" autoComplete="name" required
-                      className={touched.name && errors.name ? styles.inputError : ''}
-                    />
-                    {touched.name && errors.name && (
-                      <span className={styles.fieldError}>{errors.name}</span>
-                    )}
-                  </div>
-
-                  <div className={styles.field}>
-                    <label htmlFor="email">Email</label>
-                    <input
-                      id="email" name="email" type="email"
-                      value={form.email}
-                      onChange={handleChange} onBlur={handleBlur}
-                      placeholder="your@email.com" autoComplete="email" required
-                      className={touched.email && errors.email ? styles.inputError : ''}
-                    />
-                    {touched.email && errors.email && (
-                      <span className={styles.fieldError}>{errors.email}</span>
-                    )}
-                  </div>
-
-                  <div className={`${styles.field} ${styles.fieldGrow}`}>
-                    <label htmlFor="message">Message</label>
-                    <textarea
-                      id="message" name="message"
-                      value={form.message}
-                      onChange={handleChange} onBlur={handleBlur}
-                      placeholder="What's on your mind?" rows={4} required
-                      className={touched.message && errors.message ? styles.inputError : ''}
-                    />
-                    {touched.message && errors.message && (
-                      <span className={styles.fieldError}>{errors.message}</span>
-                    )}
-                  </div>
-
-                  <div className={styles.formActions}>
-                    <button type="submit" disabled={submitting}>
-                      {submitting ? 'Sending…' : 'Send Message'}
-                    </button>
-                  </div>
-
-                </form>
-              </>
-            )}
-          </div>
-
-          {/* ── Right column ─────────────────────────────────────────────── */}
-          {showRightCol && (
-            <div className={styles.rightCol}>
-
-              {/* Support pill */}
-              {donation?.enabled && (
-                <div className={styles.supportPillOuter}>
-                  <div className={styles.supportPillInner}>
-                    <button
-                      type="button"
-                      className={styles.supportPillBtn}
-                      onClick={openDonation}
-                    >
-                      <FaHeart aria-hidden="true" />
-                      Support
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Social links */}
-              {social === null ? (
-                <SkeletonSocialCard />
-              ) : (
-                <div className={styles.card}>
-                  <h2>{t.socialCardTitle}</h2>
-                  <ul className={styles.socialList}>
-                    {social.map(({ key, url, platform }, i) => {
-                      if (!url) return null;
-                      const Icon = getSocialIcon(key);
-                      const display = platform || (key ? key.charAt(0).toUpperCase() + key.slice(1) : '');
-                      return (
-                        <li key={key ?? i}>
-                          <a
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.socialLink}
-                          >
-                            <span className={styles.socialIcon} aria-hidden="true">
-                              <Icon />
-                            </span>
-                            <span className={styles.socialName}>{display}</span>
-                            <MdArrowOutward className={styles.socialArrow} aria-hidden="true" />
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )}
-
-            </div>
+          {!loading && contact.email && (
+            <>
+              <dt>Email</dt>
+              <dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
+            </>
           )}
 
-        </div>
+          {!loading && contact.phone && (
+            <>
+              <dt>Phone</dt>
+              <dd>
+                <a href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a>
+              </dd>
+            </>
+          )}
+
+          {!loading && contact.location && (
+            <>
+              <dt>Based</dt>
+              <dd className={styles.plain}>{contact.location}</dd>
+            </>
+          )}
+
+          {!loading && social.length > 0 && (
+            <>
+              <dt>{t.socialCardTitle}</dt>
+              <dd className={styles.social}>
+                {social.map((s, i) => (
+                  <a key={s.key ?? i} href={s.url} target="_blank" rel="noopener noreferrer">
+                    {/* `platform` is the display name; `key` is the lowercase
+                        lookup and only a fallback, or this reads as slugs. */}
+                    {s.platform || s.display || s.label || s.key}
+                  </a>
+                ))}
+              </dd>
+            </>
+          )}
+        </dl>
       </div>
-    </section>
+
+      <Slab live className={styles.form} data-rise style={{ '--i': 2 }}>
+        {sent ? (
+          <div className={styles.sent}>
+            <Embers count={18} mode="burst" className={styles.burst} />
+            <span className={styles.sentMark} aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M5 17.5 12.5 25 27 8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <h2>It is on its way</h2>
+            <p>I read everything that comes through here, and I answer.</p>
+            <Button variant="line" onClick={() => setSent(false)}>Write another</Button>
+          </div>
+        ) : (
+          <form onSubmit={submit} noValidate>
+            <h2 className={styles.formTitle}>{t.formCardTitle}</h2>
+
+            <div className={styles.pair}>
+              <Field id="name" label="Name" error={touched.name && errors.name}>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  value={form.name}
+                  onChange={change}
+                  onBlur={blur}
+                  aria-invalid={Boolean(touched.name && errors.name)}
+                  aria-describedby={touched.name && errors.name ? 'name-error' : undefined}
+                />
+              </Field>
+
+              <Field id="email" label="Email" error={touched.email && errors.email}>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={change}
+                  onBlur={blur}
+                  aria-invalid={Boolean(touched.email && errors.email)}
+                  aria-describedby={touched.email && errors.email ? 'email-error' : undefined}
+                />
+              </Field>
+            </div>
+
+            <Field id="message" label="Message" error={touched.message && errors.message}>
+              <textarea
+                id="message"
+                name="message"
+                rows={5}
+                value={form.message}
+                onChange={change}
+                onBlur={blur}
+                aria-invalid={Boolean(touched.message && errors.message)}
+                aria-describedby={touched.message && errors.message ? 'message-error' : undefined}
+              />
+            </Field>
+
+            <Button type="submit" variant="fill" size="lg" disabled={sending} full>
+              {sending ? 'Sending' : 'Send it'}
+            </Button>
+          </form>
+        )}
+      </Slab>
+    </div>
   );
 };
 

@@ -1,0 +1,166 @@
+/* Tokens. Autumn: charcoal and beige grounds, a deep umber that whole
+   sections stand on, burnt orange for anything live, amber for figures.
+
+   Two accents on purpose. One warm hue over a warm ground reads as monotone.
+   They have fixed jobs and never swap: orange is interactive, amber is data. */
+
+:root {
+    /* ── Type ───────────────────────────────────────────────────────────── */
+    --font-display: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', system-ui, sans-serif;
+    --font-text: 'Instrument Sans Variable', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Martian Mono Variable', ui-monospace, Consolas, monospace;
+
+    /* Display runs to the viewport edge, so it is sized in vw. */
+    --display-xl: clamp(3.5rem, 13vw, 13rem);
+    --display-lg: clamp(2.75rem, 8vw, 7rem);
+    --display-md: clamp(2rem, 5vw, 4rem);
+    --display-sm: clamp(1.5rem, 3vw, 2.5rem);
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.375rem;
+
+    /* Martian Mono is wide, so it needs less tracking than a normal mono. */
+    --mono-label: 0.6875rem;
+    --track-label: 0.16em;
+    --track-display: -0.04em;
+
+    /* ── Space ──────────────────────────────────────────────────────────── */
+    --gutter: clamp(1.25rem, 5vw, 5rem);
+    --block: clamp(3rem, 8vh, 6.5rem);
+    --measure: 58ch;
+    --max: 1600px;
+
+    /* Shape. Sharp by default; the only round things are controls, and
+       they are pills. Nothing in between. */
+    --r-control: 999px;
+    --r-slab: 4px;
+
+    /* ── Motion ─────────────────────────────────────────────────────────── */
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
+    --t-fast: 140ms;
+    --t: 260ms;
+    --t-slow: 720ms;
+
+    /* ── Layers ─────────────────────────────────────────────────────────── */
+    --z-field: 0;
+    --z-page: 1;
+    --z-overlay: 90;
+    --z-nav: 95;      /* above the overlay: the bar carries its close button */
+    --z-modal: 100;
+    --z-intro: 200;
+}
+
+/* ── Dark: warm charcoal, deep umber, burnt orange ──────────────────────── */
+
+:root,
+[data-theme='dark'] {
+    color-scheme: dark;
+
+    --ink: #f3ece2;
+    --ink-2: #ada396;
+    --ink-3: #7a7165;
+
+    --ground: #0d0b09;       /* the page, charcoal with a warm cast */
+    --ground-2: #16120f;
+    --deep: #33170a;         /* the ground whole sections stand on */
+    --deep-2: #40200e;
+
+    --live: #f2994a;         /* burnt orange. Interactive, and only that. */
+    --live-2: #f9bd7d;
+    --live-rgb: 242, 153, 74;
+
+    --ember: #e0b552;        /* amber. Figures and data, and only those. */
+    --ember-2: #f0d58c;
+
+    --on-live: #1c0c03;      /* text on an orange fill */
+    --on-deep: #f7e9da;      /* text on the umber ground */
+
+    --rule: rgba(243, 236, 226, 0.14);
+    --rule-strong: rgba(243, 236, 226, 0.3);
+
+    /* Glass, meant to be seen: a warm slab, bright top edge, dark bottom. */
+    --glass: linear-gradient(
+        158deg,
+        rgba(242, 153, 74, 0.1),
+        rgba(243, 236, 226, 0.03) 42%,
+        rgba(224, 181, 82, 0.05)
+    ), rgba(24, 18, 14, 0.58);
+    --glass-edge: rgba(249, 189, 125, 0.18);
+    --glass-top: inset 0 1px 0 rgba(255, 224, 190, 0.22);
+    --glass-bottom: inset 0 -1px 0 rgba(0, 0, 0, 0.45);
+    --glass-cast: 0 24px 70px -28px rgba(0, 0, 0, 0.9);
+    --blur: blur(26px) saturate(150%);
+
+    --field-dot: rgba(245, 205, 160, 0.52);
+    --field-dot-dim: rgba(245, 205, 160, 0.16);
+    --field-glow: rgba(242, 153, 74, 0.1);
+}
+
+/* ── Light: beige, the same umber, the same structure ───────────────────── */
+
+[data-theme='light'] {
+    color-scheme: light;
+
+    --ink: #1c140c;
+    --ink-2: #544a42;
+    --ink-3: #857a6c;
+
+    --ground: #eee4d3;
+    --ground-2: #f7f0e2;
+    --deep: #4a2110;
+    --deep-2: #5b2b16;
+
+    /* On beige a luminous orange has nothing to glow against, so the live
+       colour is the deep one and carries by contrast. */
+    --live: #a24413;
+    --live-2: #7c320c;
+    --live-rgb: 162, 68, 19;
+
+    --ember: #8a6416;
+    --ember-2: #6d4e0f;
+
+    --on-live: #f9f2e6;
+    --on-deep: #f7e9da;
+
+    --rule: rgba(28, 20, 12, 0.16);
+    --rule-strong: rgba(28, 20, 12, 0.34);
+
+    --glass: linear-gradient(
+        158deg,
+        rgba(255, 255, 255, 0.64),
+        rgba(255, 255, 255, 0.2) 44%,
+        rgba(162, 68, 19, 0.06)
+    ), rgba(247, 240, 226, 0.4);
+    --glass-edge: rgba(162, 68, 19, 0.2);
+    --glass-top: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --glass-bottom: inset 0 -1px 0 rgba(74, 33, 16, 0.1);
+    --glass-cast: 0 24px 60px -30px rgba(60, 34, 18, 0.45);
+
+    --field-dot: rgba(162, 68, 19, 0.4);
+    --field-dot-dim: rgba(162, 68, 19, 0.14);
+    --field-glow: rgba(162, 68, 19, 0.08);
+}
+
+/* Flips the local tokens, so anything inside reads correctly. */
+.on-deep {
+    --ink: var(--on-deep);
+    --ink-2: rgba(247, 233, 218, 0.72);
+    --ink-3: rgba(247, 233, 218, 0.5);
+    --rule: rgba(247, 233, 218, 0.18);
+    --rule-strong: rgba(247, 233, 218, 0.38);
+    color: var(--ink);
+}
+
+/* The deep ground is dark in both themes, so light theme's deep accents
+   would vanish into it. Inside one they go back to their bright form. */
+[data-theme='light'] .on-deep {
+    --live: #f2994a;
+    --live-2: #f9bd7d;
+    --live-rgb: 242, 153, 74;
+    --ember: #e0b552;
+    --on-live: #1c0c03;
+}

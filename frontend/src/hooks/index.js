@@ -1,13 +1,10 @@
 export * from './useTheme';
-export * from './useTooltip';
 export * from './useAnimations';
-export { default as useBlobPhysics }     from './useBlobPhysics';
-export { default as usePointerGlow }     from './usePointerGlow';
 export { default as useReveal }          from './useReveal';
+export { default as useActiveSection }   from './useActiveSection';
 export { default as usePortfolioData }   from './usePortfolioData';
 export { default as useSiteCopy }        from './useSiteCopy';
 export { default as useGitHubProjects }  from './useGitHubProjects';
 export { default as useStudioSites }     from './useStudioSites';
 export { default as useAuth }            from './useAuth';
-export { default as useMomentumScroll, getLenis } from './useMomentumScroll';
-export { default as useParallax }        from './useParallax';
+export { default as useMomentumScroll, getLenis, scrollPageTo } from './useMomentumScroll';

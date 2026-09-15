@@ -1,21 +1,10 @@
 import React from 'react';
 import styles from './ErrorBoundary.module.css';
 
-/**
- * App-level error boundary.
- *
- * Drop-in - no required props:
- *   <ErrorBoundary>{children}</ErrorBoundary>
- *
- * Optional props:
- *   resetKey  - when this value changes, the boundary auto-clears (pass the
- *               route path so navigating away recovers automatically).
- *   onError   - (error, info) callback for logging / reporting.
- *
- * Recovery offered to the user, cheapest first:
- *   • Try again - re-render the children in place (no reload).
- *   • Reload    - full page reload.
- *   • Go home   - navigate to "/".
+/*
+ * Catches a render error in the tree below it and shows a way out rather
+ * than a blank page. Keyed on the route, so an error on one page does not
+ * leave the app broken after navigating away.
  */
 class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null, errorInfo: null };
@@ -46,40 +35,33 @@ class ErrorBoundary extends React.Component {
 
     return (
       <div className={styles.root} role="alert">
-        <div className={styles.card}>
-          <div className={styles.iconWrap} aria-hidden="true">
-            <span className={styles.iconText}>!</span>
-          </div>
+        <div className={styles.inner}>
+          <p className={styles.mark}>Error</p>
 
-          <div className={styles.message}>
-            <h1 className={styles.title}>Something went wrong</h1>
-            <p className={styles.subtitle}>
-              An unexpected error interrupted the page. Try again first - if it
-              keeps happening, reload or head back home.
-            </p>
-          </div>
+          <h1 className={styles.title}>That did not go to plan</h1>
+
+          <p className={styles.text}>
+            Something in the page failed while it was rendering. Try again
+            first. If it keeps happening, reload, or head back to the start.
+          </p>
 
           <div className={styles.actions}>
-            <button type="button" className={`${styles.btn} ${styles.btnPrimary}`} onClick={this.reset}>
+            <button type="button" className={styles.primary} onClick={this.reset}>
               Try again
             </button>
-            <button type="button" className={`${styles.btn} ${styles.btnSecondary}`} onClick={this.reload}>
+            <button type="button" className={styles.ghost} onClick={this.reload}>
               Reload
             </button>
-            <button type="button" className={`${styles.btn} ${styles.btnSecondary}`} onClick={this.goHome}>
-              Go home
+            <button type="button" className={styles.ghost} onClick={this.goHome}>
+              Back to the start
             </button>
           </div>
 
           {error && (
             <details className={styles.details}>
-              <summary className={styles.detailsSummary}>Technical details</summary>
-              <div className={styles.detailsBody}>
-                <pre className={styles.pre}>{error.toString()}</pre>
-                {errorInfo?.componentStack && (
-                  <pre className={styles.pre}>{errorInfo.componentStack}</pre>
-                )}
-              </div>
+              <summary>Technical details</summary>
+              <pre>{error.toString()}</pre>
+              {errorInfo?.componentStack && <pre>{errorInfo.componentStack}</pre>}
             </details>
           )}
         </div>

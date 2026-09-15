@@ -1,19 +1,7 @@
 export { default as ErrorBoundary } from './Error Boundary';
-export { default as CursorGlowButton } from './Custom Buttons/CursorGlowButton';
-export { default as ShimmerButton } from './Custom Buttons/ShimmerButton';
-export { default as LightWaveButton } from './Custom Buttons/LightWaveButton';
-export { default as GlowBorderButton } from './Custom Buttons/GlowBorderButton';
+export { default as Slab } from './Slab';
+export { default as Button } from './Button';
 export { default as Modal } from './Modal';
-export { default as KebabMenu } from './Kebab Menu';
-export { default as NavigationBar } from './Navigation Bar';
-export { default as SearchableDropdown } from './Searchable Dropdown';
-export { default as Settings } from './Settings';
-export { default as ThemeSwitch } from './Theme Switch';
-export { default as ReduceAnimationsSwitch } from './Reduce Animations Switch';
-export { default as Tooltip } from './Tooltip';
-export { ToastProvider, useToast } from './Toast Notifications/ToastContext';
-export { default as PasswordInput } from './Password Input';
-export { default as SiteShowcase } from './Site Showcase';
-export { default as Intro } from './Intro';
-export { default as Parallax, ParallaxBackdrop } from './Parallax';
-
+export { default as KebabMenu } from './KebabMenu';
+export { default as SearchableDropdown } from './SearchableDropdown';
+export { ToastProvider, useToast } from './Toast/ToastContext';

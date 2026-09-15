@@ -1,306 +1,68 @@
-/* ==================== Intro ====================
- *
- * Liquid glass rises over the site, holds, and drains away.
- * See the header of Intro.js for what the material is made of and why the
- * geometry of the glass never animates.
- *
- *      0 - 120   the site is visible, sharp
- *    120 - 1150   the tide rises, decelerating into level
- *    700 - 1460   the name surfaces
- *   1000 - 1520   the role line follows
- *   1150 - 2000   a specular highlight travels across the surface
- *   2000 - 2300   hold; the meniscus keeps rippling
- *   2300 - 3100   the level drops and drains off the bottom
- *
- * The tide is ONE animation. Keyframes can carry their own timing function for
- * the segment that follows them, so the rise eases out, the hold is still and
- * the drain eases in - all without a JS timeline driving anything.
- *
- * Layer order inside .body (back → front):
- *   .water     the single backdrop-filter element; tint, rim, chromatic edge
- *   .specular  a highlight that crosses it once
- *   .surface   the meniscus: two waves and a crest line, on the top edge
- *   .title     name and role
- */
+/* One opaque screen with a canvas on it, and no layout of its own. */
 
-.curtain {
+.intro {
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
     overflow: hidden;
-    /* Transparent. The site shows through until the tide covers it, which is
-       the first beat of the sequence. */
-    background: transparent;
-    pointer-events: none;
+    background:
+        radial-gradient(120% 90% at 50% 46%, var(--ground-2), var(--ground) 62%);
+    animation: introOut 700ms var(--ease-io) forwards 3450ms;
 }
 
-/* Someone who has started reading has told you the intro is over. */
-.curtain[data-state='skipping'] {
-    opacity: 0;
-    transition: opacity 220ms linear;
+@keyframes introOut {
+    to { opacity: 0; }
 }
 
-/* ── The tide ────────────────────────────────────────────────────────────── */
-
-/**
- * Everything rides this element, so the whole sequence is one composited
- * transform.
- *
- * Taller than the viewport, and it rests at 9% rather than 0. Filling exactly
- * to the top put the water line on the viewport's own edge, which hid the
- * meniscus during the hold - the signature of the whole thing - and left the
- * wave's troughs showing a strip of unblurred site that read as a rendering
- * fault rather than as a surface. Resting slightly low keeps the water line on
- * screen and rippling, with the real page visible above it: the site is behind
- * the glass, and you can see where the glass ends.
- *
- * 112% tall so the bottom edge is still well past the fold at that rest
- * position, and 101% at the ends so no sub-pixel rounding leaves a hairline.
- */
-.body {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 112%;
-    will-change: transform;
-    transform: translateY(101%);
-    animation: tide 3100ms both;
-}
-
-@keyframes tide {
-    /* Still below the fold: the site is briefly visible and sharp. */
-    0%     { transform: translateY(101%); animation-timing-function: linear; }
-    3.9%   { transform: translateY(101%); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-    /* Level, decelerating hard into it - water finding its level, not a panel
-       sliding to a stop. */
-    37.1%  { transform: translateY(9%);   animation-timing-function: linear; }
-    74.2%  { transform: translateY(9%);   animation-timing-function: cubic-bezier(0.7, 0, 0.84, 0); }
-    /* Draining: accelerating away, which is the one place ease-in is right. */
-    100%   { transform: translateY(101%); }
-}
-
-/* ── The glass ───────────────────────────────────────────────────────────── */
-
-/**
- * The one backdrop-filter on the page, and it never changes shape.
- *
- * The rim is two inset shadows offset in opposite directions and tinted warm
- * and cool - the cheap approximation of chromatic aberration at a lens edge,
- * where red and blue refract by slightly different amounts. Static paint, so
- * it costs nothing to keep.
- */
-.water {
+.canvas {
     position: absolute;
     inset: 0;
-    overflow: hidden;
-
-    backdrop-filter: blur(26px) saturate(165%) brightness(1.02);
-    -webkit-backdrop-filter: blur(26px) saturate(165%) brightness(1.02);
-
-    background: linear-gradient(
-        180deg,
-        rgba(var(--accent-2-rgb), 0.10) 0%,
-        rgba(var(--accent-1-rgb), 0.07) 45%,
-        rgba(var(--accent-3-rgb), 0.12) 100%
-    );
-
-    box-shadow:
-        inset  0  1px 0 rgba(var(--accent-2-rgb), 0.30),
-        inset  1px 0 0 rgba(var(--accent-2-rgb), 0.10),
-        inset -1px 0 0 rgba(var(--accent-3-rgb), 0.12);
-}
-
-/**
- * The specular sweep: one wide, soft band crossing the surface once.
- *
- * 60% wide and translated by well over its own width so it is fully off both
- * edges at the ends, at any viewport size. Rotated so it reads as light
- * raking across a surface rather than a wipe.
- */
-.specular {
-    position: absolute;
-    top: -30%;
-    left: 0;
-    width: 60%;
-    height: 160%;
-    pointer-events: none;
-    transform: translate3d(-120%, 0, 0) rotate(-14deg);
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.05) 35%,
-        rgba(var(--accent-2-rgb), 0.16) 50%,
-        rgba(255, 255, 255, 0.05) 65%,
-        transparent 100%
-    );
-    animation: sweep 850ms 1150ms var(--ease-in-out) both;
-}
-
-@keyframes sweep {
-    from { transform: translate3d(-120%, 0, 0) rotate(-14deg); opacity: 0; }
-    18%  { opacity: 1; }
-    82%  { opacity: 1; }
-    to   { transform: translate3d(240%, 0, 0) rotate(-14deg); opacity: 0; }
-}
-
-/* ── The meniscus ────────────────────────────────────────────────────────── */
-
-/**
- * Straddles the top edge of the body, half above and half below, so the water
- * line is a curve rather than the container's straight edge.
- */
-.surface {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 54px;
-    transform: translateY(-50%);
-    pointer-events: none;
-    overflow: hidden;
-}
-
-/**
- * Both waves are 200% wide and loop by translating exactly one period - a
- * quarter of their own width - which is seamless because the path is periodic.
- * Different durations and amplitudes on the two layers: in step they would
- * read as one graphic sliding, out of step they read as a surface.
- */
-.waveBack,
-.waveFront {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 200%;
+    width: 100%;
     height: 100%;
-    will-change: transform;
 }
 
-.waveBack {
-    fill: rgba(var(--accent-3-rgb), 0.26);
-    transform-origin: bottom center;
-    /* The shorter amplitude is folded into the keyframes rather than set as a
-       separate `transform`, because one element has one transform property -
-       an animation on it would simply replace a static scale. */
-    animation: driftBack 5200ms linear infinite;
-}
-
-.waveFront {
-    fill: rgba(var(--accent-1-rgb), 0.13);
-    animation: drift 3400ms linear infinite reverse;
-}
-
-@keyframes drift {
-    from { transform: translate3d(0, 0, 0); }
-    to   { transform: translate3d(-25%, 0, 0); }
-}
-
-@keyframes driftBack {
-    from { transform: translate3d(0, 0, 0) scaleY(0.7); }
-    to   { transform: translate3d(-25%, 0, 0) scaleY(0.7); }
-}
-
-/* The lit water line itself. A hairline is what makes a surface read as a
-   boundary between two materials rather than as a colour change. */
-.crest {
+/* Arrives as the embers settle, leaves with the gust. */
+.caption {
     position: absolute;
     left: 0;
     right: 0;
-    top: 50%;
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(var(--accent-2-rgb), 0.55) 20%,
-        rgba(255, 255, 255, 0.40) 50%,
-        rgba(var(--accent-2-rgb), 0.55) 80%,
-        transparent 100%
-    );
-    opacity: 0.9;
-}
-
-/* ── Title ───────────────────────────────────────────────────────────────── */
-
-/**
- * Inside .body, so it rides up with the water - the name surfaces rather than
- * fading in over it. It also unblurs on its own beat, which is what turns
- * "carried up" into "coming into focus".
- */
-.title {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 46%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.7rem;
+    bottom: 16%;
+    margin: 0;
+    padding: 0 var(--gutter);
     text-align: center;
-    padding: 0 var(--spacing-lg);
-}
-
-.name {
-    margin: 0;
-    font-family: 'Georgia', 'Cormorant Garamond', 'Times New Roman', serif;
-    font-size: clamp(1.9rem, 6.5vw, 4rem);
-    font-weight: 400;
-    letter-spacing: 0.14em;
-    text-indent: 0.14em;   /* re-centres against the trailing letter-space */
-    line-height: 1.1;
-    color: var(--primary-text-color);
-    text-wrap: balance;
-
-    opacity: 0;
-    filter: blur(12px);
-    transform: translateY(10px);
-    animation: surface 760ms 700ms var(--ease-out) forwards;
-}
-
-@keyframes surface {
-    to { opacity: 1; filter: blur(0); transform: translateY(0); }
-}
-
-.role {
-    margin: 0;
-    font-size: var(--font-size-xs);
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
     font-weight: 500;
-    letter-spacing: 0.34em;
-    text-indent: 0.34em;
+    letter-spacing: var(--track-label);
     text-transform: uppercase;
-    color: var(--secondary-text-color);
-
+    color: var(--live);
     opacity: 0;
-    animation: roleIn 520ms 1000ms var(--ease-out) forwards;
+    animation:
+        captionIn 700ms var(--ease) forwards 1500ms,
+        captionOut 500ms var(--ease-io) forwards 3350ms;
 }
 
-@keyframes roleIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 0.85; transform: translateY(0); }
+@keyframes captionIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
 }
 
-/* ── Small screens ───────────────────────────────────────────────────────── */
-
-@media (max-width: 640px) {
-    .surface { height: 34px; }
-    /* A 26px backdrop blur over a phone-sized viewport is the most expensive
-       thing in this sequence on the weakest hardware. */
-    .water {
-        backdrop-filter: blur(16px) saturate(150%);
-        -webkit-backdrop-filter: blur(16px) saturate(150%);
-    }
-    .specular { display: none; }
+@keyframes captionOut {
+    to { opacity: 0; transform: translateY(-10px); }
 }
 
-/* ── Reduced motion ──────────────────────────────────────────────────────── */
+/* Any input. The canvas brings its own gust forward. */
+.leaving {
+    animation: introOut 300ms var(--ease-io) forwards;
+}
 
-/* Intro.js already returns null under either preference, so this only matters
-   if the panel is somehow mounted anyway - in which case it should not move. */
-@media (prefers-reduced-motion: reduce) {
-    .body, .waveBack, .waveFront, .specular, .name, .role {
-        animation: none !important;
-        transform: none !important;
-        filter: none !important;
-        opacity: 1 !important;
-    }
+.leaving .caption {
+    animation: captionOut 220ms var(--ease-io) forwards;
+}
+
+/* Dev freeze: virtual time advances CSS animations too. */
+.frozen,
+.frozen .caption {
+    animation: none;
+    opacity: 1;
 }

@@ -1,0 +1,126 @@
+/* One site, one row, separated by a hairline and nothing else, so a list of
+   three reads as a contents page rather than a shelf of cards. */
+
+.row {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+    padding: clamp(1.75rem, 4vw, 3rem) 0;
+    border-top: 1px solid var(--rule);
+}
+
+.row:last-child { border-bottom: 1px solid var(--rule); }
+
+.meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.index {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    color: var(--live);
+}
+
+.name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--display-sm);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
+}
+
+.desc {
+    margin: 0;
+    max-width: 34ch;
+    font-size: var(--text-sm);
+    color: var(--ink-2);
+}
+
+.visit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-3);
+}
+
+.visit svg { width: 13px; height: 13px; transition: transform var(--t) var(--ease); }
+.visit:hover { color: var(--live); }
+.visit:hover svg { transform: translate(2px, -2px); }
+
+/* ── The screen ─────────────────────────────────────────────────────────── */
+
+.screen {
+    padding: 0.5rem;
+    overflow: hidden;
+}
+
+.viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--ground-2);
+}
+
+.frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+    transform-origin: 0 0;
+    /* Inert until clicked, or scrolling past scrolls the framed site. */
+    pointer-events: none;
+}
+
+.screen:focus-within .frame,
+.screen:active .frame { pointer-events: auto; }
+
+.state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+.tap {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--live);
+    cursor: pointer;
+}
+
+@media (max-width: 860px) {
+    .row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.25rem;
+    }
+}

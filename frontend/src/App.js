@@ -1,218 +1,151 @@
-import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
-import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
+import React, { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Routes, Route, Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
-import { NavigationBar, Settings, ToastProvider, Intro, ParallaxBackdrop } from './components';
-import SiteFooter from './components/SiteFooter';
-import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
+import { ToastProvider } from './components';
+import Field from './components/Field';
+import Nav from './components/Nav';
+import Foot from './components/Foot';
+import Intro from './components/Intro';
+import { useTheme, useAnimations, useMomentumScroll, scrollPageTo } from './hooks';
 import { ContentProvider } from './context/ContentContext';
 import { NAVIGATION_PAGES } from './content/navigation';
 import styles from './App.module.css';
 
-/*
- * Dev-only component previews. Rendered outside AppLayout so there is no intro,
- * no nav and no Firestore: a measured component can only be checked by looking
- * at it, and the live page cannot be relied on to have loaded when you do.
- * import.meta.env.DEV is statically false in a production build, so Rollup
- * drops both the route and the import.
- */
-const RoadmapPreview = import.meta.env.DEV
-  ? React.lazy(() => import('./dev/RoadmapPreview'))
-  : null;
-
-const FooterPreview = import.meta.env.DEV
-  ? React.lazy(() => import('./dev/FooterPreview'))
-  : null;
-
-const ParallaxPreview = import.meta.env.DEV
-  ? React.lazy(() => import('./dev/ParallaxPreview'))
+/* Dev only. DEV is statically false in a build, so Rollup drops it. */
+const PagePreview = import.meta.env.DEV
+  ? React.lazy(() => import('./dev/PagePreview'))
   : null;
 
 /*
- * Where a navigation lands.
- *
- * The top, unless the URL names somewhere else. This used to force position 0
- * unconditionally, which quietly made every fragment on the site dead: Home
- * carries `id="about"` and `id="capabilities"` and the footer carries
- * `id="site-footer"`, so /#about is a link someone can reasonably send or
- * bookmark, and it landed at the top of the page every time - the browser's own
- * jump to the anchor happens first and was then overwritten.
- *
- * Landing on an anchor is not a single action here, because the page is not
- * finished when it first paints - see the settling logic below.
+ * Where a navigation lands: an anchor if the URL names one, the previous
+ * position on back and forward, the top otherwise.
  */
 const ScrollToTop = () => {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, key } = useLocation();
+  const navigationType = useNavigationType();
+
+  // A ref, not state: nothing renders from it.
+  const positions = useRef(new Map());
+
+  // The browser's own restore fights ours, so we own it outright.
   useEffect(() => {
-    const lenis = getLenis();
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
 
+  // One number to a ref, at most five times a second.
+  useEffect(() => {
+    let last = 0;
+    const onScroll = () => {
+      const now = performance.now();
+      if (now - last < 200) return;
+      last = now;
+      positions.current.set(key, window.scrollY);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      // A final sample, in case they left inside the throttle window.
+      positions.current.set(key, window.scrollY);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [key]);
+
+  useEffect(() => {
+    // An anchor wins. It may not exist yet, so it is retried.
     if (hash) {
-      const id = hash.slice(1);
-      const align = () => {
-        const target = document.getElementById(id);
-        if (!target) return false;
-        if (lenis) lenis.scrollTo(target, { immediate: true });
-        else target.scrollIntoView();
-        return true;
+      let timer = 0;
+      let tries = 0;
+      const land = () => {
+        const target = document.querySelector(hash);
+        if (target) { scrollPageTo(target, { immediate: true }); return; }
+        tries += 1;
+        if (tries < 12) timer = setTimeout(land, 90);
       };
-
-      /*
-       * Aligned again as the page settles, which on this site it always does:
-       * every page fills in from Firestore after first paint, so an anchor
-       * measured at mount is measured against a skeleton and everything below
-       * it then moves by thousands of pixels. Aligning once is how a link to
-       * #site-footer lands in the middle of the experience list instead.
-       *
-       * Bounded hard, and abandoned the instant the reader takes over. Nothing
-       * is more hostile than a page that keeps pulling the scroll back while
-       * someone is trying to read it, so any wheel, touch or key ends this
-       * immediately - even mid-settle, and even if the anchor is still wrong.
-       */
-      align();
-
-      let observer = null;
-      const stop = () => {
-        observer?.disconnect();
-        observer = null;
-        clearTimeout(timer);
-        window.removeEventListener('wheel', stop);
-        window.removeEventListener('touchstart', stop);
-        window.removeEventListener('keydown', stop);
-      };
-      const timer = setTimeout(stop, 2000);
-
-      window.addEventListener('wheel', stop, { passive: true });
-      window.addEventListener('touchstart', stop, { passive: true });
-      window.addEventListener('keydown', stop);
-
-      if (typeof ResizeObserver !== 'undefined') {
-        observer = new ResizeObserver(() => { align(); });
-        observer.observe(document.body);
-      }
-
-      return stop;
+      timer = setTimeout(land, 0);
+      return () => clearTimeout(timer);
     }
 
-    // Both, not one or the other: Lenis keeps its own scroll position, so
-    // resetting only the window leaves it convinced the page is still scrolled
-    // down, and the first wheel notch on the new page jumps back there.
-    if (lenis) lenis.scrollTo(0, { immediate: true });
-    window.scrollTo(0, 0);
-  }, [pathname, hash]);
+    // Nobody follows a link expecting to land halfway down a new page.
+    const restore = navigationType === 'POP' ? positions.current.get(key) ?? 0 : 0;
+
+    scrollPageTo(restore, { immediate: true });
+
+    if (restore === 0) return undefined;
+
+    // Going back lands on a page still arriving, so the position clamps.
+    let timer = 0;
+    let tries = 0;
+    const settle = () => {
+      if (Math.abs(window.scrollY - restore) > 2) scrollPageTo(restore, { immediate: true });
+      tries += 1;
+      if (tries < 10) timer = setTimeout(settle, 100);
+    };
+    timer = setTimeout(settle, 60);
+    return () => clearTimeout(timer);
+  }, [pathname, hash, key, navigationType]);
+
   return null;
 };
 
 const AppLayout = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const [, startTransition] = useTransition();
+  const links = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
 
-  // Momentum scrolling for the public site only - this layout is not mounted
-  // on the standalone /admin route, so the admin keeps native scrolling.
+  /* Momentum scrolling. It advances the real scroll position from the main
+     thread each frame, so scroll driven CSS still reads a true offset, and
+     ScrollToTop drives this instance rather than fighting it with
+     window.scrollTo. Off under reduced motion and the motion toggle. */
   useMomentumScroll();
 
-  const handleNavigate = useCallback((to) => {
-    if (to) startTransition(() => navigate(to));
-  }, [navigate, startTransition]);
-
-  const navigationLinks = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
-
-  /*
-   * ContentProvider sits here rather than at the app root so it covers every
-   * public page (this layout is not remounted by navigation between them, so the
-   * Firestore reads happen once) while /admin, which is a sibling route, never
-   * triggers them.
-   */
   return (
     <ContentProvider>
-      {/* Public site only - it lives in this layout rather than at the app root
-          so /admin, a sibling route, never plays it. It plays once per page
-          load and gates itself internally, so this layout remounting on the
-          way back from /admin does not replay it. */}
       <Intro />
 
-      {/* Reading progress. Driven entirely by animation-timeline: scroll(), so
-          there is no scroll listener behind it - the compositor advances it.
-          styles/Reveal.css hides it where that is unsupported rather than
-          leaving a bar that never fills. */}
-      <div className="scrollProgress" aria-hidden="true" />
-
       <div className={styles.app}>
-        {/* The site's ground, four layers deep, mounted here rather than per
-            page so the depth is continuous across a navigation instead of one
-            backdrop being swapped for another. It is fixed and z-index 0;
-            .pageContent below is z-index 2, so nothing in it can fall behind
-            the backdrop. */}
-        <ParallaxBackdrop />
+        {/* Layer 0, mounted once so the ground is continuous. */}
+        <Field />
 
-        <NavigationBar
-          links={navigationLinks}
-          onNavigate={handleNavigate}
-          className={styles.navigationBar}
-        />
+        <Nav links={links} theme={theme} toggleTheme={toggleTheme} />
 
-        <div className={styles.themeSwitch}>
-          <Settings theme={theme} toggleTheme={toggleTheme} />
-        </div>
-
-        <div key={location.pathname} className={styles.pageContent}>
+        <main className={styles.main}>
           <Suspense fallback={<Loading />}>
             <Outlet />
           </Suspense>
+        </main>
 
-          {/* Inside the keyed wrapper, so it participates in the page
-              transition rather than sitting still while the page changes
-              above it. It reads the route itself for the "next page" pointer,
-              so it re-renders with the page either way. */}
-          <SiteFooter />
-        </div>
+        <Foot />
       </div>
     </ContentProvider>
   );
 };
 
-const AppContent = () => (
-  <>
-    <ScrollToTop />
-    {/* Admin sits outside AppLayout, so it needs its own boundary - the layout's
-        Suspense only covers the public Outlet. Every route is lazy now (see
-        pages/index.js), and a lazy element with no boundary above it throws. */}
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        {/* Admin - standalone, no nav bar */}
-        <Route path="/admin" element={<Admin />} />
-
-        {import.meta.env.DEV && (
-          <Route path="/__preview/roadmap" element={<RoadmapPreview />} />
-        )}
-
-        {import.meta.env.DEV && (
-          <Route path="/__preview/footer" element={<FooterPreview />} />
-        )}
-
-        {import.meta.env.DEV && (
-          <Route path="/__preview/parallax" element={<ParallaxPreview />} />
-        )}
-
-        <Route path="/" element={<AppLayout />}>
-          <Route index             element={<Home />} />
-          <Route path="bio"        element={<Bio />} />
-          <Route path="connect"    element={<Connect />} />
-          <Route path="projects"   element={<Projects />} />
-          <Route path="loading"    element={<Loading />} />
-          <Route path="*"          element={<NotFound />} />
-        </Route>
-      </Routes>
-    </Suspense>
-  </>
-);
-
 const App = () => {
+  // Applies the theme to the document root for every route, /admin included.
   useTheme();
   useAnimations();
+
   return (
     <ToastProvider>
-      <AppContent />
+      <ScrollToTop />
+
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/admin" element={<Admin />} />
+
+          {import.meta.env.DEV && (
+            <Route path="/__preview/:name" element={<PagePreview />} />
+          )}
+
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<Home />} />
+            <Route path="bio" element={<Bio />} />
+            <Route path="projects" element={<Projects />} />
+            <Route path="connect" element={<Connect />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </ToastProvider>
   );
 };

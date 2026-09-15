@@ -5,21 +5,16 @@ import { getStudioSites } from '../firebase/studio';
 import { COPY_SCHEMA, resolveGroup } from '../content/copy';
 
 /*
- * One load for the whole public site, so walking Home -> Bio -> Home does not
- * re-read the same documents and re-render from a blank state.
+ * One load for the whole public site, so walking between pages does not re-read
+ * the same documents. The four sources settle independently, each with its own
+ * loading flag, so one slow read never holds up an unrelated page.
  *
- * The four sources start together and settle independently - each keeps its own
- * loading flag - so one slow read never holds up an unrelated page.
- *
- * Mounted in AppLayout rather than the app root, so /admin (which reads via its
- * own section components) never pays for this, and returning from /admin
- * remounts and re-reads.
+ * Mounted in AppLayout, not the app root, so /admin never pays for it.
  */
 
 const ContentContext = createContext(null);
 
-// Field lists keyed by copy group, so a page can ask for 'home' and get the
-// resolved strings without importing its own field list.
+// Keyed by group, so a page can ask for 'home' without its own field list.
 const GROUP_FIELDS = Object.fromEntries(COPY_SCHEMA.map(g => [g.key, g.fields]));
 
 export function ContentProvider({ children }) {
@@ -38,8 +33,7 @@ export function ContentProvider({ children }) {
       .then(data => setPortfolio({ data, loading: false, error: null }))
       .catch(error => setPortfolio({ data: null, loading: false, error }));
 
-    // Copy failing is never fatal: an empty override set resolves to the in-code
-    // defaults, which is exactly what the site shipped with.
+    // Copy failing is never fatal: no overrides means the in-code defaults.
     getCopy()
       .then(overrides => setCopy({ overrides: overrides ?? {}, loading: false }))
       .catch(() => setCopy({ overrides: {}, loading: false }));
@@ -55,8 +49,7 @@ export function ContentProvider({ children }) {
 
   useEffect(() => { reload(); }, [reload]);
 
-  // Resolved strings for one page, defaults overlaid with any admin edits. Safe
-  // to call while the copy document is still in flight: it returns the defaults.
+  // Safe to call while the copy document is in flight: returns the defaults.
   const copyFor = useCallback(
     (group) => resolveGroup(GROUP_FIELDS[group] ?? [], copy.overrides?.[group]),
     [copy.overrides],
