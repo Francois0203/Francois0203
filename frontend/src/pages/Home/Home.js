@@ -8,7 +8,7 @@ import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
 import Button from '../../components/Button';
 import LiveSite from '../../components/LiveSite';
-import Ledger from '../../components/Ledger';
+import Tally from '../../components/Tally';
 import Stack from '../../components/Stack';
 import Route from '../../components/Route';
 import styles from './Home.module.css';
@@ -225,7 +225,7 @@ const Home = () => {
       {/* 3. The ledger */}
       {figures.length > 0 && (
         <section className={styles.block}>
-          <Ledger figures={figures} />
+          <Tally figures={figures} />
         </section>
       )}
 

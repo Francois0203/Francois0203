@@ -1,0 +1,155 @@
+/* Figures as objects rather than as a table.
+
+   Each numeral is set at display scale, drawn as an outline, and inked in from
+   the left as it counts. Outline type is only legible when it is large, which
+   is the whole reason the figures get this much room: at this size four
+   numbers carry a section on their own. */
+
+.tally {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    /* Capped and spread, rather than clustered against the left edge with a
+       third of the row empty. Small numbers are narrow, so left alignment
+       always leaves the group stranded. */
+    max-width: min(100%, 64rem);
+    margin: 0;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--rule);
+}
+
+.figure {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-width: 0;
+    transition: transform var(--t) var(--ease);
+}
+
+.figure:hover { transform: translateY(-4px); }
+
+/* Every second figure sits lower, so the row reads as a composition rather
+   than as four cells of equal weight. */
+.figure:nth-child(even) {
+    padding-top: clamp(0.75rem, 2.5vw, 2rem);
+}
+
+.value {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(3.5rem, 11vw, 9rem);
+    font-weight: 600;
+    line-height: 0.82;
+    letter-spacing: -0.07em;
+    color: var(--ember);
+}
+
+/* The ink. A hard-edged gradient clipped to the glyphs, slid from unfilled to
+   filled, so the number is drawn rather than faded in.
+
+   Exactly 90deg and exactly 200%, and both matter. An angled edge on a tall
+   narrow glyph is diagonal, so at the unfilled position it cannot clear the
+   box at every height and a corner stays inked: single digits are the tallest
+   and narrowest, so they leaked worst and read as already filled. At 90deg the
+   gradient line is the element width, so 200% maps the two halves exactly onto
+   fully out and fully in.
+
+   Guarded, because without background-clip support `color: transparent` is an
+   invisible figure. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .value span {
+        display: inline-block;
+        background-image: linear-gradient(
+            90deg,
+            var(--ember) 50%,
+            transparent 50%
+        );
+        background-size: 200% 100%;
+        background-position: 100% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-stroke: 1.5px color-mix(in srgb, var(--ember) 50%, transparent);
+        transition:
+            background-position 1100ms var(--ease) var(--delay, 0ms),
+            -webkit-text-stroke-color var(--t) var(--ease);
+    }
+
+    .tally[data-shown] .value span { background-position: 0 0; }
+
+    /* Pointing at a figure inks it solid. The outline is the resting state,
+       so there is somewhere for a hover to go. */
+    .figure:hover .value span {
+        -webkit-text-stroke-color: transparent;
+        background-image: linear-gradient(90deg, var(--ember-2), var(--ember-2));
+    }
+
+    .figure { --delay: calc(var(--i, 0) * var(--step, 120ms)); }
+}
+
+.label {
+    position: relative;
+    max-width: 14ch;
+    padding-top: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
+/* A rule over the label that draws with the figure, so the two arrive as one
+   object. */
+.label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--ember);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 700ms var(--ease) var(--delay, 0ms);
+}
+
+.tally[data-shown] .label::before { transform: scaleX(1); }
+
+/* Motion off: the numbers are simply there, filled, with their rules drawn. */
+@media (prefers-reduced-motion: reduce) {
+    .value span {
+        background: none;
+        color: var(--ember);
+        -webkit-text-stroke: 0;
+        transition: none;
+    }
+
+    .label::before { transform: scaleX(1); transition: none; }
+}
+
+:global([data-no-animations='true']) .value span {
+    background: none;
+    color: var(--ember);
+    -webkit-text-stroke: 0;
+}
+
+:global([data-no-animations='true']) .label::before { transform: scaleX(1); }
+
+@media (max-width: 700px) {
+    .tally {
+        gap: 1.25rem 2rem;
+    }
+
+    .figure {
+        /* Two up, so a figure never drops to its own line with three empty
+           columns beside it. */
+        flex: 1 1 calc(50% - 1rem);
+    }
+
+    .label { font-size: 0.625rem; }
+}

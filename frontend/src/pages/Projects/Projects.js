@@ -6,7 +6,7 @@ import { resolveGroup } from '../../content/copy/resolve';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { Modal } from '../../components';
 import LiveSite from '../../components/LiveSite';
-import Ledger from '../../components/Ledger';
+import Tally from '../../components/Tally';
 import ReadmeRenderer from './ReadmeRenderer';
 import { parseReadme } from './parseReadme';
 import styles from './Projects.module.css';
@@ -112,7 +112,7 @@ const Projects = () => {
 
       {figures.length > 0 && (
         <section className={styles.block}>
-          <Ledger figures={figures} />
+          <Tally figures={figures} />
         </section>
       )}
 
