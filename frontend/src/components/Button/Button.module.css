@@ -58,6 +58,11 @@
     color: var(--on-live);
 }
 
+/* Holds the text colour when the button is a link: the global a:hover
+   would otherwise paint it the same colour as the sweep. */
+.fill:hover,
+.fill:focus-visible { color: var(--on-live); }
+
 .line {
     --sweep: var(--live);
     border-color: var(--rule-strong);

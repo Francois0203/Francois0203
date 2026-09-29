@@ -8,6 +8,7 @@ export const BIO_FIELDS = [
   { key: 'experienceHeading', label: 'Experience heading', type: 'text', default: 'Experience' },
   { key: 'educationHeading', label: 'Education heading', type: 'text', default: 'Education' },
   { key: 'certificationsHeading', label: 'Certifications heading', type: 'text', default: 'Certifications' },
+  { key: 'otherCertificationsHeading', label: 'Certifications without an exam code - heading', type: 'text', default: 'Also certified' },
   { key: 'skillsHeading', label: 'Skills heading', type: 'text', default: 'Skills' },
   { key: 'interestsHeading', label: 'Interests heading', type: 'text', default: 'Outside the work' },
 ];

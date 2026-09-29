@@ -6,6 +6,8 @@ import useReveal from '../../hooks/useReveal';
 import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
+import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
+import Credentials, { toCredential, onPath } from '../../components/Credentials';
 import Button from '../../components/Button';
 import LiveSite from '../../components/LiveSite';
 import Tally from '../../components/Tally';
@@ -86,7 +88,7 @@ const toRoute = ({ experience = [], education = [] }) => {
 
 /* Counted from real records. Anything that cannot be derived is left out
    rather than estimated. */
-const buildFigures = ({ experience, education, skills, sites, projects }) => {
+const buildFigures = ({ experience, education, skills, sites, projects, certifications }) => {
   const years = (() => {
     const found = [...experience, ...education]
       .map(e => /\b(19|20)\d{2}\b/.exec(String(e.period ?? '')))
@@ -95,10 +97,12 @@ const buildFigures = ({ experience, education, skills, sites, projects }) => {
   })();
 
   const built = (sites?.length ?? 0) + (projects?.length ?? 0);
+  const earned = certifications.filter(c => c.status === 'earned').length;
 
   return [
     years !== null && { value: years, label: 'Years in the work' },
     skills.length > 0 && { value: skills.length, label: 'Tools in regular use' },
+    earned > 0 && { value: earned, label: 'Certifications earned' },
     education.length > 0 && { value: education.length, label: 'Qualifications' },
     built > 0 && { value: built, label: 'Sites and repositories' },
   ].filter(Boolean);
@@ -109,8 +113,10 @@ const Home = () => {
   const { overrides } = useSiteCopy();
   const { featured, loading: sitesLoading } = useStudioSites({ featuredLimit: 3 });
   const t = resolveGroup(HOME_FIELDS, overrides.home);
+  const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
 
   const personal = data?.personal ?? {};
+  const certifications = useMemo(() => (data?.certifications ?? []).filter(onPath), [data]);
   const contact = data?.contact ?? {};
   const social = data?.social ?? [];
 
@@ -127,16 +133,24 @@ const Home = () => {
     skills,
     sites: featured ?? [],
     projects: data?.projects ?? [],
-  }), [data, skills, featured]);
+    certifications: certifications.map(toCredential),
+  }), [data, skills, featured, certifications]);
 
   // The same "present" test the route uses, so the two cannot disagree.
   const now = useMemo(() => {
     const present = /present/i;
+    const active = certifications.map(toCredential)
+      .filter(c => c.status === 'booked' || c.status === 'studying')
+      .sort((a, b) => a.order - b.order)[0];
     return [
       (data?.experience ?? []).find(e => present.test(String(e.period ?? ''))),
       (data?.education ?? []).find(e => present.test(String(e.period ?? ''))),
+      active && {
+        role: active.name,
+        company: active.status === 'booked' ? badges.statusBooked : badges.statusStudying,
+      },
     ].filter(Boolean);
-  }, [data]);
+  }, [data, certifications, badges.statusBooked, badges.statusStudying]);
 
   const available = contact.availability?.status === 'open';
   const name = personal.name ?? 'Francois Meiring';
@@ -268,7 +282,18 @@ const Home = () => {
         </section>
       )}
 
-      {/* 6. The route so far */}
+      {/* 6. The certification path */}
+      {certifications.length > 0 && (
+        <section id="certifications" className={styles.block}>
+          <header className={styles.head}>
+            <h2>{badges.title}</h2>
+            <p>{badges.lede}</p>
+          </header>
+          <Credentials items={certifications} labels={badges} />
+        </section>
+      )}
+
+      {/* 7. The route so far */}
       <section className={styles.block}>
         <header className={styles.head}>
           <h2>{t.journeyTitle}</h2>

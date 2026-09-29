@@ -24,16 +24,16 @@ const CONTACT_FIELDS = [
 ];
 
 const ProfileSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [personal, setPersonal] = useState({});
   const [contact,  setContact]  = useState({});
   const [saving, setSaving]     = useState(false);
 
   useEffect(() => {
-    const unsubP = subscribePersonal(setPersonal, () => showToast('error', 'Error', 'Failed to load profile'));
-    const unsubC = subscribeContact(setContact,   () => showToast('error', 'Error', 'Failed to load contact'));
+    const unsubP = subscribePersonal(setPersonal, () => toast.error('Failed to load profile'));
+    const unsubC = subscribeContact(setContact,   () => toast.error('Failed to load contact'));
     return () => { unsubP(); unsubC(); };
-  }, [showToast]);
+  }, [toast]);
 
   const setP = (key, value) => setPersonal(prev => ({ ...prev, [key]: value }));
   const setC = (key, value) => setContact(prev  => ({ ...prev, [key]: value }));
@@ -42,9 +42,9 @@ const ProfileSection = () => {
     setSaving(true);
     try {
       await Promise.all([updatePersonal(personal), updateContact(contact)]);
-      showToast('success', 'Saved', 'Profile updated');
+      toast.success('Profile updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save profile');
+      toast.error('Failed to save profile');
     } finally {
       setSaving(false);
     }
@@ -98,7 +98,7 @@ const ProfileSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Profile'}
         </button>
       </div>

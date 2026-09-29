@@ -18,7 +18,7 @@ const platformOption = (key) =>
   PLATFORM_OPTIONS.find(o => o.value === key) ?? null;
 
 const SocialsSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [platforms, setPlatforms] = useState([]);
   const [saving, setSaving]       = useState(false);
   const [newKey, setNewKey]       = useState('github');
@@ -27,9 +27,9 @@ const SocialsSection = () => {
   useEffect(() => {
     return subscribeSocial(
       data => setPlatforms(data),
-      () => showToast('error', 'Error', 'Failed to load socials'),
+      () => toast.error('Failed to load socials'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const set = (i, field, value) =>
     setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p));
@@ -54,9 +54,9 @@ const SocialsSection = () => {
     setSaving(true);
     try {
       await updateSocial(platforms.filter(p => p.url?.trim()));
-      showToast('success', 'Saved', 'Social links updated');
+      toast.success('Social links updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save socials');
+      toast.error('Failed to save socials');
     } finally {
       setSaving(false);
     }
@@ -123,7 +123,7 @@ const SocialsSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Socials'}
         </button>
       </div>

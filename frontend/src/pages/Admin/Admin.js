@@ -53,16 +53,20 @@ const EDUCATION_FIELDS = [
   { key: 'order',       label: 'Order',       type: 'number'                    },
 ];
 
-// Field keys mirror EDUCATION_FIELDS so the Bio timeline can render all three
-// sections through the same TimelineEntry component.
+// Rendered as badges by components/Credentials. Only an 'earned' entry shows
+// its badge image and verify link.
 const CERTIFICATION_FIELDS = [
-  { key: 'issuer',      label: 'Issuer',      type: 'text',     required: true  },
   { key: 'credential',  label: 'Credential',  type: 'text',     required: true  },
-  { key: 'period',      label: 'Period',      type: 'text'                      },
+  { key: 'issuer',      label: 'Issuer',      type: 'text',     required: true  },
+  { key: 'code',        label: 'Exam code (puts it on the badge path)', type: 'text' },
+  { key: 'level',       label: 'Level',       type: 'text'                      },
+  { key: 'status',      label: 'Status',      type: 'select', options: ['planned', 'studying', 'booked', 'earned'] },
+  { key: 'examDate',    label: 'Exam date',   type: 'text'                      },
   { key: 'start',       label: 'Issued',      type: 'text'                      },
   { key: 'end',         label: 'Expires',     type: 'text'                      },
+  { key: 'badgeUrl',    label: 'Badge image URL (Credly)', type: 'text'         },
+  { key: 'verifyUrl',   label: 'Verify URL (Credly)',      type: 'text'         },
   { key: 'description', label: 'Description', type: 'textarea'                  },
-  { key: 'tags',        label: 'Tags',        type: 'tags'                      },
   { key: 'order',       label: 'Order',       type: 'number'                    },
 ];
 
@@ -88,15 +92,14 @@ const SECTIONS = [
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [view, setView]           = useState({ id: 'profile' }); // { id, add }
   const [signingIn, setSigningIn] = useState(false);
   const [navOpen, setNavOpen]     = useState(false); // mobile drawer
 
-  // Momentum scrolling for the admin's own scroll region. The public site gets
-  // this from AppLayout at the window level; this route is not inside that
-  // layout, and would not benefit from a window scroller anyway.
+  // Momentum scrolling for the admin's own scroll region only. The public
+  // site stays on native scroll.
   const scrollWrapperRef = useRef(null);
   const scrollContentRef = useRef(null);
   useMomentumScroll({ wrapperRef: scrollWrapperRef, contentRef: scrollContentRef });
@@ -119,7 +122,7 @@ const Admin = () => {
     try {
       await signInWithGoogle();
     } catch {
-      showToast('error', 'Sign-in failed', 'Could not sign in with Google');
+      toast.error('Could not sign in with Google.', { title: 'Sign-in failed' });
     } finally {
       setSigningIn(false);
     }
@@ -127,7 +130,7 @@ const Admin = () => {
 
   const handleSignOut = async () => {
     try { await signOutUser(); }
-    catch { showToast('error', 'Error', 'Sign-out failed'); }
+    catch { toast.error('Sign-out failed'); }
   };
 
   if (loading) {
@@ -146,7 +149,7 @@ const Admin = () => {
             <IoSettingsSharp size={40} className={styles.authIcon} />
             <h2 className={styles.authTitle}>Portfolio Admin</h2>
             <p className={styles.authSub}>Sign in with your Google account to continue.</p>
-            <button onClick={handleSignIn} disabled={signingIn}>
+            <button type="button" className="btn-success" onClick={handleSignIn} disabled={signingIn}>
               <FaGoogle />
               {signingIn ? 'Signing in…' : 'Sign in with Google'}
             </button>
@@ -163,7 +166,7 @@ const Admin = () => {
           <div className={styles.authCard}>
             <p className={styles.notAllowed}>Access denied.</p>
             <p className={styles.authSub}>{user.email} is not on the admin list.</p>
-            <button type="button" onClick={handleSignOut}>Sign Out</button>
+            <button type="button" className="btn-outline" onClick={handleSignOut}>Sign out</button>
           </div>
         </div>
       </div>
@@ -236,7 +239,7 @@ const Admin = () => {
               <>
                 <strong>{r.credential}</strong>
                 <span style={{ color: 'var(--secondary-text-color)' }}>
-                  {r.issuer}{r.period ? ` · ${r.period}` : ''}
+                  {[r.issuer, r.code, r.status].filter(Boolean).join(' · ')}
                 </span>
               </>
             )}
@@ -266,7 +269,7 @@ const Admin = () => {
           <button type="button" className="btn-outline" onClick={() => navigate('/')}>
             <MdHome aria-hidden="true" /> View site
           </button>
-          <button type="button" onClick={handleSignOut}>Sign Out</button>
+          <button type="button" className="btn-outline" onClick={handleSignOut}>Sign out</button>
         </div>
       </div>
 

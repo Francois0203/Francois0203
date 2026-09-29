@@ -36,7 +36,7 @@ const buildOverrides = (draft) => {
 };
 
 const SiteCopySection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [activeGroup, setActiveGroup] = useState(COPY_SCHEMA[0].key);
   const [draft, setDraft] = useState(() => buildDraft({}));
   const [saving, setSaving] = useState(false);
@@ -45,9 +45,9 @@ const SiteCopySection = () => {
   useEffect(() => {
     return subscribeCopy(
       (data) => { if (!dirtyRef.current) setDraft(buildDraft(data)); },
-      () => showToast('error', 'Error', 'Failed to load site copy'),
+      () => toast.error('Failed to load site copy'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const set = (groupKey, fieldKey, value) => {
     dirtyRef.current = true;
@@ -61,9 +61,9 @@ const SiteCopySection = () => {
     try {
       await updateCopy(buildOverrides(draft));
       dirtyRef.current = false;
-      showToast('success', 'Saved', 'Site copy updated');
+      toast.success('Site copy updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save site copy');
+      toast.error('Failed to save site copy');
     } finally {
       setSaving(false);
     }
@@ -131,7 +131,7 @@ const SiteCopySection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Site Copy'}
         </button>
       </div>

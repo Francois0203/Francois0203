@@ -4,4 +4,4 @@ export { default as Button } from './Button';
 export { default as Modal } from './Modal';
 export { default as KebabMenu } from './KebabMenu';
 export { default as SearchableDropdown } from './SearchableDropdown';
-export { ToastProvider, useToast } from './Toast/ToastContext';
+export { ToastProvider, useToast, TOAST_TYPES } from './Toast';

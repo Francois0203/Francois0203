@@ -2,11 +2,13 @@ import {
   SiPython, SiR, SiPandas, SiNumpy, SiScikitlearn, SiDjango, SiReact,
   SiJavascript, SiTypescript, SiPostgresql, SiDocker, SiKubernetes, SiRedis,
   SiAmazonwebservices, SiFirebase, SiGit, SiGithubactions, SiLinux, SiNginx,
-  SiHtml5, SiCss3, SiNodedotjs, SiGo,
+  SiHtml5, SiCss3, SiNodedotjs, SiGo, SiHeroku, SiMinio, SiTerraform,
+  SiGnubash, SiNpm,
 } from 'react-icons/si';
 import {
   MdShowChart, MdInsights, MdPsychology, MdStorage, MdArchitecture,
-  MdScience, MdGroups, MdTerminal, MdFunctions, MdEditNote,
+  MdScience, MdGroups, MdTerminal, MdFunctions, MdEditNote, MdSync, MdHub,
+  MdCloud,
 } from 'react-icons/md';
 
 /*
@@ -43,12 +45,23 @@ const EXACT = {
   'node.js': SiNodedotjs,
   go: SiGo,
   golang: SiGo,
+  heroku: SiHeroku,
+  minio: SiMinio,
+  terraform: SiTerraform,
+  bash: SiGnubash,
+  npm: SiNpm,
 };
 
 /* Checked in order, so the more specific phrase wins. */
 const CONTAINS = [
   ['amazon', SiAmazonwebservices],
+  ['aws', SiAmazonwebservices],
   ['github action', SiGithubactions],
+  ['github ci', SiGithubactions],
+  ['ci/cd', MdSync],
+  ['pipeline', MdSync],
+  ['microservice', MdHub],
+  ['cloud', MdCloud],
   ['scikit', SiScikitlearn],
   ['postgre', SiPostgresql],
   ['statistic', MdShowChart],

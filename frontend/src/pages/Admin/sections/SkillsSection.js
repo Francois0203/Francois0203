@@ -8,7 +8,7 @@ const itemName = (item) =>
   item !== null && typeof item === 'object' ? (item.name ?? '') : String(item ?? '');
 
 const SkillsSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [categories, setCategories] = useState([]);
   const [saving, setSaving]         = useState(false);
   const [newCat, setNewCat]         = useState('');
@@ -16,17 +16,17 @@ const SkillsSection = () => {
   useEffect(() => {
     return subscribeSkills(
       data => setCategories(data.categories ?? []),
-      () => showToast('error', 'Error', 'Failed to load skills'),
+      () => toast.error('Failed to load skills'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const save = async (cats) => {
     setSaving(true);
     try {
       await updateSkills(cats);
-      showToast('success', 'Saved', 'Skills updated');
+      toast.success('Skills updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save skills');
+      toast.error('Failed to save skills');
     } finally {
       setSaving(false);
     }
@@ -101,7 +101,7 @@ const SkillsSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={() => save(categories)} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={() => save(categories)} disabled={saving}>
           {saving ? 'Saving…' : 'Save Skills'}
         </button>
       </div>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useToast } from '../../../components';
 import formStyles from '../AdminForms.module.css';
 
 const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
+  const { toast } = useToast();
   const [form, setForm] = useState(() => {
     const f = {};
     fields.forEach(({ key, type }) => {
@@ -16,7 +18,11 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
 
   const handleSave = () => {
     const missing = fields.find(f => f.required && !form[f.key]?.trim());
-    if (missing) { alert(`"${missing.label}" is required.`); return; }
+    if (missing) {
+      toast.warning(`"${missing.label}" is required.`);
+      document.getElementById(`rf-${missing.key}`)?.focus();
+      return;
+    }
 
     const payload = {};
     fields.forEach(({ key, type }) => {
@@ -37,7 +43,16 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
         {fields.map(f => (
           <div key={f.key} className="input-container">
             <label htmlFor={`rf-${f.key}`}>{f.label}</label>
-            {f.type === 'textarea' ? (
+            {f.type === 'select' ? (
+              <select
+                id={`rf-${f.key}`}
+                value={form[f.key]}
+                onChange={e => set(f.key, e.target.value)}
+              >
+                <option value="">Not set</option>
+                {f.options.map(o => <option key={o} value={o}>{o}</option>)}
+              </select>
+            ) : f.type === 'textarea' ? (
               <textarea
                 id={`rf-${f.key}`}
                 value={form[f.key]}
@@ -59,8 +74,8 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="button" className="btn-danger" onClick={onCancel} disabled={saving}>Cancel</button>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="button" className="btn-outline" onClick={onCancel} disabled={saving}>Cancel</button>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save'}
         </button>
       </div>

@@ -128,6 +128,17 @@
 .btn-danger { border-color: color-mix(in srgb, #e0614a 55%, transparent); color: #e0614a; }
 .btn-danger:hover { background: color-mix(in srgb, #e0614a 14%, transparent); }
 
+.btn-outline:focus-visible,
+.btn-success:focus-visible,
+.btn-danger:focus-visible {
+    outline: 2px solid var(--live);
+    outline-offset: 2px;
+}
+
+.btn-outline:active,
+.btn-success:active,
+.btn-danger:active { transform: scale(0.98); }
+
 .btn-outline:disabled,
 .btn-success:disabled,
 .btn-danger:disabled { opacity: 0.45; cursor: not-allowed; }

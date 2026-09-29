@@ -7,4 +7,4 @@ export { default as useSiteCopy }        from './useSiteCopy';
 export { default as useGitHubProjects }  from './useGitHubProjects';
 export { default as useStudioSites }     from './useStudioSites';
 export { default as useAuth }            from './useAuth';
-export { default as useMomentumScroll, getLenis, scrollPageTo } from './useMomentumScroll';
+export { default as useMomentumScroll, scrollPageTo } from './useMomentumScroll';

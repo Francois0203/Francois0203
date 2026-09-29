@@ -4,7 +4,6 @@ import Lenis from 'lenis';
 // The window-level instance, so navigation code can drive it rather than
 // fight it. Scoped instances deliberately do not register here.
 let lenisInstance = null;
-export const getLenis = () => lenisInstance;
 
 /**
  * Move the page. Through the momentum scroller when one is running, since it

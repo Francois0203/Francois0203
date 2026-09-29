@@ -25,7 +25,7 @@ const buildForm = (d = {}) => {
 };
 
 const PersonalDetailsSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [form, setForm]     = useState(() => buildForm({}));
   const [saving, setSaving] = useState(false);
   const dirtyRef = useRef(false);
@@ -34,9 +34,9 @@ const PersonalDetailsSection = () => {
     // Don't overwrite in-progress edits when our own save echoes back.
     return subscribePersonal(
       (d) => { if (!dirtyRef.current) setForm(buildForm(d)); },
-      () => showToast('error', 'Error', 'Failed to load personal details'),
+      () => toast.error('Failed to load personal details'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const set = (key, value) => {
     dirtyRef.current = true;
@@ -54,9 +54,9 @@ const PersonalDetailsSection = () => {
       });
       await updatePersonal(payload); // merge:true - leaves other personal fields intact
       dirtyRef.current = false;
-      showToast('success', 'Saved', 'Personal details updated');
+      toast.success('Personal details updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save personal details');
+      toast.error('Failed to save personal details');
     } finally {
       setSaving(false);
     }
@@ -89,7 +89,7 @@ const PersonalDetailsSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Personal Details'}
         </button>
       </div>

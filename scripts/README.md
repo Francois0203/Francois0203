@@ -1,13 +1,24 @@
-# Sync scripts
+# Scripts
 
-Two Node scripts, both run by `.github/workflows/sync-github.yml` (on every push
-to `main`, monthly, or manually from the Actions tab). Both read from GitHub and
+Two sync scripts run by `.github/workflows/sync-github.yml` (on every push to
+`main`, monthly, or manually from the Actions tab). Both read from GitHub and
 write to Firestore; the site itself never calls the GitHub API.
 
 | Script | Reads | Writes | Drives |
 | --- | --- | --- | --- |
-| `syncGitHubProjects.mjs` | the repo list in `portfolio/githubConfig` | `githubProjects/*` | Projects → *Code & Experiments* |
-| `syncStudioSites.mjs` | every repo in the `FM-Web-Studio` org | `studioSites/*` | Home → *Featured work*, Projects → *Client Work* |
+| `syncGitHubProjects.mjs` | the repo list in `portfolio/githubConfig` | `githubProjects/*` | Projects → *The bench* |
+| `syncStudioSites.mjs` | every repo in the `FM-Web-Studio` org | `studioSites/*` | Home → *Selected work*, Projects → *Live in production* |
+
+`devopsContent.mjs` is run by hand, not by CI. It moves the live content to the
+DevOps focus and seeds the AWS certification path. Dry run by default:
+
+```bash
+node devopsContent.mjs                        # prints every change, writes nothing
+node devopsContent.mjs --apply --reset-copy   # writes them
+```
+
+It reads `SERVICE_ACCOUNT` from `frontend/.env.local` when it is not set in the
+environment.
 
 `lib/gh.mjs` holds the shared GitHub helpers (auth headers, pagination, reading a
 file or README out of a repo); `lib/firebase.mjs` resolves credentials and hands

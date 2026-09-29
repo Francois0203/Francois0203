@@ -19,6 +19,15 @@
     backdrop-filter: var(--blur);
 }
 
+/* Same reason as the nav: no live blur over the field on touch. */
+@media (pointer: coarse) {
+    .live {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background-color: var(--ground-2);
+    }
+}
+
 /* The specular corner: what makes the border read as a thickness. */
 .slab::before {
     content: '';

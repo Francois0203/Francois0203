@@ -5,16 +5,16 @@ import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
 const GitHubSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [projects, setProjects] = useState([]);
   const [editing, setEditing]   = useState({});
 
   useEffect(() => {
     return subscribeGitHubProjects(
       setProjects,
-      () => showToast('error', 'Error', 'Failed to load GitHub projects'),
+      () => toast.error('Failed to load GitHub projects'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const handleOrderChange = (id, val) =>
     setEditing(prev => ({ ...prev, [id]: val }));
@@ -24,10 +24,10 @@ const GitHubSection = () => {
     if (val === undefined) return;
     try {
       await updateGitHubProject(id, { order: Number(val) });
-      showToast('success', 'Saved', 'Order updated');
+      toast.success('Order updated');
       setEditing(prev => { const n = { ...prev }; delete n[id]; return n; });
     } catch {
-      showToast('error', 'Error', 'Failed to update order');
+      toast.error('Failed to update order');
     }
   };
 
@@ -35,9 +35,9 @@ const GitHubSection = () => {
     if (!window.confirm(`Remove "${name}" from the portfolio?`)) return;
     try {
       await deleteGitHubProject(id);
-      showToast('success', 'Removed', `${name} removed`);
+      toast.success(`${name} removed`);
     } catch {
-      showToast('error', 'Error', 'Failed to remove project');
+      toast.error('Failed to remove project');
     }
   };
 
@@ -65,7 +65,7 @@ const GitHubSection = () => {
               title="Display order"
             />
             {editing[p.id] !== undefined && (
-              <button type="submit" onClick={() => saveOrder(p.id)}>Save</button>
+              <button type="submit" className="btn-success" onClick={() => saveOrder(p.id)}>Save</button>
             )}
             <button type="button" className="btn-danger" onClick={() => handleDelete(p.id, p.name)}>Remove</button>
           </div>

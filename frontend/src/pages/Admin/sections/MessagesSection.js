@@ -11,23 +11,23 @@ const fmt = (ts) => {
 };
 
 const MessagesSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     return subscribeMessages(
       setMessages,
-      () => showToast('error', 'Error', 'Failed to load messages'),
+      () => toast.error('Failed to load messages'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this message?')) return;
     try {
       await deleteMessage(id);
-      showToast('success', 'Deleted', 'Message removed');
+      toast.success('Message removed');
     } catch {
-      showToast('error', 'Error', 'Failed to delete message');
+      toast.error('Failed to delete message');
     }
   };
 

@@ -18,16 +18,16 @@ const SOURCE_LABEL = {
 };
 
 const StudioSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [sites, setSites] = useState([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     return subscribeStudioSites(
       (rows) => { setSites(rows); setReady(true); },
-      () => { setReady(true); showToast('error', 'Error', 'Failed to load studio sites'); },
+      () => { setReady(true); toast.error('Failed to load studio sites'); },
     );
-  }, [showToast]);
+  }, [toast]);
 
   const withoutUrl = sites.filter(s => (s.sites?.length ?? 0) === 0);
   const unframeable = sites.filter(s => (s.sites ?? []).some(u => !u.embeddable));

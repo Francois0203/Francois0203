@@ -178,6 +178,18 @@
     color: var(--ink-3);
 }
 
+.otherCerts { margin-top: clamp(2rem, 5vw, 3rem); }
+
+.subTitle {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 500;
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-3);
+}
+
 /* ── Chips ──────────────────────────────────────────────────────────────── */
 
 .chips {

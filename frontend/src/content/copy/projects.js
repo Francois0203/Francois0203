@@ -15,7 +15,4 @@ export const PROJECTS_FIELDS = [
   { key: 'codeTitle', label: 'Code section - title', type: 'text',     default: 'The bench' },
   { key: 'codeLede',  label: 'Code section - lede',  type: 'textarea', default: 'Repositories, tools and half-finished ideas. Filter by language.' },
   { key: 'codeEmpty', label: 'Code section - empty state', type: 'text', default: 'No projects configured yet.' },
-
-  /* The closing panel's fields were removed with the panel itself: the shared
-     site footer now ends every page, and its copy lives under "Footer". */
 ];

@@ -13,6 +13,7 @@ import styles from './Field.module.css';
 
 const SPACING = 74;          // lattice pitch in CSS px
 const MAX_POINTS = 220;
+const MAX_POINTS_TOUCH = 120;
 const FOCUS = 190;           // radius of the pointer's influence
 const JOIN = 96;             // max length of a join between settled points
 const DRIFT = 0.16;          // free wander speed
@@ -53,10 +54,15 @@ const Field = () => {
        the effect rather than a response. */
     const focus = { x: -9999, y: -9999, tx: -9999, ty: -9999, active: false, ease: 1 };
 
+    let lattice = '';
+
     const build = () => {
       const cols = Math.ceil(width / SPACING) + 1;
       const rows = Math.ceil(height / SPACING) + 1;
-      const total = Math.min(cols * rows, MAX_POINTS);
+      // Same lattice, same points: a rebuild re-scatters every dot.
+      if (`${cols}x${rows}` === lattice) return;
+      lattice = `${cols}x${rows}`;
+      const total = Math.min(cols * rows, coarse.matches ? MAX_POINTS_TOUCH : MAX_POINTS);
       const step = (cols * rows) / total;
 
       points = [];
@@ -81,7 +87,10 @@ const Field = () => {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const nextDpr = Math.min(window.devicePixelRatio || 1, coarse.matches ? 1.5 : 2);
+      // Resetting canvas.width clears it, so skip when nothing changed.
+      if (rect.width === width && rect.height === height && nextDpr === dpr) return;
+      dpr = nextDpr;
       width = rect.width;
       height = rect.height;
       canvas.width = Math.round(width * dpr);
@@ -178,6 +187,7 @@ const Field = () => {
     };
 
     const frame = (time) => {
+      if (coarse.matches) wander(time);
       draw(time);
       raf = requestAnimationFrame(frame);
     };
@@ -218,20 +228,17 @@ const Field = () => {
 
     const onLeave = () => { focus.active = false; focus.tx = -9999; focus.ty = -9999; };
 
-    // No pointer on touch, so something has to walk the field.
-    let walk = 0;
-    const wander = () => {
-      if (motionOff()) return;
-      walk += 0.0022;
+    // No pointer on touch, so something has to walk the field. Timed by the
+    // frame clock, so it stays in step with the draw.
+    function wander(time) {
+      const walk = time * 0.00007;
       focus.tx = width * (0.5 + 0.34 * Math.sin(walk));
       focus.ty = height * (0.5 + 0.3 * Math.sin(walk * 1.37));
       focus.ease = 0.08;
       focus.active = true;
-    };
+    }
 
-    let wanderTimer = 0;
-    if (coarse.matches) wanderTimer = setInterval(wander, 32);
-    else {
+    if (!coarse.matches) {
       window.addEventListener('pointermove', onMove, { passive: true });
       document.addEventListener('pointerleave', onLeave);
     }
@@ -263,7 +270,6 @@ const Field = () => {
       reduced.removeEventListener('change', sync);
       window.removeEventListener('pointermove', onMove);
       document.removeEventListener('pointerleave', onLeave);
-      if (wanderTimer) clearInterval(wanderTimer);
     };
   }, []);
 

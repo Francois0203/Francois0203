@@ -185,6 +185,22 @@
 
 .overlayOpen { display: flex; }
 
+/* A blur over the animated field is redrawn every frame, which phones
+   render as flicker. Touch gets a near-solid backing instead. */
+@media (pointer: coarse) {
+    .stuck {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: color-mix(in srgb, var(--ground) 94%, transparent);
+    }
+
+    .overlay {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: var(--ground);
+    }
+}
+
 .overlay nav {
     display: flex;
     flex-direction: column;

@@ -4,7 +4,7 @@ import { useToast } from '../../../components';
 import formStyles from '../AdminForms.module.css';
 
 const InterestsSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [items, setItems]   = useState([]);
   const [input, setInput]   = useState('');
   const [saving, setSaving] = useState(false);
@@ -12,9 +12,9 @@ const InterestsSection = () => {
   useEffect(() => {
     return subscribeInterests(
       data => setItems(data),
-      () => showToast('error', 'Error', 'Failed to load interests'),
+      () => toast.error('Failed to load interests'),
     );
-  }, [showToast]);
+  }, [toast]);
 
   const add = () => {
     const v = input.trim();
@@ -29,9 +29,9 @@ const InterestsSection = () => {
     setSaving(true);
     try {
       await updateInterests(items);
-      showToast('success', 'Saved', 'Interests updated');
+      toast.success('Interests updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save interests');
+      toast.error('Failed to save interests');
     } finally {
       setSaving(false);
     }
@@ -63,7 +63,7 @@ const InterestsSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Interests'}
         </button>
       </div>

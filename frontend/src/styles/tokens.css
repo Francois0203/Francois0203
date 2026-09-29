@@ -98,6 +98,12 @@
     --field-dot: rgba(245, 205, 160, 0.52);
     --field-dot-dim: rgba(245, 205, 160, 0.16);
     --field-glow: rgba(242, 153, 74, 0.1);
+
+    /* Status. Only for feedback, never decoration. */
+    --tone-info: #8fb4c9;
+    --tone-success: #8cc07a;
+    --tone-warning: #e8b84f;
+    --tone-error: #e8705a;
 }
 
 /* ── Light: beige, the same umber, the same structure ───────────────────── */
@@ -143,6 +149,11 @@
     --field-dot: rgba(162, 68, 19, 0.4);
     --field-dot-dim: rgba(162, 68, 19, 0.14);
     --field-glow: rgba(162, 68, 19, 0.08);
+
+    --tone-info: #2f6484;
+    --tone-success: #3d7a33;
+    --tone-warning: #8a5f0c;
+    --tone-error: #b3361f;
 }
 
 /* Flips the local tokens, so anything inside reads correctly. */

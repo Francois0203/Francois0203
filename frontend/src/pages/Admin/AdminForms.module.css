@@ -1,4 +1,5 @@
-/* Layout-only - inputs, labels, and buttons are styled globally by Components.css */
+/* Layout-only. Buttons need a class from styles/admin-support.css:
+   btn-success (primary), btn-outline, btn-danger. */
 
 /* ── Form grid ─────────────────────────────────────────────────────────────── */
 .grid {

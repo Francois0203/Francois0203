@@ -6,7 +6,9 @@ import useActiveSection from '../../hooks/useActiveSection';
 import { scrollPageTo } from '../../hooks';
 import { resolveGroup } from '../../content/copy/resolve';
 import { BIO_FIELDS } from '../../content/copy/bio';
+import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import Stack from '../../components/Stack';
+import Credentials, { toCredential, onPath } from '../../components/Credentials';
 import styles from './Bio.module.css';
 
 /*
@@ -66,11 +68,16 @@ const Bio = () => {
   const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(BIO_FIELDS, overrides.bio);
+  const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
 
   const personal = data?.personal ?? {};
   const experience = data?.experience ?? [];
   const education = data?.education ?? [];
   const certifications = data?.certifications ?? [];
+  const pathCerts = certifications.filter(onPath);
+  const otherCerts = certifications
+    .filter(c => !onPath(c))
+    .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
 
   const skills = useMemo(() => flattenSkills(data?.skills), [data]);
 
@@ -174,16 +181,29 @@ const Bio = () => {
 
           {certifications.length > 0 && (
             <Section id="certifications" title={t.certificationsHeading}>
-              {certifications.map((c, i) => (
-                <div key={c.id ?? i} data-rise style={{ '--i': i }}>
-                  <Entry
-                    when={period(c)}
-                    what={c.name || c.title}
-                    where={c.issuer || c.organisation}
-                    note={c.description}
-                  />
+              <Credentials items={pathCerts} labels={badges} detailed />
+
+              {otherCerts.length > 0 && (
+                <div className={pathCerts.length > 0 ? styles.otherCerts : undefined}>
+                  {pathCerts.length > 0 && <h3 className={styles.subTitle}>{t.otherCertificationsHeading}</h3>}
+                  {otherCerts.map((raw, i) => {
+                    const c = toCredential(raw);
+                    return (
+                      <div key={c.id ?? i} data-rise style={{ '--i': i }}>
+                        <Entry
+                          when={[
+                            c.issued,
+                            c.expires && (/expire/i.test(c.expires) ? c.expires : `${badges.expiresLabel} ${c.expires}`),
+                          ].filter(Boolean).join(', ')}
+                          what={c.name}
+                          where={c.issuer}
+                          note={c.note}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
             </Section>
           )}
 

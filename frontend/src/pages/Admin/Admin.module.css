@@ -1,4 +1,4 @@
-/* Layout-only - all colour/typography/button/input styles come from Components.css */
+/* Layout-only. Button styles come from the btn-* classes in styles/admin-support.css. */
 
 /* ── Page ──────────────────────────────────────────────────────────────────── */
 .page {
@@ -193,10 +193,8 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--spacing-lg) var(--spacing-xs) var(--spacing-lg) 0;
-  /* No `scrollbar-width` here: setting the standard property makes Chromium
-     ignore the global ::-webkit-scrollbar rules for this element, which is what
-     was painting the sidebar's scrollbar default grey instead of accent.
-     See the scrollbar block in styles/Components.css. */
+  /* No `scrollbar-width`: it makes Chromium ignore the ::-webkit-scrollbar
+     rules in styles/base.css for this element. */
 }
 
 .navGroup { display: flex; flex-direction: column; gap: 2px; }

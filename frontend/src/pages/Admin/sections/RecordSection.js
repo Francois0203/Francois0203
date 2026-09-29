@@ -5,7 +5,7 @@ import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
 const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete, renderSummary, openAddOnMount }) => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [records, setRecords] = useState([]);
   const [modal, setModal]     = useState(openAddOnMount ? { mode: 'add' } : null);
   const [saving, setSaving]   = useState(false);
@@ -13,9 +13,9 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
   useEffect(() => {
     return subscribe(
       setRecords,
-      () => showToast('error', 'Error', `Failed to load ${title}`),
+      () => toast.error(`Failed to load ${title}`),
     );
-  }, [subscribe, title, showToast]);
+  }, [subscribe, title, toast]);
 
   const closeModal = () => setModal(null);
 
@@ -24,14 +24,14 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
     try {
       if (modal.mode === 'add') {
         await onCreate(data);
-        showToast('success', 'Created', `${title} entry added`);
+        toast.success(`${title} entry added`);
       } else {
         await onUpdate(modal.record.id, data);
-        showToast('success', 'Updated', `${title} entry updated`);
+        toast.success(`${title} entry updated`);
       }
       closeModal();
     } catch {
-      showToast('error', 'Error', `Failed to save ${title} entry`);
+      toast.error(`Failed to save ${title} entry`);
     } finally {
       setSaving(false);
     }
@@ -41,9 +41,9 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
     if (!window.confirm(`Delete this ${title} entry?`)) return;
     try {
       await onDelete(record.id);
-      showToast('success', 'Deleted', `${title} entry removed`);
+      toast.success(`${title} entry removed`);
     } catch {
-      showToast('error', 'Error', `Failed to delete ${title} entry`);
+      toast.error(`Failed to delete ${title} entry`);
     }
   };
 
@@ -63,7 +63,7 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
         <div key={rec.id} className={formStyles.listRow}>
           <div className={formStyles.listRowContent}>{renderSummary(rec)}</div>
           <div className={formStyles.listRowActions}>
-            <button type="button" onClick={() => setModal({ mode: 'edit', record: rec })}>Edit</button>
+            <button type="button" className="btn-outline" onClick={() => setModal({ mode: 'edit', record: rec })}>Edit</button>
             <button type="button" className="btn-danger" onClick={() => handleDelete(rec)}>Delete</button>
           </div>
         </div>

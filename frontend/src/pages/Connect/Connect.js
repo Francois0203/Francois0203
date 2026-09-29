@@ -9,6 +9,7 @@ import { useToast } from '../../components';
 import Slab from '../../components/Slab';
 import Button from '../../components/Button';
 import Embers from '../../components/Embers';
+import SupportButton from '../../components/SupportButton';
 import styles from './Connect.module.css';
 
 /*
@@ -44,7 +45,7 @@ const Field = ({ id, label, error, children }) => (
 );
 
 const Connect = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(CONNECT_FIELDS, overrides.connect);
@@ -57,6 +58,8 @@ const Connect = () => {
 
   const contact = data?.contact ?? {};
   const social = data?.social ?? [];
+  const donation = data?.donation ?? {};
+  const support = !loading && donation.enabled && /^https?:\/\//i.test(donation.link ?? '');
 
   const change = (e) => {
     const { name, value } = e.target;
@@ -89,7 +92,7 @@ const Connect = () => {
       setForm(EMPTY);
       setTouched({});
     } catch {
-      showToast('That did not send. Try again, or email me directly.', 'error');
+      toast.error('That did not send. Try again, or email me directly.');
     } finally {
       setSending(false);
     }
@@ -154,6 +157,15 @@ const Connect = () => {
             </>
           )}
         </dl>
+
+        {support && (
+          <div className={styles.support} data-rise style={{ '--i': 4 }}>
+            {donation.message && <p>{donation.message}</p>}
+            <SupportButton href={donation.link}>
+              {donation.buttonText || t.supportButton}
+            </SupportButton>
+          </div>
+        )}
       </div>
 
       <Slab live className={styles.form} data-rise style={{ '--i': 2 }}>

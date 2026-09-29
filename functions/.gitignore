@@ -3,6 +3,6 @@ node_modules/
 .env
 .env.local
 .env.*.local
-# Secrets never live in files — they go to Secret Manager
+# Secrets never live in files; they go to Secret Manager
 *.log
 .runtimeconfig.json

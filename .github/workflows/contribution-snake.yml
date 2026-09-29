@@ -45,7 +45,7 @@ jobs:
           GITHUB_USER: ${{ github.repository_owner }}
           OUT_DIR: dist
 
-      # Two variants, coloured with the site's own tokens (Theme.css), so the
+      # Two variants, coloured with the site's own tokens (tokens.css), so the
       # README's <picture> can switch them with the viewer's GitHub theme.
       - name: Generate the contribution snake
         uses: Platane/snk@v3

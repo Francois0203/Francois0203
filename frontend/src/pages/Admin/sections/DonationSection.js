@@ -3,7 +3,7 @@ import { subscribeDonation, updateDonation } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import formStyles from '../AdminForms.module.css';
 
-// portfolio/donation - the "Support" pill shown on the Connect page.
+// portfolio/donation - the glowing "Support" button on the Connect page.
 const FIELDS = [
   { key: 'title',      label: 'Title',       type: 'text',     placeholder: 'Support my work' },
   { key: 'message',    label: 'Message',     type: 'textarea', placeholder: 'A short line shown with the support link' },
@@ -12,13 +12,13 @@ const FIELDS = [
 ];
 
 const DonationSection = () => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [data, setData]     = useState({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    return subscribeDonation(setData, () => showToast('error', 'Error', 'Failed to load donation settings'));
-  }, [showToast]);
+    return subscribeDonation(setData, () => toast.error('Failed to load donation settings'));
+  }, [toast]);
 
   const set = (key, value) => setData(prev => ({ ...prev, [key]: value }));
 
@@ -32,9 +32,9 @@ const DonationSection = () => {
         link:       data.link ?? '',
         buttonText: data.buttonText ?? '',
       });
-      showToast('success', 'Saved', 'Donation settings updated');
+      toast.success('Donation settings updated');
     } catch {
-      showToast('error', 'Error', 'Failed to save donation settings');
+      toast.error('Failed to save donation settings');
     } finally {
       setSaving(false);
     }
@@ -82,7 +82,7 @@ const DonationSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Donation'}
         </button>
       </div>

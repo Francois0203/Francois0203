@@ -1,4 +1,4 @@
-<!-- Palette and layout mirror the live site (frontend/src/styles/Theme.css).
+<!-- Palette and layout mirror the live site (frontend/src/styles/tokens.css).
      GitHub strips style/class/inline <svg> from markdown, so the brand comes
      from committed SVGs, <picture> theme switching, and hex-coloured badges.
      Content is the same data the site renders from Firestore, so keep them in step.
@@ -24,12 +24,12 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/banner-dark.svg">
-    <img alt="Fran&ccedil;ois Meiring, Data Scientist and Software Developer" src="./.github/assets/banner-light.svg">
+    <img alt="Fran&ccedil;ois Meiring, DevOps and Software Engineer" src="./.github/assets/banner-light.svg">
   </picture>
 </p>
 
 <p align="center">
-  <img alt="Data Scientist  |  Researcher  |  Developer" src="https://readme-typing-svg.demolab.com?font=Georgia&size=19&pause=1200&color=e89542&center=true&vCenter=true&width=680&lines=Data%20Scientist%20%20%7C%20%20Researcher%20%20%7C%20%20Developer%3BPredictive%20modelling%20for%20cap%20tables%20%40%20Shareforce%3BPython%20%20%7C%20%20Django%20%20%7C%20%20PostgreSQL%20%20%7C%20%20AWS%3BReact%20%20%7C%20%20Node.js%20%20%7C%20%20Kubernetes%3BMSc%20research%3A%20astronomical%20data%20processing%20%40%20NWU">
+  <img alt="DevOps  |  Cloud  |  Software Engineering" src="https://readme-typing-svg.demolab.com?font=Georgia&size=19&pause=1200&color=e89542&center=true&vCenter=true&width=680&lines=DevOps%20%20%7C%20%20Cloud%20%20%7C%20%20Software%20Engineering%3BDocker%20%20%7C%20%20Kubernetes%20%20%7C%20%20GitHub%20Actions%3BDjango%20on%20Heroku%20and%20AWS%20%40%20Shareforce%3BOn%20the%20AWS%20path%3A%20Cloud%20Practitioner%20to%20DevOps%20Pro">
 </p>
 
 <p align="center">
@@ -42,7 +42,7 @@
 </p>
 
 <p align="center">
-  <img alt="Open to data science, data analysis and research opportunities" src="https://img.shields.io/badge/Open%20to-Data%20Science%20%C2%B7%20Analysis%20%C2%B7%20Research-e07b1f?style=flat-square&labelColor=2a1810">
+  <img alt="Open to DevOps, cloud and platform engineering roles" src="https://img.shields.io/badge/Open%20to-DevOps%20%C2%B7%20Cloud%20%C2%B7%20Platform-e07b1f?style=flat-square&labelColor=2a1810">
   <img alt="Based in Centurion, South Africa" src="https://img.shields.io/badge/Based%20in-Centurion%2C%20South%20Africa-7a3e10?style=flat-square&labelColor=2a1810">
   <img alt="Languages: Afrikaans and English" src="https://img.shields.io/badge/Languages-Afrikaans%20%C2%B7%20English-b8651c?style=flat-square&labelColor=2a1810">
 </p>
@@ -51,9 +51,13 @@
 
 ## About
 
-Data scientist and software engineer with a dual background in **statistics and software engineering**. I currently build **predictive modelling for cap tables** at Shareforce, alongside the reporting and platform work the product runs on, so the statistics and the engineering are the same job rather than two interests. Reading for an **MSc in Computer Science** at North-West University, with research on **astronomical data processing and distributed computing**.
+I work on the side of software that gets it into production and keeps it running: **containers, CI/CD pipelines and the cloud** underneath them.
 
-I am drawn to roles where rigorous statistical thinking and engineering capability work together: building data pipelines, developing models, or extracting meaning from complex datasets. Away from the keyboard you will find me at the gym, on the squash court, on a hiking trail, or working through a guitar piece.
+In my previous role I was one of two developers who built three enterprise systems from nothing and took them to production on **Docker and Kubernetes**, with GitHub CI/CD, Nginx, PostgreSQL, Redis and MinIO behind them. At **Shareforce** I work on a Django platform deployed across **Heroku and AWS**, including the pipelines it ships through.
+
+I am working through the **AWS certifications**, from Cloud Practitioner toward DevOps Engineer Professional, and alongside the job I am reading for an **MSc in Computer Science** on distributed computing for astronomical data processing.
+
+Away from the keyboard you will find me at the gym, on the squash court, on a hiking trail, or working through a guitar piece.
 
 <table>
 <tr>
@@ -62,7 +66,8 @@ I am drawn to roles where rigorous statistical thinking and engineering capabili
 **Currently**
 
 Junior Software Developer at Shareforce (Pty) Ltd
-<br><sub>Predictive modelling for cap tables</sub>
+<br><sub>Django platform on Heroku and AWS</sub>
+<br>AWS Certified Cloud Practitioner <sub>exam booked</sub>
 <br>MSc. Computer Science at North-West University
 
 </td>
@@ -70,8 +75,8 @@ Junior Software Developer at Shareforce (Pty) Ltd
 
 **Focus areas**
 
-Predictive modelling &middot; statistical modelling
-<br>Distributed systems &middot; full-stack engineering
+CI/CD &middot; containers &middot; Kubernetes
+<br>AWS &middot; reliability &middot; distributed systems
 
 </td>
 </tr>
@@ -95,10 +100,10 @@ Predictive modelling &middot; statistical modelling
 
 Working on the core equity management platform within a structured team of senior, intermediate, and junior developers.
 
-- **Predictive modelling for cap tables**, a new project for the company, owned from the question through to the deployed service.
-- **Reporting.** TM1 and accounting reports against the platform's financial data.
-- **Platform work.** System refactor, design decisions on new features, defect resolution against production, and the deployment pipelines everything moves through.
+- **Delivery.** The deployment pipelines the platform ships through, across Heroku and AWS.
+- **Platform work.** System refactor, design decisions on new features, and defect resolution against production.
 - **Automation.** Building AI tooling into parts of the internal workflow.
+- **Modelling and reporting.** Predictive modelling for cap tables, a new project for the company, plus TM1 and accounting reports.
 
 **Stack.** Django and PostgreSQL, with Redis for caching, deployed across Heroku and AWS.
 
@@ -141,7 +146,7 @@ Building at that scale with no senior engineer above us taught me the cost of de
 
 <br>
 
-- **MSc. Computer Science.** Research-focused master's degree, emphasis on astronomical data processing and distributed computing systems.
+- **MSc. Computer Science.** Research-focused master's degree on astronomical data processing and the distributed computing systems it runs on.
 - **BSc. Hons. Computer Science.** Honours degree specialising in advanced software engineering and computational research methodologies.
 - **BSc. Computer Science &amp; Statistics.** Dual-major undergraduate degree combining computational theory with statistical analysis and data science fundamentals.
 - **National Senior Certificate.** Physics, Afrikaans Home Language, English First Additional Language, Mathematics, Information Technology, Computer Applications Technology.
@@ -152,17 +157,23 @@ Building at that scale with no senior engineer above us taught me the cost of de
 
 ## Certifications
 
-| Credential | Issuer | Awarded |
-|:--|:--|:--|
-| **NAUI Open Water Scuba Diver** | National Association of Underwater Instructors (NAUI) | `Jun 2026` &nbsp;<sub>does not expire</sub> |
-| **Fire Marshal Training** | VAT IT | &nbsp; |
+**AWS path.** As each exam is passed, its row gets the verified Credly badge.
+
+| Credential | Exam | Level | Status |
+|:--|:--|:--|:--|
+| **AWS Certified Cloud Practitioner** | `CLF-C02` | Foundational | Exam booked |
+| **AWS Certified Solutions Architect - Associate** | `SAA-C03` | Associate | Planned |
+| **AWS Certified CloudOps Engineer - Associate** | `SOA-C03` | Associate | Planned |
+| **AWS Certified Developer - Associate** | `DVA-C02` | Associate | Planned |
+| **AWS Certified DevOps Engineer - Professional** | `DOP-C02` | Professional | Planned |
 
 <details>
-<summary>NAUI Open Water Scuba Diver, scope of the course</summary>
+<summary>Other certifications</summary>
 
 <br>
 
-Dive planning, scuba equipment, underwater communication, buoyancy control, navigation, emergency procedures, environmental awareness, and safe diving practice, delivered through classroom learning, confined-water training, and open-water dives.
+- **NAUI Open Water Scuba Diver**, National Association of Underwater Instructors, `Jun 2026`, does not expire.
+- **Fire Marshal**, AETA Training Solutions, `Aug 2026`, valid to `Aug 2028`. Basic firefighting.
 
 </details>
 
@@ -174,52 +185,41 @@ Dive planning, scuba equipment, underwater communication, buoyancy control, navi
 <tr>
 <td valign="top" width="33%">
 
-**Data &amp; Analytics**
+**Cloud &amp; Platform**
 
-<img alt="Python" src="https://img.shields.io/badge/Python-7a3e10?style=flat-square&logo=python&logoColor=ffffff">
-<img alt="R" src="https://img.shields.io/badge/R-7a3e10?style=flat-square&logo=r&logoColor=ffffff">
-<img alt="SQL" src="https://img.shields.io/badge/SQL-7a3e10?style=flat-square&logo=postgresql&logoColor=ffffff">
-<img alt="SAS" src="https://img.shields.io/badge/SAS-7a3e10?style=flat-square">
-<img alt="NumPy" src="https://img.shields.io/badge/NumPy-7a3e10?style=flat-square&logo=numpy&logoColor=ffffff">
-<img alt="Predictive Modelling" src="https://img.shields.io/badge/Predictive%20Modelling-7a3e10?style=flat-square">
-<img alt="Statistical Modelling" src="https://img.shields.io/badge/Statistical%20Modelling-7a3e10?style=flat-square">
-<img alt="Machine Learning" src="https://img.shields.io/badge/Machine%20Learning-7a3e10?style=flat-square">
-<img alt="Data Visualisation" src="https://img.shields.io/badge/Data%20Visualisation-7a3e10?style=flat-square">
+<img alt="AWS" src="https://img.shields.io/badge/AWS-7a3e10?style=flat-square&logo=amazonwebservices&logoColor=ffffff">
+<img alt="Docker" src="https://img.shields.io/badge/Docker-7a3e10?style=flat-square&logo=docker&logoColor=ffffff">
+<img alt="Kubernetes" src="https://img.shields.io/badge/Kubernetes-7a3e10?style=flat-square&logo=kubernetes&logoColor=ffffff">
+<img alt="Linux" src="https://img.shields.io/badge/Linux-7a3e10?style=flat-square&logo=linux&logoColor=ffffff">
+<img alt="Nginx" src="https://img.shields.io/badge/Nginx-7a3e10?style=flat-square&logo=nginx&logoColor=ffffff">
+<img alt="Heroku" src="https://img.shields.io/badge/Heroku-7a3e10?style=flat-square&logo=heroku&logoColor=ffffff">
+<img alt="Firebase" src="https://img.shields.io/badge/Firebase-7a3e10?style=flat-square&logo=firebase&logoColor=ffffff">
+<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-7a3e10?style=flat-square&logo=postgresql&logoColor=ffffff">
+<img alt="Redis" src="https://img.shields.io/badge/Redis-7a3e10?style=flat-square&logo=redis&logoColor=ffffff">
+<img alt="MinIO" src="https://img.shields.io/badge/MinIO-7a3e10?style=flat-square&logo=minio&logoColor=ffffff">
 
 </td>
 <td valign="top" width="34%">
 
-**Development &amp; Infrastructure**
+**Delivery &amp; Building**
 
+<img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-b8651c?style=flat-square&logo=githubactions&logoColor=ffffff">
+<img alt="CI/CD" src="https://img.shields.io/badge/CI%2FCD-b8651c?style=flat-square">
+<img alt="Git" src="https://img.shields.io/badge/Git-b8651c?style=flat-square&logo=git&logoColor=ffffff">
+<img alt="npm" src="https://img.shields.io/badge/npm-b8651c?style=flat-square&logo=npm&logoColor=ffffff">
+<img alt="Python" src="https://img.shields.io/badge/Python-b8651c?style=flat-square&logo=python&logoColor=ffffff">
 <img alt="Django" src="https://img.shields.io/badge/Django-b8651c?style=flat-square&logo=django&logoColor=ffffff">
+<img alt="Node.js" src="https://img.shields.io/badge/Node.js-b8651c?style=flat-square&logo=nodedotjs&logoColor=ffffff">
 <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-b8651c?style=flat-square&logo=javascript&logoColor=ffffff">
 <img alt="React" src="https://img.shields.io/badge/React-b8651c?style=flat-square&logo=react&logoColor=ffffff">
-<img alt="Node.js" src="https://img.shields.io/badge/Node.js-b8651c?style=flat-square&logo=nodedotjs&logoColor=ffffff">
-<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-b8651c?style=flat-square&logo=postgresql&logoColor=ffffff">
-<img alt="Redis" src="https://img.shields.io/badge/Redis-b8651c?style=flat-square&logo=redis&logoColor=ffffff">
-<img alt="MinIO" src="https://img.shields.io/badge/MinIO-b8651c?style=flat-square&logo=minio&logoColor=ffffff">
-<img alt="Docker" src="https://img.shields.io/badge/Docker-b8651c?style=flat-square&logo=docker&logoColor=ffffff">
-<img alt="Kubernetes" src="https://img.shields.io/badge/Kubernetes-b8651c?style=flat-square&logo=kubernetes&logoColor=ffffff">
-<img alt="AWS" src="https://img.shields.io/badge/AWS-b8651c?style=flat-square&logo=amazonwebservices&logoColor=ffffff">
-<img alt="Heroku" src="https://img.shields.io/badge/Heroku-b8651c?style=flat-square&logo=heroku&logoColor=ffffff">
-<img alt="Nginx" src="https://img.shields.io/badge/Nginx-b8651c?style=flat-square&logo=nginx&logoColor=ffffff">
-<img alt="Linux" src="https://img.shields.io/badge/Linux-b8651c?style=flat-square&logo=linux&logoColor=ffffff">
-<img alt="Git" src="https://img.shields.io/badge/Git-b8651c?style=flat-square&logo=git&logoColor=ffffff">
-<img alt="GitHub CI/CD" src="https://img.shields.io/badge/GitHub%20CI%2FCD-b8651c?style=flat-square&logo=githubactions&logoColor=ffffff">
-<img alt="HTML5" src="https://img.shields.io/badge/HTML5-b8651c?style=flat-square&logo=html5&logoColor=ffffff">
-<img alt="CSS3" src="https://img.shields.io/badge/CSS3-b8651c?style=flat-square&logo=css3&logoColor=ffffff">
 
 </td>
 <td valign="top" width="33%">
 
 **Professional**
 
-<img alt="Research" src="https://img.shields.io/badge/Research-c4471c?style=flat-square">
-<img alt="Data Analysis" src="https://img.shields.io/badge/Data%20Analysis-c4471c?style=flat-square">
-<img alt="Statistical Thinking" src="https://img.shields.io/badge/Statistical%20Thinking-c4471c?style=flat-square">
-<img alt="Full-Stack Development" src="https://img.shields.io/badge/Full--Stack%20Development-c4471c?style=flat-square">
-<img alt="System Architecture" src="https://img.shields.io/badge/System%20Architecture-c4471c?style=flat-square">
 <img alt="Microservices" src="https://img.shields.io/badge/Microservices-c4471c?style=flat-square">
+<img alt="System Architecture" src="https://img.shields.io/badge/System%20Architecture-c4471c?style=flat-square">
 <img alt="Team Collaboration" src="https://img.shields.io/badge/Team%20Collaboration-c4471c?style=flat-square">
 
 </td>
@@ -256,9 +256,9 @@ Dive planning, scuba equipment, underwater communication, buoyancy control, navi
 
 | Project | What it is |
 |:--|:--|
-| **[Telescope-Correlator](https://github.com/Francois0203/Telescope-Correlator)** | Signal correlation for telescope array data, the engineering side of the MSc research into astronomical data processing. |
+| **[Telescope-Correlator](https://github.com/Francois0203/Telescope-Correlator)** | Signal correlation for telescope array data, the engineering side of the MSc research into distributed astronomical data processing. |
 | **[Nutrition-AI](https://github.com/Francois0203/Nutrition-AI)** | Applied machine learning over nutritional data. |
-| **[Francois0203](https://github.com/Francois0203/Francois0203)** | This profile, and the React and Firebase portfolio that feeds it. |
+| **[Francois0203](https://github.com/Francois0203/Francois0203)** | This profile, and the React and Firebase portfolio that feeds it, deployed and kept in sync by GitHub Actions. |
 
 The full project list, pulled straight from GitHub with READMEs rendered in-page, lives at **[francois-portfolio.web.app/projects](https://francois-portfolio.web.app/projects)**.
 
@@ -266,7 +266,7 @@ The full project list, pulled straight from GitHub with READMEs rendered in-page
 
 ## Get in touch
 
-Open to **data science, data analysis, and research opportunities**.
+Open to **DevOps, cloud and platform engineering** roles.
 
 <p align="center">
   <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email me" src="https://img.shields.io/badge/Email%20me-b8651c?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
@@ -275,5 +275,5 @@ Open to **data science, data analysis, and research opportunities**.
 </p>
 
 <p align="center">
-  <sub>Data Science &nbsp;&middot;&nbsp; Statistical Modelling &nbsp;&middot;&nbsp; Scientific Computing &nbsp;&middot;&nbsp; Full-Stack Engineering</sub>
+  <sub>DevOps &nbsp;&middot;&nbsp; Cloud &nbsp;&middot;&nbsp; CI/CD &nbsp;&middot;&nbsp; Distributed Systems</sub>
 </p>

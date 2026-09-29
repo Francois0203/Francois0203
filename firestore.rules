@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin allowlist — keep in sync with ADMIN_EMAILS in frontend/.env.local.
+    // Admin allowlist. Keep in sync with ADMIN_EMAILS in frontend/.env.local.
     // The env var only gates the UI; THIS is the real server-side enforcement.
     function isAdmin() {
       return request.auth != null
@@ -14,7 +14,7 @@ service cloud.firestore {
            ];
     }
 
-    // Public, read-only portfolio content — writable only by an admin.
+    // Public, read-only portfolio content, writable only by an admin.
     match /portfolio/{doc}      { allow read: if true; allow write: if isAdmin(); }
     match /experience/{doc}     { allow read: if true; allow write: if isAdmin(); }
     match /education/{doc}      { allow read: if true; allow write: if isAdmin(); }
