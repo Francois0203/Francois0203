@@ -11,6 +11,7 @@ import { periodOf, isCurrent } from '../../content/records';
 import Stack from '../../components/Stack';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
+import Headline from '../../components/Headline';
 import SocialIcon from '../../components/SocialIcon';
 import Drift from '../../components/Drift';
 import Credentials, { toCredential, onPath } from '../../components/Credentials';
@@ -30,26 +31,45 @@ const flattenSkills = (skills) => {
     .flatMap(([name, arr]) => arr.map(i => ({ label: itemLabel(i), group: name })));
 };
 
-const Entry = ({ when, what, where, note, tags, current }) => (
-  <article className={styles.entry}>
-    <p className={styles.when}>
-      {when ?? 'Earlier'}
-      {current && <span className={styles.currentDot} aria-hidden="true" />}
-    </p>
-    <div className={styles.what}>
-      <h3>{what}</h3>
-      {where && <p className={styles.where}>{where}</p>}
-      {note && <p className={styles.note}>{note}</p>}
-      {tags?.length > 0 && (
-        <ul className={styles.tags}>
-          {tags.map((tag, i) => <li key={i}>{tag}</li>)}
-        </ul>
+const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
+
+const Job = ({ title, org, when, note, tags, current, tone, i }) => (
+  <article className={styles.job} style={{ '--tone': `var(--c-${tone})`, '--i': i }} data-rise>
+    <span className={styles.node} aria-hidden="true" />
+    <header className={styles.jobHead}>
+      <div className={styles.jobTitle}>
+        <h3>{title}</h3>
+        {org && <p className={styles.org}>{org}</p>}
+      </div>
+      {when && (
+        <p className={styles.period}>
+          {current && <span className={styles.now}>now</span>}
+          {when}
+        </p>
       )}
-    </div>
+    </header>
+    {note && <p className={styles.note}>{note}</p>}
+    {tags?.length > 0 && (
+      <ul className={styles.tags}>
+        {tags.map((tag, k) => <li key={k}>{tag}</li>)}
+      </ul>
+    )}
   </article>
 );
 
-const Section = ({ id, title, children }) => {
+const Card = ({ title, org, when, note, current, tone, i }) => (
+  <article className={styles.card} style={{ '--tone': `var(--c-${tone})`, '--i': i }} data-rise>
+    <p className={styles.cardWhen}>
+      {current && <span className={styles.now}>now</span>}
+      {when || 'Earlier'}
+    </p>
+    <h3>{title}</h3>
+    {org && <p className={styles.org}>{org}</p>}
+    {note && <p className={styles.cardNote}>{note}</p>}
+  </article>
+);
+
+const Section = ({ id, title, tone, children }) => {
   const [ref, shown] = useReveal({ threshold: 0.04 });
   return (
     <section
@@ -57,10 +77,10 @@ const Section = ({ id, title, children }) => {
       ref={ref}
       className={styles.section}
       data-shown={shown ? '' : undefined}
-      style={{ '--step': '60ms' }}
+      style={{ '--step': '70ms' }}
     >
-      <h2 className={styles.sectionTitle}>{title}</h2>
-      <div className={styles.sectionBody}>{children}</div>
+      <Headline as="h2" text={`*${title}*`} tone={tone} className={styles.sectionTitle} />
+      {children}
     </section>
   );
 };
@@ -118,6 +138,7 @@ const Bio = () => {
       <Drift shapes={[
         { kind: 'circle', colour: 'blue', x: '100%', y: '150px', size: 'clamp(180px, 22vw, 320px)', speed: 0.6, spin: 25, wide: true },
       ]} />
+
       <header
         ref={headRef}
         className={styles.head}
@@ -130,39 +151,51 @@ const Bio = () => {
               <img src={photo} alt="" width="320" height="320" fetchPriority="high" />
             </div>
           )}
-
           <div className={styles.identityText}>
             <div data-rise style={{ '--i': 0 }}>
               <Chip dot="ink">{t.eyebrow}</Chip>
             </div>
             <h1 className={styles.name}><span className="mask"><span style={{ '--i': 1 }}>{name}</span></span></h1>
             {personal.title && <p className={styles.title} data-rise style={{ '--i': 2 }}>{personal.title}</p>}
+            <div className={styles.headActions} data-rise data-print-hide style={{ '--i': 3 }}>
+              <Button variant="line" size="sm" onClick={() => window.print()}>{t.printLabel}</Button>
+            </div>
           </div>
         </div>
 
-        <dl className={styles.reach} data-rise style={{ '--i': 3 }}>
-          {contact.location && (<><dt>based</dt><dd>{contact.location}</dd></>)}
-          {contact.email && (<><dt>email</dt><dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></>)}
-          {contact.phone && (<><dt>phone</dt><dd><a href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a></dd></>)}
-          {social.map((s, i) => (
-            <div key={s.key ?? i} className={styles.reachRow}>
-              <dt className={styles.socialKey}>
-                <SocialIcon platform={s.key} url={s.url} className={styles.socialIcon} />
-                {(s.platform || s.key || '').toLowerCase()}
-              </dt>
-              <dd><a href={s.url} target="_blank" rel="noopener noreferrer">{String(s.url).replace(/^https?:\/\/(www\.)?/, '')}</a></dd>
-            </div>
-          ))}
-        </dl>
-
-        <div className={styles.headActions} data-rise data-print-hide style={{ '--i': 4 }}>
-          <Button variant="line" size="sm" onClick={() => window.print()}>{t.printLabel}</Button>
-        </div>
+        <ul className={styles.contact} data-rise style={{ '--i': 3 }}>
+          {contact.location && (
+            <li><span className={styles.cKey}>Based</span><span className={styles.cVal}>{contact.location}</span></li>
+          )}
+          {contact.email && (
+            <li><span className={styles.cKey}>Email</span><a className={styles.cVal} href={`mailto:${contact.email}`}>{contact.email}</a></li>
+          )}
+          {contact.phone && (
+            <li><span className={styles.cKey}>Phone</span><a className={styles.cVal} href={`tel:${String(contact.phone).split(' ').join('')}`}>{contact.phone}</a></li>
+          )}
+          {social.length > 0 && (
+            <li className={styles.cSocial}>
+              {social.map((s, i) => (
+                <a
+                  key={s.key ?? i}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.cIcon}
+                  aria-label={s.platform || s.key}
+                  title={s.platform || s.key}
+                >
+                  <SocialIcon platform={s.key} url={s.url} />
+                </a>
+              ))}
+            </li>
+          )}
+        </ul>
       </header>
 
       <div className={styles.body}>
         <nav className={styles.contents} aria-label="On this page" data-print-hide>
-          <h5>contents</h5>
+          <h5>On this page</h5>
           {contents.map(c => (
             <a
               key={c.id}
@@ -184,87 +217,96 @@ const Bio = () => {
         </nav>
 
         <div className={styles.record}>
-          {loading && <p className={styles.waiting}>reading the record</p>}
+          {loading && <p className={styles.waiting}>Reading the record</p>}
 
-          <Section id="profile" title={t.profileHeading}>
+          <Section id="profile" title={t.profileHeading} tone="blue">
             <p className={styles.summary} data-rise>{summary}</p>
           </Section>
 
           {experience.length > 0 && (
-            <Section id="experience" title={t.experienceHeading}>
-              {experience.map((e, i) => (
-                <div key={e.id ?? i} data-rise style={{ '--i': i }}>
-                  <Entry
+            <Section id="experience" title={t.experienceHeading} tone="green">
+              <div className={styles.timeline}>
+                {experience.map((e, i) => (
+                  <Job
+                    key={e.id ?? i}
+                    i={i}
+                    tone={TONES[i % TONES.length]}
+                    title={e.role}
+                    org={[e.company, e.location].filter(Boolean).join(', ')}
                     when={periodOf(e)}
-                    what={e.role}
-                    where={e.company}
                     note={e.description}
                     tags={e.tags}
                     current={isCurrent(e)}
                   />
-                </div>
-              ))}
+                ))}
+              </div>
             </Section>
           )}
 
           {education.length > 0 && (
-            <Section id="education" title={t.educationHeading}>
-              {education.map((e, i) => (
-                <div key={e.id ?? i} data-rise style={{ '--i': i }}>
-                  <Entry
+            <Section id="education" title={t.educationHeading} tone="orange">
+              <div className={styles.cards}>
+                {education.map((e, i) => (
+                  <Card
+                    key={e.id ?? i}
+                    i={i}
+                    tone={TONES[(i + 2) % TONES.length]}
+                    title={[e.degree, e.field].filter(Boolean).join(', ')}
+                    org={e.institution}
                     when={periodOf(e)}
-                    what={[e.degree, e.field].filter(Boolean).join(', ')}
-                    where={e.institution}
                     note={e.description}
                     current={isCurrent(e)}
                   />
-                </div>
-              ))}
+                ))}
+              </div>
             </Section>
           )}
 
           {certifications.length > 0 && (
-            <Section id="certifications" title={t.certificationsHeading}>
+            <Section id="certifications" title={t.certificationsHeading} tone="pink">
               <Credentials items={pathCerts} labels={badges} detailed />
 
               {otherCerts.length > 0 && (
-                <div className={pathCerts.length > 0 ? styles.otherCerts : undefined}>
+                <>
                   {pathCerts.length > 0 && <h3 className={styles.subTitle}>{t.otherCertificationsHeading}</h3>}
-                  {otherCerts.map((raw, i) => {
-                    const c = toCredential(raw);
-                    return (
-                      <div key={c.id ?? i} data-rise style={{ '--i': i }}>
-                        <Entry
+                  <div className={styles.cards}>
+                    {otherCerts.map((raw, i) => {
+                      const c = toCredential(raw);
+                      return (
+                        <Card
+                          key={c.id ?? i}
+                          i={i}
+                          tone={TONES[(i + 3) % TONES.length]}
+                          title={c.name}
+                          org={c.issuer}
                           when={[
                             c.issued,
                             c.expires && (/expire/i.test(c.expires) ? c.expires : `${badges.expiresLabel} ${c.expires}`),
                           ].filter(Boolean).join(', ')}
-                          what={c.name}
-                          where={c.issuer}
                           note={c.note}
                         />
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </Section>
           )}
 
           {skills.length > 0 && (
-            <Section id="skills" title={t.skillsHeading}>
+            <Section id="skills" title={t.skillsHeading} tone="yellow">
               <Stack entries={skills} />
             </Section>
           )}
 
           {(interests.length > 0 || languages.length > 0) && (
-            <Section id="interests" title={t.interestsHeading}>
+            <Section id="interests" title={t.interestsHeading} tone="blue">
               <ul className={styles.chips}>
-                {interests.map(name => <li key={name}><Chip>{name}</Chip></li>)}
+                {interests.map(n => <li key={n}><Chip>{n}</Chip></li>)}
               </ul>
               {languages.length > 0 && (
                 <p className={styles.langs}>
-                  <span className="label">{t.languagesLabel}</span>
+                  <span className={styles.cKey}>{t.languagesLabel}</span>
                   {languages.join(', ')}
                 </p>
               )}
