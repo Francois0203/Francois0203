@@ -98,27 +98,15 @@ function findSection(sections, pattern) {
 
 // ─── Main export ─────────────────────────────────────────────────────────────
 
-/*
- * Pulls a short description, a feature list and a tech stack out of a
- * README. Everything here is defensive: these are other people's files and
- * any section may be missing, malformed or enormous.
- */
 export function parseReadme(markdown, { fallback = '' } = {}) {
   if (!markdown?.trim()) {
     return { description: fallback, features: [], techStack: [] };
   }
 
-  /* Removed before the split into lines: a comment spanning two lines leaves
-     a first line with no closing tag, so it survives every later clean-up and
-     gets collected as prose. Non-greedy, or two comments merge into one match
-     and take the real text between them. */
   const source = markdown.replace(/<!--[\s\S]*?-->/g, '');
 
   const lines = source.split('\n');
 
-  // ── Description ──────────────────────────────────────────────────────────
-  // Walk from the top, skip the h1 and any decorative HTML/badge lines,
-  // collect the first real paragraph of prose text.
   const descParts = [];
   const skipTitle = /^#\s+/.test(lines[0] ?? '');
 
@@ -189,8 +177,6 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
     }
   }
 
-  // ── Features ──────────────────────────────────────────────────────────────
-  // Primary: dedicated section
   const featSec = findSection(sections,
     /^(features?|highlights?|what (it |this )?(does|is|offers)|key features?|capabilities|what.?s included)$/i
   );
@@ -214,20 +200,14 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
     features = extractListItems(topContent).slice(0, 4);
   }
 
-  // ── Tech stack ────────────────────────────────────────────────────────────
-  // Primary: dedicated section (list items + dot-separated lines)
   const techSec = findSection(sections,
     /^(tech(nolog(ies|y))?( stack)?|stack|built[\s-]?with|tools?( used)?|requirements?|prerequisites?|dependencies|frameworks?|libraries( used)?|technical skills?|skills?( &| and)? tools?|languages?( &| and)? tools?|skills( overview)?)$/i
   );
 
   let techStack = [];
   if (techSec) {
-    /* The en dash in this character class is deliberate and must stay: it is
-       matching separators in OTHER people's README files, not our own prose.
-       A project-wide dash sweep rewrote it to `[--:...]` once, which is a
-       character RANGE from '-' to ':' and therefore split on digits. */
     const fromList = extractListItems(techSec.content)
-      .map(item => stripMarkdown(item.split(/[-–:·|]/)[0]).trim())
+      .map(item => stripMarkdown(item.split(/[-\u2013:·|]/)[0]).trim())
       .filter(Boolean);
     const fromDots = extractDotSeparated(techSec.content);
     techStack = [...new Set([...fromList, ...fromDots])].slice(0, 10);

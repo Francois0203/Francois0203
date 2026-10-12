@@ -11,12 +11,6 @@ import {
   MdCloud,
 } from 'react-icons/md';
 
-/*
- * Skill name to mark. Skills are free text in Firestore, so this is a
- * lookup rather than an import, and only about two thirds of them are
- * products with a logo. Matching falls back to a substring pass, so "AWS"
- * and "Amazon Web Services" land on the same mark.
- */
 
 const EXACT = {
   python: SiPython,

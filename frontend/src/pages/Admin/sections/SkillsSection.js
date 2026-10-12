@@ -1,11 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeSkills, updateSkills } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
 import formStyles from '../AdminForms.module.css';
 
 // Items may be plain strings or objects like {name, color, category, icon}
 const itemName = (item) =>
   item !== null && typeof item === 'object' ? (item.name ?? '') : String(item ?? '');
+
+// Names are unique within a category in practice; the index only breaks a tie.
+const itemIds = (items) => {
+  const seen = new Map();
+  return items.map((it) => {
+    const n = itemName(it);
+    const k = seen.get(n) ?? 0;
+    seen.set(n, k + 1);
+    return k ? `${n}#${k}` : n;
+  });
+};
+
+const ChipOrder = ({ items, onReorder }) => {
+  const ids = itemIds(items);
+  return (
+    <SortableList
+      items={items}
+      getId={(it, i) => ids[i]}
+      onReorder={onReorder}
+      layout="wrap"
+      className={formStyles.chips}
+      itemClassName={formStyles.chipSlot}
+    >
+      {(item, idx, handle) => (
+        <span
+          {...handle}
+          className={`${formStyles.chip} ${formStyles.chipDraggable}`}
+          aria-label={`Move ${itemName(item)}`}
+        >
+          {itemName(item)}
+        </span>
+      )}
+    </SortableList>
+  );
+};
 
 const SkillsSection = () => {
   const { toast } = useToast();
@@ -15,7 +51,7 @@ const SkillsSection = () => {
 
   useEffect(() => {
     return subscribeSkills(
-      data => setCategories(data.categories ?? []),
+      data => setCategories(withIds(data.categories ?? [])),
       () => toast.error('Failed to load skills'),
     );
   }, [toast]);
@@ -23,7 +59,7 @@ const SkillsSection = () => {
   const save = async (cats) => {
     setSaving(true);
     try {
-      await updateSkills(cats);
+      await updateSkills(stripIds(cats));
       toast.success('Skills updated');
     } catch {
       toast.error('Failed to save skills');
@@ -35,7 +71,7 @@ const SkillsSection = () => {
   const addCategory = () => {
     const name = newCat.trim();
     if (!name) return;
-    setCategories(prev => [...prev, { name, items: [] }]);
+    setCategories(prev => [...prev, ...withIds([{ name, items: [] }])]);
     setNewCat('');
   };
 
@@ -45,9 +81,6 @@ const SkillsSection = () => {
   };
 
   const updateItems = (catIdx, raw) => {
-    // Incoming edit is comma-separated names. Match against existing objects to
-    // preserve {color, icon, category} for skills that still exist; create plain
-    // strings for new ones.
     const names = raw.split(',').map(s => s.trim()).filter(Boolean);
     setCategories(prev => prev.map((cat, idx) => {
       if (idx !== catIdx) return cat;
@@ -60,12 +93,28 @@ const SkillsSection = () => {
     }));
   };
 
+  const reorderItems = (catIdx, items) =>
+    setCategories(prev => prev.map((cat, idx) => (idx === catIdx ? { ...cat, items } : cat)));
+
   return (
     <div>
-      {categories.map((cat, i) => (
-        <div key={i} className={formStyles.card}>
+      {categories.length > 1 && (
+        <p className={formStyles.meta} style={{ marginBottom: 'var(--spacing-md)' }}>
+          Drag a category or a skill to change the order, then save.
+        </p>
+      )}
+
+      <SortableList
+        items={categories}
+        getId={c => c._id}
+        onReorder={setCategories}
+        itemClassName={formStyles.card}
+      >
+        {(cat, i, handle) => (
+        <>
           <div className={formStyles.cardHeader}>
-            <strong className={formStyles.cardTitle}>{cat.name}</strong>
+            <DragHandle {...handle} label={`Move category ${cat.name}`} />
+            <strong className={formStyles.cardTitle} style={{ flex: 1 }}>{cat.name}</strong>
             <button type="button" className="btn-danger" onClick={() => removeCategory(i)}>Remove</button>
           </div>
           <div className="input-container">
@@ -77,14 +126,11 @@ const SkillsSection = () => {
             />
           </div>
           {(cat.items ?? []).length > 0 && (
-            <div className={formStyles.chips}>
-              {cat.items.map((item, idx) => (
-                <span key={idx} className={formStyles.chip}>{itemName(item)}</span>
-              ))}
-            </div>
+            <ChipOrder items={cat.items} onReorder={items => reorderItems(i, items)} />
           )}
-        </div>
-      ))}
+        </>
+        )}
+      </SortableList>
 
       <div className={formStyles.inlineAdd}>
         <div className="input-container">

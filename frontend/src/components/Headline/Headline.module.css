@@ -1,0 +1,39 @@
+.marked {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+    isolation: isolate;
+}
+
+.squiggle {
+    position: absolute;
+    z-index: -1;
+    left: -0.04em;
+    bottom: -0.2em;
+    width: calc(100% + 0.08em);
+    height: 0.24em;
+    overflow: visible;
+    clip-path: inset(-50% 100% -50% -5%);
+    transition: clip-path 800ms var(--ease) calc(min(var(--mi, 0), 14) * var(--step, 60ms) + 350ms);
+}
+
+.squiggle path {
+    fill: none;
+    stroke: var(--marker);
+    stroke-width: 0.13em;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+:global([data-shown]) .squiggle { clip-path: inset(-50% -5% -50% -5%); }
+
+@media (prefers-reduced-motion: reduce) {
+    .squiggle { clip-path: none; transition: none; }
+}
+
+:global([data-no-animations='true']) .squiggle { clip-path: none; }
+
+@media print {
+    .squiggle { clip-path: none; }
+}

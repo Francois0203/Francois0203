@@ -13,6 +13,7 @@ import {
   subscribeExperience, createExperience, updateExperience, deleteExperience,
   subscribeEducation,  createEducation,  updateEducation,  deleteEducation,
   subscribeCertifications, createCertification, updateCertification, deleteCertification,
+  reorderCollection,
 } from '../../firebase/admin';
 import { useToast, KebabMenu } from '../../components';
 import ProfileSection         from './sections/ProfileSection';
@@ -26,6 +27,7 @@ import StudioSection    from './sections/StudioSection';
 import MessagesSection  from './sections/MessagesSection';
 import DonationSection  from './sections/DonationSection';
 import SiteCopySection  from './sections/SiteCopySection';
+import { periodOf } from '../../content/records';
 import styles from './Admin.module.css';
 
 const EXPERIENCE_FIELDS = [
@@ -33,28 +35,22 @@ const EXPERIENCE_FIELDS = [
   { key: 'role',        label: 'Role',        type: 'text',     required: true  },
   { key: 'type',        label: 'Type',        type: 'text'                      },
   { key: 'location',    label: 'Location',    type: 'text'                      },
-  { key: 'period',      label: 'Period',      type: 'text'                      },
-  { key: 'start',       label: 'Start',       type: 'text'                      },
-  { key: 'end',         label: 'End',         type: 'text'                      },
+  { key: 'start',       label: 'Start (e.g. January 2025)', type: 'text'        },
+  { key: 'end',         label: 'End (leave empty if current)', type: 'text'     },
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'tags',        label: 'Tech tags',   type: 'tags'                      },
-  { key: 'order',       label: 'Order',       type: 'number'                    },
 ];
 
 const EDUCATION_FIELDS = [
   { key: 'institution', label: 'Institution', type: 'text',     required: true  },
   { key: 'degree',      label: 'Degree',      type: 'text'                      },
   { key: 'field',       label: 'Field',       type: 'text'                      },
-  { key: 'period',      label: 'Period',      type: 'text'                      },
-  { key: 'start',       label: 'Start',       type: 'text'                      },
-  { key: 'end',         label: 'End',         type: 'text'                      },
+  { key: 'start',       label: 'Start (e.g. 2021)', type: 'text'                },
+  { key: 'end',         label: 'End (leave empty if current)', type: 'text'     },
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'tags',        label: 'Tags',        type: 'tags'                      },
-  { key: 'order',       label: 'Order',       type: 'number'                    },
 ];
 
-// Rendered as badges by components/Credentials. Only an 'earned' entry shows
-// its badge image and verify link.
 const CERTIFICATION_FIELDS = [
   { key: 'credential',  label: 'Credential',  type: 'text',     required: true  },
   { key: 'issuer',      label: 'Issuer',      type: 'text',     required: true  },
@@ -67,11 +63,8 @@ const CERTIFICATION_FIELDS = [
   { key: 'badgeUrl',    label: 'Badge image URL (Credly)', type: 'text'         },
   { key: 'verifyUrl',   label: 'Verify URL (Credly)',      type: 'text'         },
   { key: 'description', label: 'Description', type: 'textarea'                  },
-  { key: 'order',       label: 'Order',       type: 'number'                    },
 ];
 
-// The settings tree. `group` buckets items in the sidebar; `quickAdd` adds a
-// three-dots menu on that row for jumping straight into "Add entry".
 const GROUPS = ['Identity', 'Content', 'Projects', 'Inbox'];
 
 const SECTIONS = [
@@ -98,8 +91,6 @@ const Admin = () => {
   const [signingIn, setSigningIn] = useState(false);
   const [navOpen, setNavOpen]     = useState(false); // mobile drawer
 
-  // Momentum scrolling for the admin's own scroll region only. The public
-  // site stays on native scroll.
   const scrollWrapperRef = useRef(null);
   const scrollContentRef = useRef(null);
   useMomentumScroll({ wrapperRef: scrollWrapperRef, contentRef: scrollContentRef });
@@ -196,11 +187,12 @@ const Admin = () => {
             onCreate={createExperience}
             onUpdate={updateExperience}
             onDelete={deleteExperience}
+            onReorder={ids => reorderCollection('experience', ids)}
             openAddOnMount={view.add}
             renderSummary={r => (
               <>
                 <strong>{r.role}</strong>
-                <span style={{ color: 'var(--secondary-text-color)' }}>{r.company}{r.period ? ` · ${r.period}` : ''}</span>
+                <span style={{ color: 'var(--secondary-text-color)' }}>{r.company}{periodOf(r) ? ` · ${periodOf(r)}` : ''}</span>
               </>
             )}
           />
@@ -214,12 +206,13 @@ const Admin = () => {
             onCreate={createEducation}
             onUpdate={updateEducation}
             onDelete={deleteEducation}
+            onReorder={ids => reorderCollection('education', ids)}
             openAddOnMount={view.add}
             renderSummary={r => (
               <>
                 <strong>{r.institution}</strong>
                 <span style={{ color: 'var(--secondary-text-color)' }}>
-                  {[r.degree, r.field].filter(Boolean).join(', ')}{r.period ? ` · ${r.period}` : ''}
+                  {[r.degree, r.field].filter(Boolean).join(', ')}{periodOf(r) ? ` · ${periodOf(r)}` : ''}
                 </span>
               </>
             )}
@@ -234,6 +227,7 @@ const Admin = () => {
             onCreate={createCertification}
             onUpdate={updateCertification}
             onDelete={deleteCertification}
+            onReorder={ids => reorderCollection('certifications', ids)}
             openAddOnMount={view.add}
             renderSummary={r => (
               <>
@@ -318,12 +312,6 @@ const Admin = () => {
           ))}
         </aside>
 
-        {/* The admin is a fixed shell - this <main> owns the scroll, not the
-            window - so momentum scrolling has to be pointed at it directly.
-            .contentInner exists purely as the element Lenis watches for size
-            changes: for a non-window wrapper it measures the wrapper but
-            observes `content`, and <main> is held at a fixed height by the
-            flex shell, so it never reports a resize when a section grows. */}
         <main className={styles.content} ref={scrollWrapperRef}>
           <div className={styles.contentInner} ref={scrollContentRef}>
             <h2 className={styles.sectionTitle}>{activeSection.title}</h2>

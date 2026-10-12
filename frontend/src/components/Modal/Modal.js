@@ -2,11 +2,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 
-/*
- * A dialog. Focus moves in on open and returns on close, Escape closes,
- * and the page behind cannot scroll. Live glass is affordable here because
- * nothing behind it is moving.
- */
 const Modal = ({ open, onClose, title, size = 'md', children }) => {
   const panelRef = useRef(null);
   const returnTo = useRef(null);

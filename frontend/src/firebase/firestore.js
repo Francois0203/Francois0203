@@ -31,8 +31,6 @@ const getExperience     = () => orderedCollection('experience');
 const getEducation      = () => orderedCollection('education');
 const getCertifications = () => orderedCollection('certifications');
 
-// ─── Full portfolio fetch (all sections in parallel) ──────────────────────────
-// Uses allSettled so one failing read never crashes the whole page.
 
 export const getPortfolio = () =>
   Promise.allSettled([

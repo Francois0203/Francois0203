@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ContentContext from '../context/ContentContext';
-import Field from '../components/Field';
 import Nav from '../components/Nav';
 import Foot from '../components/Foot';
 import { NAVIGATION_PAGES } from '../content/navigation';
@@ -12,12 +11,9 @@ import Bio from '../pages/Bio';
 import Projects from '../pages/Projects';
 import Connect from '../pages/Connect';
 import Intro from '../components/Intro';
-import Route from '../components/Route';
 import Stack from '../components/Stack';
-import Embers from '../components/Embers';
+import RecordSection from '../pages/Admin/sections/RecordSection';
 
-/* Dev-only. One public page against fixtures, with the real shell and no
-   intro and no Firestore. `?theme=dark` forces the theme for a screenshot. */
 
 const PAGES = { home: Home, bio: Bio, projects: Projects, connect: Connect };
 
@@ -32,49 +28,78 @@ const PagePreview = () => {
     if (forced === 'dark' || forced === 'light') {
       document.documentElement.setAttribute('data-theme', forced);
     }
-    /* A headless window taller than the page turns 100svh into the whole
-       capture, so a full page shot needs the hero flattened. */
     document.documentElement.style.setProperty('--hero-h', flat ? '620px' : '');
+    document.documentElement.style.setProperty('--screen-h', flat ? '900px' : '');
     document.title = `preview: ${name}`;
-  }, [forced, name, flat]);
 
-  /* The opening is a canvas animation, and Chrome's virtual time budget
-     freezes requestAnimationFrame, so it can only be reviewed as a still.
-     `?t=` picks the millisecond to freeze at. */
+    if (!params.get('probe')) return undefined;
+    const timer = setTimeout(() => {
+      const vw = document.documentElement.clientWidth;
+      const wide = [...document.querySelectorAll('body *')]
+        .filter(el => {
+          const r = el.getBoundingClientRect();
+          return r.width > 0 && (r.right > vw + 1 || r.left < -1);
+        })
+        .slice(0, 12)
+        .filter(el => !el.closest('[data-scrolls], [aria-hidden="true"]'))
+        .map(el => `${el.tagName.toLowerCase()}.${String(el.className?.baseVal ?? el.className).split(' ')[0]}:${Math.round(el.getBoundingClientRect().left)}..${Math.round(el.getBoundingClientRect().right)}`);
+      document.title = `vw=${vw} sw=${document.documentElement.scrollWidth} ${wide.join(' | ')}`;
+      if (window.parent !== window) window.parent.document.title = document.title;
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [forced, name, flat, params]);
+
+  if (name === 'phone') {
+    const w = Number(params.get('w') ?? 375);
+    const src = params.get('src') ?? 'home';
+    return (
+      <iframe
+        title="phone"
+        src={`/__preview/${src}?probe=${params.get('probe') ?? 1}&flat=1`}
+        style={{ width: w, height: 3000, border: 0, display: 'block' }}
+      />
+    );
+  }
+
   if (name === 'intro') {
     // Inside the provider: the opening reads the copy defaults through it.
     return (
       <ContentContext.Provider value={contentValue}>
-        <Intro freezeAt={Number(params.get('t') ?? 1600)} />
+        <Intro freezeAt={Number(params.get('t') ?? 1900)} />
       </ContentContext.Provider>
     );
   }
 
-  if (name === 'embers') {
+  if (name === 'sortable') {
+    const rows = contentValue.data.experience.concat(contentValue.data.education.map(e => ({ ...e, role: e.degree, company: e.institution })));
+    let current = rows.map((r, i) => ({ ...r, id: r.id, order: i }));
+    const subscribe = (cb) => { cb(current); return () => {}; };
+    const onReorder = async (ids) => {
+      current = ids.map((id, i) => ({ ...current.find(r => r.id === id), order: i }));
+      document.title = `saved: ${ids.join(',')}`;
+    };
     return (
-      <div style={{ position: 'relative', minHeight: '100vh', background: 'var(--deep)' }}>
-        <Embers count={18} mode={params.get('mode') ?? 'rise'} />
+      <div style={{ padding: '3rem', maxWidth: 760 }}>
+        <RecordSection
+          title="Experience"
+          fields={[]}
+          subscribe={subscribe}
+          onCreate={async () => {}}
+          onUpdate={async () => {}}
+          onDelete={async () => {}}
+          onReorder={onReorder}
+          renderSummary={r => <><strong>{r.role}</strong><span>{r.company}</span></>}
+        />
       </div>
     );
   }
 
-  /* One component on its own, for the sections that sit too far down the
-     page to reach in a single capture. */
-  if (name === 'route' || name === 'stack') {
-    const { experience, education, skills } = contentValue.data;
-    const stops = [
-      ...experience.map(e => ({ id: e.id, place: e.company, what: e.role, period: e.period, note: e.description, kind: 'experience' })),
-      ...education.map(e => ({ id: e.id, place: e.institution, what: `${e.degree}, ${e.field}`, period: e.period, kind: 'education' })),
-    ].reverse();
+  if (name === 'stack') {
+    const { skills } = contentValue.data;
     const flat = skills.categories.flatMap(c => c.items.map(i => ({ label: i, group: c.name })));
-
     return (
-      <div className={name === 'stack' ? 'on-deep' : undefined} style={{
-        padding: '4rem var(--gutter)',
-        background: name === 'stack' ? 'var(--deep)' : 'var(--ground)',
-        minHeight: '100vh',
-      }}>
-        {name === 'route' ? <Route stops={stops} /> : <Stack entries={flat} />}
+      <div style={{ padding: '4rem var(--gutter)', minHeight: '100vh' }}>
+        <Stack entries={flat} />
       </div>
     );
   }
@@ -83,12 +108,13 @@ const PagePreview = () => {
 
   return (
     <ContentContext.Provider value={contentValue}>
-      <Field />
+      <div style={{ overflowX: 'clip' }}>
       <Nav links={NAVIGATION_PAGES} theme={forced ?? theme} toggleTheme={toggleTheme} />
       <main style={{ position: 'relative', zIndex: 1 }}>
         <Page />
       </main>
       <Foot />
+      </div>
     </ContentContext.Provider>
   );
 };

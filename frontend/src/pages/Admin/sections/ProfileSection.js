@@ -10,7 +10,6 @@ import formStyles from '../AdminForms.module.css';
 const PERSONAL_FIELDS = [
   { key: 'name',     label: 'Name'      },
   { key: 'title',    label: 'Title'     },
-  { key: 'bio',      label: 'Bio',       textarea: true },
   { key: 'summary',  label: 'Summary',   textarea: true },
   { key: 'photoUrl', label: 'Photo URL' },
   { key: 'cvUrl',    label: 'CV URL'    },

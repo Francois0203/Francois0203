@@ -9,12 +9,15 @@ write to Firestore; the site itself never calls the GitHub API.
 | `syncGitHubProjects.mjs` | the repo list in `portfolio/githubConfig` | `githubProjects/*` | Projects → *The bench* |
 | `syncStudioSites.mjs` | every repo in the `FM-Web-Studio` org | `studioSites/*` | Home → *Selected work*, Projects → *Live in production* |
 
-`devopsContent.mjs` is run by hand, not by CI. It moves the live content to the
-DevOps focus and seeds the AWS certification path. Dry run by default:
+`cleanupRecords.mjs` is run by hand, not by CI. It removes fields the site no
+longer stores: `period` on experience and education (the site derives it from
+`start` and `end`), and leftovers nothing reads. Dry run by default, and it
+backs up every document it touches to `scripts/backups/` (git-ignored):
 
 ```bash
-node devopsContent.mjs                        # prints every change, writes nothing
-node devopsContent.mjs --apply --reset-copy   # writes them
+node cleanupRecords.mjs                         # prints every change, writes nothing
+node cleanupRecords.mjs --apply                 # copies periods into start/end, drops dead fields
+node cleanupRecords.mjs --apply --drop-periods  # also deletes period; run after deploying
 ```
 
 It reads `SERVICE_ACCOUNT` from `frontend/.env.local` when it is not set in the

@@ -1,13 +1,20 @@
 import {
   collection, doc,
   onSnapshot, setDoc, addDoc, updateDoc, deleteDoc,
-  query, orderBy, serverTimestamp,
+  query, orderBy, serverTimestamp, writeBatch,
 } from 'firebase/firestore';
 import { db } from './index';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const portfolioRef  = (id) => doc(db, 'portfolio', id);
+
+/** Saves a dragged order: each document's `order` becomes its position. */
+export const reorderCollection = (col, ids) => {
+  const batch = writeBatch(db);
+  ids.forEach((id, i) => batch.update(doc(db, col, id), { order: i }));
+  return batch.commit();
+};
 const portfolioSnap = (id, cb, onErr) =>
   onSnapshot(portfolioRef(id), snap => cb(snap.data() ?? {}), onErr);
 
@@ -35,22 +42,15 @@ export const subscribeDonation = (cb, onErr) =>
 export const updateDonation = (data) =>
   setDoc(portfolioRef('donation'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 
-// ─── Site Copy (editable narrative / headings) ─────────────────────────────────
-// Stored as { home: {...}, bio: {...}, projects: {...}, connect: {...} } - only
-// the strings that differ from the in-code defaults need to be present.
 
 export const subscribeCopy = (cb, onErr) =>
   portfolioSnap('copy', cb, onErr);
 
-// Full replace (no merge): the editor always sends the complete set of
-// overrides, so clearing a field must actually remove it and fall back to code.
 export const updateCopy = (data) =>
   setDoc(portfolioRef('copy'), { ...data, updatedAt: serverTimestamp() });
 
 // ─── Skills ──────────────────────────────────────────────────────────────────
 
-// Normalise whatever shape is in Firestore to { categories: [{name, items}] }
-// so the admin editor always has a consistent structure to work with.
 const normalizeSkills = (data) => {
   if (!data) return { categories: [] };
   if (Array.isArray(data.categories)) return data;
@@ -87,8 +87,6 @@ export const updateSocial = (platforms) =>
 
 // ─── Experience ───────────────────────────────────────────────────────────────
 
-// Fetch ALL docs (no orderBy so nothing is excluded), then sort client-side.
-// orderBy('order') silently drops documents that lack the field entirely.
 export const subscribeExperience = (cb, onErr) =>
   onSnapshot(
     collection(db, 'experience'),
@@ -162,10 +160,6 @@ export const subscribeGitHubProjects = (cb, onErr) =>
     onErr,
   );
 
-// ─── Studio sites (client work, synced from the FM-Web-Studio org) ────────────
-// Read-only from here on purpose: every field is derived from the repo's own
-// .showcase.json, so an edit made here would be silently reverted by the next
-// sync. Change the manifest in the repo instead.
 
 export const subscribeStudioSites = (cb, onErr) =>
   onSnapshot(
@@ -174,8 +168,6 @@ export const subscribeStudioSites = (cb, onErr) =>
     onErr,
   );
 
-export const updateGitHubProject = (id, data) =>
-  updateDoc(doc(db, 'githubProjects', id), { ...data, updatedAt: serverTimestamp() });
 
 export const deleteGitHubProject = (id) =>
   deleteDoc(doc(db, 'githubProjects', id));

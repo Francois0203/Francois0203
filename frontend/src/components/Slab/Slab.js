@@ -1,15 +1,10 @@
 import styles from './Slab.module.css';
 
-/*
- * A slab of glass. `live` turns on backdrop-filter, which re-blurs
- * everything behind it on every frame its backdrop moves, and the field
- * behind it moves constantly. Two or three on screen, no more.
- */
 const Slab = ({
   as: Tag = 'div',
   live = false,
   interactive = false,
-  sheen = false,
+  pad = false,
   className = '',
   children,
   ...rest
@@ -19,7 +14,7 @@ const Slab = ({
       styles.slab,
       live && styles.live,
       interactive && styles.interactive,
-      sheen && styles.sheen,
+      pad && styles.pad,
       className,
     ].filter(Boolean).join(' ')}
     {...rest}

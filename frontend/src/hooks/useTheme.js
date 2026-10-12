@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 const STORAGE_KEY = 'userSessionInfo';
 const THEME_FIELD = 'prefersColorScheme';
 
-// ─── INITIAL VALUE ────────────────────────────────────────────────────────────
-// Reads stored theme; falls back to OS prefers-color-scheme.
 const getInitialTheme = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -19,11 +17,9 @@ const getInitialTheme = () => {
     // corrupted storage - fall through to system preference
   }
 
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'light';
 };
 
-// ─── HOOK ────────────────────────────────────────────────────────────────────
-// Manages light/dark state - syncs DOM attribute and persists to storage.
 export const useTheme = () => {
   const [theme, setTheme] = useState(getInitialTheme);
 
@@ -41,8 +37,6 @@ export const useTheme = () => {
     }
   }, [theme]);
 
-  // ─── OS PREFERENCE LISTENER ─────────────────────────────────────────────────
-  // Only auto-switches when the user has no explicit stored preference.
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
     if (!mq) return;

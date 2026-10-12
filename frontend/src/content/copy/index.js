@@ -5,8 +5,6 @@ import { CONNECT_FIELDS }  from './connect';
 import { FOOTER_FIELDS }   from './footer';
 import { CREDENTIALS_FIELDS } from './credentials';
 
-// Groups the editable copy per page for the admin "Site Copy" editor. The
-// `key` matches the group name pages read from the portfolio/copy document.
 export const COPY_SCHEMA = [
   { key: 'home',     label: 'Home',     fields: HOME_FIELDS },
   { key: 'bio',      label: 'Bio',      fields: BIO_FIELDS },

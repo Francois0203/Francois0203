@@ -1,6 +1,3 @@
-/* Layout-only. Buttons need a class from styles/admin-support.css:
-   btn-success (primary), btn-outline, btn-danger. */
-
 /* ── Form grid ─────────────────────────────────────────────────────────────── */
 .grid {
   display: grid;
@@ -149,12 +146,44 @@
   text-overflow: ellipsis;
 }
 
-/* Small number input specifically for the order column */
-.orderInput {
-  width: 60px;
-  padding: 6px 8px;
-  text-align: center;
+/* ── Drag to reorder ───────────────────────────────────────────────────────── */
+.handle {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--secondary-text-color);
+  cursor: grab;
+  touch-action: none;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
+.handle svg { width: 10px; height: 16px; fill: currentColor; }
+.handle:hover { color: var(--primary-text-color); background: var(--background-2); }
+.handle:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 2px; }
+.handle:active { cursor: grabbing; }
+
+/* The item being carried: lifted above the others, everything else steady. */
+[data-dragging] {
+  position: relative;
+  z-index: 5;
+  border-color: var(--accent-1) !important;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  cursor: grabbing;
+}
+
+.chipDraggable {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.chipDraggable:active { cursor: grabbing; }
+
+/* Wrapper div from the sortable list, so a chip row keeps flowing. */
+.chipSlot { display: inline-flex; }
 
 /* ── Toggle row (checkbox + label) ─────────────────────────────────────────── */
 .toggleRow {
@@ -237,4 +266,10 @@
   .card { padding: var(--spacing-md); }
   .actions { justify-content: stretch; }
   .actions button { flex: 1; }
+}
+
+.chipSlot[data-dragging] { box-shadow: none; }
+.chipSlot[data-dragging] > * {
+  border-color: var(--accent-1);
+  box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.7);
 }

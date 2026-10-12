@@ -1,11 +1,7 @@
-/* Dev-only fixtures.
-   Firestore does not resolve under Chrome's virtual time budget, so the live
-   pages screenshot as skeletons. These stand in for the real documents so a
-   page can be looked at in its loaded state. Shapes match what
-   firebase/firestore.js hands back, not what is stored. */
+import { tidy } from '../content/tidy';
 
 export const contentValue = {
-  data: {
+  data: tidy({
     personal: {
       name: 'Francois Meiring',
       photoUrl: '',
@@ -21,6 +17,10 @@ export const contentValue = {
     social: [
       { key: 'github', platform: 'GitHub', url: 'https://github.com/Francois0203' },
       { key: 'linkedin', platform: 'LinkedIn', url: 'https://linkedin.com/in/' },
+      { key: 'instagram', platform: 'Instagram', url: 'https://www.instagram.com/' },
+      { key: 'orcid', platform: 'ORCID', url: 'https://orcid.org/' },
+      { key: 'hackerrank', platform: 'HackerRank', url: 'https://www.hackerrank.com/' },
+      { key: 'codewars', platform: 'Codewars', url: 'https://www.codewars.com/' },
     ],
     donation: { enabled: true, link: 'https://example.com/support', message: 'If something here helped you, this keeps it going.', buttonText: '' },
     skills: {
@@ -36,20 +36,20 @@ export const contentValue = {
     experience: [
       {
         id: 'shareforce', company: 'Shareforce', role: 'Junior Software Developer',
-        period: 'May 2026 - Present', order: 0,
+        start: 'May 2026', end: '', order: 0,
         description: 'Core equity management platform. Deployment pipelines, a system refactor, feature design and production defects.',
         tags: ['Django', 'Python', 'PostgreSQL', 'Redis', 'Heroku', 'AWS', 'CI/CD'],
       },
       {
         id: 'aquatico', company: 'Aquatico', role: 'Full Stack Software Developer',
-        period: 'January 2025 - April 2026', order: 1,
+        start: 'January 2025', end: 'April 2026', order: 1,
         description: 'Replaced the company\'s operational software with microservices on Docker and Kubernetes.',
         tags: ['Docker', 'Kubernetes', 'GitHub CI/CD', 'Nginx', 'Node.js', 'React'],
       },
     ],
     education: [
-      { id: 'msc', institution: 'North-West University', degree: 'MSc', field: 'Computer Science', period: '2026 - Present', order: 0 },
-      { id: 'hons', institution: 'North-West University', degree: 'BSc Hons', field: 'Computer Science', period: '2024', order: 1 },
+      { id: 'msc', institution: 'North-West University', degree: 'MSc', field: 'Computer Science', start: '2026', end: '', order: 0, description: 'Distributed computing for astronomical data processing.' },
+      { id: 'hons', institution: 'North-West University', degree: 'BSc Hons', field: 'Computer Science', start: '2024', end: '2024', order: 1 },
     ],
     certifications: [
       { id: 'naui', credential: 'NAUI Open Water Scuba Diver', issuer: 'National Association of Underwater Instructors', start: 'Jun 2026', end: 'does not expire', order: 100 },
@@ -60,7 +60,7 @@ export const contentValue = {
       { id: 'aws-dva-c02', credential: 'AWS Certified Developer - Associate', issuer: 'Amazon Web Services', code: 'DVA-C02', level: 'Associate', status: 'planned', order: 3 },
       { id: 'aws-dop-c02', credential: 'AWS Certified DevOps Engineer - Professional', issuer: 'Amazon Web Services', code: 'DOP-C02', level: 'Professional', status: 'planned', order: 4 },
     ],
-  },
+  }),
   loading: false,
   error: null,
   overrides: {},
@@ -75,9 +75,10 @@ export const contentValue = {
   projectsLoading: false,
   projectsError: null,
   studioSites: [
-    { id: 's1', name: 'Riverbend Dental', description: 'A booking-first site for a two-chair practice.', featured: true, order: 0, sites: [{ label: 'Live', url: 'https://example.com', embeddable: false, reachable: true }] },
-    { id: 's2', name: 'Kloof Coffee', description: 'Menu, hours and a wholesale enquiry form.', featured: true, order: 1, sites: [{ label: 'Live', url: 'https://example.org', embeddable: false, reachable: true }] },
-    { id: 's3', name: 'Meridian Survey', description: 'A portfolio of survey work with downloadable plans.', featured: true, order: 2, sites: [{ label: 'Live', url: 'https://example.net', embeddable: false, reachable: true }] },
+    { id: 's1', name: 'Riverbend Dental', description: 'A booking-first site for a two-chair practice.', featured: true, order: 0, stack: ['React', 'Firebase'], sites: [{ label: 'Live', url: 'https://example.com', embeddable: false, reachable: true }] },
+    { id: 's2', name: 'Kloof Coffee', description: 'Menu, hours and a wholesale enquiry form.', featured: true, order: 1, stack: ['Vite', 'Firebase'], sites: [{ label: 'Site', url: 'https://example.org', embeddable: false, reachable: true }, { label: 'Admin', url: 'https://admin.example.org', embeddable: false, reachable: true }] },
+    { id: 's3', name: 'Meridian Survey', description: 'A portfolio of survey work with downloadable plans.', featured: true, order: 2, stack: ['React', 'Firebase', 'Cloud Functions'], sites: [{ label: 'Live', url: 'https://example.net', embeddable: false, reachable: true }] },
+    { id: 's4', name: 'Hout Bay Yoga', description: 'Timetable and bookings for a studio.', featured: false, order: 3, stack: ['React'], sites: [{ label: 'Live', url: 'https://example.edu', embeddable: false, reachable: true }] },
   ],
   studioLoading: false,
   studioError: null,

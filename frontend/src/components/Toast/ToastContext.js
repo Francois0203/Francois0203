@@ -3,16 +3,8 @@ import { createPortal } from 'react-dom';
 import { MdInfoOutline, MdCheckCircleOutline, MdWarningAmber, MdErrorOutline } from 'react-icons/md';
 import styles from './Toast.module.css';
 
-/*
- * The one place the site shows a toast. Transient only: anything to act on
- * belongs inline, next to its cause.
- *
- *   const { toast } = useToast();
- *   toast.success('Saved');
- *   toast.error('Could not save', { title: 'Skills' });
- */
 
-export const TOAST_TYPES = ['info', 'success', 'warning', 'error'];
+const TOAST_TYPES = ['info', 'success', 'warning', 'error'];
 
 const ICONS = {
   info: MdInfoOutline,

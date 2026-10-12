@@ -1,11 +1,3 @@
-/* Everything /admin needs that the public site does not.
-
-   The admin's stylesheets were written against the previous design system and
-   still name its tokens. Rather than rewrite six hundred lines of CSS that
-   works, the old names are aliased onto the new ones here, so /admin picks up
-   the autumn palette, the type and the radii for free. A separate sheet, so it
-   is obvious this exists for one route and can go when the admin is rebuilt. */
-
 :root {
     --primary-text-color: var(--ink);
     --secondary-text-color: var(--ink-2);

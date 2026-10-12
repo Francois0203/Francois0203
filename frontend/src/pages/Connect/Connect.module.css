@@ -1,7 +1,5 @@
-/* One screen where it fits: a two column split rather than a header stacked
-   on a body, which is what took a third of the height out of it. */
-
 .page {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     gap: clamp(1.75rem, 5vw, 5rem);
@@ -9,93 +7,91 @@
     width: 100%;
     max-width: var(--max);
     margin: 0 auto;
-    padding: calc(68px + clamp(2rem, 6vh, 4rem)) var(--gutter) 0;
+    padding: calc(64px + 3rem) var(--gutter) 0;
 }
 
-/* ── The left column ────────────────────────────────────────────────────── */
+.side,
+.form { position: relative; z-index: 1; }
 
-.eyebrow {
-    margin: 0 0 0.9rem;
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--live);
+.side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
 }
 
-/* em, not ch: the cap has to be relative to the display size, or it resolves
-   against the body size and slices the heading in half. */
 .title {
     margin: 0;
-    max-width: 9em;
-    font-size: var(--display-lg);
-    line-height: 0.9;
+    max-width: 10ch;
+    font-size: var(--display-xxl);
+    line-height: 0.95;
 }
 
 .lede {
-    margin: 1.25rem 0 0;
+    margin: 0;
     max-width: 38ch;
     font-size: var(--text-lg);
     line-height: 1.5;
     color: var(--ink-2);
 }
 
-/* Ruled rows, so they read as a record and not as a second form. */
 .details {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    /* Stretch, not baseline: baseline shrink-wraps each cell, so a label that
-       wraps to two lines ends at a different height from its value and the two
-       halves of the row rule sit at different y. */
     align-items: stretch;
     gap: 0;
-    margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--rule);
+    width: 100%;
+    margin: 0.75rem 0 0;
+    padding: 0.5rem 1.4rem;
+    border-radius: var(--r-card);
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
 }
 
 .details dt {
     grid-column: 1;
-    padding: 0.55rem 1.5rem 0.55rem 0;
+    padding: 0.6rem 1.5rem 0.6rem 0;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     letter-spacing: var(--track-label);
-    text-transform: uppercase;
     color: var(--ink-3);
 }
 
 .details dd {
     grid-column: 2;
     margin: 0;
-    padding: 0.55rem 0;
+    padding: 0.6rem 0;
     font-size: var(--text-sm);
     color: var(--ink-2);
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .details dt,
 .details dd { border-bottom: 1px solid var(--rule); }
 
-.details dt:last-of-type,
-.details dd:last-of-type { border-bottom: 0; }
-
 .details a {
     color: var(--ink);
     text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color var(--t) var(--ease), border-color var(--t) var(--ease);
+    border-bottom: 1px solid var(--rule-strong);
+    transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
 }
 
-.details a:hover { color: var(--live); border-bottom-color: var(--live); }
+.details a:hover { color: var(--accent-text); border-color: currentColor; }
 
-.plain { color: var(--ink-3); }
+.plain { color: var(--ink-2); }
+.social { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; }
 
-.social { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; }
-
-.support {
-    margin-top: clamp(1.5rem, 3vw, 2rem);
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--rule);
+.details a.socialLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-bottom: 0;
 }
+
+.socialIcon { width: 15px; height: 15px; flex: none; }
+
+.support { margin-top: 0.5rem; }
 
 .support p {
     margin: 0 0 1rem;
@@ -106,55 +102,50 @@
 
 /* ── The form ───────────────────────────────────────────────────────────── */
 
-.form {
-    position: relative;
-    padding: clamp(1.5rem, 3vw, 2.25rem);
-    overflow: hidden;
+.form { overflow: hidden; }
+
+.formHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--rule);
 }
 
 .formTitle {
-    margin: 0 0 1.5rem;
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 600;
-    letter-spacing: -0.03em;
+    font-size: var(--text-lg);
+    font-weight: 500;
     color: var(--ink);
 }
 
-/* Name and email share a row wherever there is space. */
+.formBody { padding: clamp(1.25rem, 3vw, 1.75rem); }
+
 .pair {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 0 1rem;
 }
 
-.field { margin-bottom: 1rem; }
+.field { margin-bottom: 1.1rem; }
 
 .field label {
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.45rem;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
-    font-weight: 500;
     letter-spacing: var(--track-label);
-    text-transform: uppercase;
     color: var(--ink-2);
 }
 
 .control { position: relative; }
 
-.control input,
-.control textarea {
-    background: color-mix(in srgb, var(--ground) 45%, transparent);
-    border-color: var(--rule);
-}
-
-/* Only the rule moves: recolouring the input makes every field flash. */
 .underline {
+    display: none;
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 0.75rem;
+    right: 0.75rem;
     bottom: 0;
-    height: 2px;
+    height: 1px;
     background: var(--live);
     transform: scaleX(0);
     transform-origin: left;
@@ -164,34 +155,23 @@
 
 .control:focus-within .underline { transform: scaleX(1); }
 
-.control:focus-within input,
-.control:focus-within textarea { border-color: var(--rule-strong); }
-
 .error {
     margin: 0.4rem 0 0;
     font-size: var(--text-sm);
-    color: #e0614a;
+    color: var(--tone-error);
 }
 
 .field input[aria-invalid='true'],
-.field textarea[aria-invalid='true'] { border-color: #e0614a; }
+.field textarea[aria-invalid='true'] { border-color: var(--tone-error); }
 
 /* ── Sent ───────────────────────────────────────────────────────────────── */
 
 .sent {
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
-    padding: clamp(1rem, 3vw, 2rem) 0;
-}
-
-.burst {
-    /* Anchored to where the button was. */
-    top: auto;
-    bottom: 0;
-    height: 60%;
+    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.25rem, 3vw, 1.75rem);
 }
 
 .sentMark {
@@ -201,8 +181,8 @@
     width: 3rem;
     height: 3rem;
     border-radius: var(--r-control);
-    background: color-mix(in srgb, var(--live) 16%, transparent);
-    color: var(--live);
+    background: var(--live);
+    color: var(--on-live);
     animation: markIn 620ms var(--ease) both;
 }
 
@@ -210,35 +190,15 @@
 
 @keyframes markIn {
     from { opacity: 0; transform: scale(0.7); }
-    to { opacity: 1; transform: none; }
 }
 
-.sent h2 {
-    margin: 0.35rem 0 0;
-    font-family: var(--font-display);
-    font-size: var(--display-sm);
-    font-weight: 600;
-    letter-spacing: var(--track-display);
-    color: var(--ink);
-}
-
-.sent p {
-    margin: 0 0 0.75rem;
-    max-width: 34ch;
-    color: var(--ink-2);
-}
+.sent h2 { margin: 0.35rem 0 0; font-size: var(--display-sm); }
+.sent p { margin: 0 0 0.75rem; max-width: 34ch; color: var(--ink-2); }
 
 @media (prefers-reduced-motion: reduce) {
     .sentMark { animation: none; }
 }
 
-/* ── Narrow ─────────────────────────────────────────────────────────────── */
-
 @media (max-width: 900px) {
-    .page {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 2rem;
-    }
-
-    .details { margin-top: 1.5rem; }
+    .page { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
 }

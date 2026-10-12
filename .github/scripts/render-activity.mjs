@@ -1,16 +1,3 @@
-/**
- * Renders the contribution history as two self-contained animated SVGs (light
- * and dark), plus a small stats strip, into ./dist for the `output` branch.
- *
- * Why generate them here instead of using github-readme-stats or
- * github-readme-activity-graph: those public instances are chronically
- * rate-limited (503) or out of quota (402), which shows up on the profile as a
- * broken image. This reads GitHub's own public contributions endpoint, needs no
- * token, and commits the result, so the README can never render a missing image.
- *
- * The animation is pure CSS inside the SVG. GitHub's image proxy passes the
- * bytes through untouched, so it plays when the README loads.
- */
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const USER = process.env.GITHUB_USER || 'Francois0203';

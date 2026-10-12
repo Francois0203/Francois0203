@@ -4,11 +4,6 @@ import { useToast } from '../../../components';
 import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
-/*
- * Read-only on purpose: every field comes from the repo's own `.showcase.json`,
- * so an edit here would be overwritten by the next sync. This screen exists to
- * answer "why isn't my site showing up".
- */
 
 const SOURCE_LABEL = {
   'showcase.json': '.showcase.json',

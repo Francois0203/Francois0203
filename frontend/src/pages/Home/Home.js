@@ -7,21 +7,18 @@ import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
+import { periodOf, isCurrent, startKey } from '../../content/records';
 import Credentials, { toCredential, onPath } from '../../components/Credentials';
 import Button from '../../components/Button';
-import LiveSite from '../../components/LiveSite';
-import Tally from '../../components/Tally';
-import Stack from '../../components/Stack';
-import Route from '../../components/Route';
+import Chip from '../../components/Chip';
+import Headline from '../../components/Headline';
+import Portrait from '../../components/Portrait';
+import Story from '../../components/Story';
+import RunsOn from '../../components/RunsOn';
+import Curtain from '../../components/Curtain';
+import Fleet from '../../components/Fleet';
 import styles from './Home.module.css';
 
-/*
- * Home. Six blocks, no two built the same way, two of them whole sections
- * of deep ground so the page alternates rather than running as one scroll.
- *
- * Nothing animates an ancestor of a live iframe: opacity or a transform
- * above one forces it to rasterise into the parent layer every frame.
- */
 
 const itemLabel = (s) => (typeof s === 'string' ? s : s?.name ?? s?.title ?? String(s));
 
@@ -36,46 +33,32 @@ const flattenSkills = (skills) => {
     .flatMap(([name, arr]) => arr.map(i => ({ label: itemLabel(i), group: name })));
 };
 
-const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june',
-  'july', 'august', 'september', 'october', 'november', 'december'];
-
-/* Year * 12 + month, so two entries starting the same year do not tie.
-   Only a month written before the year belongs to the start. */
-const startKey = (record) => {
-  const text = String(record.start || record.period || '');
-  const year = /\b(19|20)\d{2}\b/.exec(text);
-  if (!year) return null;
-  const head = text.slice(0, year.index).toLowerCase();
-  const month = MONTHS.findIndex(m => head.includes(m.slice(0, 3)));
-  return Number(year[0]) * 12 + (month >= 0 ? month : 0);
-};
-
-const toRoute = ({ experience = [], education = [] }) => {
+const toChapters = ({ experience = [], education = [] }) => {
   const ex = experience.map(e => ({
     id: `exp-${e.id}`,
-    place: e.company || e.employer || e.organisation || 'Role',
-    what: e.role || e.position || e.title,
-    period: e.period || e.dates || null,
-    note: e.description || e.summary,
+    place: e.company,
+    what: e.role,
+    period: periodOf(e),
+    note: e.description,
+    tags: e.tags ?? [],
     kind: 'experience',
     order: e.order ?? 0,
+    key: startKey(e),
   }));
 
   const ed = education.map(e => ({
     id: `edu-${e.id}`,
-    place: e.institution || e.school || e.university || 'Education',
-    what: [e.degree || e.qualification, e.field || e.major].filter(Boolean).join(', '),
-    period: e.period || e.dates || null,
-    note: e.description || e.summary,
+    place: e.institution,
+    what: [e.degree, e.field].filter(Boolean).join(', '),
+    period: periodOf(e),
+    note: e.description,
+    tags: e.tags ?? [],
     kind: 'education',
     order: e.order ?? 0,
+    key: startKey(e),
   }));
 
-  /* Oldest first: it is a journey, and the rail that draws as you scroll
-     only means anything travelled forwards. Undated entries are the school
-     era ones and sort to the front, experience before education. */
   return [...ex, ...ed]
-    .map(s => ({ ...s, key: startKey(s) }))
     .sort((a, b) => {
       if (a.key !== null && b.key !== null) return a.key - b.key;
       if (a.key === null && b.key === null) {
@@ -86,223 +69,143 @@ const toRoute = ({ experience = [], education = [] }) => {
     });
 };
 
-/* Counted from real records. Anything that cannot be derived is left out
-   rather than estimated. */
-const buildFigures = ({ experience, education, skills, sites, projects, certifications }) => {
-  const years = (() => {
-    const found = [...experience, ...education]
-      .map(e => /\b(19|20)\d{2}\b/.exec(String(e.period ?? '')))
-      .filter(Boolean).map(m => Number(m[0]));
-    return found.length ? new Date().getFullYear() - Math.min(...found) : null;
-  })();
+const shortCert = (name) => name.replace(/^AWS Certified\s+/i, '');
 
-  const built = (sites?.length ?? 0) + (projects?.length ?? 0);
-  const earned = certifications.filter(c => c.status === 'earned').length;
-
-  return [
-    years !== null && { value: years, label: 'Years in the work' },
-    skills.length > 0 && { value: skills.length, label: 'Tools in regular use' },
-    earned > 0 && { value: earned, label: 'Certifications earned' },
-    education.length > 0 && { value: education.length, label: 'Qualifications' },
-    built > 0 && { value: built, label: 'Sites and repositories' },
-  ].filter(Boolean);
+const markName = (name) => {
+  const parts = name.split(' ');
+  return parts.length > 1 ? `${parts.slice(0, -1).join(' ')} *${parts[parts.length - 1]}*` : name;
 };
 
 const Home = () => {
-  const { data, loading } = usePortfolioData();
+  const { data } = usePortfolioData();
   const { overrides } = useSiteCopy();
-  const { featured, loading: sitesLoading } = useStudioSites({ featuredLimit: 3 });
+  const { sites, loading: sitesLoading } = useStudioSites();
   const t = resolveGroup(HOME_FIELDS, overrides.home);
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
 
   const personal = data?.personal ?? {};
-  const certifications = useMemo(() => (data?.certifications ?? []).filter(onPath), [data]);
   const contact = data?.contact ?? {};
   const social = data?.social ?? [];
+  const name = personal.name ?? 'Francois Meiring';
 
   const github = social.find(s => (s.key || '').toLowerCase() === 'github');
   const user = github?.url ? github.url.replace(/\/$/, '').split('/').pop() : null;
   const photo = personal.photoUrl || (user ? `https://github.com/${user}.png` : null);
 
-  const skills = useMemo(() => flattenSkills(data?.skills), [data]);
-  const route = useMemo(() => toRoute(data ?? {}), [data]);
+  const certifications = useMemo(() => (data?.certifications ?? []).filter(onPath), [data]);
+  const nextCert = useMemo(() => certifications.map(toCredential)
+    .filter(c => c.status === 'booked' || c.status === 'studying')
+    .sort((a, b) => a.order - b.order)[0], [certifications]);
 
-  const figures = useMemo(() => buildFigures({
-    experience: data?.experience ?? [],
-    education: data?.education ?? [],
-    skills,
-    sites: featured ?? [],
-    projects: data?.projects ?? [],
-    certifications: certifications.map(toCredential),
-  }), [data, skills, featured, certifications]);
+  const role = (data?.experience ?? []).find(isCurrent);
+  const study = (data?.education ?? []).find(isCurrent);
 
-  // The same "present" test the route uses, so the two cannot disagree.
-  const now = useMemo(() => {
-    const present = /present/i;
-    const active = certifications.map(toCredential)
-      .filter(c => c.status === 'booked' || c.status === 'studying')
-      .sort((a, b) => a.order - b.order)[0];
-    return [
-      (data?.experience ?? []).find(e => present.test(String(e.period ?? ''))),
-      (data?.education ?? []).find(e => present.test(String(e.period ?? ''))),
-      active && {
-        role: active.name,
-        company: active.status === 'booked' ? badges.statusBooked : badges.statusStudying,
-      },
-    ].filter(Boolean);
-  }, [data, certifications, badges.statusBooked, badges.statusStudying]);
+  const tools = useMemo(() => {
+    const all = flattenSkills(data?.skills).map(s => s.label);
+    return [...new Set(all)].slice(0, 16);
+  }, [data]);
 
-  const available = contact.availability?.status === 'open';
-  const name = personal.name ?? 'Francois Meiring';
-  const [first, ...rest] = name.split(' ');
+  const chapters = useMemo(() => {
+    const list = toChapters(data ?? {});
+    if (nextCert) {
+      list.push({
+        id: 'next',
+        kind: t.storyNextKind,
+        place: shortCert(nextCert.name),
+        what: nextCert.status === 'booked' ? badges.statusBooked : badges.statusStudying,
+        period: nextCert.examDate || String(new Date().getFullYear()),
+        note: t.storyNextNote,
+        tags: certifications.map(toCredential).map(c => c.code).filter(Boolean),
+      });
+    }
+    return list;
+  }, [data, nextCert, certifications, t.storyNextKind, t.storyNextNote, badges.statusBooked, badges.statusStudying]);
 
-  const [openRef, openShown] = useReveal({ threshold: 0 });
-  const [sayRef, sayShown] = useReveal({ threshold: 0.2 });
-  const [workRef, workShown] = useReveal({ threshold: 0.05 });
+  const facts = [
+    role && { key: 'now at', text: role.company, live: true, depth: 1.4 },
+    contact.location && { key: 'based', text: contact.location, depth: 0.8 },
+    nextCert && { key: nextCert.code.toLowerCase(), text: nextCert.status === 'booked' ? badges.statusBooked : badges.statusStudying, depth: 1.8 },
+    study && { key: 'studying', text: [study.degree, study.field].filter(Boolean).join(' ') || study.institution, depth: 1.1 },
+  ].filter(Boolean);
+
+  const chip = contact.availability?.status === 'open' ? t.availabilityLabel : (role ? String(role.role).toLowerCase() : 'devops and software engineering');
+
+  const [heroRef, heroShown] = useReveal({ threshold: 0 });
+  const [storyRef, storyShown] = useReveal({ threshold: 0.3 });
+  const [workRef, workShown] = useReveal({ threshold: 0.3 });
+  const [pathRef, pathShown] = useReveal({ threshold: 0.3 });
 
   return (
     <div className={styles.page}>
 
-      {/* 1. The opening */}
-      <section
-        ref={openRef}
-        className={styles.open}
-        data-shown={openShown ? '' : undefined}
-        style={{ '--step': '90ms' }}
-      >
-        {photo && (
-          <div className={styles.portrait} aria-hidden="true">
-            <img src={photo} alt="" width="900" height="1200" fetchPriority="high" />
+      {/* 1. Who */}
+      <section ref={heroRef} className={styles.hero} data-shown={heroShown ? '' : undefined}>
+        <div className={styles.heroCopy}>
+          <div data-rise style={{ '--i': 0 }}>
+            <Chip dot="live">{chip}</Chip>
           </div>
-        )}
 
-        <p className={styles.role} data-rise style={{ '--i': 0 }}>{t.heroLede}</p>
+          <Headline as="h1" text={markName(name)} tone="yellow" className={styles.name} start={1} />
 
-        <h1 className={styles.name}>
-          <span className="mask"><span style={{ '--i': 1 }}>{first}</span></span>
-          {rest.length > 0 && (
-            <span className="mask"><span style={{ '--i': 2 }}>{rest.join(' ')}</span></span>
-          )}
-        </h1>
+          <p className={styles.intro} data-rise style={{ '--i': 4 }}>{t.heroIntro}</p>
 
-        <div className={styles.openFoot}>
-          <p className={styles.say} data-rise style={{ '--i': 3 }}>{t.heroStatement}</p>
-
-          <div className={styles.openActions} data-rise style={{ '--i': 4 }}>
-            <Button as={Link} to="/projects" variant="fill">{t.heroCtaPrimary}</Button>
+          <div className={styles.actions} data-rise style={{ '--i': 5 }}>
+            <Button as={Link} to="/projects" variant="fill" arrow>{t.heroCtaPrimary}</Button>
             <Button as={Link} to="/connect" variant="line">{t.heroCtaSecondary}</Button>
           </div>
+        </div>
 
-          {available && (
-            <p className={styles.open_available} data-rise style={{ '--i': 5 }}>
-              {t.availabilityLabel}
-            </p>
-          )}
+        <div className={styles.heroPortrait} data-rise style={{ '--i': 2, '--rise': '28px' }}>
+          <Portrait src={photo} name={name} facts={facts} />
         </div>
       </section>
 
-      {/* 2. The statement. A whole section on the deep ground. */}
-      <section
-        ref={sayRef}
-        id="about"
-        className={`${styles.band} on-deep`}
-        data-shown={sayShown ? '' : undefined}
-        style={{ '--step': '110ms' }}
-      >
-        <div className={styles.blockInner}>
-          <h2 className={styles.statement}>
-            {String(t.statementBody).split('. ').filter(Boolean).map((line, i) => (
-              <span className="mask" key={i}>
-                <span style={{ '--i': i }}>{line.endsWith('.') ? line : `${line}.`}</span>
-              </span>
-            ))}
-          </h2>
-
-          {now.length > 0 && (
-            <dl className={styles.now} data-rise style={{ '--i': 4 }}>
-              <dt className="label">{t.nowTitle}</dt>
-              {now.map((entry, i) => (
-                <dd key={i}>
-                  <strong>
-                    {entry.role || entry.position || entry.degree || entry.qualification}
-                  </strong>
-                  <span>
-                    {entry.company || entry.employer || entry.institution || entry.university}
-                  </span>
-                </dd>
-              ))}
-            </dl>
-          )}
-        </div>
-      </section>
-
-      {/* 3. The ledger */}
-      {figures.length > 0 && (
-        <section className={styles.block}>
-          <Tally figures={figures} />
+      {/* Tools */}
+      {tools.length > 0 && (
+        <section className={`${styles.block} ${styles.toolsBlock}`}>
+          <RunsOn label={t.runsOnTitle} items={tools} />
         </section>
       )}
 
-      {/* 4. The work. Live cross origin iframes: nothing above them animates. */}
-      <section
-        ref={workRef}
-        className={styles.block}
-        data-shown={workShown ? '' : undefined}
-      >
-        <header className={styles.head}>
-          <h2>{t.workTitle}</h2>
-          <p>{t.workLede}</p>
-          <Button as={Link} to="/projects" variant="text">{t.workCta}</Button>
-        </header>
+      {/* 2. How he got here */}
+      {chapters.length > 0 && (
+        <section id="story" className={`${styles.block} ${styles.story}`}>
+          <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
+            <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
+            <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.storyLede}</p>
+          </header>
+          <Story chapters={chapters} photo={photo} name={name} />
+        </section>
+      )}
 
+      {/* Interval */}
+      <Curtain label={t.curtainLabel} />
+
+      {/* 3. What he has built */}
+      <section id="work" className={styles.block}>
+        <header ref={workRef} className={styles.headRow} data-shown={workShown ? '' : undefined}>
+          <p className={styles.lede} data-rise style={{ '--i': 1 }}>{t.workLede}</p>
+          <div data-rise style={{ '--i': 5 }}>
+            <Button as={Link} to="/projects" variant="text" arrow>{t.workCta}</Button>
+          </div>
+        </header>
         {sitesLoading
           ? <div className={styles.waiting} aria-hidden="true" />
-          : featured.length === 0
+          : sites.length === 0
             ? <p className={styles.empty}>{t.workEmpty}</p>
-            : featured.map((site, i) => (
-              <LiveSite key={site.id} site={site} name={site.name} index={i} />
-            ))}
+            : <Fleet sites={sites} />}
       </section>
 
-      {/* 5. The stack, on the deep ground. */}
-      {(loading || skills.length > 0) && (
-        <section id="capabilities" className={`${styles.band} on-deep`}>
-          <div className={styles.bandInner}>
-            <header className={styles.head}>
-              <h2>{t.toolkitTitle}</h2>
-            </header>
-            {loading && skills.length === 0
-            ? (
-              <div className={styles.stackSkeleton} aria-hidden="true">
-                {[0, 1, 2].map(i => <span key={i} />)}
-              </div>
-            )
-            : <Stack entries={skills} />}
-          </div>
-        </section>
-      )}
-
-      {/* 6. The certification path */}
+      {/* 4. What is next */}
       {certifications.length > 0 && (
         <section id="certifications" className={styles.block}>
-          <header className={styles.head}>
-            <h2>{badges.title}</h2>
-            <p>{badges.lede}</p>
+          <header ref={pathRef} className={styles.head} data-shown={pathShown ? '' : undefined}>
+            <Headline text={badges.title} tone="pink" className={styles.headTitle} />
+            <p className={styles.lede} data-rise style={{ '--i': 4 }}>{badges.lede}</p>
           </header>
           <Credentials items={certifications} labels={badges} />
         </section>
       )}
-
-      {/* 7. The route so far */}
-      <section className={styles.block}>
-        <header className={styles.head}>
-          <h2>{t.journeyTitle}</h2>
-          <p>{t.journeyLede}</p>
-        </header>
-        {route.length === 0
-          ? <p className={styles.empty}>{t.journeyEmpty}</p>
-          : <Route stops={route} />}
-      </section>
     </div>
   );
 };

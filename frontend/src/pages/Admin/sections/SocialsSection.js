@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeSocial, updateSocial } from '../../../firebase/admin';
 import { useToast, SearchableDropdown } from '../../../components';
+import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
+import { PLATFORMS } from '../../../components/SocialIcon';
 import formStyles from '../AdminForms.module.css';
 
-const PLATFORMS = [
-  'github', 'linkedin', 'instagram', 'facebook',
-  'twitter', 'behance', 'dribbble', 'youtube',
-  'tiktok', 'whatsapp', 'email',
-];
-
-const PLATFORM_OPTIONS = PLATFORMS.map(pl => ({
-  value: pl,
-  label: pl.charAt(0).toUpperCase() + pl.slice(1),
-}));
+const PLATFORM_OPTIONS = PLATFORMS.map(p => ({ value: p.key, label: p.label }));
 
 const platformOption = (key) =>
   PLATFORM_OPTIONS.find(o => o.value === key) ?? null;
@@ -26,7 +19,7 @@ const SocialsSection = () => {
 
   useEffect(() => {
     return subscribeSocial(
-      data => setPlatforms(data),
+      data => setPlatforms(withIds(data)),
       () => toast.error('Failed to load socials'),
     );
   }, [toast]);
@@ -35,13 +28,14 @@ const SocialsSection = () => {
     setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p));
 
   // `platform` mirrors `key` (it drives the card title), so keep both in step.
+  const labelOf = (key) => platformOption(key)?.label ?? key;
   const setPlatform = (i, key) =>
-    setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, key, platform: key } : p));
+    setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, key, platform: labelOf(key) } : p));
 
   const add = () => {
     const url = newUrl.trim();
     if (!url) return;
-    setPlatforms(prev => [...prev, { key: newKey, platform: newKey, url }]);
+    setPlatforms(prev => [...prev, ...withIds([{ key: newKey, platform: labelOf(newKey), url }])]);
     setNewUrl('');
   };
 
@@ -53,7 +47,7 @@ const SocialsSection = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateSocial(platforms.filter(p => p.url?.trim()));
+      await updateSocial(stripIds(platforms.filter(p => p.url?.trim())));
       toast.success('Social links updated');
     } catch {
       toast.error('Failed to save socials');
@@ -64,10 +58,23 @@ const SocialsSection = () => {
 
   return (
     <div>
-      {platforms.map((p, i) => (
-        <div key={i} className={formStyles.card}>
+      {platforms.length > 1 && (
+        <p className={formStyles.meta} style={{ marginBottom: 'var(--spacing-md)' }}>
+          Drag to change the order they appear in, then save.
+        </p>
+      )}
+
+      <SortableList
+        items={platforms}
+        getId={p => p._id}
+        onReorder={setPlatforms}
+        itemClassName={formStyles.card}
+      >
+        {(p, i, handle) => (
+        <>
           <div className={formStyles.cardHeader}>
-            <strong className={formStyles.cardTitle}>{p.platform || p.key}</strong>
+            <DragHandle {...handle} label={`Move ${p.platform || p.key}`} />
+            <strong className={formStyles.cardTitle} style={{ flex: 1 }}>{p.platform || p.key}</strong>
             <button type="button" className="btn-danger" onClick={() => remove(i)}>Remove</button>
           </div>
           <div className={formStyles.row}>
@@ -91,8 +98,9 @@ const SocialsSection = () => {
               />
             </div>
           </div>
-        </div>
-      ))}
+        </>
+        )}
+      </SortableList>
 
       <div className={formStyles.card}>
         <p className={formStyles.cardTitle}>Add social link</p>

@@ -1,6 +1,3 @@
-/* Someone else's markdown, inside our dialog. Kept deliberately plain: a
-   README is a document, and the site's display voice would fight it. */
-
 .body { max-width: 70ch; color: var(--ink-2); font-size: var(--text-sm); }
 
 .body h1, .body h2, .body h3, .body h4 {
@@ -49,8 +46,6 @@
 
 .body hr { margin: 1.5rem 0; }
 
-/* Badge rows: a line of shields at the top of most READMEs. Shrunk and set
-   inline so they read as a strip rather than as content. */
 .badgeRow {
     display: flex;
     flex-wrap: wrap;

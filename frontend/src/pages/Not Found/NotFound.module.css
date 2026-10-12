@@ -4,33 +4,20 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    gap: 1.25rem;
     min-height: 74svh;
     max-width: var(--max);
     margin: 0 auto;
-    padding: 0 var(--gutter);
-    overflow: hidden;
-}
-
-/* The figure at display scale, so the page states what happened before the
-   sentence does. */
-.code {
-    margin: 0 0 0.5rem;
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    font-size: clamp(3.5rem, 12vw, 9rem);
-    font-weight: 600;
-    line-height: 0.9;
-    letter-spacing: -0.06em;
-    color: var(--ember);
+    padding: 64px var(--gutter) 0;
 }
 
 .title {
-    margin: 0 0 1rem;
-    font-size: var(--display-md);
+    margin: 0;
+    font-size: var(--display-xl);
 }
 
 .text {
-    margin: 0 0 2rem;
+    margin: 0;
     max-width: 42ch;
     font-size: var(--text-lg);
     color: var(--ink-2);

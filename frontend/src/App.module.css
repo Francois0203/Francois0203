@@ -1,10 +1,9 @@
-/* Shell. Structure only. */
-
 .app {
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 100svh;
+  overflow-x: clip;
 }
 
 .main {
@@ -12,8 +11,3 @@
   z-index: var(--z-page);
   flex: 1;
 }
-
-/* No transition on this wrapper, deliberately. Opacity here forces every live
-   iframe below it to rasterise into the parent layer, and a transform that
-   persists under animation-fill-mode makes this element the containing block
-   for any position: fixed inside a page. Pages reveal per element instead. */

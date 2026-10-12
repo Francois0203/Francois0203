@@ -1,14 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
+import { tabStyle } from '../../content/navigation';
 import { useAnimations } from '../../hooks';
+import Button from '../Button';
+import Monogram from '../Monogram';
 import styles from './Nav.module.css';
-
-/*
- * A hairline across the top. Transparent over the field until the page
- * moves under it, then it takes a glass backing, driven by one observer on
- * a sentinel rather than a scroll listener. On a narrow screen the routes
- * move into a full screen overlay at display size.
- */
 
 const SunIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
@@ -26,8 +22,8 @@ const MoonIcon = () => (
 const MotionIcon = ({ off }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
     {off
-      ? <><path d="M9 5v14M15 5v14" strokeLinecap="round" /></>
-      : <><path d="M3 12h4l2.5-6 5 12L17 12h4" strokeLinecap="round" strokeLinejoin="round" /></>}
+      ? <path d="M9 5v14M15 5v14" strokeLinecap="round" />
+      : <path d="M3 12h4l2.5-6 5 12L17 12h4" strokeLinecap="round" strokeLinejoin="round" />}
   </svg>
 );
 
@@ -37,7 +33,6 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
   const { reduceAnimations, toggleAnimations } = useAnimations();
   const isDark = theme !== 'light';
 
-  // While the sentinel is visible the reader is at the top.
   const sentinel = useCallback((node) => {
     if (!node) return;
     const obs = new IntersectionObserver(
@@ -51,7 +46,6 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
     document.addEventListener('keydown', onKey);
-    // The page behind an overlay must not scroll.
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -66,19 +60,22 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
     <>
       <div ref={sentinel} className={styles.sentinel} aria-hidden="true" />
 
-      <header className={`${styles.bar} ${stuck ? styles.stuck : ''}`}>
+      <header className={`${styles.bar} ${stuck ? styles.stuck : ''}`} data-print-hide>
         <NavLink to="/" className={styles.mark} onClick={close} aria-label="Home">
-          <span>FM</span>
+          <Monogram size={34} />
+          <span className={styles.markName}>Francois Meiring</span>
         </NavLink>
 
         <nav className={styles.routes} aria-label="Site">
-          {links.map(({ label, to }) => (
+          {links.map(({ label, to, tone }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
+              style={tabStyle(tone)}
               className={({ isActive }) => `${styles.route} ${isActive ? styles.active : ''}`}
             >
+              <span className={styles.tabDot} aria-hidden="true" />
               {label}
             </NavLink>
           ))}
@@ -104,6 +101,10 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
             <MotionIcon off={reduceAnimations} />
           </button>
 
+          <Button as={Link} to="/connect" variant="fill" size="sm" className={styles.cta}>
+            Get in touch
+          </Button>
+
           <button
             type="button"
             className={styles.menu}
@@ -118,17 +119,20 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
 
       <div className={`${styles.overlay} ${open ? styles.overlayOpen : ''}`} hidden={!open}>
         <nav aria-label="Site, expanded">
-          {links.map(({ label, to }, i) => (
+          {links.map(({ label, to, blurb, tone }, i) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
               onClick={close}
               className={({ isActive }) => `${styles.big} ${isActive ? styles.bigActive : ''}`}
-              style={{ '--i': i }}
+              style={{ '--i': i, ...tabStyle(tone) }}
             >
               <span className={styles.bigIndex}>{String(i + 1).padStart(2, '0')}</span>
-              {label}
+              <span className={styles.bigText}>
+                {label}
+                <span className={styles.bigBlurb}>{blurb}</span>
+              </span>
             </NavLink>
           ))}
         </nav>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeInterests, updateInterests } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { SortableList } from './Sortable';
 import formStyles from '../AdminForms.module.css';
 
 const InterestsSection = () => {
@@ -39,14 +40,27 @@ const InterestsSection = () => {
 
   return (
     <div>
-      <div className={formStyles.chips}>
-        {items.map(item => (
-          <span key={item} className={formStyles.chipRemovable}>
-            {item}
-            <button onClick={() => remove(item)} aria-label={`Remove ${item}`}>×</button>
+      {items.length > 1 && (
+        <p className={formStyles.meta} style={{ marginBottom: 'var(--spacing-sm)' }}>
+          Drag to change the order, then save.
+        </p>
+      )}
+
+      <SortableList
+        items={items}
+        getId={item => item}
+        onReorder={setItems}
+        layout="wrap"
+        className={formStyles.chips}
+        itemClassName={formStyles.chipSlot}
+      >
+        {(item, i, handle) => (
+          <span className={formStyles.chipRemovable}>
+            <span {...handle} className={formStyles.chipDraggable} aria-label={`Move ${item}`}>{item}</span>
+            <button type="button" onClick={() => remove(item)} aria-label={`Remove ${item}`}>×</button>
           </span>
-        ))}
-      </div>
+        )}
+      </SortableList>
 
       <div className={formStyles.inlineAdd}>
         <div className="input-container">

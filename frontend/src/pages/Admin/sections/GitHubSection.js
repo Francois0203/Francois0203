@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { subscribeGitHubProjects, updateGitHubProject, deleteGitHubProject } from '../../../firebase/admin';
+import { subscribeGitHubProjects, deleteGitHubProject, reorderCollection } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { SortableList, DragHandle } from './Sortable';
 import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
 const GitHubSection = () => {
   const { toast } = useToast();
   const [projects, setProjects] = useState([]);
-  const [editing, setEditing]   = useState({});
 
   useEffect(() => {
     return subscribeGitHubProjects(
@@ -16,18 +16,14 @@ const GitHubSection = () => {
     );
   }, [toast]);
 
-  const handleOrderChange = (id, val) =>
-    setEditing(prev => ({ ...prev, [id]: val }));
-
-  const saveOrder = async (id) => {
-    const val = editing[id];
-    if (val === undefined) return;
+  const handleReorder = async (next) => {
+    const before = projects;
+    setProjects(next);
     try {
-      await updateGitHubProject(id, { order: Number(val) });
-      toast.success('Order updated');
-      setEditing(prev => { const n = { ...prev }; delete n[id]; return n; });
+      await reorderCollection('githubProjects', next.map(p => p.id));
     } catch {
-      toast.error('Failed to update order');
+      setProjects(before);
+      toast.error('Failed to save the project order');
     }
   };
 
@@ -44,33 +40,30 @@ const GitHubSection = () => {
   return (
     <div>
       <p className={styles.hint}>
-        These entries are synced from GitHub. Edit <code>order</code> to control display order, or remove an entry to hide it.
+        These entries are synced from GitHub. Drag the handle to set the display order, which saves as you drop and survives the next sync, or remove an entry to hide it.
       </p>
 
       {projects.length === 0 && <p className={styles.empty}>No GitHub projects found.</p>}
 
-      {projects.map(p => (
-        <div key={p.id} className={formStyles.listRow}>
-          <div className={formStyles.listRowContent}>
-            <strong>{p.name}</strong>
-            <span className={formStyles.meta}>{[p.language, p.stars != null ? `⭐ ${p.stars}` : null].filter(Boolean).join(' · ')}</span>
-          </div>
-          <div className={formStyles.listRowActions}>
-            <input
-              className={formStyles.orderInput}
-              type="number"
-              value={editing[p.id] !== undefined ? editing[p.id] : (p.order ?? '')}
-              onChange={e => handleOrderChange(p.id, e.target.value)}
-              placeholder="Order"
-              title="Display order"
-            />
-            {editing[p.id] !== undefined && (
-              <button type="submit" className="btn-success" onClick={() => saveOrder(p.id)}>Save</button>
-            )}
-            <button type="button" className="btn-danger" onClick={() => handleDelete(p.id, p.name)}>Remove</button>
-          </div>
-        </div>
-      ))}
+      <SortableList
+        items={projects}
+        getId={p => p.id}
+        onReorder={handleReorder}
+        itemClassName={formStyles.listRow}
+      >
+        {(p, i, handle) => (
+          <>
+            <DragHandle {...handle} label={`Move ${p.name}, position ${i + 1}`} />
+            <div className={formStyles.listRowContent}>
+              <strong>{p.name}</strong>
+              <span className={formStyles.meta}>{[p.language, p.stars != null ? `${p.stars} stars` : null].filter(Boolean).join(' · ')}</span>
+            </div>
+            <div className={formStyles.listRowActions}>
+              <button type="button" className="btn-danger" onClick={() => handleDelete(p.id, p.name)}>Remove</button>
+            </div>
+          </>
+        )}
+      </SortableList>
     </div>
   );
 };

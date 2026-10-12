@@ -1,6 +1,3 @@
-/* The last thing a reader sees when something has failed, so it is written in
-   the same voice as the rest of the site rather than as a system dialog. */
-
 .root {
     display: flex;
     align-items: center;
@@ -81,8 +78,6 @@
 .primary:active,
 .ghost:active { transform: scale(0.98); }
 
-/* Collapsed by default. A stack trace is for whoever is fixing it, not for
-   the person who ran into it. */
 .details {
     width: 100%;
     max-width: 70ch;

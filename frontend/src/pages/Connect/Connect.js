@@ -8,17 +8,12 @@ import { submitContactForm } from '../../firebase/firestore';
 import { useToast } from '../../components';
 import Slab from '../../components/Slab';
 import Button from '../../components/Button';
-import Embers from '../../components/Embers';
+import Chip from '../../components/Chip';
+import Headline from '../../components/Headline';
+import Drift from '../../components/Drift';
 import SupportButton from '../../components/SupportButton';
+import SocialIcon from '../../components/SocialIcon';
 import styles from './Connect.module.css';
-
-/*
- * The letter. Heading and real addresses on the left, form on the right.
- *
- * Labels above inputs, errors below, never a placeholder as a label: a
- * placeholder vanishes the moment someone types, which is when they need
- * it. Validation runs on submit, then per change on a touched field.
- */
 
 const EMPTY = { name: '', email: '', message: '' };
 
@@ -37,7 +32,6 @@ const Field = ({ id, label, error, children }) => (
     <label htmlFor={id}>{label}</label>
     <div className={styles.control}>
       {children}
-      {/* Draws in on focus. */}
       <span className={styles.underline} aria-hidden="true" />
     </div>
     {error && <p className={styles.error} id={`${id}-error`}>{error}</p>}
@@ -80,7 +74,6 @@ const Connect = () => {
     setTouched({ name: true, email: true, message: true });
 
     if (Object.values(found).some(Boolean)) {
-      // Take them to the first thing that needs fixing.
       document.getElementById(Object.keys(found).find(k => found[k]))?.focus();
       return;
     }
@@ -105,39 +98,39 @@ const Connect = () => {
       ref={ref}
       className={styles.page}
       data-shown={shown ? '' : undefined}
-      style={{ '--step': '70ms' }}
     >
+      <Drift shapes={[
+        { kind: 'star', colour: 'orange', x: '100%', y: '150px', size: 'clamp(180px, 22vw, 320px)', speed: 0.6, spin: 25, wide: true },
+      ]} />
       <div className={styles.side}>
-        <p className={styles.eyebrow} data-rise style={{ '--i': 0 }}>{t.eyebrow}</p>
+        <div data-rise style={{ '--i': 0 }}>
+          <Chip dot="live">{t.eyebrow}</Chip>
+        </div>
 
-        <h1 className={styles.title}>
-          <span className="mask"><span style={{ '--i': 1 }}>{t.heading}</span></span>
-        </h1>
+        <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
 
-        <p className={styles.lede} data-rise style={{ '--i': 2 }}>{t.intro}</p>
+        <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
 
-        <dl className={styles.details} data-rise style={{ '--i': 3 }}>
-          {loading && <dd className={styles.plain}>Loading</dd>}
+        <dl className={styles.details} data-rise style={{ '--i': 5 }}>
+          {loading && <dd className={styles.plain}>loading</dd>}
 
           {!loading && contact.email && (
             <>
-              <dt>Email</dt>
+              <dt>email</dt>
               <dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
             </>
           )}
 
           {!loading && contact.phone && (
             <>
-              <dt>Phone</dt>
-              <dd>
-                <a href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a>
-              </dd>
+              <dt>phone</dt>
+              <dd><a href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a></dd>
             </>
           )}
 
           {!loading && contact.location && (
             <>
-              <dt>Based</dt>
+              <dt>based</dt>
               <dd className={styles.plain}>{contact.location}</dd>
             </>
           )}
@@ -147,9 +140,8 @@ const Connect = () => {
               <dt>{t.socialCardTitle}</dt>
               <dd className={styles.social}>
                 {social.map((s, i) => (
-                  <a key={s.key ?? i} href={s.url} target="_blank" rel="noopener noreferrer">
-                    {/* `platform` is the display name; `key` is the lowercase
-                        lookup and only a fallback, or this reads as slugs. */}
+                  <a key={s.key ?? i} href={s.url} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                    <SocialIcon platform={s.key} url={s.url} className={styles.socialIcon} />
                     {s.platform || s.display || s.label || s.key}
                   </a>
                 ))}
@@ -159,7 +151,7 @@ const Connect = () => {
         </dl>
 
         {support && (
-          <div className={styles.support} data-rise style={{ '--i': 4 }}>
+          <div className={styles.support} data-rise style={{ '--i': 6 }}>
             {donation.message && <p>{donation.message}</p>}
             <SupportButton href={donation.link}>
               {donation.buttonText || t.supportButton}
@@ -168,10 +160,14 @@ const Connect = () => {
         )}
       </div>
 
-      <Slab live className={styles.form} data-rise style={{ '--i': 2 }}>
+      <Slab className={styles.form} data-rise style={{ '--i': 3, '--rise': '20px' }}>
+        <header className={styles.formHead}>
+          <span className={styles.formTitle}>{t.formCardTitle.toLowerCase()}</span>
+          <Chip dot="live">delivered by email</Chip>
+        </header>
+
         {sent ? (
           <div className={styles.sent}>
-            <Embers count={18} mode="burst" className={styles.burst} />
             <span className={styles.sentMark} aria-hidden="true">
               <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M5 17.5 12.5 25 27 8" strokeLinecap="round" strokeLinejoin="round" />
@@ -182,11 +178,9 @@ const Connect = () => {
             <Button variant="line" onClick={() => setSent(false)}>Write another</Button>
           </div>
         ) : (
-          <form onSubmit={submit} noValidate>
-            <h2 className={styles.formTitle}>{t.formCardTitle}</h2>
-
+          <form onSubmit={submit} noValidate className={styles.formBody}>
             <div className={styles.pair}>
-              <Field id="name" label="Name" error={touched.name && errors.name}>
+              <Field id="name" label="name" error={touched.name && errors.name}>
                 <input
                   id="name"
                   name="name"
@@ -200,7 +194,7 @@ const Connect = () => {
                 />
               </Field>
 
-              <Field id="email" label="Email" error={touched.email && errors.email}>
+              <Field id="email" label="email" error={touched.email && errors.email}>
                 <input
                   id="email"
                   name="email"
@@ -215,11 +209,11 @@ const Connect = () => {
               </Field>
             </div>
 
-            <Field id="message" label="Message" error={touched.message && errors.message}>
+            <Field id="message" label="message" error={touched.message && errors.message}>
               <textarea
                 id="message"
                 name="message"
-                rows={5}
+                rows={6}
                 value={form.message}
                 onChange={change}
                 onBlur={blur}
@@ -228,7 +222,7 @@ const Connect = () => {
               />
             </Field>
 
-            <Button type="submit" variant="fill" size="lg" disabled={sending} full>
+            <Button type="submit" variant="fill" size="lg" disabled={sending} full arrow>
               {sending ? 'Sending' : 'Send it'}
             </Button>
           </form>

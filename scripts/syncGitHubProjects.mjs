@@ -1,18 +1,3 @@
-/**
- * syncGitHubProjects.mjs
- *
- * Reads  portfolio/githubConfig  from Firestore, fetches each repo's
- * metadata and README from the GitHub REST API, then upserts the results
- * into  githubProjects/{owner}_{repo}.
- *
- * Required env vars
- *   GH_PAT - GitHub Personal Access Token (repo read)
- *   SERVICE_ACCOUNT - Firebase Admin service-account JSON. Omit for a local
- *                      run to use application-default credentials instead.
- *
- * Node ≥18 required (uses native fetch).
- */
-
 import { ghGet, ghReadme } from './lib/gh.mjs';
 import { initFirestore, closeFirestore, admin } from './lib/firebase.mjs';
 
@@ -96,10 +81,10 @@ async function main() {
 
     try {
       const data = await fetchRepoData(owner, repo);
-      batch.set(
-        db.collection('githubProjects').doc(docId(owner, repo)),
-        { ...data, order },
-      );
+      const ref = db.collection('githubProjects').doc(docId(owner, repo));
+      const existing = await ref.get();
+      const kept = existing.exists ? existing.get('order') : undefined;
+      batch.set(ref, { ...data, order: typeof kept === 'number' ? kept : order });
       console.log('✓');
       success++;
     } catch (err) {

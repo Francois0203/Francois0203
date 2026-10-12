@@ -3,14 +3,8 @@ import { getPortfolio, getCopy } from '../firebase/firestore';
 import { getGitHubProjects } from '../firebase/github';
 import { getStudioSites } from '../firebase/studio';
 import { COPY_SCHEMA, resolveGroup } from '../content/copy';
+import { tidy } from '../content/tidy';
 
-/*
- * One load for the whole public site, so walking between pages does not re-read
- * the same documents. The four sources settle independently, each with its own
- * loading flag, so one slow read never holds up an unrelated page.
- *
- * Mounted in AppLayout, not the app root, so /admin never pays for it.
- */
 
 const ContentContext = createContext(null);
 
@@ -30,20 +24,20 @@ export function ContentProvider({ children }) {
     setStudio(s => ({ ...s, loading: true }));
 
     getPortfolio()
-      .then(data => setPortfolio({ data, loading: false, error: null }))
+      .then(data => setPortfolio({ data: tidy(data), loading: false, error: null }))
       .catch(error => setPortfolio({ data: null, loading: false, error }));
 
     // Copy failing is never fatal: no overrides means the in-code defaults.
     getCopy()
-      .then(overrides => setCopy({ overrides: overrides ?? {}, loading: false }))
+      .then(overrides => setCopy({ overrides: tidy(overrides ?? {}), loading: false }))
       .catch(() => setCopy({ overrides: {}, loading: false }));
 
     getGitHubProjects()
-      .then(projects => setGithub({ projects, loading: false, error: null }))
+      .then(projects => setGithub({ projects: tidy(projects), loading: false, error: null }))
       .catch(error => setGithub({ projects: null, loading: false, error }));
 
     getStudioSites()
-      .then(sites => setStudio({ sites, loading: false, error: null }))
+      .then(sites => setStudio({ sites: tidy(sites), loading: false, error: null }))
       .catch(error => setStudio({ sites: null, loading: false, error }));
   }, []);
 

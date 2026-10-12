@@ -1,42 +1,18 @@
-/**
- * syncStudioSites.mjs
- *
- * Discovers every repo in the studio GitHub org, resolves the live site(s) each
- * one hosts, and upserts them into  studioSites/{owner}_{repo}.
- *
- * Nothing is hardcoded: add a repo to the org and it appears. Each repo states
- * where it is deployed, via one of three strategies tried in order -
- * `.showcase.json` (see scripts/showcase.template.json), the repo's GitHub
- * `homepage` field, or `.firebaserc` + `firebase.json`. Each url is also probed
- * for whether it permits framing, since the portfolio embeds these live.
- *
- * Env: GH_PAT (repo + read:org). Credentials come from SERVICE_ACCOUNT, or from
- * application-default credentials for a local run. Optional: STUDIO_ORG,
- * SITE_ORIGIN, PRUNE=1. Full notes in scripts/README.md. Node >= 18.
- */
-
 import { ghPaginate, ghReadJson } from './lib/gh.mjs';
 import { initFirestore, closeFirestore, projectId, admin } from './lib/firebase.mjs';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const ORG         = process.env.STUDIO_ORG  || 'FM-Web-Studio';
-// Defaults to this site's own Firebase origin, so a target's CSP
-// `frame-ancestors` list can be evaluated without extra configuration.
 const SITE_ORIGIN = process.env.SITE_ORIGIN
   || (projectId() ? `${projectId()}.web.app` : '');
 const COLLECTION  = 'studioSites';
 const PROBE_MS    = 10_000;
 
-
 // ─── URL discovery ────────────────────────────────────────────────────────────
 
 const isHttpUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v.trim());
 
-/**
- * Normalise one `sites` entry from a manifest into { label, url }.
- * Accepts a bare url string as shorthand for { url }.
- */
 function normaliseSite(entry, index) {
   if (isHttpUrl(entry)) return { label: index === 0 ? 'Live site' : `Site ${index + 1}`, url: entry.trim() };
   if (!entry || !isHttpUrl(entry.url)) return null;
@@ -46,11 +22,6 @@ function normaliseSite(entry, index) {
   };
 }
 
-/**
- * Firebase Hosting site ids for a repo, from its own config. Targets are checked
- * before the default project id - a repo defining targets is the
- * two-apps-in-one-project case, where the default id finds only one.
- */
 async function firebaseSites(owner, repo) {
   const [rc, cfg] = await Promise.all([
     ghReadJson(owner, repo, '.firebaserc').catch(() => null),
@@ -88,10 +59,6 @@ async function firebaseSites(owner, repo) {
 
 // ─── Embeddability probe ──────────────────────────────────────────────────────
 
-/**
- * Can this url be framed on the portfolio? Conservative: a wrong `true` is a
- * blank panel on the live site, a wrong `false` is only a link-out card.
- */
 async function probe(url) {
   try {
     const res = await fetch(url, {

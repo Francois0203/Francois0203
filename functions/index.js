@@ -1,17 +1,3 @@
-/**
- * Cloud Functions - portfolio contact notifications.
- *
- * Fires whenever a new document is created in the `contacts` collection (i.e.
- * a visitor submits the Connect form) and emails a nicely formatted summary to
- * the site owner. Replying to that email goes straight back to the visitor.
- *
- * Config (set once - see functions/README.md):
- *   SMTP_HOST      param   default smtp.gmail.com
- *   SMTP_PORT      param   default 465
- *   SMTP_USER      param   the mailbox that sends the notification
- *   NOTIFY_TO      param   where notifications are delivered
- *   SMTP_PASSWORD  secret  the SMTP / Gmail app password
- */
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { defineString, defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
@@ -145,8 +131,6 @@ exports.onContactMessage = onDocumentCreated(
       });
       logger.info('Contact notification sent', { id: event.params.id, from: payload.email });
     } catch (err) {
-      // Don't rethrow - a retry storm won't fix bad credentials, and the message
-      // is safely stored in Firestore regardless. Surface it loudly in logs.
       logger.error('Failed to send contact notification', {
         id: event.params.id,
         error: err?.message,

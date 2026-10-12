@@ -91,3 +91,6 @@ logs/
 # -----------------
 .npmrc
 *.tgz
+
+# Firestore backups written by scripts/cleanupRecords.mjs (personal data)
+scripts/backups/

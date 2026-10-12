@@ -1,0 +1,43 @@
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    height: 2rem;
+    padding: 0 0.9rem;
+    border-radius: var(--r-control);
+    background: var(--surface-2);
+    font-family: var(--font-text);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--ink);
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--ink-3);
+}
+
+.chip[data-dot='live'] .dot {
+    background: var(--c-green);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-green) 35%, transparent);
+    animation: pulse 2.4s ease-in-out infinite;
+}
+
+.chip[data-dot='ink'] .dot { background: var(--c-blue); }
+.chip[data-dot='off'] { color: var(--ink-2); }
+.chip[data-dot='off'] .dot { background: transparent; border: 1.5px solid var(--ink-3); }
+
+.solid { background: var(--ink); color: var(--ground); }
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-green) 35%, transparent); }
+    50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--c-green) 10%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chip[data-dot='live'] .dot { animation: none; }
+}

@@ -1,11 +1,6 @@
-/* Entrances. The resting state of both is the FINISHED state, so a failed
-   observer leaves a readable page rather than an invisible one. */
-
-/* ── Rise. For everything that is not display type. ─────────────────────── */
-
 [data-rise] {
     opacity: 0;
-    transform: translateY(var(--rise, 20px));
+    transform: translateY(var(--rise, 12px));
     transition:
         opacity var(--t-slow) var(--ease) var(--delay, 0ms),
         transform var(--t-slow) var(--ease) var(--delay, 0ms);
@@ -17,42 +12,46 @@
     transform: none;
 }
 
-/* Line mask, for display type only. The line slides up into a clipped box,
-   so the type is uncovered rather than faded. Fading large type reads as a
-   loading state; uncovering it reads as printed. */
-
+/* Line mask for display type: words rise out of a clipped line. */
 .mask {
-    display: block;
+    display: inline-block;
     overflow: hidden;
-    /* Ascenders and descenders cross the line box, so a flush clip shaves
-       every line. Pulled back out with a negative margin, so it costs no
-       layout; at rest the child sits below the box either way. */
-    padding: 0.18em 0.08em;
-    margin: -0.18em -0.08em;
+    vertical-align: bottom;
+    padding: 0.14em 0.06em 0.1em;
+    margin: -0.14em -0.06em -0.1em;
 }
 
 .mask > * {
-    display: block;
-    transform: translateY(105%);
-    transition: transform 900ms var(--ease) var(--delay, 0ms);
+    display: inline-block;
+    transform: translateY(110%);
+    transition: transform 820ms var(--ease) var(--delay, 0ms);
     will-change: transform;
 }
 
 [data-shown] .mask > * { transform: none; }
 
-/* A child sets --i and inherits the step, so a block picks its rhythm once.
-   Capped, so a long list cannot run for seconds. */
-[data-rise],
-.mask > * {
-    --delay: calc(min(var(--i, 0), 12) * var(--step, 70ms));
+.mask > em,
+.mask > .serif {
+    filter: blur(6px);
+    opacity: 0;
+    transition:
+        transform 820ms var(--ease) var(--delay, 0ms),
+        filter 700ms var(--ease) calc(var(--delay, 0ms) + 120ms),
+        opacity 500ms var(--ease) calc(var(--delay, 0ms) + 60ms);
 }
 
-/* ── Off ────────────────────────────────────────────────────────────────── */
+[data-shown] .mask > em,
+[data-shown] .mask > .serif { filter: blur(0); opacity: 1; }
+
+[data-rise],
+.mask > * {
+    --delay: calc(min(var(--i, 0), 14) * var(--step, 60ms));
+}
 
 @media (prefers-reduced-motion: reduce) {
     [data-rise] { opacity: 1; transform: none; transition: none; }
-    .mask > * { transform: none; transition: none; }
+    .mask > * { transform: none; transition: none; filter: none; opacity: 1; }
 }
 
 [data-no-animations='true'] [data-rise] { opacity: 1; transform: none; }
-[data-no-animations='true'] .mask > * { transform: none; }
+[data-no-animations='true'] .mask > * { transform: none; filter: none; opacity: 1; }

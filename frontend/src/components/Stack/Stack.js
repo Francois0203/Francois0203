@@ -3,13 +3,6 @@ import useReveal from '../../hooks/useReveal';
 import { markFor } from './marks';
 import styles from './Stack.module.css';
 
-/*
- * The stack, as a printed index. A grid of identical chips is a wall that
- * nobody reads; grouped columns are a shape people know how to scan.
- *
- * Pointing at a group brings it forward and steps the others back, so half
- * the stack can be isolated without a filter control to operate.
- */
 const Stack = ({ entries = [] }) => {
   const [ref, shown] = useReveal({ threshold: 0.06 });
   const [focus, setFocus] = useState(null);

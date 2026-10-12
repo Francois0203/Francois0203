@@ -1,0 +1,25 @@
+/* The Bio page prints as a CV. Everything else stays on screen. */
+@media print {
+    :root, [data-theme='dark'], [data-theme='light'] {
+        --ground: #fff;
+        --ground-2: #fff;
+        --ink: #111;
+        --ink-2: #444;
+        --ink-3: #777;
+        --rule: rgba(0, 0, 0, 0.14);
+        --rule-strong: rgba(0, 0, 0, 0.3);
+        --surface: transparent;
+        --surface-2: transparent;
+        --accent-text: #1f1f1f;
+        --live: #1f1f1f;
+        --on-live: #fff;
+    }
+
+    html, body { background: #fff; color: #111; }
+    [data-print-hide] { display: none !important; }
+    * { box-shadow: none !important; }
+    [data-rise] { opacity: 1 !important; transform: none !important; }
+    .mask > * { transform: none !important; filter: none !important; opacity: 1 !important; }
+    a { color: inherit; text-decoration: none; }
+    @page { margin: 16mm; }
+}

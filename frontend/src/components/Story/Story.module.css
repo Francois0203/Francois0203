@@ -1,0 +1,321 @@
+.story {
+    --p: 0;
+    --screen: var(--screen-h, 100svh);
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(2rem, 5vw, 5rem);
+}
+
+/* ── The pinned side ────────────────────────────────────────────────────── */
+
+.pin {
+    position: sticky;
+    top: 0;
+    height: var(--screen);
+    display: flex;
+    align-items: center;
+}
+
+.stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+.figure {
+    position: relative;
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+}
+
+.ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(0deg);
+    overflow: visible;
+}
+
+.backShape {
+    position: absolute;
+    inset: -6%;
+    z-index: 0;
+    animation: shapeIn 700ms var(--spring) both;
+}
+
+.backSvg { display: block; width: 100%; height: 100%; animation: turn 30s linear infinite; }
+
+@keyframes shapeIn {
+    from { opacity: 0; scale: 0.6; rotate: -40deg; }
+}
+
+@keyframes turn {
+    to { rotate: 360deg; }
+}
+
+.ring { z-index: 1; }
+
+.track {
+    fill: none;
+    stroke: var(--rule-strong);
+    stroke-width: 0.8;
+}
+
+.fill {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 120ms linear;
+}
+
+.tick { fill: var(--ground); stroke: var(--ink-3); stroke-width: 0.6; transition: fill 300ms var(--ease); }
+.tickOn { fill: var(--ink); stroke: var(--ink); stroke-width: 0.6; transition: fill 300ms var(--ease); }
+
+.photo {
+    position: absolute;
+    z-index: 2;
+    inset: 11%;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 6px solid var(--surface);
+    box-shadow: var(--card-shadow);
+    background: var(--ground-2);
+    /* Leans a little as the story moves on. */
+    transform: rotate(calc((var(--p) - 0.5) * 8deg)) scale(calc(0.96 + var(--p) * 0.04));
+}
+
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.initials {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: 5rem;
+    font-weight: 500;
+    color: var(--ink);
+}
+
+/* The active chapter's tools, settling around the portrait. */
+.tags {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+}
+
+.tags { z-index: 3; }
+
+.tags li {
+    position: absolute;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--ink);
+    animation: tagIn 600ms var(--ease) both;
+    animation-delay: calc(var(--i) * 70ms);
+}
+
+.tags li[data-slot='0'] { top: 2%; left: 4%; }
+.tags li[data-slot='1'] { top: 10%; right: -4%; }
+.tags li[data-slot='2'] { top: 46%; right: -10%; }
+.tags li[data-slot='3'] { bottom: 8%; right: 0; }
+.tags li[data-slot='4'] { bottom: 2%; left: 8%; }
+.tags li[data-slot='5'] { top: 40%; left: -10%; }
+
+@keyframes tagIn {
+    from { opacity: 0; transform: scale(0.8) translateY(8px); filter: blur(4px); }
+}
+
+.meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    text-align: center;
+}
+
+.count {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    color: var(--cc-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.count span { color: var(--ink-3); }
+
+.year {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    animation: rollIn 600ms var(--ease) both;
+}
+
+.where {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--cc-ink);
+    animation: rollIn 600ms var(--ease) 80ms both;
+}
+
+@keyframes rollIn {
+    from { opacity: 0; transform: translateY(40%); filter: blur(4px); }
+}
+
+/* ── The chapters ───────────────────────────────────────────────────────── */
+
+.chapters {
+    margin: 0;
+    padding: calc(var(--screen) * 0.2) 0;
+    list-style: none;
+}
+
+.chapter {
+    display: flex;
+    align-items: center;
+    min-height: calc(var(--screen) * 0.8);
+}
+
+.chapterInner {
+    padding: 1.75rem 1.75rem 1.75rem 2rem;
+    border-radius: var(--r-card);
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+    border-left: 6px solid var(--rule);
+    opacity: 0.35;
+    transform: translateX(10px);
+    transition:
+        opacity 500ms var(--ease),
+        transform 600ms var(--ease),
+        border-color 500ms var(--ease);
+}
+
+.chapter[data-active] .chapterInner {
+    opacity: 1;
+    transform: rotate(-0.6deg);
+    border-color: var(--chapter);
+}
+
+.kind {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    letter-spacing: var(--track-label);
+    color: var(--chapter-ink);
+}
+
+.kindDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--chapter);
+}
+
+.kindDot[data-kind='education'] { border-radius: 50%; }
+
+.period { color: var(--ink-2); }
+
+.place {
+    margin: 0;
+    font-size: var(--display-md);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.035em;
+}
+
+.what {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    color: var(--ink-2);
+}
+
+.note {
+    margin: 1.25rem 0 0;
+    max-width: 48ch;
+    font-size: var(--text-lg);
+    line-height: 1.55;
+    color: var(--ink-2);
+}
+
+.chapterTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.chapterTags li {
+    padding: 0.35rem 0.8rem;
+    border-radius: var(--r-control);
+    background: var(--surface-2);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--ink);
+}
+
+/* ── Phones: the pinned side becomes a sticky bar under the nav ─────────── */
+
+@media (max-width: 900px) {
+    .story { grid-template-columns: minmax(0, 1fr); gap: 0; }
+
+    .pin {
+        top: 60px;
+        z-index: 2;
+        height: auto;
+        padding: 0.75rem 0;
+        margin: 0 calc(var(--gutter) * -1);
+        padding-inline: var(--gutter);
+        background: color-mix(in srgb, var(--ground) 94%, transparent);
+        border-bottom: 1px solid var(--rule);
+        -webkit-backdrop-filter: var(--blur);
+        backdrop-filter: var(--blur);
+    }
+
+    .stage { flex-direction: row; justify-content: flex-start; gap: 1rem; }
+    .figure { width: 64px; flex: none; }
+    .tags { display: none; }
+    .backShape { inset: -14%; }
+    .meta { flex-direction: row; align-items: baseline; gap: 0.75rem; text-align: left; min-width: 0; }
+    .year { font-size: 1.75rem; }
+    .where {
+        font-size: var(--text-md);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+    }
+    .count { order: 3; margin-left: auto; white-space: nowrap; }
+
+    .chapters { padding: 2rem 0 0; }
+    .chapter { min-height: calc(var(--screen) * 0.7); }
+    .chapterInner { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chapterInner { opacity: 1; transform: none; }
+    .tags li, .year, .where, .backShape, .backSvg { animation: none; }
+    .photo { transform: none; }
+}

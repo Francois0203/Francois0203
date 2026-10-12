@@ -8,10 +8,6 @@ const admin   = require('firebase-admin');
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
-/**
- * Project id, so a local run needs no extra env var: taken from the repo's own
- * .firebaserc unless overridden.
- */
 export function projectId() {
   const fromEnv = process.env.FIREBASE_PROJECT
     || process.env.GOOGLE_CLOUD_PROJECT
@@ -26,13 +22,6 @@ export function projectId() {
   }
 }
 
-/**
- * Firestore handle for the sync scripts.
- *
- * CI passes a service-account JSON in SERVICE_ACCOUNT. Without it we fall back
- * to application-default credentials, so a local run only needs
- * `gcloud auth application-default login`.
- */
 export async function initFirestore() {
   const raw = process.env.SERVICE_ACCOUNT;
   const project = raw ? null : projectId();
@@ -66,9 +55,6 @@ export async function initFirestore() {
     }
   }
 
-  // Resolve the credential now rather than on first query: initializeApp is
-  // lazy, so without this a missing credential surfaces as a raw stack trace
-  // from deep inside the Firestore client instead of the message above.
   try {
     await admin.app().options.credential.getAccessToken();
   } catch (err) {
@@ -84,11 +70,6 @@ export async function initFirestore() {
   return admin.firestore();
 }
 
-/**
- * Releases the Firestore client. Without this, exiting while its gRPC handles
- * are still open aborts the process on Windows (libuv assertion, exit code 127)
- * instead of returning the intended code.
- */
 export async function closeFirestore() {
   try {
     await Promise.all(admin.apps.filter(Boolean).map(a => a.delete()));

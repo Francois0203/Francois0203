@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [
-    // CRA allowed JSX in .js files via Babel; transform them before Vite's
-    // import-analysis plugin runs so it sees valid JS, not raw JSX.
     {
       name: 'treat-js-files-as-jsx',
       enforce: 'pre',

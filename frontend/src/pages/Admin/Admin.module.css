@@ -2,8 +2,6 @@
 
 /* ── Page ──────────────────────────────────────────────────────────────────── */
 .page {
-  /* App-shell: fill the viewport and let ONLY the content pane scroll, so the
-     topbar and settings nav stay put. (dvh handles mobile browser chrome.) */
   height: 100vh;
   height: 100dvh;
   display: flex;
@@ -59,8 +57,6 @@
   color: #e0614a;
 }
 
-/* A rule that fills, matching the public site, rather than a spinner. The
-   whole point of the wait is that nothing is known yet. */
 .spinner {
   width: min(260px, 60vw);
   height: 1px;
@@ -122,9 +118,6 @@
 
 /* ── Content area - the only scrolling region ──────────────────────────────── */
 
-/* Wraps everything inside .content so Lenis has a node that actually grows with
-   the section it is showing. .content itself is pinned to the shell height by
-   flex and never resizes, so observing it would report nothing. */
 .contentInner {
   min-height: 100%;
 }
@@ -193,8 +186,6 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--spacing-lg) var(--spacing-xs) var(--spacing-lg) 0;
-  /* No `scrollbar-width`: it makes Chromium ignore the ::-webkit-scrollbar
-     rules in styles/base.css for this element. */
 }
 
 .navGroup { display: flex; flex-direction: column; gap: 2px; }
@@ -239,9 +230,6 @@
 .navIcon { display: inline-flex; align-items: center; font-size: 1.15rem; flex-shrink: 0; }
 .navLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .navKebab { flex-shrink: 0; padding-right: 2px; }
-/* The three-dots is part of the row: let the row's hover show through instead
-   of the trigger drawing its own separate hover pill. (Dots still tint to
-   accent via the trigger's color change - just no competing background.) */
 .navKebab button:hover,
 .navKebab button[aria-expanded='true'] { background: transparent; }
 

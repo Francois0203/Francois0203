@@ -1,68 +1,99 @@
-/* One opaque screen with a canvas on it, and no layout of its own. */
-
 .intro {
+    --u: min(7vw, 8vh, 64px);
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--u) * 1.1);
     overflow: hidden;
-    background:
-        radial-gradient(120% 90% at 50% 46%, var(--ground-2), var(--ground) 62%);
-    animation: introOut 700ms var(--ease-io) forwards 3450ms;
+    background-color: #f7f3ea;
+    background-image:
+        linear-gradient(rgba(43, 51, 196, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(43, 51, 196, 0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: #1f1f1f;
 }
 
-@keyframes introOut {
-    to { opacity: 0; }
+.lifting { animation: fade 850ms var(--ease-io) forwards; }
+
+@keyframes fade {
+    55% { opacity: 1; }
+    to { opacity: 0; visibility: hidden; }
 }
 
-.canvas {
+.board {
+    position: relative;
+    width: calc(var(--cols) * var(--u));
+    height: calc(var(--rows) * var(--u));
+}
+
+.block {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    left: calc(var(--c) * var(--u));
+    top: calc(var(--r) * var(--u));
+    width: calc(var(--u) * 0.92);
+    height: calc(var(--u) * 0.92);
+    animation: drop 700ms var(--spring) both;
+    animation-delay: var(--d);
+    transition: translate 850ms var(--ease-io), rotate 850ms var(--ease-io);
 }
 
-/* Arrives as the embers settle, leaves with the gust. */
-.caption {
+.shape { display: block; width: 100%; height: 100%; }
+
+@keyframes drop {
+    from { translate: 0 -70vh; rotate: -25deg; }
+    70% { rotate: 4deg; }
+}
+
+.lifting .block {
+    translate: var(--fx) var(--fy);
+    rotate: var(--spin);
+}
+
+.name {
+    display: flex;
+    gap: 0.25em;
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 4.25rem);
+    font-weight: 700;
+    font-stretch: 92%;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+}
+
+.word {
+    display: inline-block;
+    animation: rise 800ms var(--ease) both;
+    animation-delay: calc(1500ms + var(--i) * 120ms);
+}
+
+@keyframes rise {
+    from { transform: translateY(110%); }
+}
+
+.lifting .name { opacity: 0; transition: opacity 300ms ease; }
+
+.skip {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 16%;
+    bottom: 1.75rem;
     margin: 0;
-    padding: 0 var(--gutter);
     text-align: center;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
-    font-weight: 500;
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--live);
-    opacity: 0;
-    animation:
-        captionIn 700ms var(--ease) forwards 1500ms,
-        captionOut 500ms var(--ease-io) forwards 3350ms;
+    color: rgba(31, 31, 31, 0.55);
+    animation: skipIn 600ms ease 900ms both;
 }
 
-@keyframes captionIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: none; }
-}
+@keyframes skipIn { from { opacity: 0; } }
 
-@keyframes captionOut {
-    to { opacity: 0; transform: translateY(-10px); }
-}
-
-/* Any input. The canvas brings its own gust forward. */
-.leaving {
-    animation: introOut 300ms var(--ease-io) forwards;
-}
-
-.leaving .caption {
-    animation: captionOut 220ms var(--ease-io) forwards;
-}
-
-/* Dev freeze: virtual time advances CSS animations too. */
 .frozen,
-.frozen .caption {
-    animation: none;
-    opacity: 1;
-}
+.frozen .block,
+.frozen .word,
+.frozen .skip { animation: none; opacity: 1; }

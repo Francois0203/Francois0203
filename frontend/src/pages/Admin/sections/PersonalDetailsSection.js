@@ -3,8 +3,6 @@ import { subscribePersonal, updatePersonal } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import formStyles from '../AdminForms.module.css';
 
-// Extra fields stored on portfolio/personal beyond the core Profile editor.
-// `languages` is an array in Firestore; everything else is a plain string.
 const FIELDS = [
   { key: 'tagline',        label: 'Tagline',          type: 'text'     },
   { key: 'description',    label: 'Description',      type: 'textarea' },

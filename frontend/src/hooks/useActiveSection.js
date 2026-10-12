@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
 
-/**
- * Which section the reader is in. One observer with the viewport collapsed
- * to a thin band near the top; a section is current while it crosses it.
- *
- * @param {string[]} ids section element ids, in document order.
- * @param {number} [offset] where the band sits, clearing any fixed header.
- */
 const useActiveSection = (ids, offset = 96) => {
   const [active, setActive] = useState(null);
 

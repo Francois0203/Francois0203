@@ -3,34 +3,49 @@
     z-index: var(--z-page);
 }
 
-/* Blocks sit on the page measure. Bands break out of it and run edge to
-   edge, which is what makes them read as ground. */
 .block {
+    position: relative;
     width: 100%;
     max-width: var(--max);
     margin: 0 auto;
     padding: var(--block) var(--gutter) 0;
 }
 
+.block > :not([aria-hidden='true']) { position: relative; z-index: 1; }
+
 .head {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: baseline;
-    gap: 0.6rem 2rem;
-    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
 
-.head h2 { grid-column: 1; }
-.head p { grid-column: 1; }
-.head > a,
-.head > button { grid-column: 2; grid-row: 1; justify-self: end; }
+.headTitle { max-width: 14ch; font-size: var(--display-xl); }
 
-.head p {
-    margin: 0;
+/* Content paints above the shapes that bleed out of a colour-through headline. */
+.heroCopy > *,
+.head > *,
+.headRow > * { position: relative; z-index: 1; }
+
+.headRow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    flex-wrap: wrap;
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.headRow .lede { margin: 0; }
+
+.lede {
+    margin: 0.75rem 0 0;
     max-width: var(--measure);
     font-size: var(--text-lg);
     color: var(--ink-2);
 }
+
+.head .lede { margin: 0; }
 
 .empty {
     padding: 2rem 0;
@@ -39,252 +54,70 @@
 }
 
 .waiting {
-    height: 320px;
-    border-top: 1px solid var(--rule);
+    height: 420px;
+    border-radius: 32px;
+    background: var(--surface);
 }
 
-/* ── 1. The opening ─────────────────────────────────────────────────────── */
+/* ── 1. Hero ────────────────────────────────────────────────────────────── */
 
-.open {
+.hero {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    /* A variable so a dev screenshot can flatten it. */
-    min-height: var(--hero-h, 100svh);
-    padding: calc(68px + var(--block) * 0.5) var(--gutter) clamp(2rem, 6vh, 4rem);
-    overflow: hidden;
-}
-
-.role {
-    margin: 0 0 clamp(1rem, 3vh, 2rem);
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    font-weight: 500;
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--live);
-}
-
-/* The name is the page's only image. */
-.name {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--display-xl);
-    font-weight: 600;
-    line-height: 0.84;
-    letter-spacing: -0.055em;
-    color: var(--ink);
-}
-
-/* The photograph, whole. A square box with contain, so nothing is cropped at
-   any viewport; the only softening is on the edge the type crosses. */
-.portrait {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: -1;
-    width: clamp(220px, 34vw, 480px);
-    aspect-ratio: 1 / 1;
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 26%);
-    mask-image: linear-gradient(to right, transparent, #000 26%);
-}
-
-.portrait img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-}
-
-.openFoot {
     display: grid;
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    align-items: end;
-    gap: clamp(1rem, 3vw, 2rem) clamp(1.5rem, 4vw, 4rem);
-    margin-top: clamp(1.5rem, 5vh, 3rem);
-    padding-top: clamp(1rem, 3vh, 1.75rem);
-    border-top: 1px solid var(--rule);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(72px + clamp(2.5rem, 7vh, 5rem)) var(--gutter) clamp(2rem, 5vh, 3rem);
 }
 
-.say {
-    grid-column: 1;
-    grid-row: 1;
+.heroCopy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.name {
     margin: 0;
-    max-width: 30ch;
-    font-size: clamp(1.0625rem, 1.6vw, 1.5rem);
-    line-height: 1.35;
-    color: var(--ink);
+    font-size: var(--display-xxl);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
 }
 
-/* Left column: in the right one these landed on top of the portrait. */
-.openActions {
-    grid-column: 1;
-    grid-row: 2;
+.intro {
+    margin: 0;
+    max-width: 40ch;
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--ink-2);
+}
+
+.actions {
     display: flex;
     gap: 0.6rem;
     flex-wrap: wrap;
-    margin-top: 0.25rem;
 }
 
-.open_available {
-    grid-column: 1;
-    grid-row: 3;
-    margin: 0;
-    padding-top: 0.9rem;
-    border-top: 1px solid var(--rule);
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--live);
-}
+.heroPortrait { min-width: 0; }
 
-/* ── 2. The deep band ──────────────────────────────────────────────── */
+/* ── 2. Story ───────────────────────────────────────────────────────────── */
 
-.band {
-    position: relative;
-    margin-top: var(--block);
-    padding: clamp(3rem, 9vh, 7rem) var(--gutter);
-    background: var(--deep);
-}
+.story { padding-bottom: 0; }
 
-/* Soft edges, so the field behind carries through rather than being cut.
-
-   Both are z-index 0 and the content is 1. Without that the ::after paints
-   above the content, because positioned boxes with z-index auto paint in DOM
-   order, and the bottom gradient washes out the last lines. */
-.band::before,
-.band::after {
-    content: '';
-    position: absolute;
-    z-index: 0;
-    inset: -1px 0 auto;
-    height: 90px;
-    background: linear-gradient(to bottom, transparent, var(--deep));
-    pointer-events: none;
-}
-
-.band::after {
-    inset: auto 0 -1px;
-    background: linear-gradient(to top, transparent, var(--deep));
-}
-
-/* Full width content inside a band. */
-.bandInner {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: var(--max);
-    margin: 0 auto;
-}
-
-.blockInner {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-    gap: clamp(1.5rem, 5vw, 4rem);
-    align-items: start;
-    width: 100%;
-    max-width: var(--max);
-    margin: 0 auto;
-}
-
-.statement {
-    margin: 0;
-    font-family: var(--font-display);
-    max-width: 30ch;
-    font-size: clamp(1.5rem, 2.9vw, 2.75rem);
-    font-weight: 500;
-    line-height: 1.12;
-    letter-spacing: -0.035em;
-    color: var(--ink);
-    /* Each sentence is its own clipped line. */
-    text-wrap: balance;
-}
-
-.statement :global(.mask) + :global(.mask) { margin-top: 0.15em; }
-
-.now {
-    margin: 0;
-    padding-top: 0.9rem;
-    border-top: 1px solid var(--rule);
-}
-
-.now dt { margin-bottom: 0.75rem; }
-
-.now dd {
-    margin: 0 0 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--rule);
-}
-
-.now dd:last-child { margin-bottom: 0; border-bottom: 0; padding-bottom: 0; }
-
-.now strong {
-    display: block;
-    font-size: var(--text-md);
-    font-weight: 600;
-    color: var(--ink);
-}
-
-.now span {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--live);
-}
+.toolsBlock { padding-top: 0; }
 
 /* ── Narrow ─────────────────────────────────────────────────────────────── */
 
-@media (max-width: 860px) {
-    /* Full width content inside a band. */
-.bandInner {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: var(--max);
-    margin: 0 auto;
-}
-
-.blockInner { grid-template-columns: minmax(0, 1fr); align-items: start; }
-    .openFoot { grid-template-columns: minmax(0, 1fr); }
-    .openActions { grid-column: 1; }
-    /* Above the type, not behind it, with its height reserved. A faded
-       photograph under a headline is a legibility problem, not a style. */
-    .open {
-        --photo: min(38vw, 190px);
-        padding-top: calc(60px + var(--photo) + 1.5rem);
-    }
-
-    .portrait {
-        width: var(--photo);
-        top: calc(60px + 0.75rem);
-        right: 0;
-        transform: none;
-        -webkit-mask-image: none;
-        mask-image: none;
+@media (max-width: 960px) {
+    .hero {
+        grid-template-columns: minmax(0, 1fr);
+        padding-top: calc(64px + 2.5rem);
+        padding-bottom: 2rem;
     }
 }
 
-@media (max-width: 560px) {
-    .open { min-height: var(--hero-h, 92svh); }
-    .name { line-height: 0.88; }
-}
-
-/* So the band is never a bare colour field waiting for data. */
-.stackSkeleton {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-}
-
-.stackSkeleton span {
-    display: block;
-    height: 190px;
-    border-top: 1px solid var(--rule);
-}

@@ -1,29 +1,26 @@
 .page {
+    position: relative;
     width: 100%;
     max-width: var(--max);
     margin: 0 auto;
-    padding: calc(68px + var(--block)) var(--gutter) 0;
+    padding: calc(64px + 3rem) var(--gutter) 0;
 }
 
+.head,
+.block { position: relative; z-index: 1; }
+
 .head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
     padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
-.eyebrow {
-    margin: 0 0 1rem;
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--live);
-}
-
-/* em, not ch: the cap has to be relative to the display size, or it
-   resolves against the body size and slices the heading in half. */
-.title { margin: 0; max-width: 11em; font-size: var(--display-lg); line-height: 0.9; }
+.title { margin: 0; max-width: 14ch; font-size: var(--display-xxl); line-height: 0.95; }
 
 .lede {
-    margin: 1.5rem 0 0;
+    margin: 0;
     max-width: 46ch;
     font-size: var(--text-lg);
     line-height: 1.5;
@@ -40,6 +37,8 @@
     margin-bottom: clamp(1.25rem, 3vw, 2rem);
 }
 
+.sectionHead h2 { max-width: 16ch; }
+
 .sectionHead p {
     margin: 0;
     max-width: var(--measure);
@@ -53,7 +52,12 @@
     color: var(--ink-3);
 }
 
-.waiting { height: 280px; border-top: 1px solid var(--rule); }
+.waiting {
+    height: 420px;
+    border-radius: var(--r-slab);
+    background: var(--surface);
+}
+
 
 /* ── Filter ─────────────────────────────────────────────────────────────── */
 
@@ -68,33 +72,28 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    min-height: 2.25rem;
-    padding: 0 0.85rem;
-    border: 1px solid var(--rule);
+    height: 2.5rem;
+    padding: 0 1.1rem;
+    border: 0;
     border-radius: var(--r-control);
-    background: none;
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--ink-2);
+    background: var(--surface-2);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink);
     cursor: pointer;
-    transition:
-        color var(--t) var(--ease),
-        border-color var(--t) var(--ease),
-        background-color var(--t) var(--ease);
+    transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
 
 .chip span { color: var(--ink-3); }
-.chip:hover { border-color: var(--rule-strong); color: var(--ink); }
+.chip:hover { background: color-mix(in srgb, var(--surface-2) 75%, var(--ink) 8%); }
 
-.chipOn {
-    border-color: transparent;
-    background: var(--live);
-    color: var(--on-live);
+.chipOn,
+.chipOn:hover {
+    background: var(--ink);
+    color: var(--ground);
 }
 
-.chipOn span { color: color-mix(in srgb, var(--on-live) 70%, transparent); }
+.chipOn span { color: color-mix(in srgb, var(--ground) 65%, transparent); }
 
 .status {
     min-height: 1.4rem;
@@ -102,47 +101,60 @@
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     letter-spacing: var(--track-label);
-    text-transform: uppercase;
     color: var(--ink-3);
 }
 
 /* ── Repositories ───────────────────────────────────────────────────────── */
 
-.repos { border-top: 1px solid var(--rule); }
+.repos { display: flex; flex-direction: column; gap: 0.6rem; }
 
 .repo {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: baseline;
-    gap: clamp(0.75rem, 3vw, 2.5rem);
-    padding: 1.1rem 0;
-    border-bottom: 1px solid var(--rule);
-    transition: background-color var(--t) var(--ease);
+    align-items: center;
+    gap: clamp(0.75rem, 3vw, 2rem);
+    padding: 1.1rem 1.4rem;
+    border-radius: 22px;
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+    transition: transform var(--t) var(--spring);
 }
 
-.repo:hover { background: color-mix(in srgb, var(--live) 5%, transparent); }
+.repo:hover { transform: translateY(-2px) rotate(-0.3deg); }
+
+.repos > div:nth-child(5n + 1) .repoIndex { background: var(--c-blue); }
+.repos > div:nth-child(5n + 2) .repoIndex { background: var(--c-green); border-radius: 30%; }
+.repos > div:nth-child(5n + 3) .repoIndex { background: var(--c-orange); }
+.repos > div:nth-child(5n + 4) .repoIndex { background: var(--c-pink); border-radius: 30%; }
+.repos > div:nth-child(5n + 5) .repoIndex { background: var(--c-yellow); }
 
 .repoIndex {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    color: #1f1f1f;
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     font-size: var(--mono-label);
     letter-spacing: var(--track-label);
-    color: var(--ink-3);
+    font-weight: 600;
+    box-shadow: 0 0 0 1.5px #1f1f1f;
 }
 
 .repoBody { min-width: 0; }
 
 .repoName {
     margin: 0;
-    font-family: var(--font-display);
     font-size: var(--text-xl);
-    font-weight: 600;
-    letter-spacing: -0.03em;
+    font-weight: 500;
+    letter-spacing: -0.02em;
     line-height: 1.15;
 }
 
 .repoName a { color: var(--ink); text-decoration: none; }
-.repoName a:hover { color: var(--live); }
+.repoName a:hover { color: var(--accent-text); }
 
 .repoText {
     margin: 0.2rem 0 0;
@@ -158,44 +170,29 @@
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     letter-spacing: var(--track-label);
-    text-transform: uppercase;
     color: var(--ink-3);
 }
 
-.lang { color: var(--ember); }
-
-.stars::before {
-    content: '';
-    display: inline-block;
-    width: 0.45rem;
-    height: 0.45rem;
-    margin-right: 0.4rem;
-    background: currentColor;
-    /* A star, drawn as a clipped square rather than as an icon, because it is
-       one glyph at one size and a whole icon import for it is not worth it. */
-    clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-}
-
+.stars { font-variant-numeric: tabular-nums; }
 .private { color: var(--ink-3); }
 
 .readme {
-    padding: 0.35rem 0;
+    padding: 0.45rem 0.95rem;
     border: 0;
-    background: none;
+    border-radius: var(--r-control);
+    background: var(--surface-2);
     font: inherit;
-    color: var(--ink-2);
+    font-family: var(--font-text);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--ink);
     cursor: pointer;
-    border-bottom: 1px solid var(--rule-strong);
-    transition: color var(--t) var(--ease), border-color var(--t) var(--ease);
+    transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
 }
 
-.readme:hover { color: var(--live); border-color: var(--live); }
+.readme:hover { background: var(--c-yellow); color: #1f1f1f; }
 
 @media (max-width: 760px) {
-    .repo {
-        grid-template-columns: auto minmax(0, 1fr);
-        row-gap: 0.5rem;
-    }
-
+    .repo { grid-template-columns: auto minmax(0, 1fr); row-gap: 0.5rem; }
     .repoMeta { grid-column: 1 / -1; flex-wrap: wrap; }
 }

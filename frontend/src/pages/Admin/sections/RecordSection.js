@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, useToast } from '../../../components';
 import RecordForm from './RecordForm';
+import { SortableList, DragHandle } from './Sortable';
 import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
-const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete, renderSummary, openAddOnMount }) => {
+const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete, onReorder, renderSummary, openAddOnMount }) => {
   const { toast } = useToast();
   const [records, setRecords] = useState([]);
   const [modal, setModal]     = useState(openAddOnMount ? { mode: 'add' } : null);
@@ -23,7 +24,7 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
     setSaving(true);
     try {
       if (modal.mode === 'add') {
-        await onCreate(data);
+        await onCreate({ ...data, order: records.length });
         toast.success(`${title} entry added`);
       } else {
         await onUpdate(modal.record.id, data);
@@ -34,6 +35,17 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
       toast.error(`Failed to save ${title} entry`);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleReorder = async (next) => {
+    const before = records;
+    setRecords(next);
+    try {
+      await onReorder(next.map(r => r.id));
+    } catch {
+      setRecords(before);
+      toast.error(`Failed to save the ${title.toLowerCase()} order`);
     }
   };
 
@@ -59,15 +71,27 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
         <p className={styles.empty}>No {title.toLowerCase()} entries yet.</p>
       )}
 
-      {records.map(rec => (
-        <div key={rec.id} className={formStyles.listRow}>
-          <div className={formStyles.listRowContent}>{renderSummary(rec)}</div>
-          <div className={formStyles.listRowActions}>
-            <button type="button" className="btn-outline" onClick={() => setModal({ mode: 'edit', record: rec })}>Edit</button>
-            <button type="button" className="btn-danger" onClick={() => handleDelete(rec)}>Delete</button>
-          </div>
-        </div>
-      ))}
+      {records.length > 1 && (
+        <p className={styles.hint}>Drag the handle to change the order. It saves as you drop.</p>
+      )}
+
+      <SortableList
+        items={records}
+        getId={r => r.id}
+        onReorder={handleReorder}
+        itemClassName={formStyles.listRow}
+      >
+        {(rec, i, handle) => (
+          <>
+            <DragHandle {...handle} label={`Move ${title.toLowerCase()} entry ${i + 1}`} />
+            <div className={formStyles.listRowContent}>{renderSummary(rec)}</div>
+            <div className={formStyles.listRowActions}>
+              <button type="button" className="btn-outline" onClick={() => setModal({ mode: 'edit', record: rec })}>Edit</button>
+              <button type="button" className="btn-danger" onClick={() => handleDelete(rec)}>Delete</button>
+            </div>
+          </>
+        )}
+      </SortableList>
 
       <Modal
         open={!!modal}

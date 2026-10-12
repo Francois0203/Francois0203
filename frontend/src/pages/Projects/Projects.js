@@ -5,36 +5,17 @@ import useReveal from '../../hooks/useReveal';
 import { resolveGroup } from '../../content/copy/resolve';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { Modal } from '../../components';
-import LiveSite from '../../components/LiveSite';
-import Tally from '../../components/Tally';
+import Chip from '../../components/Chip';
+import Headline from '../../components/Headline';
+import Drift from '../../components/Drift';
+import Fleet from '../../components/Fleet';
 import ReadmeRenderer from './ReadmeRenderer';
 import { parseReadme } from './parseReadme';
 import styles from './Projects.module.css';
 
-/*
- * The work. Client sites and personal repositories stay in two sections and
- * are never merged: equal cards would read as equal achievements.
- *
- * Repositories are a ruled list, not a grid. Fourteen cards is a wall.
- */
-
-const buildFigures = ({ sites, repos }) => {
-  const stars = repos.reduce((a, p) => a + (p.stars ?? 0), 0);
-  const languages = new Set(repos.map(p => p.language).filter(Boolean)).size;
-
-  return [
-    sites.length > 0 && { value: sites.length, label: 'Sites in production' },
-    repos.length > 0 && { value: repos.length, label: 'Repositories' },
-    languages > 0 && { value: languages, label: 'Languages' },
-    stars > 0 && { value: stars, label: 'Stars' },
-  ].filter(Boolean);
-};
-
 const Repo = ({ project, onReadme, index }) => {
   const { name, description, url, language, stars, readme, isPrivate } = project;
   const hasReadme = readme?.trim().length > 0;
-
-  // The README is usually a better summary than the GitHub description.
   const summary = hasReadme
     ? parseReadme(readme, { fallback: description ?? '' }).description
     : description;
@@ -51,16 +32,26 @@ const Repo = ({ project, onReadme, index }) => {
       </div>
 
       <div className={styles.repoMeta}>
-        {language && <span className={styles.lang}>{language}</span>}
-        {stars > 0 && <span className={styles.stars}>{stars}</span>}
-        {isPrivate && <span className={styles.private}>Private</span>}
+        {language && <Chip>{language}</Chip>}
+        {stars > 0 && <span className={styles.stars}>{stars} ★</span>}
+        {isPrivate && <span className={styles.private}>private</span>}
         {hasReadme && (
           <button type="button" className={styles.readme} onClick={() => onReadme(project)}>
-            Readme
+            readme
           </button>
         )}
       </div>
     </article>
+  );
+};
+
+const Head = ({ title, lede }) => {
+  const [ref, shown] = useReveal({ threshold: 0.3 });
+  return (
+    <header ref={ref} className={styles.sectionHead} data-shown={shown ? '' : undefined}>
+      <Headline as="h2" text={title} />
+      {lede && <p data-rise style={{ '--i': 3 }}>{lede}</p>}
+    </header>
   );
 };
 
@@ -75,7 +66,6 @@ const Projects = () => {
 
   const repos = projects ?? [];
 
-  // Counted across everything: a filter must not change the claim.
   const languages = useMemo(() => {
     const counts = new Map();
     repos.forEach(p => {
@@ -90,38 +80,29 @@ const Projects = () => {
     [repos, lang],
   );
 
-  const figures = useMemo(() => buildFigures({ sites, repos }), [sites, repos]);
-
   const [headRef, headShown] = useReveal({ threshold: 0 });
   const [benchRef, benchShown] = useReveal({ threshold: 0.03 });
 
   return (
     <div className={styles.page}>
+      <Drift shapes={[
+        { kind: 'hexagon', colour: 'green', x: '100%', y: '150px', size: 'clamp(180px, 22vw, 320px)', speed: 0.6, spin: 25, wide: true },
+      ]} />
       <header
         ref={headRef}
         className={styles.head}
         data-shown={headShown ? '' : undefined}
-        style={{ '--step': '80ms' }}
       >
-        <p className={styles.eyebrow} data-rise style={{ '--i': 0 }}>{t.eyebrow}</p>
-        <h1 className={styles.title}>
-          <span className="mask"><span style={{ '--i': 1 }}>{t.heading}</span></span>
-        </h1>
-        <p className={styles.lede} data-rise style={{ '--i': 2 }}>{t.lede}</p>
+        <div data-rise style={{ '--i': 0 }}>
+          <Chip dot="ink">{t.eyebrow}</Chip>
+        </div>
+        <Headline as="h1" text={t.heading} tone="green" className={styles.title} start={1} />
+        <p className={styles.lede} data-rise style={{ '--i': 5 }}>{t.lede}</p>
       </header>
 
-      {figures.length > 0 && (
-        <section className={styles.block}>
-          <Tally figures={figures} />
-        </section>
-      )}
-
-      {/* ── Client work ─────────────────────────────────────────────────── */}
-      <section className={styles.block}>
-        <header className={styles.sectionHead}>
-          <h2>{t.studioTitle}</h2>
-          <p>{t.studioLede}</p>
-        </header>
+      {/* ── The fleet ───────────────────────────────────────────────────── */}
+      <section className={styles.block} id="sites">
+        <Head title={t.studioTitle} lede={t.studioLede} />
 
         {sitesError
           ? <p className={styles.note}>The client sites could not be loaded.</p>
@@ -129,22 +110,18 @@ const Projects = () => {
             ? <div className={styles.waiting} aria-hidden="true" />
             : sites.length === 0
               ? <p className={styles.note}>{t.studioEmpty}</p>
-              : sites.map((site, i) => (
-                <LiveSite key={site.id} site={site} name={site.name} index={i} />
-              ))}
+              : <Fleet sites={sites} />}
       </section>
 
       {/* ── The bench ───────────────────────────────────────────────────── */}
       <section
         ref={benchRef}
         className={styles.block}
+        id="bench"
         data-shown={benchShown ? '' : undefined}
         style={{ '--step': '40ms' }}
       >
-        <header className={styles.sectionHead}>
-          <h2>{t.codeTitle}</h2>
-          <p>{t.codeLede}</p>
-        </header>
+        <Head title={t.codeTitle} lede={t.codeLede} />
 
         {languages.length > 1 && (
           <div className={styles.filter}>
@@ -154,7 +131,7 @@ const Projects = () => {
               onClick={() => setLang(null)}
               aria-pressed={lang === null}
             >
-              All<span>{repos.length}</span>
+              all<span>{repos.length}</span>
             </button>
             {languages.map(([name, count]) => (
               <button
@@ -164,13 +141,12 @@ const Projects = () => {
                 onClick={() => setLang(lang === name ? null : name)}
                 aria-pressed={lang === name}
               >
-                {name}<span>{count}</span>
+                {name.toLowerCase()}<span>{count}</span>
               </button>
             ))}
           </div>
         )}
 
-        {/* Announced: the grid it changes may be below the fold. */}
         <p className={styles.status} role="status">
           {lang ? `${shown.length} of ${repos.length} repositories, in ${lang}.` : ''}
         </p>
@@ -184,7 +160,7 @@ const Projects = () => {
               : (
                 <div className={styles.repos}>
                   {shown.map((p, i) => (
-                    <div key={p.id} data-rise style={{ '--i': Math.min(i, 10), '--rise': '12px' }}>
+                    <div key={p.id} data-rise style={{ '--i': Math.min(i, 10) }}>
                       <Repo project={p} index={i} onReadme={setOpen} />
                     </div>
                   ))}

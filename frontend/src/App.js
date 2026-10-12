@@ -2,11 +2,10 @@ import React, { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Routes, Route, Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
 import { ToastProvider } from './components';
-import Field from './components/Field';
 import Nav from './components/Nav';
 import Foot from './components/Foot';
 import Intro from './components/Intro';
-import { useTheme, useAnimations, useMomentumScroll, scrollPageTo } from './hooks';
+import { useTheme, useAnimations, scrollPageTo } from './hooks';
 import { ContentProvider } from './context/ContentContext';
 import { NAVIGATION_PAGES } from './content/navigation';
 import styles from './App.module.css';
@@ -16,25 +15,17 @@ const PagePreview = import.meta.env.DEV
   ? React.lazy(() => import('./dev/PagePreview'))
   : null;
 
-/*
- * Where a navigation lands: an anchor if the URL names one, the previous
- * position on back and forward, the top otherwise.
- */
 const ScrollToTop = () => {
   const { pathname, hash, key } = useLocation();
   const navigationType = useNavigationType();
-
-  // A ref, not state: nothing renders from it.
   const positions = useRef(new Map());
 
-  // The browser's own restore fights ours, so we own it outright.
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
 
-  // One number to a ref, at most five times a second.
   useEffect(() => {
     let last = 0;
     const onScroll = () => {
@@ -45,14 +36,12 @@ const ScrollToTop = () => {
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      // A final sample, in case they left inside the throttle window.
       positions.current.set(key, window.scrollY);
       window.removeEventListener('scroll', onScroll);
     };
   }, [key]);
 
   useEffect(() => {
-    // An anchor wins. It may not exist yet, so it is retried.
     if (hash) {
       let timer = 0;
       let tries = 0;
@@ -66,14 +55,10 @@ const ScrollToTop = () => {
       return () => clearTimeout(timer);
     }
 
-    // Nobody follows a link expecting to land halfway down a new page.
     const restore = navigationType === 'POP' ? positions.current.get(key) ?? 0 : 0;
-
     scrollPageTo(restore, { immediate: true });
-
     if (restore === 0) return undefined;
 
-    // Going back lands on a page still arriving, so the position clamps.
     let timer = 0;
     let tries = 0;
     const settle = () => {
@@ -88,24 +73,28 @@ const ScrollToTop = () => {
   return null;
 };
 
+/* The public site runs on native scroll. Lenis lives in /admin only. */
+// Highlighted text takes the current page's tab colour.
+const useSelectionTone = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const tone = NAVIGATION_PAGES.find(p => p.to === pathname)?.tone ?? 'yellow';
+    const root = document.documentElement.style;
+    root.setProperty('--sel', `var(--c-${tone})`);
+    root.setProperty('--sel-on', tone === 'blue' ? '#ffffff' : '#1f1f1f');
+  }, [pathname]);
+};
+
 const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const links = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
-
-  /* Momentum scrolling. It advances the real scroll position from the main
-     thread each frame, so scroll driven CSS still reads a true offset, and
-     ScrollToTop drives this instance rather than fighting it with
-     window.scrollTo. Off under reduced motion and the motion toggle. */
-  useMomentumScroll();
+  useSelectionTone();
 
   return (
     <ContentProvider>
       <Intro />
 
       <div className={styles.app}>
-        {/* Layer 0, mounted once so the ground is continuous. */}
-        <Field />
-
         <Nav links={links} theme={theme} toggleTheme={toggleTheme} />
 
         <main className={styles.main}>
@@ -121,7 +110,6 @@ const AppLayout = () => {
 };
 
 const App = () => {
-  // Applies the theme to the document root for every route, /admin included.
   useTheme();
   useAnimations();
 

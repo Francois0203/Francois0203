@@ -16,116 +16,107 @@
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    height: 68px;
+    height: 72px;
     padding: 0 var(--gutter);
     padding-top: env(safe-area-inset-top, 0px);
     border-bottom: 1px solid transparent;
     transition:
         background-color var(--t) var(--ease),
-        border-color var(--t) var(--ease),
-        backdrop-filter var(--t) var(--ease);
+        border-color var(--t) var(--ease);
 }
 
-/* The backing is the only state this bar has. */
 .stuck {
-    border-bottom-color: var(--rule);
-    background: color-mix(in srgb, var(--ground) 62%, transparent);
+    border-bottom-color: transparent;
+    background: color-mix(in srgb, var(--ground) 82%, transparent);
     -webkit-backdrop-filter: var(--blur);
     backdrop-filter: var(--blur);
 }
 
 .mark {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.06em;
-    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
     text-decoration: none;
-    line-height: 1;
+    color: var(--ink);
 }
 
-.mark span {
-    display: inline-block;
-    transition: color var(--t) var(--ease);
+.markName {
+    font-size: var(--text-lg);
+    font-weight: 500;
+    letter-spacing: -0.02em;
 }
-
-.mark:hover span { color: var(--live); }
-
-/* ── Routes ─────────────────────────────────────────────────────────────── */
 
 .routes {
     display: flex;
     align-items: center;
-    gap: 1.75rem;
+    gap: 0.25rem;
     margin-left: auto;
 }
 
 .route {
     position: relative;
-    padding: 0.4rem 0;
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1rem;
+    border-radius: var(--r-control);
+    font-size: var(--text-md);
     font-weight: 500;
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--ink-3);
+    color: var(--ink);
     text-decoration: none;
-    transition: color var(--t) var(--ease);
+    transition: background-color var(--t-fast) var(--ease);
 }
 
-.route::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background: var(--live);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--t) var(--ease);
+.route { gap: 0.5rem; }
+
+.tabDot {
+    width: 9px;
+    height: 9px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--tab);
+    box-shadow: 0 0 0 1.5px var(--ink);
+    transition: transform var(--t) var(--spring);
 }
 
-.route:hover { color: var(--ink); }
-.route:hover::after { transform: scaleX(1); }
+.route:hover { color: var(--ink); background: color-mix(in srgb, var(--tab) 30%, transparent); }
+.route:hover .tabDot { transform: scale(1.25); }
 
-.active { color: var(--live); }
-.active::after { transform: scaleX(1); }
+.active,
+.active:hover {
+    background: var(--tab);
+    color: var(--tab-on);
+    box-shadow: 0 0 0 1.5px var(--ink), 2px 3px 0 1.5px var(--ink);
+}
 
-/* ── Controls ───────────────────────────────────────────────────────────── */
+.active .tabDot { background: var(--tab-on); box-shadow: none; }
 
 .controls {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    margin-left: 0.75rem;
+    margin-left: 0.5rem;
 }
 
 .icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
     padding: 0;
-    border: 0;
+    border: 1px solid var(--rule-strong);
     border-radius: var(--r-control);
     background: none;
-    color: var(--ink-3);
+    color: var(--ink);
     cursor: pointer;
-    transition: color var(--t) var(--ease), background-color var(--t) var(--ease);
+    transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
 
 .icon svg { width: 17px; height: 17px; }
+.icon:hover { color: var(--ink); background: var(--surface-2); }
+.iconOn { background: var(--c-pink); color: #1f1f1f; border-color: transparent; }
 
-.icon:hover {
-    color: var(--live);
-    background: color-mix(in srgb, var(--live) 12%, transparent);
-}
-
-.iconOn { color: var(--live); }
-
-/* ── The menu button and its overlay ────────────────────────────────────── */
+.cta { margin-left: 0.5rem; }
 
 .menu {
     display: none;
@@ -144,7 +135,7 @@
 .barsOpen {
     position: relative;
     display: block;
-    width: 20px;
+    width: 18px;
     height: 1.5px;
     background: currentColor;
     transition: background-color var(--t-fast) var(--ease);
@@ -157,15 +148,14 @@
     content: '';
     position: absolute;
     left: 0;
-    width: 20px;
+    width: 18px;
     height: 1.5px;
     background: currentColor;
     transition: transform var(--t) var(--ease);
 }
 
-.bars::before { transform: translateY(-6px); }
-.bars::after { transform: translateY(6px); }
-
+.bars::before { transform: translateY(-5px); }
+.bars::after { transform: translateY(5px); }
 .barsOpen { background: transparent; }
 .barsOpen::before { transform: rotate(45deg); }
 .barsOpen::after { transform: rotate(-45deg); }
@@ -177,21 +167,19 @@
     display: none;
     flex-direction: column;
     justify-content: center;
-    padding: 60px var(--gutter) 0;
-    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    padding: 64px var(--gutter) 0;
+    background: color-mix(in srgb, var(--ground) 94%, transparent);
     -webkit-backdrop-filter: var(--blur);
     backdrop-filter: var(--blur);
 }
 
 .overlayOpen { display: flex; }
 
-/* A blur over the animated field is redrawn every frame, which phones
-   render as flicker. Touch gets a near-solid backing instead. */
 @media (pointer: coarse) {
     .stuck {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
-        background: color-mix(in srgb, var(--ground) 94%, transparent);
+        background: color-mix(in srgb, var(--ground) 96%, transparent);
     }
 
     .overlay {
@@ -204,28 +192,28 @@
 .overlay nav {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
 }
 
 .big {
     display: flex;
     align-items: baseline;
     gap: 1rem;
-    padding: 0.35rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--rule);
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 13vw, 4.5rem);
-    font-weight: 600;
+    font-size: clamp(2rem, 9vw, 3.25rem);
+    font-weight: 500;
     line-height: 1;
     letter-spacing: var(--track-display);
     color: var(--ink);
     text-decoration: none;
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
 }
 
 .overlayOpen .big {
     animation: bigIn 520ms var(--ease) forwards;
-    animation-delay: calc(var(--i) * 70ms);
+    animation-delay: calc(var(--i) * 60ms);
 }
 
 @keyframes bigIn {
@@ -233,24 +221,42 @@
 }
 
 .bigIndex {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--tab);
+    box-shadow: 0 0 0 1.5px var(--ink);
     font-family: var(--font-mono);
     font-size: var(--mono-label);
-    letter-spacing: var(--track-label);
-    color: var(--live);
+    color: var(--tab-on);
 }
 
-.bigActive { color: var(--live); }
+.big:nth-child(even) .bigIndex { border-radius: 30%; }
 
-/* ── Narrow ─────────────────────────────────────────────────────────────── */
+.bigText { display: flex; flex-direction: column; gap: 0.35rem; }
 
-@media (max-width: 760px) {
+.bigBlurb {
+    font-size: var(--text-sm);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--ink-2);
+}
+
+.bigActive { color: var(--tab-deep); }
+
+@media (max-width: 860px) {
     .bar { height: 60px; gap: 0.5rem; }
     .routes { display: none; }
     .controls { margin-left: auto; }
     .menu { display: inline-flex; }
+    .cta { display: none; }
+    .markName { display: none; }
 }
 
-@media (min-width: 761px) {
+@media (min-width: 861px) {
     .overlay,
     .overlayOpen { display: none; }
 }

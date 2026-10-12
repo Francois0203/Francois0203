@@ -3,8 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin allowlist. Keep in sync with ADMIN_EMAILS in frontend/.env.local.
-    // The env var only gates the UI; THIS is the real server-side enforcement.
+    // Real enforcement of the admin allowlist; keep in sync with ADMIN_EMAILS in frontend/.env.local.
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email_verified == true

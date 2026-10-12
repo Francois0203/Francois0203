@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import useReveal from '../../hooks/useReveal';
+import Chip from '../Chip';
+import Shape from '../Shape';
 import styles from './Credentials.module.css';
 
-/*
- * Certifications as a path of badges. An earned badge shows its real image and
- * links to its verification; anything not yet earned is drawn as an outline
- * with its exam code, so nothing on the page claims a badge that is not held.
- */
 
 const STATUSES = ['earned', 'booked', 'studying', 'planned'];
 
@@ -14,26 +11,25 @@ export const toCredential = (c = {}) => {
   const given = String(c.status || '').toLowerCase().trim();
   const status = STATUSES.includes(given)
     ? given
-    : (c.badgeUrl || c.start || c.issued) ? 'earned' : 'planned';
+    : (c.badgeUrl || c.start) ? 'earned' : 'planned';
 
   return {
     id: c.id,
-    name: c.credential || c.name || c.title || '',
+    name: c.credential || '',
     code: c.code || '',
     level: c.level || '',
-    issuer: c.issuer || c.organisation || '',
+    issuer: c.issuer || '',
     status,
     badgeUrl: status === 'earned' ? (c.badgeUrl || '') : '',
     verifyUrl: status === 'earned' ? (c.verifyUrl || '') : '',
-    issued: c.start || c.issued || c.period || '',
-    expires: c.end || c.expires || '',
+    issued: c.start || '',
+    expires: c.end || '',
     examDate: c.examDate || '',
     note: c.description || '',
     order: c.order ?? 9999,
   };
 };
 
-// An exam code is what puts a certification on the badge path.
 export const onPath = (c) => Boolean(String(c?.code ?? '').trim());
 
 const when = (c, t) => {
@@ -42,38 +38,40 @@ const when = (c, t) => {
   return '';
 };
 
-const Outline = ({ code, level }) => (
-  <svg className={styles.outline} viewBox="0 0 120 132" aria-hidden="true">
-    <path d="M60 4 L112 34 L112 98 L60 128 L8 98 L8 34 Z" />
-    {code && <text x="60" y={level ? 62 : 70} textAnchor="middle" className={styles.code}>{code}</text>}
-    {level && <text x="60" y="80" textAnchor="middle" className={styles.level}>{level}</text>}
-  </svg>
-);
+const DOT = { earned: 'live', booked: 'live', studying: 'ink', planned: 'off' };
 
-// A URL that is not an image falls back to the outline instead of a broken icon.
+const shortName = (name) => name.replace(/^AWS Certified\s+/i, '');
+
+const LEVEL = {
+  foundational: { kind: 'circle', colour: 'yellow' },
+  associate: { kind: 'squircle', colour: 'blue' },
+  professional: { kind: 'hexagon', colour: 'pink' },
+};
+
+const Outline = ({ code, level }) => {
+  const look = LEVEL[String(level).toLowerCase()] ?? { kind: 'star', colour: 'green' };
+  return (
+    <span className={styles.outline} aria-hidden="true">
+      <Shape kind={look.kind} colour={look.colour} className={styles.outlineShape} />
+      {code && <span className={styles.code}>{code.split('-')[0]}</span>}
+    </span>
+  );
+};
+
 const Badge = ({ c }) => {
   const [failed, setFailed] = useState(false);
   const image = c.badgeUrl && !failed;
   return (
     <div className={styles.badge} data-image={image ? '' : undefined}>
       {image
-        ? (
-          <img
-            src={c.badgeUrl}
-            alt={`${c.name} badge`}
-            width="340"
-            height="340"
-            loading="lazy"
-            onError={() => setFailed(true)}
-          />
-        )
+        ? <img src={c.badgeUrl} alt={`${c.name} badge`} width="160" height="160" loading="lazy" onError={() => setFailed(true)} />
         : <Outline code={c.code} level={c.level} />}
     </div>
   );
 };
 
 const Credentials = ({ items = [], labels = {}, detailed = false }) => {
-  const [ref, shown] = useReveal({ threshold: 0.08 });
+  const [ref, shown] = useReveal({ threshold: 0.15 });
   const list = items.map(toCredential).filter(c => c.name).sort((a, b) => a.order - b.order);
   if (!list.length) return null;
 
@@ -84,31 +82,31 @@ const Credentials = ({ items = [], labels = {}, detailed = false }) => {
     planned: labels.statusPlanned,
   };
 
+  // The track fills to the last stop that is earned or being worked on.
+  let reach = -1;
+  list.forEach((c, i) => { if (c.status !== 'planned') reach = i; });
+  const fill = list.length > 1 ? Math.max(0, reach) / (list.length - 1) : 0;
+
   return (
     <ol
       ref={ref}
       className={styles.path}
       data-shown={shown ? '' : undefined}
       data-detailed={detailed ? '' : undefined}
-      style={{ '--step': '80ms' }}
+      style={{ '--step': '90ms', '--fill': fill, '--n': list.length }}
     >
+      <span className={styles.track} aria-hidden="true"><span className={styles.trackFill} /></span>
+
       {list.map((c, i) => {
         const date = when(c, labels);
         return (
-          <li key={c.id ?? c.name} className={styles.stop} data-status={c.status} data-rise style={{ '--i': i, '--rise': '12px' }}>
+          <li key={c.id ?? c.name} className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
+            <span className={styles.level}>{c.level || ' '}</span>
             <Badge c={c} />
-
-            <p className={styles.status}>
-              <span className={styles.dot} aria-hidden="true" />
-              {statusLabel[c.status]}
-              {date && <span className={styles.date}>{date}</span>}
-            </p>
-
-            <h3 className={styles.name}>{c.name}</h3>
-            <p className={styles.meta}>{[c.issuer, c.code].filter(Boolean).join(' / ')}</p>
-
+            <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>
+            <h3 className={styles.name}>{shortName(c.name)}</h3>
+            <p className={styles.meta}>{c.code}{date ? ` / ${date}` : ''}</p>
             {detailed && c.note && <p className={styles.note}>{c.note}</p>}
-
             {c.verifyUrl && (
               <a className={styles.verify} href={c.verifyUrl} target="_blank" rel="noreferrer">
                 {labels.verifyLabel}

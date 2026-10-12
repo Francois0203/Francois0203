@@ -1,11 +1,6 @@
 import React from 'react';
 import styles from './ErrorBoundary.module.css';
 
-/*
- * Catches a render error in the tree below it and shows a way out rather
- * than a blank page. Keyed on the route, so an error on one page does not
- * leave the app broken after navigating away.
- */
 class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null, errorInfo: null };
 

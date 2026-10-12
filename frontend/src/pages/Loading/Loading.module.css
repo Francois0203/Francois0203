@@ -1,5 +1,4 @@
-/* Shapes, not a spinner. Each block is where a real element will be, and the
-   shimmer travels across all of them at once so it reads as one surface. */
+/* Shapes where real elements will be, with one shimmer across all of them. */
 
 .wrap {
     display: flex;
@@ -9,7 +8,7 @@
     min-height: 70svh;
     max-width: var(--max);
     margin: 0 auto;
-    padding: calc(68px + var(--block)) var(--gutter) 0;
+    padding: calc(64px + 3rem) var(--gutter) 0;
 }
 
 .eyebrow,
@@ -17,33 +16,31 @@
 .line,
 .rule {
     display: block;
-    border-radius: 2px;
+    border-radius: 6px;
     background: linear-gradient(
         100deg,
-        var(--ground-2) 30%,
-        color-mix(in srgb, var(--live) 9%, var(--ground-2)) 50%,
-        var(--ground-2) 70%
+        var(--surface-2) 30%,
+        rgba(var(--live-rgb), 0.08) 50%,
+        var(--surface-2) 70%
     );
     background-size: 300% 100%;
     animation: sweep 1600ms linear infinite;
 }
 
-.eyebrow { width: 9rem; height: 0.7rem; }
-.title { width: min(60%, 26rem); height: clamp(2.5rem, 7vw, 5rem); margin-bottom: 0.6rem; }
+.eyebrow { width: 9rem; height: 1.6rem; border-radius: 999px; }
+.title { width: min(60%, 26rem); height: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: 0.6rem; }
 .line { width: min(46%, 30rem); height: 0.9rem; }
 .short { width: min(32%, 20rem); }
-.rule { width: 100%; height: 1px; margin-top: 1.5rem; }
+.rule { width: 100%; height: 1px; margin-top: 1.5rem; border-radius: 0; }
 
 @keyframes sweep {
     from { background-position: 150% 0; }
     to { background-position: -150% 0; }
 }
 
-/* A shimmer that cannot move is a row of grey bars, which reads as broken
-   rather than as loading. Held still and dimmed instead. */
 @media (prefers-reduced-motion: reduce) {
     .eyebrow, .title, .line, .rule {
         animation: none;
-        background: var(--ground-2);
+        background: var(--surface-2);
     }
 }

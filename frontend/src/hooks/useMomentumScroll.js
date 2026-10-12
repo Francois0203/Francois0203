@@ -1,17 +1,8 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 
-// The window-level instance, so navigation code can drive it rather than
-// fight it. Scoped instances deliberately do not register here.
 let lenisInstance = null;
 
-/**
- * Move the page. Through the momentum scroller when one is running, since it
- * owns the position and would overwrite a raw window.scrollTo next frame.
- *
- * @param {number|HTMLElement} target offset, or an element to bring into view.
- * @param {object} [options] `immediate` skips the glide, for a navigation.
- */
 export const scrollPageTo = (target, { immediate = false, offset = 0 } = {}) => {
   const lenis = lenisInstance;
   if (lenis) { lenis.scrollTo(target, { immediate, offset, force: true }); return; }
@@ -27,8 +18,6 @@ const prefersReduced = () =>
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// The in-app motion toggle. Someone who turns animation off and still gets
-// an inertial scroller has been ignored.
 const motionDisabled = () =>
   document.documentElement.getAttribute('data-no-animations') === 'true';
 
@@ -37,20 +26,9 @@ const FEEL = {
   smoothWheel: true,
   wheelMultiplier: 1.25, // more travel per wheel notch
   touchMultiplier: 1.4,
-  // Hands the wheel back to anything that scrolls itself. Without it a
-  // nested scroller is swallowed by preventDefault and will not move.
   allowNestedScroll: true,
 };
 
-/**
- * Momentum scrolling via Lenis, for /admin only: the public site runs on
- * native scroll, because a main thread scroller defeats scroll driven CSS.
- * Off under reduced motion or the in-app motion toggle, followed live.
- *
- * @param {object} [options] `wrapperRef` is the scrolling box and
- *        `contentRef` the element that grows, which Lenis watches for
- *        resizes. One node for both means the height is never re-measured.
- */
 export const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -75,9 +53,6 @@ export const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
       const raf = (time) => { lenis.raf(time); rafId = requestAnimationFrame(raf); };
       rafId = requestAnimationFrame(raf);
 
-      /* Lenis caches the scrollable height, and content arrives after first
-         paint. Against a stale height it clamps to the wrong maximum, felt
-         as an invisible wall partway down. */
       if (!scoped && typeof ResizeObserver !== 'undefined') {
         // One call per frame, or a settling image lurches the position.
         let pending = 0;

@@ -5,16 +5,15 @@ import App from './App';
 import { ErrorBoundary } from './components';
 
 import '@fontsource-variable/bricolage-grotesque';
-import '@fontsource-variable/instrument-sans';
-import '@fontsource-variable/martian-mono';
+import '@fontsource-variable/onest';
+import '@fontsource-variable/jetbrains-mono';
 
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/reveal.css';
 import './styles/admin-support.css';
+import './styles/print.css';
 
-/* Keyed on the path, so an error on one route does not leave the whole app in
-   a failed state after navigating away from it. */
 function Boundary({ children }) {
   const location = useLocation();
   return <ErrorBoundary resetKey={location.pathname}>{children}</ErrorBoundary>;
