@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="260" viewBox="0 0 940 260" role="img" aria-label="Contributions per week over the past year for Francois0203: 1,169 in total">
+  <title>Contributions per week, past year</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f3ea"/><stop offset="100%" stop-color="#f1ebdd"/>
+    </linearGradient>
+    <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bda8ff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#5a63ff" stop-opacity="0.04"/>
+    </linearGradient>
+    <clipPath id="wipe"><rect id="wiperect" x="0" y="0" width="940" height="260"/></clipPath>
+  </defs>
+  <style>
+    .ttl { font: 700 15px 'Bricolage Grotesque', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: #1f1f1f; }
+    .sub { font: 400 11.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #8a847c; letter-spacing: .04em; }
+    .ax  { font: 400 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #8a847c; }
+    .pk  { font: 600 10.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: #2b33c4; }
+
+    /* Draws the line from left to right. */
+    #wiperect { animation: wipe 1900ms cubic-bezier(.22,.61,.36,1) forwards; }
+    @keyframes wipe { from { width: 0; } to { width: 940px; } }
+
+    #line { stroke-dasharray: 4000; stroke-dashoffset: 4000;
+            animation: draw 1900ms cubic-bezier(.22,.61,.36,1) forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    #area { opacity: 0; animation: fade 1500ms 400ms ease-out forwards; }
+    @keyframes fade { to { opacity: 1; } }
+
+    .peak { opacity: 0; animation: fade 600ms 2000ms ease-out forwards; }
+    .head { opacity: 0; animation: rise 700ms ease-out forwards; }
+    .head.b { animation-delay: 120ms; }
+    @keyframes rise { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      #wiperect, #line, #area, .peak, .head { animation: none; }
+      #wiperect { width: 940px; }
+      #line { stroke-dashoffset: 0; }
+      #area, .peak, .head { opacity: 1; }
+    }
+  </style>
+
+  <rect width="940" height="260" fill="url(#bg)"/>
+  <text x="24" y="28" class="ttl head">Contributions per week</text>
+  <text x="24" y="44" class="sub head b">PAST YEAR &#183; 1,169 CONTRIBUTIONS</text>
+
+  <g><line x1="40" y1="226.0" x2="916" y2="226.0" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="229.5" class="ax" text-anchor="end">0</text><line x1="40" y1="197.7" x2="916" y2="197.7" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="201.2" class="ax" text-anchor="end">25</text><line x1="40" y1="169.3" x2="916" y2="169.3" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="172.8" class="ax" text-anchor="end">50</text><line x1="40" y1="141.0" x2="916" y2="141.0" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="144.5" class="ax" text-anchor="end">75</text><line x1="40" y1="112.7" x2="916" y2="112.7" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="116.2" class="ax" text-anchor="end">100</text><line x1="40" y1="84.3" x2="916" y2="84.3" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="87.8" class="ax" text-anchor="end">125</text><line x1="40" y1="56.0" x2="916" y2="56.0" stroke="#e6dfcf" stroke-width="1"/><text x="32" y="59.5" class="ax" text-anchor="end">150</text></g>
+  <g><text x="40.0" y="246" class="ax" text-anchor="middle">Oct</text><text x="90.5" y="246" class="ax" text-anchor="middle">Nov</text><text x="174.8" y="246" class="ax" text-anchor="middle">Dec</text><text x="242.2" y="246" class="ax" text-anchor="middle">Jan</text><text x="309.5" y="246" class="ax" text-anchor="middle">Feb</text><text x="376.9" y="246" class="ax" text-anchor="middle">Mar</text><text x="461.2" y="246" class="ax" text-anchor="middle">Apr</text><text x="528.5" y="246" class="ax" text-anchor="middle">May</text><text x="612.8" y="246" class="ax" text-anchor="middle">Jun</text><text x="680.2" y="246" class="ax" text-anchor="middle">Jul</text><text x="747.5" y="246" class="ax" text-anchor="middle">Aug</text><text x="831.8" y="246" class="ax" text-anchor="middle">Sep</text><text x="899.2" y="246" class="ax" text-anchor="middle">Oct</text></g>
+
+  <g clip-path="url(#wipe)">
+    <path id="area" d="M 40 224.86666666666667 C 42.8 225.1, 51.2 225.8, 56.8 226.0 C 62.5 226.2, 68.1 226.0, 73.7 226.0 C 79.3 226.0, 84.9 227.7, 90.5 226.0 C 96.2 224.3, 101.8 218.4, 107.4 215.8 C 113.0 213.2, 118.6 212.8, 124.2 210.1 C 129.8 207.5, 135.5 197.3, 141.1 199.9 C 146.7 202.6, 152.3 245.5, 157.9 226.0 C 163.5 206.5, 169.2 101.0, 174.8 83.2 C 180.4 65.4, 186.0 101.7, 191.6 119.5 C 197.2 137.2, 202.8 179.2, 208.5 189.7 C 214.1 200.3, 219.7 176.9, 225.3 182.9 C 230.9 189.0, 236.5 229.0, 242.2 226.0 C 247.8 223.0, 253.4 169.1, 259.0 164.8 C 264.6 160.5, 270.2 195.4, 275.8 199.9 C 281.5 204.5, 287.1 197.3, 292.7 192.0 C 298.3 186.7, 303.9 166.5, 309.5 168.2 C 315.2 169.9, 320.8 196.2, 326.4 202.2 C 332.0 208.2, 337.6 203.1, 343.2 204.5 C 348.8 205.8, 354.5 212.0, 360.1 210.1 C 365.7 208.2, 371.3 192.4, 376.9 193.1 C 382.5 193.9, 388.2 218.3, 393.8 214.7 C 399.4 211.1, 405.0 179.3, 410.6 171.6 C 416.2 163.9, 421.8 165.0, 427.5 168.2 C 433.1 171.4, 438.7 188.6, 444.3 190.9 C 449.9 193.1, 455.5 183.9, 461.2 181.8 C 466.8 179.7, 472.4 178.6, 478.0 178.4 C 483.6 178.2, 489.2 173.3, 494.8 180.7 C 500.5 188.0, 506.1 215.0, 511.7 222.6 C 517.3 230.2, 522.9 225.4, 528.5 226.0 C 534.2 226.6, 539.8 230.0, 545.4 226.0 C 551.0 222.0, 556.6 203.3, 562.2 202.2 C 567.8 201.1, 573.5 220.0, 579.1 219.2 C 584.7 218.4, 590.3 196.7, 595.9 197.7 C 601.5 198.6, 607.2 220.1, 612.8 224.9 C 618.4 229.6, 624.0 226.0, 629.6 226.0 C 635.2 226.0, 640.8 225.4, 646.5 224.9 C 652.1 224.3, 657.7 222.6, 663.3 222.6 C 668.9 222.6, 674.5 227.7, 680.2 224.9 C 685.8 222.0, 691.4 209.4, 697.0 205.6 C 702.6 201.8, 708.2 203.0, 713.8 202.2 C 719.5 201.4, 725.1 200.9, 730.7 201.1 C 736.3 201.3, 741.9 203.1, 747.5 203.3 C 753.2 203.5, 758.8 202.0, 764.4 202.2 C 770.0 202.4, 775.6 204.8, 781.2 204.5 C 786.8 204.1, 792.5 199.4, 798.1 199.9 C 803.7 200.5, 809.3 210.3, 814.9 207.9 C 820.5 205.4, 826.2 186.0, 831.8 185.2 C 837.4 184.4, 843.0 198.4, 848.6 203.3 C 854.2 208.2, 859.8 215.4, 865.5 214.7 C 871.1 213.9, 876.7 198.6, 882.3 198.8 C 887.9 199.0, 893.5 213.2, 899.2 215.8 C 904.8 218.4, 913.2 214.9, 916.0 214.7 L 916.0 226 L 40 226 Z" fill="url(#areaFill)"/>
+    <path id="line" d="M 40 224.86666666666667 C 42.8 225.1, 51.2 225.8, 56.8 226.0 C 62.5 226.2, 68.1 226.0, 73.7 226.0 C 79.3 226.0, 84.9 227.7, 90.5 226.0 C 96.2 224.3, 101.8 218.4, 107.4 215.8 C 113.0 213.2, 118.6 212.8, 124.2 210.1 C 129.8 207.5, 135.5 197.3, 141.1 199.9 C 146.7 202.6, 152.3 245.5, 157.9 226.0 C 163.5 206.5, 169.2 101.0, 174.8 83.2 C 180.4 65.4, 186.0 101.7, 191.6 119.5 C 197.2 137.2, 202.8 179.2, 208.5 189.7 C 214.1 200.3, 219.7 176.9, 225.3 182.9 C 230.9 189.0, 236.5 229.0, 242.2 226.0 C 247.8 223.0, 253.4 169.1, 259.0 164.8 C 264.6 160.5, 270.2 195.4, 275.8 199.9 C 281.5 204.5, 287.1 197.3, 292.7 192.0 C 298.3 186.7, 303.9 166.5, 309.5 168.2 C 315.2 169.9, 320.8 196.2, 326.4 202.2 C 332.0 208.2, 337.6 203.1, 343.2 204.5 C 348.8 205.8, 354.5 212.0, 360.1 210.1 C 365.7 208.2, 371.3 192.4, 376.9 193.1 C 382.5 193.9, 388.2 218.3, 393.8 214.7 C 399.4 211.1, 405.0 179.3, 410.6 171.6 C 416.2 163.9, 421.8 165.0, 427.5 168.2 C 433.1 171.4, 438.7 188.6, 444.3 190.9 C 449.9 193.1, 455.5 183.9, 461.2 181.8 C 466.8 179.7, 472.4 178.6, 478.0 178.4 C 483.6 178.2, 489.2 173.3, 494.8 180.7 C 500.5 188.0, 506.1 215.0, 511.7 222.6 C 517.3 230.2, 522.9 225.4, 528.5 226.0 C 534.2 226.6, 539.8 230.0, 545.4 226.0 C 551.0 222.0, 556.6 203.3, 562.2 202.2 C 567.8 201.1, 573.5 220.0, 579.1 219.2 C 584.7 218.4, 590.3 196.7, 595.9 197.7 C 601.5 198.6, 607.2 220.1, 612.8 224.9 C 618.4 229.6, 624.0 226.0, 629.6 226.0 C 635.2 226.0, 640.8 225.4, 646.5 224.9 C 652.1 224.3, 657.7 222.6, 663.3 222.6 C 668.9 222.6, 674.5 227.7, 680.2 224.9 C 685.8 222.0, 691.4 209.4, 697.0 205.6 C 702.6 201.8, 708.2 203.0, 713.8 202.2 C 719.5 201.4, 725.1 200.9, 730.7 201.1 C 736.3 201.3, 741.9 203.1, 747.5 203.3 C 753.2 203.5, 758.8 202.0, 764.4 202.2 C 770.0 202.4, 775.6 204.8, 781.2 204.5 C 786.8 204.1, 792.5 199.4, 798.1 199.9 C 803.7 200.5, 809.3 210.3, 814.9 207.9 C 820.5 205.4, 826.2 186.0, 831.8 185.2 C 837.4 184.4, 843.0 198.4, 848.6 203.3 C 854.2 208.2, 859.8 215.4, 865.5 214.7 C 871.1 213.9, 876.7 198.6, 882.3 198.8 C 887.9 199.0, 893.5 213.2, 899.2 215.8 C 904.8 218.4, 913.2 214.9, 916.0 214.7" fill="none" stroke="#5a63ff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g class="peak">
+    <circle cx="174.8" cy="83.2" r="3.5" fill="#2b33c4"/>
+    <text x="174.8" y="73.2" class="pk" text-anchor="middle">126</text>
+  </g>
+</svg>
