@@ -53,6 +53,17 @@
     height: 100%;
     object-fit: cover;
     transform: scale(1.04);
+    opacity: 0;
+    transition: opacity 500ms var(--ease);
+}
+
+.photo[data-ready] { opacity: 1; }
+
+/* The loading sheen fills the card until the photo has arrived. */
+.wait {
+    position: absolute;
+    inset: 0;
+    border-radius: 0;
 }
 
 .initials {

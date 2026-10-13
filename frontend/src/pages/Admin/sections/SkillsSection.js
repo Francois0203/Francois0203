@@ -3,6 +3,7 @@ import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 import { subscribeSkills, updateSkills } from '../../../firebase/admin';
 import { useToast, KebabMenu } from '../../../components';
 import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
+import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 // Items may be plain strings or objects like {name, color, category, icon}
@@ -48,12 +49,13 @@ const SkillsSection = () => {
   const { toast } = useToast();
   const [categories, setCategories] = useState([]);
   const [saving, setSaving]         = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [newCat, setNewCat]         = useState('');
 
   useEffect(() => {
     return subscribeSkills(
-      data => setCategories(withIds(data.categories ?? [])),
-      () => toast.error('Failed to load skills'),
+      data => { setCategories(withIds(data.categories ?? [])); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load skills'); },
     );
   }, [toast]);
 
@@ -96,6 +98,8 @@ const SkillsSection = () => {
 
   const reorderItems = (catIdx, items) =>
     setCategories(prev => prev.map((cat, idx) => (idx === catIdx ? { ...cat, items } : cat)));
+
+  if (!loaded) return <ListSkeleton />;
 
   return (
     <div>

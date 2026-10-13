@@ -4,6 +4,7 @@ import { subscribeCopy, updateCopy } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import { COPY_SCHEMA } from '../../../content/copy';
 import styles from '../Admin.module.css';
+import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const buildDraft = (saved = {}) => {
@@ -36,12 +37,13 @@ const SiteCopySection = () => {
   const [activeGroup, setActiveGroup] = useState(COPY_SCHEMA[0].key);
   const [draft, setDraft] = useState(() => buildDraft({}));
   const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const dirtyRef = useRef(false);
 
   useEffect(() => {
     return subscribeCopy(
-      (data) => { if (!dirtyRef.current) setDraft(buildDraft(data)); },
-      () => toast.error('Failed to load site copy'),
+      (data) => { if (!dirtyRef.current) setDraft(buildDraft(data)); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load site copy'); },
     );
   }, [toast]);
 
@@ -66,6 +68,8 @@ const SiteCopySection = () => {
   };
 
   const group = COPY_SCHEMA.find(g => g.key === activeGroup) ?? COPY_SCHEMA[0];
+
+  if (!loaded) return <FormSkeleton />;
 
   return (
     <div>

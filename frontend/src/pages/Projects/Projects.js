@@ -8,7 +8,8 @@ import { Modal } from '../../components';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
 import Drift from '../../components/Drift';
-import Fleet from '../../components/Fleet';
+import Showcase, { ShowcaseSkeleton } from '../../components/Showcase';
+import Skeleton, { Bone } from '../../components/Skeleton';
 import ReadmeRenderer from './ReadmeRenderer';
 import { parseReadme } from './parseReadme';
 import styles from './Projects.module.css';
@@ -44,6 +45,24 @@ const Repo = ({ project, onReadme, index }) => {
     </article>
   );
 };
+
+// Row-shaped placeholders while the repositories load.
+const RepoSkeleton = () => (
+  <Skeleton label="Loading repositories" className={styles.repos}>
+    {[70, 55, 80, 60].map((w, i) => (
+      <div key={i}>
+        <div className={styles.repo}>
+          <Bone w="2.6rem" h="2.6rem" r="50%" />
+          <div className={styles.repoBody}>
+            <Bone w={`${w * 0.5}%`} h="1.1rem" />
+            <Bone w={`${w}%`} h="0.8rem" style={{ marginTop: '0.55rem' }} />
+          </div>
+          <div className={styles.repoMeta}><Bone w="4.5rem" h="1.6rem" r="999px" /></div>
+        </div>
+      </div>
+    ))}
+  </Skeleton>
+);
 
 const Head = ({ title, lede }) => {
   const [ref, shown] = useReveal({ threshold: 0.3 });
@@ -107,10 +126,10 @@ const Projects = () => {
         {sitesError
           ? <p className={styles.note}>The client sites could not be loaded.</p>
           : sitesLoading
-            ? <div className={styles.waiting} aria-hidden="true" />
+            ? <ShowcaseSkeleton />
             : sites.length === 0
               ? <p className={styles.note}>{t.studioEmpty}</p>
-              : <Fleet sites={sites} />}
+              : <Showcase sites={sites} visitLabel={t.visitLabel} />}
       </section>
 
       {/* Repositories */}
@@ -154,7 +173,7 @@ const Projects = () => {
         {error
           ? <p className={styles.note}>The repositories could not be loaded.</p>
           : loading
-            ? <div className={styles.waiting} aria-hidden="true" />
+            ? <RepoSkeleton />
             : shown.length === 0
               ? <p className={styles.note}>{t.codeEmpty}</p>
               : (

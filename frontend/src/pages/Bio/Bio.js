@@ -9,6 +9,7 @@ import { BIO_FIELDS } from '../../content/copy/bio';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { periodOf, isCurrent } from '../../content/records';
 import Stack from '../../components/Stack';
+import Skeleton, { Bone } from '../../components/Skeleton';
 import { useToast } from '../../components';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
@@ -69,6 +70,29 @@ const Card = ({ title, org, when, note, current, tone, i }) => (
     {org && <p className={styles.org}>{org}</p>}
     {note && <p className={styles.cardNote}>{note}</p>}
   </article>
+);
+
+// The shape of the record while it loads: a profile paragraph and two job cards.
+const RecordSkeleton = () => (
+  <Skeleton label="Loading the CV">
+    <div className={styles.section}>
+      <Bone w="11rem" h="2.6rem" style={{ marginBottom: '1.75rem' }} />
+      {[100, 96, 98, 60].map((w, i) => <Bone key={i} w={`${w}%`} h="1rem" style={{ marginBottom: '0.75rem' }} />)}
+    </div>
+    <div className={styles.section}>
+      <Bone w="14rem" h="2.6rem" style={{ marginBottom: '1.75rem' }} />
+      <div className={styles.timeline}>
+        {[0, 1].map(i => (
+          <div key={i} className={styles.job}>
+            <Bone w="45%" h="1.4rem" />
+            <Bone w="30%" h="0.9rem" style={{ marginTop: '0.6rem' }} />
+            <Bone w="100%" h="0.85rem" style={{ marginTop: '1.2rem' }} />
+            <Bone w="85%" h="0.85rem" style={{ marginTop: '0.5rem' }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </Skeleton>
 );
 
 const Section = ({ id, title, tone, children }) => {
@@ -158,7 +182,9 @@ const Bio = () => {
         style={{ '--step': '70ms' }}
       >
         <div className={styles.identity}>
-          {photo && (
+          {loading ? (
+            <div className={styles.portrait}><Bone h="100%" r="0" /></div>
+          ) : photo && (
             <div className={styles.portrait} data-rise style={{ '--i': 0 }}>
               <img src={photo} alt="" width="320" height="320" fetchPriority="high" />
             </div>
@@ -167,8 +193,17 @@ const Bio = () => {
             <div data-rise style={{ '--i': 0 }}>
               <Chip dot="ink">{t.eyebrow}</Chip>
             </div>
-            <h1 className={styles.name}><span className="mask"><span style={{ '--i': 1 }}>{name}</span></span></h1>
-            {personal.title && <p className={styles.title} data-rise style={{ '--i': 2 }}>{personal.title}</p>}
+            {loading ? (
+              <>
+                <Bone w="min(26rem, 80%)" h="3.6rem" />
+                <Bone w="14rem" h="1.3rem" />
+              </>
+            ) : (
+              <>
+                <h1 className={styles.name}><span className="mask"><span style={{ '--i': 1 }}>{name}</span></span></h1>
+                {personal.title && <p className={styles.title} data-rise style={{ '--i': 2 }}>{personal.title}</p>}
+              </>
+            )}
             <div className={styles.headActions} data-rise data-print-hide style={{ '--i': 3 }}>
               <Button variant="line" size="sm" disabled={loading || !data} onClick={printCv}>{t.printLabel}</Button>
             </div>
@@ -176,6 +211,9 @@ const Bio = () => {
         </div>
 
         <ul className={styles.contact} data-rise style={{ '--i': 3 }}>
+          {loading && [0, 1, 2].map(i => (
+            <li key={i}><Bone w="3.5rem" h="0.8rem" /><Bone w={['80%', '90%', '60%'][i]} h="1rem" /></li>
+          ))}
           {contact.location && (
             <li><span className={styles.cKey}>Based</span><span className={styles.cVal}>{contact.location}</span></li>
           )}
@@ -229,11 +267,11 @@ const Bio = () => {
         </nav>
 
         <div className={styles.record}>
-          {loading && <p className={styles.waiting}>Reading the record</p>}
-
-          <Section id="profile" title={t.profileHeading} tone="blue">
-            <p className={styles.summary} data-rise>{summary}</p>
-          </Section>
+          {loading ? <RecordSkeleton /> : (
+            <Section id="profile" title={t.profileHeading} tone="blue">
+              <p className={styles.summary} data-rise>{summary}</p>
+            </Section>
+          )}
 
           {experience.length > 0 && (
             <Section id="experience" title={t.experienceHeading} tone="green">

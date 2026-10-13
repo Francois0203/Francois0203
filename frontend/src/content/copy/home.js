@@ -18,7 +18,7 @@ export const HOME_FIELDS = [
   { key: 'curtainLabel', label: 'Selected work - band title', type: 'text', default: 'Selected work' },
 
   // Work
-  { key: 'workLede',  label: 'Work - lede',  type: 'textarea', default: 'Real sites I built for clients, running right now. Pick one from the list and use it.' },
+  { key: 'workLede',  label: 'Work - lede',  type: 'textarea', default: 'Websites I built for small businesses. Click one to visit it.' },
   { key: 'workCta',   label: 'Work - button', type: 'text', default: 'All projects' },
   { key: 'workEmpty', label: 'Work - empty state', type: 'textarea', default: 'The next one is still being built.' },
 ];

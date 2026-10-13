@@ -4,7 +4,8 @@ export const PROJECTS_FIELDS = [
   { key: 'lede',     label: 'Hero - positioning line', type: 'textarea', default: 'Client sites that are live today, and the repositories I work on in my own time.' },
 
   { key: 'studioTitle', label: 'Client work - headline (italic in *asterisks*)', type: 'text', default: 'Client *sites*.' },
-  { key: 'studioLede',  label: 'Client work - lede', type: 'textarea', default: 'Sites I built for clients, running live. Pick one from the list and use it.' },
+  { key: 'studioLede',  label: 'Client work - lede', type: 'textarea', default: 'Websites I built for small businesses. Click one to visit it.' },
+  { key: 'visitLabel', label: 'Client work - button on each site', type: 'text', default: 'Visit website' },
   { key: 'studioEmpty', label: 'Client work - empty state', type: 'textarea', default: 'No client sites are published yet.' },
 
   { key: 'codeTitle', label: 'Code section - headline (italic in *asterisks*)', type: 'text', default: 'Personal *projects*.' },

@@ -6,6 +6,7 @@ import useReveal from '../../hooks/useReveal';
 import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
 import { HOME_FIELDS } from '../../content/copy/home';
+import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { periodOf, isCurrent, startKey } from '../../content/records';
 import Credentials, { toCredential, onPath } from '../../components/Credentials';
@@ -16,7 +17,8 @@ import Portrait from '../../components/Portrait';
 import Story from '../../components/Story';
 import RunsOn from '../../components/RunsOn';
 import Curtain from '../../components/Curtain';
-import Fleet from '../../components/Fleet';
+import Showcase, { ShowcaseSkeleton } from '../../components/Showcase';
+import Skeleton, { Bone } from '../../components/Skeleton';
 import styles from './Home.module.css';
 
 
@@ -81,10 +83,11 @@ const markName = (name) => {
 };
 
 const Home = () => {
-  const { data } = usePortfolioData();
+  const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const { sites, loading: sitesLoading } = useStudioSites();
   const t = resolveGroup(HOME_FIELDS, overrides.home);
+  const tp = resolveGroup(PROJECTS_FIELDS, overrides.projects);
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
 
   const personal = data?.personal ?? {};
@@ -163,7 +166,7 @@ const Home = () => {
         </div>
 
         <div className={styles.heroPortrait} data-rise style={{ '--i': 2, '--rise': '28px' }}>
-          <Portrait src={photo} name={name} facts={facts} />
+          <Portrait src={photo} name={name} facts={facts} loading={loading} />
         </div>
       </section>
 
@@ -175,6 +178,24 @@ const Home = () => {
       )}
 
       {/* 2. How he got here */}
+      {loading && (
+        <section className={`${styles.block} ${styles.story}`}>
+          <header className={styles.head} data-shown="">
+            <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
+          </header>
+          <Skeleton label="Loading the story" className={styles.storyWait}>
+            <Bone w="min(100%, 340px)" h="auto" r="50%" className={styles.storyWaitRing} style={{ aspectRatio: '1' }} />
+            <div className={styles.storyWaitCard}>
+              <Bone w="40%" h="0.8rem" />
+              <Bone w="70%" h="2.4rem" style={{ marginTop: '1rem' }} />
+              <Bone w="50%" h="1.1rem" style={{ marginTop: '0.75rem' }} />
+              <Bone w="95%" h="0.9rem" style={{ marginTop: '1.5rem' }} />
+              <Bone w="80%" h="0.9rem" style={{ marginTop: '0.5rem' }} />
+            </div>
+          </Skeleton>
+        </section>
+      )}
+
       {chapters.length > 0 && (
         <section id="story" className={`${styles.block} ${styles.story}`}>
           <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
@@ -197,10 +218,10 @@ const Home = () => {
           </div>
         </header>
         {sitesLoading
-          ? <div className={styles.waiting} aria-hidden="true" />
+          ? <ShowcaseSkeleton />
           : sites.length === 0
             ? <p className={styles.empty}>{t.workEmpty}</p>
-            : <Fleet sites={sites} />}
+            : <Showcase sites={sites} visitLabel={tp.visitLabel} />}
       </section>
 
       {/* 4. What is next */}

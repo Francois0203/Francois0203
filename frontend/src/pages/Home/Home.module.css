@@ -53,11 +53,6 @@
     color: var(--ink-3);
 }
 
-.waiting {
-    height: 420px;
-    border-radius: 32px;
-    background: var(--surface);
-}
 
 /* 1. Hero */
 
@@ -110,6 +105,31 @@
 .story { padding-bottom: 0; }
 
 .toolsBlock { padding-top: 0; }
+
+/* The story's shape while it loads: the portrait ring beside a chapter card. */
+.storyWait {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    min-height: 60vh;
+}
+
+.storyWaitRing { justify-self: center; }
+
+.storyWaitCard {
+    padding: 1.75rem;
+    border-radius: var(--r-card);
+    background: var(--surface);
+    box-shadow: var(--card-shadow);
+}
+
+.storyWaitCard > span { display: block; }
+
+@media (max-width: 900px) {
+    .storyWait { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+    .storyWaitRing { display: none !important; }
+}
 
 /* Narrow */
 

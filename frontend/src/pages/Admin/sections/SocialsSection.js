@@ -4,6 +4,7 @@ import { subscribeSocial, updateSocial } from '../../../firebase/admin';
 import { useToast, SearchableDropdown, KebabMenu } from '../../../components';
 import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
 import { PLATFORMS } from '../../../components/SocialIcon';
+import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const PLATFORM_OPTIONS = PLATFORMS.map(p => ({ value: p.key, label: p.label }));
@@ -15,13 +16,14 @@ const SocialsSection = () => {
   const { toast } = useToast();
   const [platforms, setPlatforms] = useState([]);
   const [saving, setSaving]       = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [newKey, setNewKey]       = useState('github');
   const [newUrl, setNewUrl]       = useState('');
 
   useEffect(() => {
     return subscribeSocial(
-      data => setPlatforms(withIds(data)),
-      () => toast.error('Failed to load socials'),
+      data => { setPlatforms(withIds(data)); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load socials'); },
     );
   }, [toast]);
 
@@ -56,6 +58,8 @@ const SocialsSection = () => {
       setSaving(false);
     }
   };
+
+  if (!loaded) return <ListSkeleton />;
 
   return (
     <div>

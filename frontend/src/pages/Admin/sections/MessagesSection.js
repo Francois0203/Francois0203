@@ -3,6 +3,7 @@ import { subscribeMessages, deleteMessage } from '../../../firebase/admin';
 import { MdDeleteOutline, MdReply } from 'react-icons/md';
 import { useToast, KebabMenu } from '../../../components';
 import styles from '../Admin.module.css';
+import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const fmt = (ts) => {
@@ -14,11 +15,12 @@ const fmt = (ts) => {
 const MessagesSection = () => {
   const { toast } = useToast();
   const [messages, setMessages] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     return subscribeMessages(
-      setMessages,
-      () => toast.error('Failed to load messages'),
+      (rows) => { setMessages(rows); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load messages'); },
     );
   }, [toast]);
 
@@ -31,6 +33,8 @@ const MessagesSection = () => {
       toast.error('Failed to delete message');
     }
   };
+
+  if (!loaded) return <ListSkeleton />;
 
   return (
     <div>

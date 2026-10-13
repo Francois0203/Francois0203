@@ -177,12 +177,6 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
 
 .record { min-width: 0; max-width: 820px; }
 
-.waiting {
-    padding: 2rem 0;
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    color: var(--ink-3);
-}
 
 .section {
     padding-bottom: clamp(3rem, 7vh, 4.5rem);

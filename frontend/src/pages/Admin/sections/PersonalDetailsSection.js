@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { subscribePersonal, updatePersonal } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const FIELDS = [
@@ -28,13 +29,14 @@ const PersonalDetailsSection = () => {
   const { toast } = useToast();
   const [form, setForm]     = useState(() => buildForm({}));
   const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const dirtyRef = useRef(false);
 
   useEffect(() => {
     // Don't overwrite in-progress edits when our own save echoes back.
     return subscribePersonal(
-      (d) => { if (!dirtyRef.current) setForm(buildForm(d)); },
-      () => toast.error('Failed to load personal details'),
+      (d) => { if (!dirtyRef.current) setForm(buildForm(d)); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load personal details'); },
     );
   }, [toast]);
 
@@ -61,6 +63,8 @@ const PersonalDetailsSection = () => {
       setSaving(false);
     }
   };
+
+  if (!loaded) return <FormSkeleton />;
 
   return (
     <div>

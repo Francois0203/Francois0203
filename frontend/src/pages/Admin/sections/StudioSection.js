@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { subscribeStudioSites } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import styles from '../Admin.module.css';
+import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 
@@ -25,7 +26,9 @@ const StudioSection = () => {
   }, [toast]);
 
   const withoutUrl = sites.filter(s => (s.sites?.length ?? 0) === 0);
-  const unframeable = sites.filter(s => (s.sites ?? []).some(u => !u.embeddable));
+  const noPicture = sites.filter(s => (s.sites?.length ?? 0) > 0 && !s.preview);
+
+  if (!ready) return <ListSkeleton />;
 
   return (
     <div>
@@ -38,7 +41,7 @@ const StudioSection = () => {
         <p className={styles.hint} style={{ margin: 'var(--spacing-sm) 0 var(--spacing-md)' }}>
           {sites.length} synced
           {withoutUrl.length > 0 && ` · ${withoutUrl.length} with no live url`}
-          {unframeable.length > 0 && ` · ${unframeable.length} that can't be embedded`}
+          {noPicture.length > 0 && ` · ${noPicture.length} without a screenshot yet`}
         </p>
       )}
 
@@ -77,11 +80,7 @@ const StudioSection = () => {
               {urls.map(u => (
                 <span key={u.url} className={formStyles.meta}>
                   {u.label}: <a href={u.url} target="_blank" rel="noopener noreferrer">{u.url}</a>
-                  {u.reachable === false
-                    ? ' · not responding'
-                    : u.embeddable === false
-                      ? ' · refuses framing, will link out'
-                      : ' · embeds fine'}
+                  {u.reachable === false ? ' · not responding' : ' · online'}
                 </span>
               ))}
 

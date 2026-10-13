@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install script dependencies
         run: npm install
@@ -44,5 +44,4 @@ jobs:
           GH_PAT:          ${{ secrets.STUDIO_PAT || secrets.GH_PAT }}
           SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
           STUDIO_ORG:      FM-Web-Studio
-          SITE_ORIGIN:     ${{ vars.SITE_ORIGIN }}
           PRUNE:           '1'

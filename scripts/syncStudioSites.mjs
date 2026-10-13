@@ -1,13 +1,14 @@
 import { ghPaginate, ghReadJson } from './lib/gh.mjs';
 import { initFirestore, closeFirestore, projectId, admin } from './lib/firebase.mjs';
+import { screenshot } from './lib/screenshot.mjs';
 
 // Config
 
 const ORG         = process.env.STUDIO_ORG  || 'FM-Web-Studio';
-const SITE_ORIGIN = process.env.SITE_ORIGIN
-  || (projectId() ? `${projectId()}.web.app` : '');
 const COLLECTION  = 'studioSites';
 const PROBE_MS    = 10_000;
+// The portfolio's own address, so a site that only allows named frames can still be shown.
+const PORTFOLIO   = projectId() ? `${projectId()}.web.app` : '';
 
 // URL discovery
 
@@ -57,7 +58,7 @@ async function firebaseSites(owner, repo) {
   }));
 }
 
-// Embeddability probe
+// Is the site up, and may the portfolio show it in a frame?
 
 async function probe(url) {
   try {
@@ -67,29 +68,14 @@ async function probe(url) {
       headers:  { 'User-Agent': 'portfolio-showcase-probe' },
       signal:   AbortSignal.timeout(PROBE_MS),
     });
-
-    // We only need the headers; don't hold the body open.
     res.body?.cancel?.().catch(() => {});
 
     const xfo = (res.headers.get('x-frame-options') || '').toLowerCase();
-    const csp = res.headers.get('content-security-policy') || '';
-    const fa  = /frame-ancestors([^;]*)/i.exec(csp)?.[1]?.trim().toLowerCase() ?? '';
+    const ancestors = (/frame-ancestors([^;]*)/i.exec(res.headers.get('content-security-policy') || '')?.[1] || '').trim().toLowerCase();
+    const allowedByCsp = !ancestors || ancestors.includes('*') || (PORTFOLIO && ancestors.includes(PORTFOLIO));
+    const embeddable = res.ok && !/deny|sameorigin/.test(xfo) && allowedByCsp;
 
-    const blockedByXfo = /deny|sameorigin/.test(xfo);
-
-    let blockedByCsp = false;
-    if (fa) {
-      if (fa.includes("'none'"))    blockedByCsp = true;
-      else if (fa.includes('*'))    blockedByCsp = false;
-      else if (SITE_ORIGIN)         blockedByCsp = !fa.includes(SITE_ORIGIN.toLowerCase().replace(/^https?:\/\//, ''));
-      else                          blockedByCsp = true;   // cannot evaluate
-    }
-
-    return {
-      reachable:  res.ok,
-      embeddable: res.ok && !blockedByXfo && !blockedByCsp,
-      status:     res.status,
-    };
+    return { reachable: res.ok, embeddable, status: res.status };
   } catch {
     return { reachable: false, embeddable: false, status: 0 };
   }
@@ -107,7 +93,7 @@ function docId(owner, repo) {
   return `${owner}_${repo}`.toLowerCase().replace(/[^a-z0-9]/g, '_');
 }
 
-async function buildDoc(r) {
+async function buildDoc(r, previous) {
   const owner = r.owner?.login ?? ORG;
   const repo  = r.name;
 
@@ -145,8 +131,11 @@ async function buildDoc(r) {
   const seen = new Set();
   sites = sites.filter(s => !seen.has(s.url) && seen.add(s.url)).slice(0, 4);
 
-  // Probe each url for framing support
   const probed = await Promise.all(sites.map(async s => ({ ...s, ...(await probe(s.url)) })));
+
+  // A picture of the main site for its card. Keeps the last one if this capture fails.
+  const main = probed.find(s => s.reachable);
+  const preview = (main && await screenshot(main.url)) || previous?.preview || null;
 
   return {
     id:   docId(owner, repo),
@@ -160,6 +149,7 @@ async function buildDoc(r) {
       featured:    manifest?.featured === true,
       order:       Number.isFinite(manifest?.order) ? manifest.order : 100,
       sites:       probed,
+      preview,
       stack:       strList(manifest?.stack, 12),
       tags:        strList(manifest?.tags, 8),
       topics:      strList(r.topics, 8),
@@ -199,6 +189,7 @@ async function main() {
 
   console.log(`${repos.length} repo(s) found. Resolving live sites...\n`);
 
+  const existing = new Map((await db.collection(COLLECTION).get()).docs.map(d => [d.id, d.data()]));
   const batch  = db.batch();
   const keptIds = new Set();
   let withSites = 0;
@@ -207,12 +198,11 @@ async function main() {
   for (const r of repos) {
     process.stdout.write(`  ${r.name} ... `);
     try {
-      const { id, data } = await buildDoc(r);
+      const { id, data } = await buildDoc(r, existing.get(docId(r.owner?.login ?? ORG, r.name)));
       batch.set(db.collection(COLLECTION).doc(id), data);
       keptIds.add(id);
 
       const urls   = data.sites.length;
-      const frames = data.sites.filter(s => s.embeddable).length;
       const dead   = data.sites.filter(s => !s.reachable).map(s => s.url);
 
       if (urls === 0) {
@@ -220,14 +210,13 @@ async function main() {
       } else {
         console.log(
           `${urls} site(s) via ${data.source}` +
-          `, ${frames}/${urls} embeddable` +
+          (data.preview ? ', screenshot' : ', no screenshot') +
           (data.featured ? ', featured' : ''),
         );
         withSites++;
       }
       if (dead.length)          console.log(`      ! unreachable: ${dead.join(', ')}`);
       if (data.manifestError)   console.log(`      ! ${data.manifestError}`);
-      if (urls > frames)        console.log('      ! some sites refuse framing - the card will link out instead');
     } catch (err) {
       console.log(`FAILED  ${err.message}`);
       failed++;
@@ -237,9 +226,8 @@ async function main() {
   // Off by default so a transient GitHub error cannot wipe the collection.
   let pruned = 0;
   if (process.env.PRUNE === '1') {
-    const existing = await db.collection(COLLECTION).get();
-    for (const doc of existing.docs) {
-      if (!keptIds.has(doc.id)) { batch.delete(doc.ref); pruned++; }
+    for (const docIdKey of existing.keys()) {
+      if (!keptIds.has(docIdKey)) { batch.delete(db.collection(COLLECTION).doc(docIdKey)); pruned++; }
     }
   }
 

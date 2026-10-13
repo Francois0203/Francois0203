@@ -15,9 +15,10 @@ const BEHIND = [
 
 const DOTS = ['green', 'blue', 'orange', 'pink'];
 
-const Portrait = ({ src, name = '', facts = [] }) => {
+const Portrait = ({ src, name = '', facts = [], loading = false }) => {
   const ref = useRef(null);
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
   const initials = name.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('');
 
   useEffect(() => {
@@ -63,9 +64,10 @@ const Portrait = ({ src, name = '', facts = [] }) => {
       ))}
 
       <div className={styles.card}>
-        {src && !failed
-          ? <img className={styles.photo} src={src} alt={name} width="640" height="640" fetchPriority="high" onError={() => setFailed(true)} />
-          : <span className={styles.initials} aria-hidden="true">{initials}</span>}
+        {(loading || (src && !failed && !ready)) && <span className={`skeleton ${styles.wait}`} aria-hidden="true" />}
+        {!loading && (src && !failed
+          ? <img className={styles.photo} src={src} alt={name} width="640" height="640" fetchPriority="high" data-ready={ready ? '' : undefined} onLoad={() => setReady(true)} onError={() => setFailed(true)} />
+          : !src && <span className={styles.initials} aria-hidden="true">{initials}</span>)}
       </div>
       </div>
 

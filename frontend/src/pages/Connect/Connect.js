@@ -12,6 +12,7 @@ import Button from '../../components/Button';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
 import Shape from '../../components/Shape';
+import Skeleton, { Bone } from '../../components/Skeleton';
 import SupportButton from '../../components/SupportButton';
 import SocialIcon, { platformFor } from '../../components/SocialIcon';
 import { toCredential, onPath } from '../../components/Credentials';
@@ -157,6 +158,14 @@ const Connect = () => {
           <div className={styles.ways} data-rise style={{ '--i': 5 }}>
             <h2 className={styles.waysTitle}>{t.waysTitle}</h2>
 
+            {loading && (
+              <Skeleton label="Loading contact details">
+                {['70%', '45%'].map(w => (
+                  <div key={w} className={styles.way}><Bone w="3rem" h="0.8rem" /><Bone w={w} h="1.1rem" /></div>
+                ))}
+              </Skeleton>
+            )}
+
             {contact.email && (
               <div className={styles.way}>
                 <span className={styles.wayKey}>email</span>
@@ -180,6 +189,15 @@ const Connect = () => {
                   {contact.location && <span className={styles.place}>{contact.location}</span>}
                 </span>
               </div>
+            )}
+
+            {loading && (
+              <Skeleton label="Loading profiles">
+                <h3 className={styles.waysSub}>{t.socialCardTitle}</h3>
+                <ul className={styles.tiles}>
+                  {[0, 1, 2, 3].map(i => <li key={i}><Bone h="3.6rem" r="var(--r-node)" /></li>)}
+                </ul>
+              </Skeleton>
             )}
 
             {social.length > 0 && (

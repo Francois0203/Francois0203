@@ -6,6 +6,7 @@ import {
   subscribeSocial,
 } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 // Fields that live in portfolio/personal
@@ -48,11 +49,15 @@ const ProfileSection = () => {
   const [contact,  setContact]  = useState({});
   const [github,   setGithub]   = useState(null);
   const [saving, setSaving]     = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef(null);
 
   useEffect(() => {
-    const unsubP = subscribePersonal(setPersonal, () => toast.error('Failed to load profile'));
+    const unsubP = subscribePersonal(
+      (d) => { setPersonal(d); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load profile'); },
+    );
     const unsubC = subscribeContact(setContact,   () => toast.error('Failed to load contact'));
     const unsubS = subscribeSocial((list) => {
       const gh = list.find(s => (s.key || '').toLowerCase() === 'github');
@@ -117,6 +122,8 @@ const ProfileSection = () => {
 
   const own = Boolean(personal.photoUrl);
   const shown = personal.photoUrl || github;
+
+  if (!loaded) return <FormSkeleton />;
 
   return (
     <div>

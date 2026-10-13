@@ -4,16 +4,18 @@ import { MdDeleteOutline, MdOpenInNew } from 'react-icons/md';
 import { useToast, KebabMenu } from '../../../components';
 import { SortableList, DragHandle } from './Sortable';
 import styles from '../Admin.module.css';
+import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const GitHubSection = () => {
   const { toast } = useToast();
   const [projects, setProjects] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     return subscribeGitHubProjects(
-      setProjects,
-      () => toast.error('Failed to load GitHub projects'),
+      (rows) => { setProjects(rows); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load GitHub projects'); },
     );
   }, [toast]);
 
@@ -37,6 +39,8 @@ const GitHubSection = () => {
       toast.error('Failed to remove project');
     }
   };
+
+  if (!loaded) return <ListSkeleton />;
 
   return (
     <div>

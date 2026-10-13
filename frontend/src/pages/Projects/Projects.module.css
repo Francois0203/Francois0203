@@ -52,11 +52,6 @@
     color: var(--ink-3);
 }
 
-.waiting {
-    height: 420px;
-    border-radius: var(--r-slab);
-    background: var(--surface);
-}
 
 
 /* Filter */

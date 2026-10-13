@@ -67,20 +67,14 @@ Every field is optional. Minimum useful version:
 Edit the manifest, re-run the workflow, done. There is nothing to change in the
 portfolio repo and nothing to edit in the admin panel.
 
-### Embedding
+### Screenshots
 
-The cards hold **real live iframes**, so each url is probed once per sync for
-whether it actually permits framing (`X-Frame-Options`, CSP `frame-ancestors`)
-and the verdict is stored per url. A site that refuses is never framed - it gets
-a card explaining why with a link out, instead of a blank white panel.
-
-The probe is deliberately pessimistic: a `frame-ancestors` list it cannot
-evaluate counts as a refusal. Set the `SITE_ORIGIN` repo variable to the
-portfolio's own origin (e.g. `francois-portfolio.web.app`) so such lists can be checked
-properly rather than assumed hostile.
-
-Firebase Hosting sends no framing headers by default, so an ordinary
-`firebase deploy` site embeds fine with no configuration.
+Each card shows a picture of the site's home page. On every sync the script opens
+the first reachable url in headless Chrome (already installed on GitHub's
+runners), waits until the visible images and fonts have loaded, captures the top
+of the page at 1280x800 as a WebP
+and stores it on the document as `preview`. If a capture fails, the previous
+picture is kept. Locally it uses your Chrome install, or set `CHROME_PATH`.
 
 ### Env
 
@@ -90,7 +84,7 @@ Firebase Hosting sends no framing headers by default, so an ordinary
 | `GH_PAT` | secret | Used when `STUDIO_PAT` is unset. A classic token needs **`repo` + `read:org`**. |
 | `SERVICE_ACCOUNT` | secret | Firebase Admin service-account JSON. **Omit for a local run** to fall back to application-default credentials. |
 | `STUDIO_ORG` | set in the workflow | defaults to `FM-Web-Studio` |
-| `SITE_ORIGIN` | repo *variable* | optional, improves CSP evaluation |
+| `CHROME_PATH` | optional | path to Chrome when it is not in a standard place |
 | `PRUNE` | set to `'1'` in the workflow | deletes docs for repos no longer in the org. Off by default so a transient GitHub error can't wipe the collection. |
 
 ### Tokens
@@ -123,8 +117,8 @@ GH_PAT=ghp_… node syncStudioSites.mjs
 ```
 
 The first line of output says which credentials were used. The rest names, per
-repo, how many urls were found, which strategy found them, how many can be
-embedded, and anything unreachable or malformed.
+repo, how many urls were found, which strategy found them, whether a screenshot
+was taken, and anything unreachable or malformed.
 
 A local run writes to the **live** Firestore - there is no emulator wired up
 here, so treat it as a deploy, not a dry run.

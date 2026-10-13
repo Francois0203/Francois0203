@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeDonation, updateDonation } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 // portfolio/donation - the glowing "Support" button on the Connect page.
@@ -15,9 +16,13 @@ const DonationSection = () => {
   const { toast } = useToast();
   const [data, setData]     = useState({});
   const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    return subscribeDonation(setData, () => toast.error('Failed to load donation settings'));
+    return subscribeDonation(
+      (d) => { setData(d); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load donation settings'); },
+    );
   }, [toast]);
 
   const set = (key, value) => setData(prev => ({ ...prev, [key]: value }));
@@ -39,6 +44,8 @@ const DonationSection = () => {
       setSaving(false);
     }
   };
+
+  if (!loaded) return <FormSkeleton />;
 
   return (
     <div>

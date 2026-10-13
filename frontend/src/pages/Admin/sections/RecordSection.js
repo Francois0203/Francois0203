@@ -4,18 +4,20 @@ import { Modal, useToast, KebabMenu } from '../../../components';
 import RecordForm from './RecordForm';
 import { SortableList, DragHandle } from './Sortable';
 import styles from '../Admin.module.css';
+import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete, onReorder, renderSummary, openAddOnMount }) => {
   const { toast } = useToast();
   const [records, setRecords] = useState([]);
+  const [loaded, setLoaded] = useState(false);
   const [modal, setModal]     = useState(openAddOnMount ? { mode: 'add' } : null);
   const [saving, setSaving]   = useState(false);
 
   useEffect(() => {
     return subscribe(
-      setRecords,
-      () => toast.error(`Failed to load ${title}`),
+      (rows) => { setRecords(rows); setLoaded(true); },
+      () => { setLoaded(true); toast.error(`Failed to load ${title}`); },
     );
   }, [subscribe, title, toast]);
 
@@ -59,6 +61,8 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
       toast.error(`Failed to delete ${title} entry`);
     }
   };
+
+  if (!loaded) return <ListSkeleton />;
 
   return (
     <div>

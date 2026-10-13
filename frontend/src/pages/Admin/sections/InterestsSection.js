@@ -3,6 +3,7 @@ import { MdAdd } from 'react-icons/md';
 import { subscribeInterests, updateInterests, subscribePersonal, updatePersonal } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import { SortableList } from './Sortable';
+import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const InterestsSection = () => {
@@ -10,12 +11,13 @@ const InterestsSection = () => {
   const [items, setItems]   = useState([]);
   const [input, setInput]   = useState('');
   const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [onCv, setOnCv]     = useState(true);
 
   useEffect(() => {
     const unsubI = subscribeInterests(
-      data => setItems(data),
-      () => toast.error('Failed to load interests'),
+      data => { setItems(data); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load interests'); },
     );
     // The switch is stored with the personal details, as cvInterests.
     const unsubP = subscribePersonal(d => setOnCv(d?.cvInterests !== false), () => {});
@@ -42,6 +44,8 @@ const InterestsSection = () => {
       setSaving(false);
     }
   };
+
+  if (!loaded) return <FormSkeleton />;
 
   return (
     <div>
