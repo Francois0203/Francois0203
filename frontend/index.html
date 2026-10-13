@@ -5,7 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" href="/logo.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#f3efea" />
+    <meta name="theme-color" content="#f7f3ea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171615" media="(prefers-color-scheme: dark)" />
+    <script>
+      // Pick the theme before the first paint: the visitor's own choice, else the device.
+      (function () {
+        var theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        try {
+          var info = JSON.parse(localStorage.getItem('userSessionInfo')) || {};
+          if (info.themeChosen && (info.prefersColorScheme === 'dark' || info.prefersColorScheme === 'light')) theme = info.prefersColorScheme;
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <style>
+      html { background: #f7f3ea; }
+      html[data-theme='dark'] { background: #171615; }
+    </style>
     <meta name="description" content="Francois Meiring. DevOps and software engineering: containers, pipelines, and the platforms teams run on." />
     <title>Francois Meiring</title>
   </head>

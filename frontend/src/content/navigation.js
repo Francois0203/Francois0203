@@ -5,14 +5,14 @@ export const NAVIGATION_PAGES = [
   { label: 'Connect',  to: '/connect',  blurb: 'Send a letter, or find me elsewhere', tone: 'orange' },
 ];
 
-/** CSS variables that colour a page's tab: its fill, and readable text on that fill. */
+// The colours for a page's tab.
 export const tabStyle = (tone = 'yellow') => ({
   '--tab': `var(--c-${tone})`,
   '--tab-deep': `var(--c-${tone}-deep)`,
   '--tab-on': tone === 'blue' ? '#ffffff' : '#1f1f1f',
 });
 
-/** The page after `pathname`, wrapping. Null on /admin and the 404. */
+// The next page, looping back to the first.
 export const nextPage = (pathname) => {
   const i = NAVIGATION_PAGES.findIndex(p => p.to === pathname);
   if (i === -1) return null;

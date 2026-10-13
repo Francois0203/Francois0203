@@ -25,13 +25,11 @@
     display: inline-block;
     transform: translateY(110%);
     transition: transform 820ms var(--ease) var(--delay, 0ms);
-    will-change: transform;
 }
 
 [data-shown] .mask > * { transform: none; }
 
-.mask > em,
-.mask > .serif {
+.mask > em {
     filter: blur(6px);
     opacity: 0;
     transition:
@@ -40,8 +38,7 @@
         opacity 500ms var(--ease) calc(var(--delay, 0ms) + 60ms);
 }
 
-[data-shown] .mask > em,
-[data-shown] .mask > .serif { filter: blur(0); opacity: 1; }
+[data-shown] .mask > em { filter: none; opacity: 1; }
 
 [data-rise],
 .mask > * {

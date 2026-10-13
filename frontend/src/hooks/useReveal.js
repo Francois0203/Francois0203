@@ -1,18 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+// Pages already revealed this visit. Coming back to one shows it straight away.
+const seen = new Set();
+const here = () => (typeof window === 'undefined' ? '' : window.location.pathname);
+export const markSeen = (path) => seen.add(path);
+
+// Also works for sections that only appear once data loads.
 const useReveal = ({
   threshold = 0.12,
   rootMargin = '0px 0px -8% 0px',
   enabled = true,
 } = {}) => {
-  const ref = useRef(null);
-  const [shown, setShown] = useState(!enabled);
+  const [el, setEl] = useState(null);
+  const [shown, setShown] = useState(() => !enabled || seen.has(here()));
 
   useEffect(() => {
     if (!enabled) { setShown(true); return undefined; }
-
-    const el = ref.current;
-    if (!el) return undefined;
+    if (!el || shown) return undefined;
 
     if (typeof IntersectionObserver === 'undefined') { setShown(true); return undefined; }
 
@@ -38,9 +42,10 @@ const useReveal = ({
       obs?.disconnect();
       window.removeEventListener('intro:done', arm);
     };
-  }, [enabled, threshold, rootMargin]);
+  }, [el, shown, enabled, threshold, rootMargin]);
 
-  return [ref, shown];
+
+  return [setEl, shown];
 };
 
 export default useReveal;

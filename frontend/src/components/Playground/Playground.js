@@ -8,7 +8,13 @@ const still = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
   || document.documentElement.dataset.noAnimations === 'true';
 
-// His tools as sticker pills that fall into a heap: drag them on desktop, tap to kick on touch.
+const STEP = 1000 / 60;
+
+// Load the physics library early, while the browser is idle.
+let matterPromise = null;
+const loadMatter = () => (matterPromise ??= import('matter-js').then(m => m.default));
+
+// Tool pills that fall into a pile. Drag them, or tap to kick on phones.
 const Playground = ({ items = [], caption }) => {
   const boxRef = useRef(null);
   const nodes = useRef([]);
@@ -21,15 +27,19 @@ const Playground = ({ items = [], caption }) => {
     let cancelled = false;
     let teardown = () => {};
 
+    const idle = window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1500));
+    const cancelIdle = window.cancelIdleCallback ?? clearTimeout;
+    const warm = idle(() => loadMatter());
+
     const start = async () => {
-      const Matter = (await import('matter-js')).default;
+      const Matter = await loadMatter();
       if (cancelled) return;
-      const { Engine, Bodies, Body, Composite, Mouse, MouseConstraint, Events } = Matter;
+      const { Engine, Bodies, Body, Composite, Mouse, MouseConstraint, Events, Sleeping } = Matter;
 
       const W = box.clientWidth;
       const H = box.clientHeight;
       const sizes = nodes.current.map(n => (n ? { w: n.offsetWidth, h: n.offsetHeight } : { w: 0, h: 0 }));
-      const engine = Engine.create({ gravity: { y: 1.1 } });
+      const engine = Engine.create({ gravity: { y: 1.1 }, enableSleeping: true });
       const wall = { isStatic: true };
 
       Composite.add(engine.world, [
@@ -52,6 +62,17 @@ const Playground = ({ items = [], caption }) => {
         return b;
       });
       Composite.add(engine.world, bodies);
+
+      const place = (b, i) => {
+        const n = nodes.current[i];
+        if (!n) return;
+        const x = (b.position.x - sizes[i].w / 2).toFixed(1);
+        const y = (b.position.y - sizes[i].h / 2).toFixed(1);
+        n.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${b.angle.toFixed(3)}rad)`;
+      };
+
+      // Place pills first, so none flash in the corner.
+      bodies.forEach(place);
       box.dataset.live = '';
 
       const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -65,7 +86,7 @@ const Playground = ({ items = [], caption }) => {
         Events.on(drag, 'startdrag', () => { box.dataset.grabbing = ''; });
         Events.on(drag, 'enddrag', () => { delete box.dataset.grabbing; });
 
-        // Matter only hears the box, so a release outside it never ended the drag.
+        // Let go of a pill even when the mouse is released outside the box.
         const follow = (e) => { if (mouse.button === 0) mouse.mousemove(e); };
         const release = (e) => { if (mouse.button !== -1) mouse.mouseup(e); };
         const drop = () => { mouse.button = -1; };
@@ -85,6 +106,7 @@ const Playground = ({ items = [], caption }) => {
           const r = box.getBoundingClientRect();
           const tx = e.clientX - r.left;
           bodies.forEach(b => {
+            Sleeping.set(b, false);
             const dir = Math.sign(b.position.x - tx) || 1;
             Body.setVelocity(b, { x: dir * (3 + Math.random() * 5), y: -9 - Math.random() * 7 });
             Body.setAngularVelocity(b, (Math.random() - 0.5) * 0.25);
@@ -93,15 +115,18 @@ const Playground = ({ items = [], caption }) => {
         box.addEventListener('pointerdown', onTap);
       }
 
+      // Even steps keep it smooth. Pills at rest are skipped.
       let raf = 0;
       let last = performance.now();
+      let carry = 0;
       const tick = (now) => {
-        Engine.update(engine, Math.min(32, now - last));
+        carry = Math.min(carry + now - last, STEP * 4);
         last = now;
-        bodies.forEach((b, i) => {
-          const n = nodes.current[i];
-          if (n) n.style.transform = `translate(${b.position.x - sizes[i].w / 2}px, ${b.position.y - sizes[i].h / 2}px) rotate(${b.angle}rad)`;
-        });
+        while (carry >= STEP) {
+          Engine.update(engine, STEP);
+          carry -= STEP;
+        }
+        bodies.forEach((b, i) => { if (!b.isSleeping) place(b, i); });
         raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);
@@ -128,7 +153,7 @@ const Playground = ({ items = [], caption }) => {
     }, { rootMargin: '0px 0px -20% 0px' });
     gate.observe(box);
 
-    return () => { cancelled = true; gate.disconnect(); teardown(); };
+    return () => { cancelled = true; cancelIdle(warm); gate.disconnect(); teardown(); };
   }, [list.length]);
 
   if (!list.length) return null;

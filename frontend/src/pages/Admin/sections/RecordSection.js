@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, useToast } from '../../../components';
+import { MdAdd, MdEdit, MdDeleteOutline } from 'react-icons/md';
+import { Modal, useToast, KebabMenu } from '../../../components';
 import RecordForm from './RecordForm';
 import { SortableList, DragHandle } from './Sortable';
 import styles from '../Admin.module.css';
@@ -62,17 +63,16 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
   return (
     <div>
       <div className={styles.sectionHeader}>
-        <button type="button" className="btn-success" onClick={() => setModal({ mode: 'add' })}>
-          + Add Entry
+        <p className={styles.hint}>
+          {records.length > 1 ? 'Click an entry to edit it. Drag the handle to reorder.' : `${records.length} ${records.length === 1 ? 'entry' : 'entries'}`}
+        </p>
+        <button type="button" className="btn-primary" onClick={() => setModal({ mode: 'add' })}>
+          <MdAdd aria-hidden="true" /> Add
         </button>
       </div>
 
       {records.length === 0 && (
         <p className={styles.empty}>No {title.toLowerCase()} entries yet.</p>
-      )}
-
-      {records.length > 1 && (
-        <p className={styles.hint}>Drag the handle to change the order. It saves as you drop.</p>
       )}
 
       <SortableList
@@ -84,11 +84,17 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
         {(rec, i, handle) => (
           <>
             <DragHandle {...handle} label={`Move ${title.toLowerCase()} entry ${i + 1}`} />
-            <div className={formStyles.listRowContent}>{renderSummary(rec)}</div>
-            <div className={formStyles.listRowActions}>
-              <button type="button" className="btn-outline" onClick={() => setModal({ mode: 'edit', record: rec })}>Edit</button>
-              <button type="button" className="btn-danger" onClick={() => handleDelete(rec)}>Delete</button>
-            </div>
+            <button type="button" className={formStyles.listRowContent} onClick={() => setModal({ mode: 'edit', record: rec })}>
+              {renderSummary(rec)}
+              {rec.showOnCv === false && <span className={formStyles.notOnCv}>not on CV</span>}
+            </button>
+            <KebabMenu
+              ariaLabel={`Options for ${title.toLowerCase()} entry ${i + 1}`}
+              items={[
+                { label: 'Edit', icon: <MdEdit />, onSelect: () => setModal({ mode: 'edit', record: rec }) },
+                { label: 'Delete', icon: <MdDeleteOutline />, danger: true, onSelect: () => handleDelete(rec) },
+              ]}
+            />
           </>
         )}
       </SortableList>
@@ -98,6 +104,7 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
         onClose={closeModal}
         title={modal?.mode === 'add' ? `Add ${title}` : `Edit ${title}`}
         size="lg"
+        className="admin-modal"
       >
         {modal && (
           <RecordForm

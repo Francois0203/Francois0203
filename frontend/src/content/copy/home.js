@@ -3,7 +3,6 @@ export const HOME_FIELDS = [
   { key: 'heroIntro', label: 'Hero - introduction', type: 'textarea', default: 'I am a DevOps engineer in Centurion. I look after the pipelines, containers and cloud that software runs on, and I build websites for small businesses.' },
   { key: 'heroCtaPrimary',   label: 'Hero - primary button', type: 'text', default: 'See my work' },
   { key: 'heroCtaSecondary', label: 'Hero - second button',  type: 'text', default: 'Get in touch' },
-  { key: 'heroLede',      label: 'Hero - caption (used by the intro)', type: 'text', default: 'DevOps, Cloud and Software Engineering' },
 
   // Only shown while the contact document's availability.status is 'open'.
   { key: 'availabilityLabel', label: 'Availability chip', type: 'text', default: 'open to part-time work' },

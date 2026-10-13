@@ -5,11 +5,11 @@ import {
 } from 'firebase/firestore';
 import { db } from './index';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// Helpers
 
 const portfolioRef  = (id) => doc(db, 'portfolio', id);
 
-/** Saves a dragged order: each document's `order` becomes its position. */
+// Saves the new order after a drag.
 export const reorderCollection = (col, ids) => {
   const batch = writeBatch(db);
   ids.forEach((id, i) => batch.update(doc(db, col, id), { order: i }));
@@ -18,7 +18,7 @@ export const reorderCollection = (col, ids) => {
 const portfolioSnap = (id, cb, onErr) =>
   onSnapshot(portfolioRef(id), snap => cb(snap.data() ?? {}), onErr);
 
-// ─── Personal ────────────────────────────────────────────────────────────────
+// Personal
 
 export const subscribePersonal = (cb, onErr) =>
   portfolioSnap('personal', cb, onErr);
@@ -26,7 +26,7 @@ export const subscribePersonal = (cb, onErr) =>
 export const updatePersonal = (data) =>
   setDoc(portfolioRef('personal'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 
-// ─── Contact ─────────────────────────────────────────────────────────────────
+// Contact
 
 export const subscribeContact = (cb, onErr) =>
   portfolioSnap('contact', cb, onErr);
@@ -34,7 +34,7 @@ export const subscribeContact = (cb, onErr) =>
 export const updateContact = (data) =>
   setDoc(portfolioRef('contact'), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 
-// ─── Donation ────────────────────────────────────────────────────────────────
+// Donation
 
 export const subscribeDonation = (cb, onErr) =>
   portfolioSnap('donation', cb, onErr);
@@ -49,7 +49,7 @@ export const subscribeCopy = (cb, onErr) =>
 export const updateCopy = (data) =>
   setDoc(portfolioRef('copy'), { ...data, updatedAt: serverTimestamp() });
 
-// ─── Skills ──────────────────────────────────────────────────────────────────
+// Skills
 
 const normalizeSkills = (data) => {
   if (!data) return { categories: [] };
@@ -69,7 +69,7 @@ export const subscribeSkills = (cb, onErr) =>
 export const updateSkills = (categories) =>
   setDoc(portfolioRef('skills'), { categories, updatedAt: serverTimestamp() });
 
-// ─── Interests ───────────────────────────────────────────────────────────────
+// Interests
 
 export const subscribeInterests = (cb, onErr) =>
   onSnapshot(portfolioRef('interests'), snap => cb(snap.data()?.items ?? []), onErr);
@@ -77,7 +77,7 @@ export const subscribeInterests = (cb, onErr) =>
 export const updateInterests = (items) =>
   setDoc(portfolioRef('interests'), { items: items.map(i => i.trim()).filter(Boolean), updatedAt: serverTimestamp() });
 
-// ─── Social ──────────────────────────────────────────────────────────────────
+// Social
 
 export const subscribeSocial = (cb, onErr) =>
   onSnapshot(portfolioRef('social'), snap => cb(snap.data()?.platforms ?? []), onErr);
@@ -85,7 +85,7 @@ export const subscribeSocial = (cb, onErr) =>
 export const updateSocial = (platforms) =>
   setDoc(portfolioRef('social'), { platforms, updatedAt: serverTimestamp() });
 
-// ─── Experience ───────────────────────────────────────────────────────────────
+// Experience
 
 export const subscribeExperience = (cb, onErr) =>
   onSnapshot(
@@ -107,7 +107,7 @@ export const updateExperience = (id, data) =>
 export const deleteExperience = (id) =>
   deleteDoc(doc(db, 'experience', id));
 
-// ─── Education ───────────────────────────────────────────────────────────────
+// Education
 
 export const subscribeEducation = (cb, onErr) =>
   onSnapshot(
@@ -129,7 +129,7 @@ export const updateEducation = (id, data) =>
 export const deleteEducation = (id) =>
   deleteDoc(doc(db, 'education', id));
 
-// ─── Certifications ──────────────────────────────────────────────────────────
+// Certifications
 
 export const subscribeCertifications = (cb, onErr) =>
   onSnapshot(
@@ -151,7 +151,7 @@ export const updateCertification = (id, data) =>
 export const deleteCertification = (id) =>
   deleteDoc(doc(db, 'certifications', id));
 
-// ─── GitHub Projects ─────────────────────────────────────────────────────────
+// GitHub Projects
 
 export const subscribeGitHubProjects = (cb, onErr) =>
   onSnapshot(
@@ -172,7 +172,7 @@ export const subscribeStudioSites = (cb, onErr) =>
 export const deleteGitHubProject = (id) =>
   deleteDoc(doc(db, 'githubProjects', id));
 
-// ─── Contact Messages ────────────────────────────────────────────────────────
+// Contact Messages
 
 export const subscribeMessages = (cb, onErr) =>
   onSnapshot(

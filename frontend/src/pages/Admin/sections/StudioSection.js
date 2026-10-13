@@ -30,16 +30,13 @@ const StudioSection = () => {
   return (
     <div>
       <p className={styles.hint}>
-        Synced from the <strong>FM-Web-Studio</strong> organisation by{' '}
-        <code>scripts/syncStudioSites.mjs</code>. Read-only here - to change a name,
-        tagline, order or which sites are featured, edit that repo&rsquo;s{' '}
-        <code>.showcase.json</code> and re-run the sync (Actions &rarr; Sync GitHub
-        Projects to Firestore &rarr; Run workflow).
+        Read-only. To change a site, edit its repo&rsquo;s <code>.showcase.json</code>, then run
+        the &ldquo;Sync GitHub Projects to Firestore&rdquo; workflow on GitHub.
       </p>
 
       {ready && sites.length > 0 && (
-        <p className={styles.hint}>
-          {sites.length} repo(s) synced
+        <p className={styles.hint} style={{ margin: 'var(--spacing-sm) 0 var(--spacing-md)' }}>
+          {sites.length} synced
           {withoutUrl.length > 0 && ` · ${withoutUrl.length} with no live url`}
           {unframeable.length > 0 && ` · ${unframeable.length} that can't be embedded`}
         </p>
@@ -57,10 +54,10 @@ const StudioSection = () => {
         return (
           <div key={s.id} className={formStyles.listRow}>
             <div className={formStyles.listRowContent}>
-              <strong>
+              <span className={formStyles.rowTitle}>
                 {s.name}
                 {s.featured && ' ★'}
-              </strong>
+              </span>
               <span className={formStyles.meta}>
                 {[
                   s.client,
@@ -72,7 +69,7 @@ const StudioSection = () => {
 
               {urls.length === 0 && (
                 <span className={formStyles.meta}>
-                  No live url found - add a <code>.showcase.json</code>, or set the
+                  No live url found. Add a <code>.showcase.json</code>, or set the
                   repo&rsquo;s Website field on GitHub.
                 </span>
               )}

@@ -22,7 +22,7 @@
 
 .headTitle { max-width: 14ch; font-size: var(--display-xl); }
 
-/* Content paints above the shapes that bleed out of a colour-through headline. */
+/* Keep text above the shapes. */
 .heroCopy > *,
 .head > *,
 .headRow > * { position: relative; z-index: 1; }
@@ -59,7 +59,7 @@
     background: var(--surface);
 }
 
-/* ── 1. Hero ────────────────────────────────────────────────────────────── */
+/* 1. Hero */
 
 .hero {
     position: relative;
@@ -105,13 +105,13 @@
 
 .heroPortrait { min-width: 0; }
 
-/* ── 2. Story ───────────────────────────────────────────────────────────── */
+/* 2. Story */
 
 .story { padding-bottom: 0; }
 
 .toolsBlock { padding-top: 0; }
 
-/* ── Narrow ─────────────────────────────────────────────────────────────── */
+/* Narrow */
 
 @media (max-width: 960px) {
     .hero {

@@ -34,7 +34,7 @@
 .toast[data-type='warning'] { --tone: var(--tone-warning); }
 .toast[data-type='error'] { --tone: var(--tone-error); }
 
-/* The type is carried by the leading rule and the icon, not a coloured panel. */
+/* The side line and icon show the type. */
 .toast::before {
     content: '';
     position: absolute;
@@ -95,7 +95,7 @@
 .close:focus-visible { outline: 2px solid var(--live); outline-offset: 1px; }
 .close svg { width: 15px; height: 15px; }
 
-/* Same reason as the nav: no live blur over the animated field on touch. */
+/* No blur on touch screens, it is slow there. */
 @media (pointer: coarse) {
     .toast {
         -webkit-backdrop-filter: none;

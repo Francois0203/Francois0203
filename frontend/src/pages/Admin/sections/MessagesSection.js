@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeMessages, deleteMessage } from '../../../firebase/admin';
-import { useToast } from '../../../components';
+import { MdDeleteOutline, MdReply } from 'react-icons/md';
+import { useToast, KebabMenu } from '../../../components';
 import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
 
@@ -39,12 +40,18 @@ const MessagesSection = () => {
         <div key={m.id} className={formStyles.messageCard}>
           <div className={formStyles.messageHeader}>
             <div>
-              <strong>{m.name}</strong>
+              <span className={formStyles.rowTitle}>{m.name}</span>
               <a href={`mailto:${m.email}`} className={formStyles.email}>{m.email}</a>
             </div>
             <div className={formStyles.listRowActions}>
               <span className={formStyles.meta}>{fmt(m.createdAt)}</span>
-              <button type="button" className="btn-danger" onClick={() => handleDelete(m.id)}>Delete</button>
+              <KebabMenu
+                ariaLabel={`Options for the message from ${m.name}`}
+                items={[
+                  { label: 'Reply by email', icon: <MdReply />, onSelect: () => { window.location.href = `mailto:${m.email}`; } },
+                  { label: 'Delete', icon: <MdDeleteOutline />, danger: true, onSelect: () => handleDelete(m.id) },
+                ]}
+              />
             </div>
           </div>
           <p className={formStyles.messageBody}>{m.message}</p>

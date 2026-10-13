@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 import { subscribeSocial, updateSocial } from '../../../firebase/admin';
-import { useToast, SearchableDropdown } from '../../../components';
+import { useToast, SearchableDropdown, KebabMenu } from '../../../components';
 import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
 import { PLATFORMS } from '../../../components/SocialIcon';
 import formStyles from '../AdminForms.module.css';
@@ -27,7 +28,7 @@ const SocialsSection = () => {
   const set = (i, field, value) =>
     setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p));
 
-  // `platform` mirrors `key` (it drives the card title), so keep both in step.
+  // Keep `platform` the same as `key`.
   const labelOf = (key) => platformOption(key)?.label ?? key;
   const setPlatform = (i, key) =>
     setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, key, platform: labelOf(key) } : p));
@@ -74,8 +75,11 @@ const SocialsSection = () => {
         <>
           <div className={formStyles.cardHeader}>
             <DragHandle {...handle} label={`Move ${p.platform || p.key}`} />
-            <strong className={formStyles.cardTitle} style={{ flex: 1 }}>{p.platform || p.key}</strong>
-            <button type="button" className="btn-danger" onClick={() => remove(i)}>Remove</button>
+            <strong className={formStyles.cardTitle}>{p.platform || p.key}</strong>
+            <KebabMenu
+              ariaLabel={`Options for ${p.platform || p.key}`}
+              items={[{ label: 'Remove', icon: <MdDeleteOutline />, danger: true, onSelect: () => remove(i) }]}
+            />
           </div>
           <div className={formStyles.row}>
             <div className="input-container">
@@ -98,12 +102,20 @@ const SocialsSection = () => {
               />
             </div>
           </div>
+          <label className={formStyles.toggleRow}>
+            <input
+              type="checkbox"
+              checked={p.showOnCv !== false}
+              onChange={e => set(i, 'showOnCv', e.target.checked)}
+            />
+            <span><strong>Show on the printed CV</strong></span>
+          </label>
         </>
         )}
       </SortableList>
 
-      <div className={formStyles.card}>
-        <p className={formStyles.cardTitle}>Add social link</p>
+      <div className={formStyles.inlineAdd} style={{ display: 'block' }}>
+        <p className={formStyles.cardTitle}>Add a link</p>
         <div className={formStyles.row}>
           <div className="input-container">
             {/* Not a <label>: SearchableDropdown is not a labelable control. */}
@@ -126,12 +138,12 @@ const SocialsSection = () => {
               onKeyDown={e => e.key === 'Enter' && add()}
             />
           </div>
-          <button type="button" className="btn-success" onClick={add}>Add</button>
+          <button type="button" className="btn-primary" onClick={add}><MdAdd aria-hidden="true" /> Add</button>
         </div>
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Socials'}
         </button>
       </div>

@@ -1,16 +1,14 @@
-/* Layout-only. Button styles come from the btn-* classes in styles/admin-support.css. */
+/* Layout only. Buttons live in styles/admin-support.css. */
 
-/* ── Page ──────────────────────────────────────────────────────────────────── */
 .page {
   height: 100vh;
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--background-1);
   overflow: hidden;
 }
 
-/* ── Auth screens ──────────────────────────────────────────────────────────── */
+/* Sign-in screens */
 .authScreen {
   display: flex;
   align-items: center;
@@ -20,29 +18,24 @@
 }
 
 .authCard {
-  background: var(--glass);
-  border: 1px solid var(--glass-edge);
-  border-radius: var(--r-slab);
-  box-shadow: var(--glass-top), var(--glass-bottom), var(--glass-cast);
-  -webkit-backdrop-filter: var(--blur);
-  backdrop-filter: var(--blur);
-  padding: clamp(1.75rem, 4vw, 2.75rem);
-  max-width: 400px;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
 }
 
-.authIcon { color: var(--live); }
-
 .authTitle {
-  margin: 0;
+  margin: 0.5rem 0 0;
   font-family: var(--font-display);
   font-size: var(--display-sm);
   font-weight: 600;
-  letter-spacing: var(--track-display);
+  letter-spacing: -0.03em;
   color: var(--ink);
 }
 
@@ -50,16 +43,14 @@
 
 .notAllowed {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--mono-label);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  color: #e0614a;
+  font-weight: 600;
+  color: var(--admin-cancel);
 }
 
 .spinner {
   width: min(260px, 60vw);
-  height: 1px;
+  height: 3px;
+  border-radius: 3px;
   background: var(--rule);
   overflow: hidden;
 }
@@ -69,7 +60,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--live);
+  background: var(--c-blue);
   transform: scaleX(0);
   transform-origin: left;
   animation: fill 1400ms var(--ease) infinite;
@@ -82,92 +73,45 @@
   100% { transform: scaleX(0); transform-origin: right; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .spinner::after { animation: none; transform: scaleX(0.4); }
-}
-
-/* ── Topbar ────────────────────────────────────────────────────────────────── */
+/* Top bar */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-bottom: 1px solid var(--border-color);
-  background: var(--frosted-background);
+  height: 64px;
+  padding: 0 var(--spacing-lg);
+  border-bottom: 1.5px solid var(--ink);
+  background: var(--surface);
   flex-shrink: 0;
   z-index: var(--z-sticky);
 }
 
-.topbarLeft  { display: flex; align-items: center; gap: var(--spacing-sm); }
-.topbarIcon  { color: var(--accent-1); flex-shrink: 0; }
-.topbarTitle { font-size: var(--font-size-lg); font-weight: 700; }
-
-.topbarRight {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+.topbarLeft  { display: flex; align-items: center; gap: 0.7rem; }
+.topbarTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
+
+.topbarRight { display: flex; align-items: center; gap: var(--spacing-sm); }
 
 .userEmail {
-  font-size: var(--font-size-sm);
-  color: var(--secondary-text-color);
+  margin-right: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-size: var(--text-xs);
+  color: var(--ink-2);
 }
 
-
-/* ── Content area - the only scrolling region ──────────────────────────────── */
-
-.contentInner {
-  min-height: 100%;
-}
-
-.content {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  overflow-y: auto;
-  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl) 0;
-}
-
-.sectionTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--accent-1);
-  margin: 0 0 var(--spacing-xl);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.sectionHeader {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--spacing-lg);
-}
-
-.empty {
-  color: var(--tertiary-text-color);
-  font-style: italic;
-  text-align: center;
-  padding: var(--spacing-2xl) 0;
-}
-
-.hint {
-  color: var(--secondary-text-color);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-lg);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--frosted-background);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-}
-
-/* ── Settings shell (nav tree + content pane) ──────────────────────────────── */
+/* Shell: sidebar + content */
 .shell {
   flex: 1;
-  min-height: 0;         /* let the content pane own the scroll */
+  min-height: 0;
   width: 100%;
-  max-width: 1140px;
+  max-width: 1240px;
   margin: 0 auto;
   display: flex;
   gap: var(--spacing-xl);
@@ -175,67 +119,143 @@
   overflow: hidden;
 }
 
-/* ── Nav tree (desktop sidebar) ────────────────────────────────────────────── */
+/* Sidebar */
 .nav {
-  width: 234px;
+  width: 240px;
   flex-shrink: 0;
-  min-height: 0;            /* fills the shell height; scrolls internally only if the tree is taller */
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--spacing-lg) var(--spacing-xs) var(--spacing-lg) 0;
+  padding: var(--spacing-lg) 2px var(--spacing-lg);
 }
 
 .navGroup { display: flex; flex-direction: column; gap: 2px; }
 
 .navGroupLabel {
-  margin: 0 0 var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--tertiary-text-color);
+  margin: 0 0 0.3rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--mono-label);
+  color: var(--ink-3);
 }
 
 .navItem {
-  display: flex;
-  align-items: center;
-  border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
-}
-.navItem:hover { background: rgba(var(--accent-1-rgb), 0.08); }
-.navItemActive,
-.navItemActive:hover { background: rgba(var(--accent-1-rgb), 0.14); }
-
-.navItemBtn {
   all: unset;
   box-sizing: border-box;
-  flex: 1;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  color: var(--secondary-text-color);
-  font-size: var(--font-size-sm);
+  gap: 0.7rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  font-size: var(--text-sm);
   font-weight: 500;
-  min-width: 0;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
-.navItemBtn:focus-visible { outline: 2px solid var(--accent-1); outline-offset: -2px; }
-.navItemActive .navItemBtn { color: var(--accent-1); font-weight: 600; }
 
-.navIcon { display: inline-flex; align-items: center; font-size: 1.15rem; flex-shrink: 0; }
+.navItem:hover { background: color-mix(in srgb, var(--tone) 18%, transparent); color: var(--ink); }
+.navItem:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 1px; }
+
+.navItemActive,
+.navItemActive:hover {
+  background: var(--surface);
+  box-shadow: 0 0 0 1.5px var(--ink), 3px 3px 0 1.5px var(--ink);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.navIcon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--tone) 35%, var(--surface));
+  color: #1f1f1f;
+  font-size: 1.05rem;
+}
+
+.navItemActive .navIcon { background: var(--tone); box-shadow: 0 0 0 1.5px var(--ink); }
+
 .navLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.navKebab { flex-shrink: 0; padding-right: 2px; }
-.navKebab button:hover,
-.navKebab button[aria-expanded='true'] { background: transparent; }
 
-.sectionBody { min-width: 0; }
+/* Content */
+.content {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-lg) 4px 0;
+}
 
-/* ── Mobile menu button (topbar) + drawer backdrop - hidden on desktop ─────── */
+.contentInner { min-height: 100%; max-width: 860px; padding-bottom: var(--spacing-2xl); }
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.sectionIcon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--tone);
+  box-shadow: 0 0 0 1.5px var(--ink), 3px 3px 0 1.5px var(--ink);
+  color: #1f1f1f;
+  font-size: 1.5rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--display-sm);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.sectionDesc { margin: 0.2rem 0 0; font-size: var(--text-sm); color: var(--ink-2); }
+
+.sectionBody {
+  min-width: 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 0 0 1.5px var(--ink), 4px 5px 0 1.5px var(--ink);
+}
+
+/* The top row of a list section: hint on the left, Add on the right. */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.empty {
+  padding: var(--spacing-2xl) 0;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+/* Mobile menu button and drawer */
 .menuBtn {
   all: unset;
   display: none;
@@ -243,16 +263,15 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-md);
+  border-radius: 5px;
   cursor: pointer;
-  color: var(--primary-text-color);
+  color: var(--ink);
   font-size: 1.45rem;
   flex-shrink: 0;
 }
-.menuBtn:hover { background: rgba(var(--accent-1-rgb), 0.10); color: var(--accent-1); }
+.menuBtn:hover { background: var(--surface-2); }
 .navBackdrop { display: none; }
 
-/* ── Mobile: the settings nav becomes a proper off-canvas side drawer ──────── */
 @media (max-width: 900px) {
   .menuBtn { display: inline-flex; }
   .shell { padding: 0; gap: 0; }
@@ -262,16 +281,14 @@
     top: 0;
     left: 0;
     bottom: 0;
-    z-index: 1100;                 /* above the topbar (var(--z-sticky) = 1020) */
+    z-index: 1100;
     width: min(288px, 84vw);
     height: 100%;
     padding: var(--spacing-lg) var(--spacing-md);
-    background: var(--background-1);
-    border-right: 1px solid var(--border-color);
-    box-shadow: var(--shadow-xl);
+    background: var(--ground);
+    border-right: 1.5px solid var(--ink);
     transform: translateX(-100%);
     transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
   }
   .navOpen { transform: translateX(0); }
 
@@ -280,74 +297,58 @@
     position: fixed;
     inset: 0;
     z-index: 1090;
-    background: rgba(0, 0, 0, 0.5);
-    -webkit-backdrop-filter: blur(1px);
-    backdrop-filter: blur(1px);
+    background: rgba(0, 0, 0, 0.45);
     animation: adminBackdropIn 0.2s ease;
   }
 
-  .content {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
-  }
+  .content { padding: var(--spacing-md) var(--spacing-md) 0; }
 }
 
 @keyframes adminBackdropIn { from { opacity: 0; } to { opacity: 1; } }
 :global([data-no-animations='true']) .nav { transition: none; }
 
-/* ── Sub-tabs (used inside Site Copy) ──────────────────────────────────────── */
+/* Sub-tabs (Site Copy) */
 .subTabs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
+  gap: 0.35rem;
   margin-bottom: var(--spacing-lg);
 }
 .subTab {
-  padding: 7px 16px;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  color: var(--secondary-text-color);
-  font-size: var(--font-size-sm);
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid var(--rule-strong);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
-  min-height: auto;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  transition: all var(--transition-fast);
+  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
-.subTab:hover:not(:disabled) {
-  border-color: var(--border-color-hover);
-  color: var(--primary-text-color);
-  background: transparent;
-  box-shadow: none;
-}
+.subTab:hover:not(:disabled) { border-color: var(--ink); color: var(--ink); }
 .subTabActive,
 .subTabActive:hover {
-  background: var(--accent-1);
-  border-color: var(--accent-1);
-  color: #fff;
+  border-color: var(--ink);
+  background: var(--tone, var(--c-yellow));
+  color: #1f1f1f;
 }
 
-/* ── Reset-to-default link inside Site Copy labels ─────────────────────────── */
+/* Reset-to-default link inside Site Copy labels: a discard action, so red. */
 .resetBtn {
   all: unset;
   display: inline-flex;
   align-items: center;
   gap: 2px;
   margin-left: 8px;
-  font-size: var(--font-size-xs);
-  color: var(--error-color);   /* reset is a discard action - red, like Cancel */
+  font-size: var(--text-xs);
+  color: var(--admin-cancel);
   cursor: pointer;
   vertical-align: middle;
 }
 .resetBtn:hover { text-decoration: underline; }
 
-/* ── Responsive ────────────────────────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .userEmail { display: none; }
-  .topbarTitle { font-size: var(--font-size-md); }
+@media (max-width: 600px) {
+  .userEmail, .hideNarrow { display: none; }
+  .topbar { padding: 0 var(--spacing-md); }
+  .sectionIcon { width: 40px; height: 40px; font-size: 1.25rem; }
 }

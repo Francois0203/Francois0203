@@ -1,4 +1,4 @@
-// ─── Badge / decorative service detection ────────────────────────────────────
+// Badge / decorative service detection
 
 const BADGE_HOSTS = /shields\.io|badgen\.net|badge\.fury|forthebadge|travis-ci|circleci|coveralls|sonarcloud|codecov|snyk\.io|dependabot|capsule-render|readme-typing-svg|skillicons\.dev|github-readme-stats|streak-stats|demolab\.com|wakatime|visitor-badge|hits\.seeyoufarm|github\.com\/.*\/workflows|raw\.githubusercontent\.com\/.*\/badge/i;
 
@@ -6,7 +6,7 @@ function isBadgeUrl(url) {
   return BADGE_HOSTS.test(url);
 }
 
-// ─── HTML helpers ─────────────────────────────────────────────────────────────
+// HTML helpers
 
 // Returns true if a line is purely an HTML block with no readable text
 function isDecorativeLine(line) {
@@ -32,7 +32,7 @@ function htmlImageSrcs(line) {
   return srcs;
 }
 
-// ─── Markdown helpers ─────────────────────────────────────────────────────────
+// Markdown helpers
 
 function stripMarkdown(text) {
   return text
@@ -96,7 +96,7 @@ function findSection(sections, pattern) {
   return sections.find(s => pattern.test(s.heading.trim()));
 }
 
-// ─── Main export ─────────────────────────────────────────────────────────────
+// Main export
 
 export function parseReadme(markdown, { fallback = '' } = {}) {
   if (!markdown?.trim()) {
@@ -154,7 +154,7 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
     ? descParts.join(' ')
     : fallback;
 
-  // ── Sections ──────────────────────────────────────────────────────────────
+  // Sections
   const sections = parseSections(source);
 
   // If no description found at the top level, try the first "About" section

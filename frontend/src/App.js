@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Routes, Route, Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
 import { ToastProvider } from './components';
@@ -6,14 +6,10 @@ import Nav from './components/Nav';
 import Foot from './components/Foot';
 import Intro from './components/Intro';
 import { useTheme, useAnimations, scrollPageTo } from './hooks';
+import { markSeen } from './hooks/useReveal';
 import { ContentProvider } from './context/ContentContext';
 import { NAVIGATION_PAGES } from './content/navigation';
 import styles from './App.module.css';
-
-/* Dev only. DEV is statically false in a build, so Rollup drops it. */
-const PagePreview = import.meta.env.DEV
-  ? React.lazy(() => import('./dev/PagePreview'))
-  : null;
 
 const ScrollToTop = () => {
   const { pathname, hash, key } = useLocation();
@@ -73,7 +69,16 @@ const ScrollToTop = () => {
   return null;
 };
 
-/* The public site runs on native scroll. Lenis lives in /admin only. */
+// A page you leave counts as seen, so its titles show at once when you return.
+const useSeenPages = () => {
+  const { pathname } = useLocation();
+  const last = useRef(pathname);
+  useEffect(() => {
+    if (last.current !== pathname) markSeen(last.current);
+    last.current = pathname;
+  }, [pathname]);
+};
+
 // Highlighted text takes the current page's tab colour.
 const useSelectionTone = () => {
   const { pathname } = useLocation();
@@ -89,6 +94,7 @@ const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const links = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
   useSelectionTone();
+  useSeenPages();
 
   return (
     <ContentProvider>
@@ -120,10 +126,6 @@ const App = () => {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/admin" element={<Admin />} />
-
-          {import.meta.env.DEV && (
-            <Route path="/__preview/:name" element={<PagePreview />} />
-          )}
 
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />

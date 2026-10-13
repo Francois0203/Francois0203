@@ -1,64 +1,56 @@
 import { useState, useEffect } from 'react';
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'userSessionInfo';
 const THEME_FIELD = 'prefersColorScheme';
+// Set only when the visitor presses the theme button. Without it, the device decides.
+const CHOSEN_FIELD = 'themeChosen';
+
+const readInfo = () => {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch {
+    return {};
+  }
+};
+
+const deviceTheme = () =>
+  (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
 const getInitialTheme = () => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (parsed[THEME_FIELD] === 'dark' || parsed[THEME_FIELD] === 'light') {
-        return parsed[THEME_FIELD];
-      }
-    }
-  } catch {
-    // corrupted storage - fall through to system preference
+  const info = readInfo();
+  if (info[CHOSEN_FIELD] && (info[THEME_FIELD] === 'dark' || info[THEME_FIELD] === 'light')) {
+    return info[THEME_FIELD];
   }
-
-  return 'light';
+  return deviceTheme();
 };
 
 export const useTheme = () => {
   const [theme, setTheme] = useState(getInitialTheme);
 
-  // ─── DOM SYNC ─────────────────────────────────────────────────────────────
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const info = stored ? JSON.parse(stored) : {};
-      info[THEME_FIELD] = theme;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
-    } catch {
-      // storage unavailable - DOM attribute is still updated
-    }
   }, [theme]);
 
+  // Follow the device while the visitor has not picked a theme themselves.
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
-    if (!mq) return;
-
-    const handleChange = (e) => {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        const info = stored ? JSON.parse(stored) : {};
-        // Only auto-switch if the user has never explicitly chosen
-        if (!info[THEME_FIELD]) {
-          setTheme(e.matches ? 'dark' : 'light');
-        }
-      } catch {
-        setTheme(e.matches ? 'dark' : 'light');
-      }
+    if (!mq) return undefined;
+    const onChange = (e) => {
+      if (!readInfo()[CHOSEN_FIELD]) setTheme(e.matches ? 'dark' : 'light');
     };
-
-    mq.addEventListener('change', handleChange);
-    return () => mq.removeEventListener('change', handleChange);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...readInfo(), [THEME_FIELD]: next, [CHOSEN_FIELD]: true }));
+    } catch {
+      // Storage unavailable: the theme still changes for this visit.
+    }
+    setTheme(next);
+  };
 
   return { theme, toggleTheme, setTheme };
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 import { subscribeSkills, updateSkills } from '../../../firebase/admin';
-import { useToast } from '../../../components';
+import { useToast, KebabMenu } from '../../../components';
 import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
 import formStyles from '../AdminForms.module.css';
 
@@ -8,7 +9,7 @@ import formStyles from '../AdminForms.module.css';
 const itemName = (item) =>
   item !== null && typeof item === 'object' ? (item.name ?? '') : String(item ?? '');
 
-// Names are unique within a category in practice; the index only breaks a tie.
+// The index only matters if two names match.
 const itemIds = (items) => {
   const seen = new Map();
   return items.map((it) => {
@@ -114,8 +115,11 @@ const SkillsSection = () => {
         <>
           <div className={formStyles.cardHeader}>
             <DragHandle {...handle} label={`Move category ${cat.name}`} />
-            <strong className={formStyles.cardTitle} style={{ flex: 1 }}>{cat.name}</strong>
-            <button type="button" className="btn-danger" onClick={() => removeCategory(i)}>Remove</button>
+            <strong className={formStyles.cardTitle}>{cat.name}</strong>
+            <KebabMenu
+              ariaLabel={`Options for ${cat.name}`}
+              items={[{ label: 'Remove group', icon: <MdDeleteOutline />, danger: true, onSelect: () => removeCategory(i) }]}
+            />
           </div>
           <div className="input-container">
             <label>Skills (comma-separated)</label>
@@ -128,6 +132,14 @@ const SkillsSection = () => {
           {(cat.items ?? []).length > 0 && (
             <ChipOrder items={cat.items} onReorder={items => reorderItems(i, items)} />
           )}
+          <label className={formStyles.toggleRow}>
+            <input
+              type="checkbox"
+              checked={cat.showOnCv !== false}
+              onChange={e => setCategories(prev => prev.map((c, idx) => (idx === i ? { ...c, showOnCv: e.target.checked } : c)))}
+            />
+            <span><strong>Show this group on the printed CV</strong></span>
+          </label>
         </>
         )}
       </SortableList>
@@ -143,11 +155,11 @@ const SkillsSection = () => {
             onKeyDown={e => e.key === 'Enter' && addCategory()}
           />
         </div>
-        <button type="button" className="btn-success" onClick={addCategory}>Add Category</button>
+        <button type="button" className="btn-primary" onClick={addCategory}><MdAdd aria-hidden="true" /> Add group</button>
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-success" onClick={() => save(categories)} disabled={saving}>
+        <button type="submit" className="btn-save" onClick={() => save(categories)} disabled={saving}>
           {saving ? 'Saving…' : 'Save Skills'}
         </button>
       </div>

@@ -1,7 +1,7 @@
 import { ghPaginate, ghReadJson } from './lib/gh.mjs';
 import { initFirestore, closeFirestore, projectId, admin } from './lib/firebase.mjs';
 
-// ─── Config ───────────────────────────────────────────────────────────────────
+// Config
 
 const ORG         = process.env.STUDIO_ORG  || 'FM-Web-Studio';
 const SITE_ORIGIN = process.env.SITE_ORIGIN
@@ -9,7 +9,7 @@ const SITE_ORIGIN = process.env.SITE_ORIGIN
 const COLLECTION  = 'studioSites';
 const PROBE_MS    = 10_000;
 
-// ─── URL discovery ────────────────────────────────────────────────────────────
+// URL discovery
 
 const isHttpUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v.trim());
 
@@ -57,7 +57,7 @@ async function firebaseSites(owner, repo) {
   }));
 }
 
-// ─── Embeddability probe ──────────────────────────────────────────────────────
+// Embeddability probe
 
 async function probe(url) {
   try {
@@ -95,7 +95,7 @@ async function probe(url) {
   }
 }
 
-// ─── Manifest → Firestore document ────────────────────────────────────────────
+// Manifest → Firestore document
 
 const str = (v, fallback = '') => (typeof v === 'string' && v.trim() ? v.trim() : fallback);
 
@@ -119,7 +119,7 @@ async function buildDoc(r) {
     manifestError = err.message;
   }
 
-  // ── Which urls, and where they came from ──
+  // Which urls, and where they came from
   let sites  = [];
   let source = 'none';
 
@@ -141,11 +141,11 @@ async function buildDoc(r) {
     }
   }
 
-  // Dedupe by url - a repo can name the same site twice across two strategies.
+  // A repo can list the same site twice, keep one.
   const seen = new Set();
   sites = sites.filter(s => !seen.has(s.url) && seen.add(s.url)).slice(0, 4);
 
-  // ── Probe each url for framing support ──
+  // Probe each url for framing support
   const probed = await Promise.all(sites.map(async s => ({ ...s, ...(await probe(s.url)) })));
 
   return {
@@ -175,7 +175,7 @@ async function buildDoc(r) {
   };
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// Main
 
 async function main() {
   if (!process.env.GH_PAT) {

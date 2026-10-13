@@ -1,7 +1,7 @@
 import Shape from '../Shape';
 import styles from './Drift.module.css';
 
-// Big flat shapes that float behind a section and move at their own pace as it scrolls.
+// Big shapes behind a section that drift as you scroll.
 const Drift = ({ shapes = [], className = '' }) => (
   <div className={`${styles.field} ${className}`} aria-hidden="true" data-print-hide>
     {shapes.map((s, i) => (

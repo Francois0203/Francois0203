@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { subscribeInterests, updateInterests } from '../../../firebase/admin';
+import { MdAdd } from 'react-icons/md';
+import { subscribeInterests, updateInterests, subscribePersonal, updatePersonal } from '../../../firebase/admin';
 import { useToast } from '../../../components';
 import { SortableList } from './Sortable';
 import formStyles from '../AdminForms.module.css';
@@ -9,12 +10,16 @@ const InterestsSection = () => {
   const [items, setItems]   = useState([]);
   const [input, setInput]   = useState('');
   const [saving, setSaving] = useState(false);
+  const [onCv, setOnCv]     = useState(true);
 
   useEffect(() => {
-    return subscribeInterests(
+    const unsubI = subscribeInterests(
       data => setItems(data),
       () => toast.error('Failed to load interests'),
     );
+    // The switch is stored with the personal details, as cvInterests.
+    const unsubP = subscribePersonal(d => setOnCv(d?.cvInterests !== false), () => {});
+    return () => { unsubI(); unsubP(); };
   }, [toast]);
 
   const add = () => {
@@ -29,7 +34,7 @@ const InterestsSection = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateInterests(items);
+      await Promise.all([updateInterests(items), updatePersonal({ cvInterests: onCv })]);
       toast.success('Interests updated');
     } catch {
       toast.error('Failed to save interests');
@@ -73,11 +78,16 @@ const InterestsSection = () => {
             onKeyDown={e => e.key === 'Enter' && add()}
           />
         </div>
-        <button type="button" className="btn-success" onClick={add}>Add</button>
+        <button type="button" className="btn-primary" onClick={add}><MdAdd aria-hidden="true" /> Add</button>
       </div>
 
+      <label className={formStyles.toggleRow} style={{ marginTop: 'var(--spacing-md)' }}>
+        <input type="checkbox" checked={onCv} onChange={e => setOnCv(e.target.checked)} />
+        <span><strong>Show interests on the printed CV</strong></span>
+      </label>
+
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Interests'}
         </button>
       </div>

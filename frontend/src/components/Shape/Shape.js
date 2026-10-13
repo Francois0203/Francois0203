@@ -8,7 +8,7 @@ const STAR = Array.from({ length: 16 }, (_, i) => {
 
 const poly = (pts) => pts.map(p => p.join(',')).join(' ');
 
-export const SHAPES = {
+const SHAPES = {
   circle: { m: '<circle cx="50" cy="50" r="46"/>', sw: 0 },
   squircle: { m: '<rect x="4" y="4" width="92" height="92" rx="26"/>', sw: 0 },
   hexagon: { m: `<polygon points="${poly(HEX)}"/>`, sw: 9 },
@@ -19,7 +19,6 @@ export const SHAPES = {
   arch: { m: '<path d="M4 96V50a46 46 0 0 1 92 0v46z"/>', sw: 0 },
 };
 
-export const KINDS = Object.keys(SHAPES);
 
 const layer = (shape, paint, extra, props = {}) => (
   <g
@@ -31,7 +30,7 @@ const layer = (shape, paint, extra, props = {}) => (
   />
 );
 
-// A flat shape with an ink outline and a hard offset shadow, like a sticker.
+// A sticker-style shape with an outline and shadow.
 const Shape = ({ kind = 'circle', colour = 'blue', sticker = true, className = '', style, ...rest }) => {
   const shape = SHAPES[kind] ?? SHAPES.circle;
   return (

@@ -8,7 +8,7 @@ export const getStudioSites = async () => {
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 };
 
-/** A repo with no resolvable url syncs fine but has nothing to show. */
+// Skip repos with no live site.
 export const hasLiveSite = (p) => Array.isArray(p?.sites) && p.sites.length > 0;
 
 export const pickFeatured = (sites, limit = 3) => {

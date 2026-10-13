@@ -61,7 +61,7 @@
     transition: background-color var(--t-fast) var(--ease), transform var(--t) var(--spring);
 }
 
-.social a:hover { background: var(--surface-2); transform: translateY(-3px) rotate(-6deg); }
+.social a:hover { background: var(--hc); border-color: var(--ink); color: var(--hc-on); transform: translateY(-3px) rotate(-6deg); }
 .social svg { width: 18px; height: 18px; }
 
 .strip {

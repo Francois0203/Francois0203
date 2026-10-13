@@ -4,50 +4,66 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 2.1rem;
+    height: 2.1rem;
     padding: 0;
     border: 0;
-    border-radius: var(--r-control);
+    border-radius: 4px;
     background: none;
     color: var(--ink-3);
     cursor: pointer;
-    transition: color var(--t) var(--ease), background-color var(--t) var(--ease);
+    transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
 
-.trigger:hover { color: var(--ink); background: color-mix(in srgb, var(--live) 14%, transparent); }
-.trigger svg { width: 16px; height: 16px; }
+.trigger:hover,
+.trigger[aria-expanded='true'] { color: var(--ink); background: var(--surface-2); }
+.trigger:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 1px; }
+.trigger svg { width: 18px; height: 18px; }
 
 .menu {
     position: absolute;
-    top: calc(100% + 0.35rem);
+    top: calc(100% + 0.3rem);
     right: 0;
     z-index: var(--z-overlay);
-    min-width: 11rem;
-    padding: 0.25rem;
-    border: 1px solid var(--glass-edge);
-    border-radius: var(--r-slab);
-    background: var(--glass);
-    box-shadow: var(--glass-top), var(--glass-cast);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    animation: menuIn 180ms var(--ease) both;
+    min-width: 10.5rem;
+    padding: 0.3rem;
+    border-radius: 6px;
+    background: var(--surface);
+    box-shadow: 0 0 0 1.5px var(--ink), 3px 4px 0 1.5px var(--ink);
+    animation: menuIn 160ms var(--ease) both;
 }
 
 @keyframes menuIn { from { opacity: 0; transform: translateY(-4px); } }
 
 .item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     width: 100%;
     padding: 0.55rem 0.7rem;
     border: 0;
-    border-radius: 2px;
+    border-radius: 4px;
     background: none;
     text-align: left;
+    font-family: var(--font-text);
     font-size: var(--text-sm);
-    color: var(--ink-2);
+    font-weight: 500;
+    color: var(--ink);
     cursor: pointer;
-    transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+    transition: background-color var(--t-fast) var(--ease);
 }
 
-.item:hover { color: var(--ink); background: color-mix(in srgb, var(--live) 12%, transparent); }
+.item:hover,
+.item:focus-visible { background: var(--surface-2); outline: none; }
+
+.icon { display: inline-flex; color: var(--ink-3); }
+.icon svg { width: 16px; height: 16px; }
+
+.danger,
+.danger .icon { color: var(--admin-cancel, #d33a2c); }
+.danger:hover,
+.danger:focus-visible { background: color-mix(in srgb, var(--admin-cancel, #d33a2c) 10%, var(--surface)); }
+
+@media (prefers-reduced-motion: reduce) {
+    .menu { animation: none; }
+}

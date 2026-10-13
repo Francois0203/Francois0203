@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { subscribeGitHubProjects, deleteGitHubProject, reorderCollection } from '../../../firebase/admin';
-import { useToast } from '../../../components';
+import { MdDeleteOutline, MdOpenInNew } from 'react-icons/md';
+import { useToast, KebabMenu } from '../../../components';
 import { SortableList, DragHandle } from './Sortable';
 import styles from '../Admin.module.css';
 import formStyles from '../AdminForms.module.css';
@@ -55,12 +56,16 @@ const GitHubSection = () => {
           <>
             <DragHandle {...handle} label={`Move ${p.name}, position ${i + 1}`} />
             <div className={formStyles.listRowContent}>
-              <strong>{p.name}</strong>
-              <span className={formStyles.meta}>{[p.language, p.stars != null ? `${p.stars} stars` : null].filter(Boolean).join(' · ')}</span>
+              <span className={formStyles.rowTitle}>{p.name}</span>
+              <span className={formStyles.rowMeta}>{[p.language, p.stars != null ? `${p.stars} stars` : null].filter(Boolean).join(' · ')}</span>
             </div>
-            <div className={formStyles.listRowActions}>
-              <button type="button" className="btn-danger" onClick={() => handleDelete(p.id, p.name)}>Remove</button>
-            </div>
+            <KebabMenu
+              ariaLabel={`Options for ${p.name}`}
+              items={[
+                p.url && { label: 'Open on GitHub', icon: <MdOpenInNew />, onSelect: () => window.open(p.url, '_blank', 'noopener') },
+                { label: 'Remove', icon: <MdDeleteOutline />, danger: true, onSelect: () => handleDelete(p.id, p.name) },
+              ].filter(Boolean)}
+            />
           </>
         )}
       </SortableList>

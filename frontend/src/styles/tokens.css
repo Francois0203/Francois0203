@@ -1,7 +1,6 @@
 :root {
     --font-display: 'Bricolage Grotesque Variable', system-ui, -apple-system, sans-serif;
     --font-text: 'Onest Variable', system-ui, -apple-system, sans-serif;
-    --font-serif: var(--font-display);
     --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Consolas, monospace;
 
     --display-xxl: clamp(3.5rem, 10vw, 9.5rem);
@@ -17,7 +16,6 @@
     --text-xl: 1.5rem;
 
     --mono-label: 0.75rem;
-    --mono-text: 0.8125rem;
     --track-label: 0.01em;
     --track-display: -0.035em;
 
@@ -30,23 +28,20 @@
     --r-slab: 26px;
     --r-card: 26px;
     --r-node: 16px;
-    --r-chip: 12px;
 
     --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
-    --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --t-fast: 160ms;
     --t: 280ms;
     --t-slow: 760ms;
 
-    --z-field: 0;
     --z-page: 1;
     --z-overlay: 90;
     --z-nav: 95;
     --z-modal: 100;
     --z-intro: 200;
 
-    /* Indigo, mint, lilac, coral and lemon; each with a deep shade for text. */
+    /* The five colours, each with a darker shade for text. */
     --c-blue: #5a63ff;
     --c-green: #35d6a3;
     --c-pink: #bda8ff;
@@ -75,20 +70,14 @@
 
     --ground: #f7f3ea;
     --ground-2: #ffffff;
-    --deep: #1f1f1f;
-    --deep-2: #2c2b29;
 
     --live: #1f1f1f;
     --live-2: #3a3936;
     --live-rgb: 31, 31, 31;
     --accent-text: var(--c-blue-ink);
-    --accent-2: var(--c-blue);
 
-    --ember: var(--ink);
-    --ember-2: var(--c-pink-ink);
 
     --on-live: #ffffff;
-    --on-deep: #f3efea;
 
     --surface: #ffffff;
     --surface-2: #efe8da;
@@ -104,7 +93,6 @@
     --blur: blur(14px) saturate(140%);
 
     --card-shadow: 0 0 0 1.5px var(--ink), 4px 5px 0 1.5px var(--ink);
-    --card-shadow-lift: 0 0 0 1.5px var(--ink), 7px 8px 0 1.5px var(--ink);
     --dot: rgba(31, 31, 31, 0.08);
 
     --tone-info: #0b47b8;
@@ -122,20 +110,14 @@
 
     --ground: #171615;
     --ground-2: #232220;
-    --deep: #f3efea;
-    --deep-2: #e8e1d8;
 
     --live: #f3efea;
     --live-2: #ffffff;
     --live-rgb: 243, 239, 234;
     --accent-text: var(--c-blue);
-    --accent-2: var(--c-blue);
 
-    --ember: var(--ink);
-    --ember-2: var(--c-pink);
 
     --on-live: #1f1f1f;
-    --on-deep: #1f1f1f;
 
     --surface: #232220;
     --surface-2: #2f2d2a;
@@ -150,7 +132,6 @@
     --glass-cast: 0 0 0 transparent;
 
     --card-shadow: 0 0 0 1.5px var(--ink), 4px 5px 0 1.5px #000;
-    --card-shadow-lift: 0 0 0 1.5px var(--ink), 7px 8px 0 1.5px #000;
     --dot: rgba(243, 239, 234, 0.07);
 
     --c-blue-ink: #a3a8ff;
@@ -163,14 +144,4 @@
     --tone-success: #6ff3a2;
     --tone-warning: #ffd76e;
     --tone-error: #ff8a80;
-}
-
-.on-deep {
-    --ink: var(--on-deep);
-    --ink-2: color-mix(in srgb, var(--on-deep) 72%, transparent);
-    --ink-3: color-mix(in srgb, var(--on-deep) 52%, transparent);
-    --rule: color-mix(in srgb, var(--on-deep) 16%, transparent);
-    --rule-strong: color-mix(in srgb, var(--on-deep) 32%, transparent);
-    --surface: color-mix(in srgb, var(--on-deep) 8%, transparent);
-    color: var(--ink);
 }

@@ -1,11 +1,4 @@
-# Renders the contribution graph as animated SVGs and pushes them to the
-# `output` branch, which the README reads from. Runs on a schedule so the
-# graphics stay current without touching `main`.
-#
-# Everything the README shows is generated here and committed. That is
-# deliberate: the popular third-party card services (github-readme-stats,
-# github-readme-activity-graph) are rate-limited or out of quota often enough
-# that the profile ends up showing broken images.
+# Builds the README graphics and pushes them to the `output` branch.
 name: Contribution graphics
 
 on:
@@ -36,17 +29,14 @@ jobs:
         with:
           node-version: '20'
 
-      # Runs before snk so that `dist` is created by the runner user. The snk
-      # action executes in a Docker container as root, and sharing a directory
-      # it created that way is what broke the first run of this workflow.
+      # Must run before snk, which creates `dist` as root otherwise.
       - name: Render the weekly chart and stats strip
         run: node .github/scripts/render-activity.mjs
         env:
           GITHUB_USER: ${{ github.repository_owner }}
           OUT_DIR: dist
 
-      # Two variants, coloured with the site's own tokens (tokens.css), so the
-      # README's <picture> can switch them with the viewer's GitHub theme.
+      # A light and a dark version, to match the viewer's GitHub theme.
       - name: Generate the contribution snake
         uses: Platane/snk@v3
         with:

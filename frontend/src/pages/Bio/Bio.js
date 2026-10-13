@@ -9,12 +9,14 @@ import { BIO_FIELDS } from '../../content/copy/bio';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { periodOf, isCurrent } from '../../content/records';
 import Stack from '../../components/Stack';
+import { useToast } from '../../components';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
 import SocialIcon from '../../components/SocialIcon';
 import Drift from '../../components/Drift';
 import Credentials, { toCredential, onPath } from '../../components/Credentials';
+import PrintCV from './PrintCV';
 import styles from './Bio.module.css';
 
 
@@ -87,6 +89,7 @@ const Section = ({ id, title, tone, children }) => {
 
 const Bio = () => {
   const { data, loading } = usePortfolioData();
+  const { toast } = useToast();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(BIO_FIELDS, overrides.bio);
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
@@ -117,8 +120,17 @@ const Bio = () => {
   const github = social.find(s => (s.key || '').toLowerCase() === 'github');
   const user = github?.url ? github.url.replace(/\/$/, '').split('/').pop() : null;
   const photo = personal.photoUrl || (user ? `https://github.com/${user}.png` : null);
-  const name = personal.name ?? 'Francois Meiring';
+  const name = personal.name ?? '';
   const summary = personal.summary || t.lede;
+
+  // Only print a complete record. A half-loaded CV is worse than none.
+  const printCv = () => {
+    if (data?.failed?.length) {
+      toast.error(`${t.cvIncomplete} (${data.failed.join(', ')})`);
+      return;
+    }
+    window.print();
+  };
 
   const contents = [
     { id: 'profile', label: t.profileHeading },
@@ -158,7 +170,7 @@ const Bio = () => {
             <h1 className={styles.name}><span className="mask"><span style={{ '--i': 1 }}>{name}</span></span></h1>
             {personal.title && <p className={styles.title} data-rise style={{ '--i': 2 }}>{personal.title}</p>}
             <div className={styles.headActions} data-rise data-print-hide style={{ '--i': 3 }}>
-              <Button variant="line" size="sm" onClick={() => window.print()}>{t.printLabel}</Button>
+              <Button variant="line" size="sm" disabled={loading || !data} onClick={printCv}>{t.printLabel}</Button>
             </div>
           </div>
         </div>
@@ -174,7 +186,7 @@ const Bio = () => {
             <li><span className={styles.cKey}>Phone</span><a className={styles.cVal} href={`tel:${String(contact.phone).split(' ').join('')}`}>{contact.phone}</a></li>
           )}
           {social.length > 0 && (
-            <li className={styles.cSocial}>
+            <li className={styles.cSocial} data-tones>
               {social.map((s, i) => (
                 <a
                   key={s.key ?? i}
@@ -314,6 +326,24 @@ const Bio = () => {
           )}
         </div>
       </div>
+
+      <PrintCV
+        name={name}
+        photo={photo}
+        personal={personal}
+        contact={contact}
+        social={social}
+        experience={experience}
+        education={education}
+        certifications={certifications}
+        skills={skills}
+        skillGroups={data?.skills?.categories ?? []}
+        interests={interests}
+        languages={languages}
+        summary={personal.summary ?? ''}
+        t={t}
+        badges={badges}
+      />
     </div>
   );
 };

@@ -35,29 +35,31 @@ const Foot = () => {
   return (
     <footer id="site-footer" className={styles.foot} data-print-hide>
       <div className={styles.inner}>
-        <div ref={ref} className={styles.call} data-shown={shown ? '' : undefined}>
-          <Headline as="h2" text={t.ctaTitle} className={styles.callTitle} />
-          <p className={styles.callText} data-rise style={{ '--i': 5 }}>{t.ctaText}</p>
-          <div className={styles.callActions} data-rise style={{ '--i': 6 }}>
-            <Button as={Link} to="/connect" variant="fill" arrow>{t.ctaButton}</Button>
-            {contact.email && <Button as="a" href={`mailto:${contact.email}`} variant="line">{contact.email}</Button>}
+        {pathname !== '/connect' && (
+          <div ref={ref} className={styles.call} data-shown={shown ? '' : undefined}>
+            <Headline as="h2" text={t.ctaTitle} className={styles.callTitle} />
+            <p className={styles.callText} data-rise style={{ '--i': 5 }}>{t.ctaText}</p>
+            <div className={styles.callActions} data-rise style={{ '--i': 6 }}>
+              <Button as={Link} to="/connect" variant="fill" arrow>{t.ctaButton}</Button>
+              {contact.email && <Button as="a" href={`mailto:${contact.email}`} variant="line">{contact.email}</Button>}
+            </div>
+            {social.length > 0 && (
+              <ul className={styles.social} data-tones data-rise style={{ '--i': 7 }}>
+                {social.map((s, i) => {
+                  const p = platformFor(s.key, s.url);
+                  const label = p.key === 'website' ? (s.platform || s.key) : p.label;
+                  return (
+                    <li key={s.key ?? i}>
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
+                        <SocialIcon platform={s.key} url={s.url} />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
-          {social.length > 0 && (
-            <ul className={styles.social} data-rise style={{ '--i': 7 }}>
-              {social.map((s, i) => {
-                const p = platformFor(s.key, s.url);
-                const label = p.key === 'website' ? (s.platform || s.key) : p.label;
-                return (
-                  <li key={s.key ?? i}>
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
-                      <SocialIcon platform={s.key} url={s.url} />
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+        )}
 
         <Playground items={[...new Set(tools)]} caption={t.stackCaption} />
 

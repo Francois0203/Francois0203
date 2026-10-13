@@ -1,48 +1,65 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import useReveal from '../../hooks/useReveal';
 import { resolveGroup } from '../../content/copy/resolve';
 import { CONNECT_FIELDS } from '../../content/copy/connect';
+import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
+import { isCurrent } from '../../content/records';
 import { submitContactForm } from '../../firebase/firestore';
 import { useToast } from '../../components';
-import Slab from '../../components/Slab';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
-import Drift from '../../components/Drift';
+import Shape from '../../components/Shape';
 import SupportButton from '../../components/SupportButton';
-import SocialIcon from '../../components/SocialIcon';
+import SocialIcon, { platformFor } from '../../components/SocialIcon';
+import { toCredential, onPath } from '../../components/Credentials';
 import styles from './Connect.module.css';
 
 const EMPTY = { name: '', email: '', message: '' };
 
-const validate = ({ name, email, message }) => ({
-  name: !name.trim() ? 'Your name, so I know who I am replying to.' : '',
+const validate = ({ name, email, message }, t) => ({
+  name: !name.trim() ? t.nameMissing : '',
   email: !email.trim()
-    ? 'An address I can reach you at.'
-    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      ? 'That does not look like an email address.'
-      : '',
-  message: !message.trim() ? 'Say something, even if it is short.' : '',
+    ? t.emailMissing
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? t.emailInvalid : '',
+  message: !message.trim() ? t.messageMissing : '',
 });
 
-const Field = ({ id, label, error, children }) => (
-  <div className={styles.field}>
-    <label htmlFor={id}>{label}</label>
-    <div className={styles.control}>
-      {children}
-      <span className={styles.underline} aria-hidden="true" />
-    </div>
-    {error && <p className={styles.error} id={`${id}-error`}>{error}</p>}
-  </div>
-);
+// The last useful part of a profile URL, e.g. github.com/name -> name.
+const handleOf = (url = '') => {
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split('/').filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : u.hostname.replace(/^www\./, '');
+  } catch {
+    return '';
+  }
+};
+
+const useClock = (timeZone) => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 20000);
+    return () => clearInterval(id);
+  }, []);
+  try {
+    return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone }).format(now);
+  } catch {
+    return '';
+  }
+};
+
+const postmarkDate = () =>
+  new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()).toUpperCase();
 
 const Connect = () => {
   const { toast } = useToast();
   const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(CONNECT_FIELDS, overrides.connect);
+  const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
 
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState(EMPTY);
@@ -54,22 +71,45 @@ const Connect = () => {
   const social = data?.social ?? [];
   const donation = data?.donation ?? {};
   const support = !loading && donation.enabled && /^https?:\/\//i.test(donation.link ?? '');
+  const time = useClock(t.timeZone);
+
+  const studying = useMemo(() => {
+    const degrees = (data?.education ?? []).filter(isCurrent).map(e => ({
+      id: `edu-${e.id}`,
+      shape: 'circle',
+      colour: 'blue',
+      title: [e.degree, e.field].filter(Boolean).join(' in ') || e.institution,
+      detail: e.institution,
+    }));
+    const exams = (data?.certifications ?? []).filter(onPath).map(toCredential)
+      .filter(c => c.status === 'booked' || c.status === 'studying')
+      .sort((a, b) => a.order - b.order)
+      .slice(0, 1)
+      .map(c => ({
+        id: `cert-${c.id ?? c.code}`,
+        shape: 'hexagon',
+        colour: 'yellow',
+        title: c.name,
+        detail: c.status === 'booked' ? [badges.statusBooked, c.examDate].filter(Boolean).join(', ') : badges.statusStudying,
+      }));
+    return [...degrees, ...exams];
+  }, [data, badges.statusBooked, badges.statusStudying]);
 
   const change = (e) => {
     const { name, value } = e.target;
     const next = { ...form, [name]: value };
     setForm(next);
-    if (touched[name]) setErrors(validate(next));
+    if (touched[name]) setErrors(validate(next, t));
   };
 
   const blur = (e) => {
     setTouched(prev => ({ ...prev, [e.target.name]: true }));
-    setErrors(validate(form));
+    setErrors(validate(form, t));
   };
 
   const submit = async (e) => {
     e.preventDefault();
-    const found = validate(form);
+    const found = validate(form, t);
     setErrors(found);
     setTouched({ name: true, email: true, message: true });
 
@@ -85,149 +125,205 @@ const Connect = () => {
       setForm(EMPTY);
       setTouched({});
     } catch {
-      toast.error('That did not send. Try again, or email me directly.');
+      toast.error(t.sendFailed);
     } finally {
       setSending(false);
     }
   };
 
-  const [ref, shown] = useReveal({ threshold: 0 });
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(contact.email);
+      toast.success(t.copiedLabel);
+    } catch {
+      window.location.href = `mailto:${contact.email}`;
+    }
+  };
+
+  const shownError = (k) => (touched[k] && errors[k]) || '';
+  const [headRef, headShown] = useReveal({ threshold: 0 });
+  const [supportRef, supportShown] = useReveal({ threshold: 0.2 });
 
   return (
-    <div
-      ref={ref}
-      className={styles.page}
-      data-shown={shown ? '' : undefined}
-    >
-      <Drift shapes={[
-        { kind: 'star', colour: 'orange', x: '100%', y: '150px', size: 'clamp(180px, 22vw, 320px)', speed: 0.6, spin: 25, wide: true },
-      ]} />
-      <div className={styles.side}>
-        <div data-rise style={{ '--i': 0 }}>
-          <Chip dot="live">{t.eyebrow}</Chip>
+    <div className={styles.page}>
+      <section ref={headRef} className={styles.top} data-shown={headShown ? '' : undefined}>
+        <div className={styles.side}>
+          <div data-rise style={{ '--i': 0 }}>
+            <Chip dot="live">{t.eyebrow}</Chip>
+          </div>
+          <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
+          <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
+
+          <div className={styles.ways} data-rise style={{ '--i': 5 }}>
+            <h2 className={styles.waysTitle}>{t.waysTitle}</h2>
+
+            {contact.email && (
+              <div className={styles.way}>
+                <span className={styles.wayKey}>email</span>
+                <a className={styles.wayValue} href={`mailto:${contact.email}`}>{contact.email}</a>
+                <button type="button" className={styles.copy} onClick={copyEmail}>{t.copyLabel}</button>
+              </div>
+            )}
+
+            {contact.phone && (
+              <div className={styles.way}>
+                <span className={styles.wayKey}>phone</span>
+                <a className={styles.wayValue} href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a>
+              </div>
+            )}
+
+            {time && (
+              <div className={styles.way}>
+                <span className={styles.wayKey}>{t.clockLabel}</span>
+                <span className={styles.wayValue}>
+                  <span className={styles.time}>{time}</span>
+                  {contact.location && <span className={styles.place}>{contact.location}</span>}
+                </span>
+              </div>
+            )}
+
+            {social.length > 0 && (
+              <>
+                <h3 className={styles.waysSub}>{t.socialCardTitle}</h3>
+                <ul className={styles.tiles} data-tones>
+                  {social.map((s, i) => {
+                    const p = platformFor(s.key, s.url);
+                    const label = p.key === 'website' ? (s.platform || s.key) : p.label;
+                    return (
+                      <li key={s.key ?? i}>
+                        <a className={styles.tile} href={s.url} target="_blank" rel="noopener noreferrer">
+                          <span className={styles.tileIcon}><SocialIcon platform={s.key} url={s.url} /></span>
+                          <span className={styles.tileText}>
+                            <span className={styles.tileName}>{label}</span>
+                            <span className={styles.tileHandle}>{handleOf(s.url)}</span>
+                          </span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            )}
+          </div>
         </div>
 
-        <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
-
-        <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
-
-        <dl className={styles.details} data-rise style={{ '--i': 5 }}>
-          {loading && <dd className={styles.plain}>loading</dd>}
-
-          {!loading && contact.email && (
-            <>
-              <dt>email</dt>
-              <dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd>
-            </>
-          )}
-
-          {!loading && contact.phone && (
-            <>
-              <dt>phone</dt>
-              <dd><a href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a></dd>
-            </>
-          )}
-
-          {!loading && contact.location && (
-            <>
-              <dt>based</dt>
-              <dd className={styles.plain}>{contact.location}</dd>
-            </>
-          )}
-
-          {!loading && social.length > 0 && (
-            <>
-              <dt>{t.socialCardTitle}</dt>
-              <dd className={styles.social}>
-                {social.map((s, i) => (
-                  <a key={s.key ?? i} href={s.url} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                    <SocialIcon platform={s.key} url={s.url} className={styles.socialIcon} />
-                    {s.platform || s.display || s.label || s.key}
-                  </a>
-                ))}
-              </dd>
-            </>
-          )}
-        </dl>
-
-        {support && (
-          <div className={styles.support} data-rise style={{ '--i': 6 }}>
-            {donation.message && <p>{donation.message}</p>}
-            <SupportButton href={donation.link}>
-              {donation.buttonText || t.supportButton}
-            </SupportButton>
-          </div>
-        )}
-      </div>
-
-      <Slab className={styles.form} data-rise style={{ '--i': 3, '--rise': '20px' }}>
-        <header className={styles.formHead}>
-          <span className={styles.formTitle}>{t.formCardTitle.toLowerCase()}</span>
-          <Chip dot="live">delivered by email</Chip>
-        </header>
-
-        {sent ? (
-          <div className={styles.sent}>
-            <span className={styles.sentMark} aria-hidden="true">
-              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M5 17.5 12.5 25 27 8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+        <div className={styles.letterWrap} data-rise style={{ '--i': 3, '--rise': '24px' }}>
+          <div className={styles.letter}>
+            <span className={styles.stamp} aria-hidden="true">
+              <Shape kind="star" colour="orange" className={styles.stampShape} />
             </span>
-            <h2>It is on its way</h2>
-            <p>I read everything that comes through here, and I answer.</p>
-            <Button variant="line" onClick={() => setSent(false)}>Write another</Button>
+            <span className={styles.postmark} aria-hidden="true">{postmarkDate()}</span>
+
+            {sent ? (
+              <div className={styles.sent} role="status">
+                <span className={styles.sentMark} aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.4">
+                    <path d="M6 17.5 12.5 24 26 9" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <h2>{t.sentTitle}</h2>
+                <p>{t.sentText}</p>
+                <Button variant="line" onClick={() => setSent(false)}>{t.sentAgain}</Button>
+              </div>
+            ) : (
+              <form onSubmit={submit} noValidate className={styles.form}>
+                <p className={styles.greeting}>{t.letterGreeting}</p>
+
+                <p className={styles.sentence}>
+                  {t.letterName}{' '}
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    aria-label="Your name"
+                    className={styles.blank}
+                    style={{ '--w': `${Math.max(8, form.name.length + 1)}ch` }}
+                    value={form.name}
+                    onChange={change}
+                    onBlur={blur}
+                    aria-invalid={Boolean(shownError('name'))}
+                    aria-describedby={shownError('name') ? 'name-error' : undefined}
+                  />{' '}
+                  {t.letterEmail}{' '}
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    aria-label="Your email"
+                    className={styles.blank}
+                    style={{ '--w': `${Math.max(14, form.email.length + 1)}ch` }}
+                    value={form.email}
+                    onChange={change}
+                    onBlur={blur}
+                    aria-invalid={Boolean(shownError('email'))}
+                    aria-describedby={shownError('email') ? 'email-error' : undefined}
+                  />.
+                </p>
+                {shownError('name') && <p className={styles.error} id="name-error">{shownError('name')}</p>}
+                {shownError('email') && <p className={styles.error} id="email-error">{shownError('email')}</p>}
+
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={6}
+                  aria-label="Your message"
+                  placeholder={t.letterPlaceholder}
+                  className={styles.ruled}
+                  value={form.message}
+                  onChange={change}
+                  onBlur={blur}
+                  aria-invalid={Boolean(shownError('message'))}
+                  aria-describedby={shownError('message') ? 'message-error' : undefined}
+                />
+                {shownError('message') && <p className={styles.error} id="message-error">{shownError('message')}</p>}
+
+                <div className={styles.letterFoot}>
+                  <p className={styles.signOff}>
+                    {t.letterSignOff}
+                    <span className={styles.signature} data-empty={form.name.trim() ? undefined : ''}>
+                      {form.name.trim() || '...'}
+                    </span>
+                  </p>
+                  <Button type="submit" variant="fill" size="lg" disabled={sending} arrow>
+                    {sending ? t.sendingLabel : t.sendLabel}
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
-        ) : (
-          <form onSubmit={submit} noValidate className={styles.formBody}>
-            <div className={styles.pair}>
-              <Field id="name" label="name" error={touched.name && errors.name}>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  value={form.name}
-                  onChange={change}
-                  onBlur={blur}
-                  aria-invalid={Boolean(touched.name && errors.name)}
-                  aria-describedby={touched.name && errors.name ? 'name-error' : undefined}
-                />
-              </Field>
+        </div>
+      </section>
 
-              <Field id="email" label="email" error={touched.email && errors.email}>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={form.email}
-                  onChange={change}
-                  onBlur={blur}
-                  aria-invalid={Boolean(touched.email && errors.email)}
-                  aria-describedby={touched.email && errors.email ? 'email-error' : undefined}
-                />
-              </Field>
+      {support && (
+        <section ref={supportRef} className={styles.support} data-shown={supportShown ? '' : undefined}>
+          <div className={styles.supportCopy}>
+            <Headline as="h2" text={t.supportTitle} tone="orange" className={styles.supportTitle} />
+            {donation.message && <p className={styles.supportText} data-rise style={{ '--i': 3 }}>{donation.message}</p>}
+            <div data-rise style={{ '--i': 4 }}>
+              <SupportButton href={donation.link}>{donation.buttonText || t.supportButton}</SupportButton>
             </div>
+          </div>
 
-            <Field id="message" label="message" error={touched.message && errors.message}>
-              <textarea
-                id="message"
-                name="message"
-                rows={6}
-                value={form.message}
-                onChange={change}
-                onBlur={blur}
-                aria-invalid={Boolean(touched.message && errors.message)}
-                aria-describedby={touched.message && errors.message ? 'message-error' : undefined}
-              />
-            </Field>
-
-            <Button type="submit" variant="fill" size="lg" disabled={sending} full arrow>
-              {sending ? 'Sending' : 'Send it'}
-            </Button>
-          </form>
-        )}
-      </Slab>
+          {studying.length > 0 && (
+            <div className={styles.studying} data-rise style={{ '--i': 3 }}>
+              <span className={styles.studyingLabel}>{t.supportStudyingLabel}</span>
+              <ul>
+                {studying.map(s => (
+                  <li key={s.id}>
+                    <Shape kind={s.shape} colour={s.colour} className={styles.studyShape} />
+                    <span>
+                      <strong>{s.title}</strong>
+                      {s.detail && <small>{s.detail}</small>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 };

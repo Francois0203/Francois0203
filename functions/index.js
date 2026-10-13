@@ -26,7 +26,7 @@ const formatWhen = (createdAt) => {
   }
 };
 
-// A self-contained, email-client-friendly (table + inline styles) HTML message.
+// The email, built with tables and inline styles so mail apps show it right.
 const buildHtml = ({ name, email, message, when }) => {
   const safeName = esc(name);
   const safeEmail = esc(email);

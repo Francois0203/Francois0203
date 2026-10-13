@@ -21,14 +21,21 @@ const BLOCKS = (() => {
     });
     col0 += rows[0].length + 1;
   });
-  return out.map((b, i) => ({
-    ...b,
-    tone: TONES[(b.c * 3 + b.r) % TONES.length],
-    delay: b.c * 70 + (4 - b.r) * 45 + (i % 3) * 20,
-    fx: (b.c - 4) * 14 + ((i * 37) % 21) - 10,
-    fy: (b.r - 2) * 16 - 30 - ((i * 53) % 25),
-    spin: ((i * 71) % 300) - 150,
-  }));
+  return out.map((b, i) => {
+    const dx = b.c - 4;
+    const dy = b.r - 2;
+    const angle = (dx || dy ? Math.atan2(dy, dx) : i) + (((i * 37) % 21) - 10) / 40;
+    const reach = 80 + ((i * 29) % 30);
+    return {
+      ...b,
+      tone: TONES[(b.c * 3 + b.r) % TONES.length],
+      delay: b.c * 70 + (4 - b.r) * 45 + (i % 3) * 20,
+      fx: Math.cos(angle) * reach,
+      fy: Math.sin(angle) * reach,
+      out: (Math.abs(dx) + Math.abs(dy)) * 25,
+      spin: ((i * 71) % 300) - 150,
+    };
+  });
 })();
 
 const COLS = 9;
@@ -44,10 +51,10 @@ const shouldPlay = () => {
   return true;
 };
 
-const Intro = ({ freezeAt = null, name = 'Francois Meiring' }) => {
+const Intro = ({ name = 'Francois Meiring' }) => {
   const [play] = useState(() => {
-    const yes = freezeAt !== null || shouldPlay();
-    if (yes && freezeAt === null) document.documentElement.dataset.intro = 'playing';
+    const yes = shouldPlay();
+    if (yes) document.documentElement.dataset.intro = 'playing';
     return yes;
   });
   const [lifting, setLifting] = useState(false);
@@ -64,7 +71,7 @@ const Intro = ({ freezeAt = null, name = 'Francois Meiring' }) => {
   }, []);
 
   useEffect(() => {
-    if (!play || freezeAt !== null) return undefined;
+    if (!play) return undefined;
     playedThisLoad = true;
     document.documentElement.dataset.intro = 'playing';
 
@@ -84,7 +91,7 @@ const Intro = ({ freezeAt = null, name = 'Francois Meiring' }) => {
         window.dispatchEvent(new Event('intro:done'));
       }
     };
-  }, [play, lift, freezeAt]);
+  }, [play, lift]);
 
   useEffect(() => {
     if (lifting) document.body.style.overflow = '';
@@ -94,7 +101,7 @@ const Intro = ({ freezeAt = null, name = 'Francois Meiring' }) => {
 
   return (
     <div
-      className={[styles.intro, lifting && styles.lifting, freezeAt !== null && styles.frozen].filter(Boolean).join(' ')}
+      className={[styles.intro, lifting && styles.lifting].filter(Boolean).join(' ')}
       aria-hidden="true"
     >
       <div className={styles.board} style={{ '--cols': COLS, '--rows': ROWS }}>
@@ -106,8 +113,9 @@ const Intro = ({ freezeAt = null, name = 'Francois Meiring' }) => {
               '--c': b.c,
               '--r': b.r,
               '--d': `${b.delay}ms`,
-              '--fx': `${b.fx}vw`,
-              '--fy': `${b.fy}vh`,
+              '--fx': `${b.fx}vmax`,
+              '--fy': `${b.fy}vmax`,
+              '--out': `${b.out}ms`,
               '--spin': `${b.spin}deg`,
             }}
           >

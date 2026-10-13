@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 
-const Modal = ({ open, onClose, title, size = 'md', children }) => {
+const Modal = ({ open, onClose, title, size = 'md', children, className = '' }) => {
   const panelRef = useRef(null);
   const returnTo = useRef(null);
 
@@ -47,7 +47,7 @@ const Modal = ({ open, onClose, title, size = 'md', children }) => {
     <div className={styles.scrim} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div
         ref={panelRef}
-        className={`${styles.panel} ${styles[size]}`}
+        className={`${styles.panel} ${styles[size]} ${className}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}

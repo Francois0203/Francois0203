@@ -82,7 +82,7 @@ const DonationSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Donation'}
         </button>
       </div>

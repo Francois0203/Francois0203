@@ -9,15 +9,17 @@ const FIELDS = [
   { key: 'dateOfBirth',    label: 'Date of birth',    type: 'text'     },
   { key: 'gender',         label: 'Gender',           type: 'text'     },
   { key: 'driversLicense', label: "Driver's license", type: 'text'     },
-  { key: 'languages',      label: 'Languages',        type: 'tags'     },
   { key: 'faith',          label: 'Faith',            type: 'text'     },
+  { key: 'languages',      label: 'Languages',        type: 'tags'     },
+  { key: 'cvLanguages',    label: 'Show languages on the printed CV', type: 'toggle' },
 ];
 
 const buildForm = (d = {}) => {
   const f = {};
   FIELDS.forEach(({ key, type }) => {
-    if (type === 'tags') f[key] = Array.isArray(d[key]) ? d[key].join(', ') : (d[key] ?? '');
-    else                 f[key] = d[key] ?? '';
+    if (type === 'toggle')    f[key] = d[key] !== false;
+    else if (type === 'tags') f[key] = Array.isArray(d[key]) ? d[key].join(', ') : (d[key] ?? '');
+    else                      f[key] = d[key] ?? '';
   });
   return f;
 };
@@ -46,11 +48,11 @@ const PersonalDetailsSection = () => {
     try {
       const payload = {};
       FIELDS.forEach(({ key, type }) => {
-        payload[key] = type === 'tags'
-          ? form[key].split(',').map(s => s.trim()).filter(Boolean)
-          : form[key];
+        if (type === 'toggle') payload[key] = Boolean(form[key]);
+        else if (type === 'tags') payload[key] = form[key].split(',').map(s => s.trim()).filter(Boolean);
+        else payload[key] = form[key];
       });
-      await updatePersonal(payload); // merge:true - leaves other personal fields intact
+      await updatePersonal(payload); // keeps the other fields
       dirtyRef.current = false;
       toast.success('Personal details updated');
     } catch {
@@ -63,7 +65,16 @@ const PersonalDetailsSection = () => {
   return (
     <div>
       <div className={formStyles.grid}>
-        {FIELDS.map(f => (
+        {FIELDS.map(f => f.type === 'toggle' ? (
+          <label key={f.key} className={formStyles.toggleRow} style={{ gridColumn: '1 / -1' }}>
+            <input
+              type="checkbox"
+              checked={Boolean(form[f.key])}
+              onChange={e => set(f.key, e.target.checked)}
+            />
+            <span><strong>{f.label}</strong></span>
+          </label>
+        ) : (
           <div key={f.key} className="input-container">
             <label htmlFor={`pd-${f.key}`}>{f.label}</label>
             {f.type === 'textarea' ? (
@@ -87,7 +98,7 @@ const PersonalDetailsSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Personal Details'}
         </button>
       </div>

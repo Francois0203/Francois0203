@@ -69,9 +69,8 @@ const SiteCopySection = () => {
 
   return (
     <div>
-      <p className={styles.empty} style={{ textAlign: 'left', marginTop: 0 }}>
-        Edit the headings and narrative text shown across the site. Clear a field to
-        restore its original wording.
+      <p className={styles.hint} style={{ marginBottom: 'var(--spacing-md)' }}>
+        Pick a page, edit its wording, then save. Clear a field to bring back the original.
       </p>
 
       <nav className={styles.subTabs}>
@@ -127,7 +126,7 @@ const SiteCopySection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-success" onClick={handleSave} disabled={saving}>
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save Site Copy'}
         </button>
       </div>

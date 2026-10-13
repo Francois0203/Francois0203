@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './KebabMenu.module.css';
 
-/** A small overflow menu. Closes on outside click, on Escape, and on choose. */
+// A small "more" menu. Closes on outside click, Escape, or a pick.
 const KebabMenu = ({ items = [], ariaLabel = 'More options' }) => {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
@@ -27,7 +27,7 @@ const KebabMenu = ({ items = [], ariaLabel = 'More options' }) => {
       <button
         type="button"
         className={styles.trigger}
-        onClick={() => setOpen(v => !v)}
+        onClick={(e) => { e.stopPropagation(); setOpen(v => !v); }}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={ariaLabel}
@@ -46,9 +46,10 @@ const KebabMenu = ({ items = [], ariaLabel = 'More options' }) => {
               key={item.label}
               type="button"
               role="menuitem"
-              className={styles.item}
-              onClick={() => { setOpen(false); item.onSelect?.(); }}
+              className={`${styles.item} ${item.danger ? styles.danger : ''}`}
+              onClick={(e) => { e.stopPropagation(); setOpen(false); item.onSelect?.(); }}
             >
+              {item.icon && <span className={styles.icon} aria-hidden="true">{item.icon}</span>}
               {item.label}
             </button>
           ))}

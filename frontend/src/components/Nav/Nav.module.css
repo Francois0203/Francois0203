@@ -44,7 +44,12 @@
     font-size: var(--text-lg);
     font-weight: 500;
     letter-spacing: -0.02em;
+    background: linear-gradient(transparent 58%, var(--c-yellow) 58% 92%, transparent 92%) no-repeat 0 0 / 0% 100%;
+    transition: background-size var(--t) var(--ease);
 }
+
+.mark:hover .markName,
+.markHome .markName { background-size: 100% 100%; }
 
 .routes {
     display: flex;
@@ -116,7 +121,6 @@
 .icon:hover { color: var(--ink); background: var(--surface-2); }
 .iconOn { background: var(--c-pink); color: #1f1f1f; border-color: transparent; }
 
-.cta { margin-left: 0.5rem; }
 
 .menu {
     display: none;
@@ -252,7 +256,6 @@
     .routes { display: none; }
     .controls { margin-left: auto; }
     .menu { display: inline-flex; }
-    .cta { display: none; }
     .markName { display: none; }
 }
 

@@ -27,7 +27,7 @@ export function ContentProvider({ children }) {
       .then(data => setPortfolio({ data: tidy(data), loading: false, error: null }))
       .catch(error => setPortfolio({ data: null, loading: false, error }));
 
-    // Copy failing is never fatal: no overrides means the in-code defaults.
+    // If the copy fails to load, the defaults are used.
     getCopy()
       .then(overrides => setCopy({ overrides: tidy(overrides ?? {}), loading: false }))
       .catch(() => setCopy({ overrides: {}, loading: false }));
@@ -43,7 +43,7 @@ export function ContentProvider({ children }) {
 
   useEffect(() => { reload(); }, [reload]);
 
-  // Safe to call while the copy document is in flight: returns the defaults.
+  // Returns the defaults while the copy is still loading.
   const copyFor = useCallback(
     (group) => resolveGroup(GROUP_FIELDS[group] ?? [], copy.overrides?.[group]),
     [copy.overrides],

@@ -24,9 +24,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/** Scrapes date and count pairs out of the public contributions fragment. */
+// Reads the date and count of each day.
 async function fetchDays() {
-  // Runner IPs are shared, so a single 429 or 5xx is normal. Retry before giving up.
+  // GitHub sometimes refuses at first, so retry.
   let html = '';
   for (let attempt = 1; attempt <= 4; attempt += 1) {
     const res = await fetch(`https://github.com/users/${USER}/contributions`, {
@@ -38,7 +38,7 @@ async function fetchDays() {
     await new Promise((r) => setTimeout(r, attempt * 3000));
   }
 
-  // Each cell carries its date and an id; the matching tool-tip carries the count.
+  // The cell has the date, its tooltip has the count.
   const counts = new Map();
   for (const m of html.matchAll(/for="(contribution-day-component-\d+-\d+)"[^>]*>([^<]*)</g)) {
     const n = /^No contributions/.test(m[2]) ? 0 : parseInt(m[2].replace(/,/g, ''), 10);
@@ -58,7 +58,7 @@ async function fetchDays() {
   return days;
 }
 
-/** Weekly totals, so a year fits in roughly 53 points instead of 366. */
+// Weekly totals, so a year is about 53 points.
 function toWeeks(days) {
   const weeks = [];
   for (let i = 0; i < days.length; i += 7) {
@@ -82,7 +82,7 @@ function streaks(days) {
   return { current, longest };
 }
 
-/** Catmull-Rom to cubic bezier, so the line reads as a curve and not a zigzag. */
+// Turns the points into a smooth curve.
 function smoothPath(pts) {
   if (pts.length < 2) return '';
   let d = `M ${pts[0][0]} ${pts[0][1]}`;
@@ -158,7 +158,7 @@ function renderChart(weeks, totals, t) {
     .ax  { font: 400 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: ${t.muted}; }
     .pk  { font: 600 10.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: ${t.accent}; }
 
-    /* The wipe reveals the plot left to right; the line draws itself in step. */
+    /* Draws the line from left to right. */
     #wiperect { animation: wipe 1900ms cubic-bezier(.22,.61,.36,1) forwards; }
     @keyframes wipe { from { width: 0; } to { width: ${W}px; } }
 

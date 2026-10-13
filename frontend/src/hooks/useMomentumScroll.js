@@ -29,7 +29,7 @@ const FEEL = {
   allowNestedScroll: true,
 };
 
-export const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
+const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
 

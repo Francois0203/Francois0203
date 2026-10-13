@@ -9,7 +9,7 @@
 .head,
 .body { position: relative; z-index: 1; }
 
-/* ── Header: who, and how to reach him ─────────────────────────────────── */
+/* Header: who, and how to reach him */
 
 .head {
     display: grid;
@@ -120,9 +120,9 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
 }
 
 .cIcon svg { width: 17px; height: 17px; }
-.cIcon:hover { background: var(--c-yellow); color: #1f1f1f; transform: translateY(-2px) rotate(-6deg); }
+.cIcon:hover { background: var(--hc); color: var(--hc-on); transform: translateY(-2px) rotate(-6deg); }
 
-/* ── Body: contents beside one reading column ───────────────────────────── */
+/* Body: contents beside one reading column */
 
 .body {
     display: grid;
@@ -202,7 +202,7 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     color: var(--ink);
 }
 
-/* ── Experience: a timeline of full-width cards ─────────────────────────── */
+/* Experience: a timeline of full-width cards */
 
 .timeline {
     position: relative;
@@ -318,7 +318,7 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     color: var(--ink);
 }
 
-/* ── Education and other certificates: compact cards ────────────────────── */
+/* Education and other certificates: compact cards */
 
 .cards {
     display: grid;
@@ -354,7 +354,7 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     letter-spacing: -0.02em;
 }
 
-/* ── Outside the work ────────────────────────────────────────────────────── */
+/* Outside the work */
 
 .chips {
     display: flex;
@@ -374,7 +374,7 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     color: var(--ink);
 }
 
-/* ── Narrow ─────────────────────────────────────────────────────────────── */
+/* Narrow */
 
 @media (max-width: 960px) {
     .head { grid-template-columns: minmax(0, 1fr); }
@@ -399,17 +399,9 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     .contact { padding: 0.25rem 1.1rem; }
 }
 
-/* ── Print: a plain CV ───────────────────────────────────────────────────── */
+/* Print: a plain CV */
 
 @media print {
     .page { padding: 0; max-width: none; }
-    .head { align-items: start; }
-    .portrait { width: 72px; transform: none; }
-    .body { display: block; }
-    .record { max-width: none; }
-    .section { break-inside: avoid; padding-bottom: 1.5rem; }
-    .job, .card { break-inside: avoid; border: 1px solid #ccc; }
-    .node, .timeline::before { display: none; }
-    .timeline { padding-left: 0; }
-    .name { font-size: 2rem; }
+    .head, .body { display: none !important; }
 }

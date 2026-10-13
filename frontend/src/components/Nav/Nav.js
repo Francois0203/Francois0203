@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { tabStyle } from '../../content/navigation';
 import { useAnimations } from '../../hooks';
-import Button from '../Button';
 import Monogram from '../Monogram';
 import styles from './Nav.module.css';
 
@@ -61,13 +60,13 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
       <div ref={sentinel} className={styles.sentinel} aria-hidden="true" />
 
       <header className={`${styles.bar} ${stuck ? styles.stuck : ''}`} data-print-hide>
-        <NavLink to="/" className={styles.mark} onClick={close} aria-label="Home">
+        <NavLink to="/" end className={({ isActive }) => `${styles.mark} ${isActive ? styles.markHome : ''}`} onClick={close} aria-label="Home">
           <Monogram size={34} />
           <span className={styles.markName}>Francois Meiring</span>
         </NavLink>
 
         <nav className={styles.routes} aria-label="Site">
-          {links.map(({ label, to, tone }) => (
+          {links.filter(l => l.to !== '/').map(({ label, to, tone }) => (
             <NavLink
               key={to}
               to={to}
@@ -100,10 +99,6 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
           >
             <MotionIcon off={reduceAnimations} />
           </button>
-
-          <Button as={Link} to="/connect" variant="fill" size="sm" className={styles.cta}>
-            Get in touch
-          </Button>
 
           <button
             type="button"

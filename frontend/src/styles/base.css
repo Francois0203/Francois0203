@@ -48,8 +48,8 @@ h2 { font-size: var(--display-lg); }
 h3 { font-size: var(--display-sm); line-height: 1.15; letter-spacing: -0.02em; }
 h4 { font-size: var(--text-lg); line-height: 1.25; letter-spacing: -0.01em; }
 
-/* The accent word. Italic serif, one per headline. */
-h1 em, h2 em, h3 em, .serif {
+/* The marked word in a headline. */
+h1 em, h2 em, h3 em {
     font-style: normal;
     color: inherit;
 }
@@ -84,11 +84,6 @@ a {
 
 a:hover { color: var(--accent-text); text-decoration-color: currentColor; }
 
-.num {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: 'tnum' 1;
-}
 
 hr {
     height: 0;
@@ -96,6 +91,13 @@ hr {
     border: 0;
     border-top: 1px solid var(--rule);
 }
+
+/* Each child of a [data-tones] row gets its own hover colour. */
+[data-tones] > :nth-child(5n + 1) { --hc: var(--c-blue); --hc-on: #ffffff; }
+[data-tones] > :nth-child(5n + 2) { --hc: var(--c-green); --hc-on: #1f1f1f; }
+[data-tones] > :nth-child(5n + 3) { --hc: var(--c-orange); --hc-on: #1f1f1f; }
+[data-tones] > :nth-child(5n + 4) { --hc: var(--c-pink); --hc-on: #1f1f1f; }
+[data-tones] > :nth-child(5n + 5) { --hc: var(--c-yellow); --hc-on: #1f1f1f; }
 
 ::selection {
     background: var(--sel, var(--c-yellow));

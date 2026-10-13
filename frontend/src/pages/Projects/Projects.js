@@ -81,7 +81,7 @@ const Projects = () => {
   );
 
   const [headRef, headShown] = useReveal({ threshold: 0 });
-  const [benchRef, benchShown] = useReveal({ threshold: 0.03 });
+  const [reposRef, reposShown] = useReveal({ threshold: 0.03 });
 
   return (
     <div className={styles.page}>
@@ -100,7 +100,7 @@ const Projects = () => {
         <p className={styles.lede} data-rise style={{ '--i': 5 }}>{t.lede}</p>
       </header>
 
-      {/* ── The fleet ───────────────────────────────────────────────────── */}
+      {/* Client sites */}
       <section className={styles.block} id="sites">
         <Head title={t.studioTitle} lede={t.studioLede} />
 
@@ -113,12 +113,12 @@ const Projects = () => {
               : <Fleet sites={sites} />}
       </section>
 
-      {/* ── The bench ───────────────────────────────────────────────────── */}
+      {/* Repositories */}
       <section
-        ref={benchRef}
+        ref={reposRef}
         className={styles.block}
         id="bench"
-        data-shown={benchShown ? '' : undefined}
+        data-shown={reposShown ? '' : undefined}
         style={{ '--step': '40ms' }}
       >
         <Head title={t.codeTitle} lede={t.codeLede} />

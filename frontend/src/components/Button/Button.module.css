@@ -65,7 +65,7 @@
 }
 
 .line:hover,
-.line:focus-visible { background: var(--c-yellow); color: #1f1f1f; }
+.line:focus-visible { background: var(--sel, var(--c-yellow)); color: var(--sel-on, #1f1f1f); }
 
 .text {
     height: auto;
@@ -101,14 +101,6 @@
 .text.sm, .text.lg { height: auto; padding: 0.3rem 0; }
 
 .full { width: 100%; }
-
-.dark {
-    background: #1f1f1f;
-    color: #ffffff;
-}
-
-.dark:hover,
-.dark:focus-visible { background: #3a3936; color: #ffffff; }
 
 @media (prefers-reduced-motion: reduce) {
     .btn:hover, .btn:active { transform: none; }

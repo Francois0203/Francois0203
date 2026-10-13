@@ -1,113 +1,125 @@
-@property --edge-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: true;
-}
-
-@property --edge-tone {
+@property --tone {
     syntax: '<color>';
-    initial-value: #5a63ff;
+    initial-value: #ff7d5e;
     inherits: true;
 }
 
-/* The 1px padding is the border: the conic fill shows through it only. */
 .support {
-    --edge-angle: 0deg;
-
     position: relative;
-    isolation: isolate;
-    display: inline-flex;
-    padding: 1px;
-    border-radius: var(--r-control);
-    text-decoration: none;
-    background: conic-gradient(
-        from var(--edge-angle),
-        var(--rule-strong) 0deg,
-        var(--rule-strong) 200deg,
-        color-mix(in srgb, var(--edge-tone) 35%, transparent) 255deg,
-        var(--edge-tone) 300deg,
-        var(--edge-tone) 335deg,
-        var(--rule-strong) 360deg
-    );
-    animation:
-        orbit 4s linear infinite,
-        tones 20s steps(1, end) infinite;
-    transition: transform var(--t-fast) var(--ease);
-}
-
-/* The glow: the same fill, blurred, behind the button. */
-.support::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    z-index: -1;
-    border-radius: inherit;
-    background: inherit;
-    filter: blur(10px);
-    opacity: 0.55;
-    transition: opacity var(--t) var(--ease), filter var(--t) var(--ease);
-}
-
-.inner {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    height: 2.75rem;
-    padding: 0 1.25rem;
-    border-radius: inherit;
-    background: var(--ground-2);
-    font-family: var(--font-text);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    letter-spacing: -0.005em;
+    gap: 0.85rem;
+    height: 3.75rem;
+    padding: 0 1.5rem 0 0.55rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 0 0 1.5px var(--ink), 4px 5px 0 0 var(--tone), 4px 5px 0 1.5px var(--ink);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    letter-spacing: -0.02em;
     white-space: nowrap;
     color: var(--ink);
-    transition: color var(--t) var(--ease);
+    text-decoration: none;
+    animation: tones 12.5s steps(1, end) infinite;
+    transition: transform 220ms var(--spring), box-shadow 220ms var(--spring);
 }
 
-.icon {
-    width: 1rem;
-    height: 1rem;
-    color: var(--edge-tone);
+.heart {
+    display: grid;
+    place-items: center;
+    width: 2.7rem;
+    height: 2.7rem;
+    flex: none;
+    border-radius: 50%;
+    background: var(--tone);
+    box-shadow: 0 0 0 1.5px var(--ink);
 }
 
-/* Faster on hover; both durations scale together so the colour still turns over once per lap. */
+.heart svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: #ffffff;
+    stroke: #1f1f1f;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+}
+
+.arrow {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 220ms var(--spring);
+}
+
 .support:hover,
-.support:focus-visible { animation-duration: 1.6s, 8s; }
-
-.support:hover::before,
-.support:focus-visible::before { opacity: 0.95; filter: blur(14px); }
-
-.support:hover .inner,
-.support:focus-visible .inner { color: var(--ink); }
-
-.support:active { transform: scale(0.975); }
-
 .support:focus-visible {
-    outline: 2px solid var(--c-blue);
-    outline-offset: 4px;
+    color: var(--ink);
+    transform: translate(-2px, -3px);
+    box-shadow: 0 0 0 1.5px var(--ink), 7px 9px 0 0 var(--tone), 7px 9px 0 1.5px var(--ink);
 }
 
-/* Beige has little to glow against, so the light needs more weight there. */
-:global([data-theme='light']) .support::before { opacity: 0.85; }
+.support:hover .heart svg { animation: beat 900ms var(--ease) infinite; }
+.support:hover .arrow { transform: translate(2px, -2px); }
 
-@keyframes orbit {
-    to { --edge-angle: 360deg; }
+.support:active {
+    transform: translate(3px, 4px);
+    box-shadow: 0 0 0 1.5px var(--ink), 1px 1px 0 0 var(--tone), 1px 1px 0 1.5px var(--ink);
+    transition-duration: 80ms;
 }
 
-/* One colour per lap: five laps, five colours. */
+.support:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 5px; }
+
+.burst {
+    position: absolute;
+    left: 1.9rem;
+    top: 50%;
+    pointer-events: none;
+}
+
+.bit {
+    position: absolute;
+    left: -7px;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    animation: fly 700ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+    animation-delay: calc(var(--i) * 18ms);
+}
+
+.bit svg { display: block; width: 100%; height: 100%; }
+
+@keyframes fly {
+    0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
+    70% { opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); opacity: 0; }
+}
+
+@keyframes beat {
+    0%, 100% { transform: scale(1); }
+    18% { transform: scale(1.22); }
+    36% { transform: scale(0.95); }
+    54% { transform: scale(1.12); }
+}
+
+/* A new colour every few seconds. */
 @keyframes tones {
-    0% { --edge-tone: var(--c-blue); }
-    20% { --edge-tone: var(--c-yellow); }
-    40% { --edge-tone: var(--c-green); }
-    60% { --edge-tone: var(--c-orange); }
-    80% { --edge-tone: var(--c-pink); }
-    100% { --edge-tone: var(--c-blue); }
+    0% { --tone: var(--c-orange); }
+    20% { --tone: var(--c-yellow); }
+    40% { --tone: var(--c-green); }
+    60% { --tone: var(--c-pink); }
+    80% { --tone: var(--c-blue); }
 }
 
-/* Motion off: the lit edge stays, parked at the top. */
 @media (prefers-reduced-motion: reduce) {
-    .support { animation: none; --edge-angle: 60deg; --edge-tone: var(--c-blue); }
+    .support { animation: none; --tone: var(--c-orange); transition: none; }
+    .support:hover .heart svg { animation: none; }
+    .burst { display: none; }
 }
 
-:global([data-no-animations='true']) .support { animation: none; --edge-angle: 60deg; --edge-tone: var(--c-blue); }
+:global([data-no-animations='true']) .support { animation: none; --tone: var(--c-orange); }
+:global([data-no-animations='true']) .burst { display: none; }

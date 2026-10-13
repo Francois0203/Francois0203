@@ -1,13 +1,13 @@
 .story {
     --p: 0;
-    --screen: var(--screen-h, 100svh);
+    --screen: 100svh;
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     gap: clamp(2rem, 5vw, 5rem);
 }
 
-/* ── The pinned side ────────────────────────────────────────────────────── */
+/* The pinned side */
 
 .pin {
     position: sticky;
@@ -148,6 +148,11 @@
 }
 
 .count {
+    position: relative;
+    z-index: 2;
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--r-control);
+    background: var(--ground);
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     letter-spacing: var(--track-label);
@@ -157,15 +162,50 @@
 
 .count span { color: var(--ink-3); }
 
+.range {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.6rem, 1.5vw, 1rem);
+    animation: rollIn 600ms var(--ease) both;
+}
+
 .year {
     font-family: var(--font-display);
-    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    font-size: clamp(2.75rem, 5.5vw, 4.75rem);
     font-weight: 600;
     line-height: 1;
     letter-spacing: -0.05em;
     font-variant-numeric: tabular-nums;
     color: var(--ink);
-    animation: rollIn 600ms var(--ease) both;
+}
+
+.year[data-end] { color: var(--cc-ink); }
+
+.rangeLine {
+    position: relative;
+    width: clamp(1.75rem, 4vw, 3.25rem);
+    height: 4px;
+    border-radius: 4px;
+    background: var(--cc);
+    box-shadow: 0 0 0 1.5px var(--ink);
+    transform-origin: left;
+    animation: grow 700ms var(--ease) 120ms both;
+}
+
+.rangeLine::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border-top: 2.5px solid var(--ink);
+    border-right: 2.5px solid var(--ink);
+    transform: translateY(-50%) rotate(45deg);
+}
+
+@keyframes grow {
+    from { transform: scaleX(0); }
 }
 
 .where {
@@ -179,7 +219,7 @@
     from { opacity: 0; transform: translateY(40%); filter: blur(4px); }
 }
 
-/* ── The chapters ───────────────────────────────────────────────────────── */
+/* The chapters */
 
 .chapters {
     margin: 0;
@@ -233,8 +273,6 @@
 
 .kindDot[data-kind='education'] { border-radius: 50%; }
 
-.period { color: var(--ink-2); }
-
 .place {
     margin: 0;
     font-size: var(--display-md);
@@ -248,6 +286,81 @@
     font-size: var(--text-lg);
     font-weight: 500;
     color: var(--ink-2);
+}
+
+.span {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+}
+
+.stop {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: none;
+    font-size: var(--text-md);
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.stop small {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 400;
+    letter-spacing: var(--track-label);
+    color: var(--ink-3);
+}
+
+.stop[data-end] { text-align: right; }
+
+.bar {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    min-width: 2.5rem;
+    height: 1.6rem;
+    align-items: center;
+}
+
+.bar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 4px;
+    margin-top: -2px;
+    border-radius: 4px;
+    background: var(--chapter);
+    box-shadow: 0 0 0 1.5px var(--ink);
+    transform: scaleX(0.15);
+    transform-origin: left;
+    transition: transform 900ms var(--ease) 150ms;
+}
+
+.chapter[data-active] .bar::before { transform: scaleX(1); }
+
+.span[data-open] .bar::before {
+    background: repeating-linear-gradient(90deg, var(--chapter) 0 10px, transparent 10px 15px);
+    box-shadow: none;
+    height: 4px;
+}
+
+.length {
+    position: relative;
+    padding: 0.15rem 0.6rem;
+    border-radius: var(--r-control);
+    background: var(--surface);
+    box-shadow: 0 0 0 1.5px var(--ink);
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    white-space: nowrap;
+    color: var(--ink);
 }
 
 .note {
@@ -276,7 +389,7 @@
     color: var(--ink);
 }
 
-/* ── Phones: the pinned side becomes a sticky bar under the nav ─────────── */
+/* Phones: the pinned side becomes a sticky bar under the nav */
 
 @media (max-width: 900px) {
     .story { grid-template-columns: minmax(0, 1fr); gap: 0; }
@@ -299,7 +412,10 @@
     .tags { display: none; }
     .backShape { inset: -14%; }
     .meta { flex-direction: row; align-items: baseline; gap: 0.75rem; text-align: left; min-width: 0; }
-    .year { font-size: 1.75rem; }
+    .range { gap: 0.4rem; flex: none; }
+    .year { font-size: 1.4rem; }
+    .rangeLine { width: 1rem; height: 3px; box-shadow: none; background: var(--ink); }
+    .rangeLine::after { width: 6px; height: 6px; border-width: 2px; }
     .where {
         font-size: var(--text-md);
         white-space: nowrap;
@@ -316,6 +432,7 @@
 
 @media (prefers-reduced-motion: reduce) {
     .chapterInner { opacity: 1; transform: none; }
-    .tags li, .year, .where, .backShape, .backSvg { animation: none; }
+    .tags li, .range, .rangeLine, .where, .backShape, .backSvg { animation: none; }
+    .bar::before { transition: none; transform: none; }
     .photo { transform: none; }
 }

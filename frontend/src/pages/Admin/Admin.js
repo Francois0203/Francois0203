@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaGithub } from 'react-icons/fa';
-import { IoSettingsSharp } from 'react-icons/io5';
 import {
   MdPerson, MdBadge, MdEditNote, MdBuild, MdWork, MdSchool, MdFavorite,
-  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdVerified, MdPublic,
+  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdLogout, MdVerified, MdPublic,
 } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
 import useMomentumScroll from '../../hooks/useMomentumScroll';
@@ -15,7 +14,8 @@ import {
   subscribeCertifications, createCertification, updateCertification, deleteCertification,
   reorderCollection,
 } from '../../firebase/admin';
-import { useToast, KebabMenu } from '../../components';
+import { useToast } from '../../components';
+import Monogram from '../../components/Monogram';
 import ProfileSection         from './sections/ProfileSection';
 import PersonalDetailsSection from './sections/PersonalDetailsSection';
 import SkillsSection          from './sections/SkillsSection';
@@ -29,6 +29,7 @@ import DonationSection  from './sections/DonationSection';
 import SiteCopySection  from './sections/SiteCopySection';
 import { periodOf } from '../../content/records';
 import styles from './Admin.module.css';
+import formStyles from './AdminForms.module.css';
 
 const EXPERIENCE_FIELDS = [
   { key: 'company',     label: 'Company',     type: 'text',     required: true  },
@@ -39,6 +40,7 @@ const EXPERIENCE_FIELDS = [
   { key: 'end',         label: 'End (leave empty if current)', type: 'text'     },
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'tags',        label: 'Tech tags',   type: 'tags'                      },
+  { key: 'showOnCv',    label: 'Show on the printed CV', type: 'toggle', default: true, hint: 'Untick to keep it on the website but leave it off the CV.' },
 ];
 
 const EDUCATION_FIELDS = [
@@ -49,6 +51,7 @@ const EDUCATION_FIELDS = [
   { key: 'end',         label: 'End (leave empty if current)', type: 'text'     },
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'tags',        label: 'Tags',        type: 'tags'                      },
+  { key: 'showOnCv',    label: 'Show on the printed CV', type: 'toggle', default: true, hint: 'Untick to keep it on the website but leave it off the CV.' },
 ];
 
 const CERTIFICATION_FIELDS = [
@@ -63,25 +66,29 @@ const CERTIFICATION_FIELDS = [
   { key: 'badgeUrl',    label: 'Badge image URL (Credly)', type: 'text'         },
   { key: 'verifyUrl',   label: 'Verify URL (Credly)',      type: 'text'         },
   { key: 'description', label: 'Description', type: 'textarea'                  },
+  { key: 'showOnCv',    label: 'Show on the printed CV', type: 'toggle', default: true, hint: 'Untick to keep it on the website but leave it off the CV.' },
 ];
 
 const GROUPS = ['Identity', 'Content', 'Projects', 'Inbox'];
 
+// Each section has its own colour, so it is easy to tell where you are.
 const SECTIONS = [
-  { id: 'profile',    group: 'Identity', title: 'Profile & Contact', icon: <MdPerson /> },
-  { id: 'personal',   group: 'Identity', title: 'Personal Details',  icon: <MdBadge /> },
-  { id: 'copy',       group: 'Content',  title: 'Site Copy',         icon: <MdEditNote /> },
-  { id: 'skills',     group: 'Content',  title: 'Skills',            icon: <MdBuild /> },
-  { id: 'experience', group: 'Content',  title: 'Experience',        icon: <MdWork />,   quickAdd: true },
-  { id: 'education',  group: 'Content',  title: 'Education',         icon: <MdSchool />, quickAdd: true },
-  { id: 'certifications', group: 'Content', title: 'Certifications',  icon: <MdVerified />, quickAdd: true },
-  { id: 'interests',  group: 'Content',  title: 'Interests',         icon: <MdFavorite /> },
-  { id: 'socials',    group: 'Content',  title: 'Social Links',      icon: <MdShare /> },
-  { id: 'donation',   group: 'Content',  title: 'Donation',          icon: <MdVolunteerActivism /> },
-  { id: 'studio',     group: 'Projects', title: 'Client Sites',      icon: <MdPublic /> },
-  { id: 'github',     group: 'Projects', title: 'GitHub Projects',   icon: <FaGithub /> },
-  { id: 'messages',   group: 'Inbox',    title: 'Messages',          icon: <MdMailOutline /> },
+  { id: 'profile',    group: 'Identity', tone: 'blue',   title: 'Profile & Contact', desc: 'Name, title, summary, photo and how people reach you.', icon: <MdPerson /> },
+  { id: 'personal',   group: 'Identity', tone: 'pink',   title: 'Personal Details',  desc: 'Languages and other personal facts.', icon: <MdBadge /> },
+  { id: 'copy',       group: 'Content',  tone: 'yellow', title: 'Site Copy',         desc: 'Every heading and label on the site.', icon: <MdEditNote /> },
+  { id: 'skills',     group: 'Content',  tone: 'green',  title: 'Skills',            desc: 'Skill groups shown on the Bio page and the CV.', icon: <MdBuild /> },
+  { id: 'experience', group: 'Content',  tone: 'green',  title: 'Experience',        desc: 'Jobs. The CV always lists them newest first.', icon: <MdWork /> },
+  { id: 'education',  group: 'Content',  tone: 'orange', title: 'Education',         desc: 'Degrees and schooling.', icon: <MdSchool /> },
+  { id: 'certifications', group: 'Content', tone: 'pink', title: 'Certifications',   desc: 'The AWS path and other certificates.', icon: <MdVerified /> },
+  { id: 'interests',  group: 'Content',  tone: 'orange', title: 'Interests',         desc: 'Things you do outside work.', icon: <MdFavorite /> },
+  { id: 'socials',    group: 'Content',  tone: 'blue',   title: 'Social Links',      desc: 'Profiles linked across the site.', icon: <MdShare /> },
+  { id: 'donation',   group: 'Content',  tone: 'yellow', title: 'Donation',          desc: 'The support link on the Connect page.', icon: <MdVolunteerActivism /> },
+  { id: 'studio',     group: 'Projects', tone: 'green',  title: 'Client Sites',      desc: 'Live client sites, synced from GitHub.', icon: <MdPublic /> },
+  { id: 'github',     group: 'Projects', tone: 'blue',   title: 'GitHub Projects',   desc: 'Your repositories, in display order.', icon: <FaGithub /> },
+  { id: 'messages',   group: 'Inbox',    tone: 'orange', title: 'Messages',          desc: 'Letters sent from the Connect page.', icon: <MdMailOutline /> },
 ];
+
+const toneStyle = (tone) => ({ '--tone': `var(--c-${tone})`, '--tone-ink': `var(--c-${tone}-deep)` });
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -99,6 +106,14 @@ const Admin = () => {
     setView({ id, add });
     setNavOpen(false); // close the mobile drawer after picking a section
   };
+
+  // Highlighted text takes the colour of the open section.
+  useEffect(() => {
+    const tone = (SECTIONS.find(s => s.id === view.id) ?? SECTIONS[0]).tone;
+    const root = document.documentElement.style;
+    root.setProperty('--sel', `var(--c-${tone})`);
+    root.setProperty('--sel-on', tone === 'blue' ? '#ffffff' : '#1f1f1f');
+  }, [view.id]);
 
   // Close the mobile drawer on Escape.
   useEffect(() => {
@@ -137,10 +152,10 @@ const Admin = () => {
       <div className={styles.page}>
         <div className={styles.authScreen}>
           <div className={styles.authCard}>
-            <IoSettingsSharp size={40} className={styles.authIcon} />
+            <Monogram size={44} />
             <h2 className={styles.authTitle}>Portfolio Admin</h2>
             <p className={styles.authSub}>Sign in with your Google account to continue.</p>
-            <button type="button" className="btn-success" onClick={handleSignIn} disabled={signingIn}>
+            <button type="button" className="btn-primary" onClick={handleSignIn} disabled={signingIn}>
               <FaGoogle />
               {signingIn ? 'Signing in…' : 'Sign in with Google'}
             </button>
@@ -157,7 +172,7 @@ const Admin = () => {
           <div className={styles.authCard}>
             <p className={styles.notAllowed}>Access denied.</p>
             <p className={styles.authSub}>{user.email} is not on the admin list.</p>
-            <button type="button" className="btn-outline" onClick={handleSignOut}>Sign out</button>
+            <button type="button" className="btn-cancel" onClick={handleSignOut}>Sign out</button>
           </div>
         </div>
       </div>
@@ -191,8 +206,8 @@ const Admin = () => {
             openAddOnMount={view.add}
             renderSummary={r => (
               <>
-                <strong>{r.role}</strong>
-                <span style={{ color: 'var(--secondary-text-color)' }}>{r.company}{periodOf(r) ? ` · ${periodOf(r)}` : ''}</span>
+                <span className={formStyles.rowTitle}>{r.role}</span>
+                <span className={formStyles.rowMeta}>{r.company}{periodOf(r) ? ` · ${periodOf(r)}` : ''}</span>
               </>
             )}
           />
@@ -210,8 +225,8 @@ const Admin = () => {
             openAddOnMount={view.add}
             renderSummary={r => (
               <>
-                <strong>{r.institution}</strong>
-                <span style={{ color: 'var(--secondary-text-color)' }}>
+                <span className={formStyles.rowTitle}>{r.institution}</span>
+                <span className={formStyles.rowMeta}>
                   {[r.degree, r.field].filter(Boolean).join(', ')}{periodOf(r) ? ` · ${periodOf(r)}` : ''}
                 </span>
               </>
@@ -231,8 +246,8 @@ const Admin = () => {
             openAddOnMount={view.add}
             renderSummary={r => (
               <>
-                <strong>{r.credential}</strong>
-                <span style={{ color: 'var(--secondary-text-color)' }}>
+                <span className={formStyles.rowTitle}>{r.credential}</span>
+                <span className={formStyles.rowMeta}>
                   {[r.issuer, r.code, r.status].filter(Boolean).join(' · ')}
                 </span>
               </>
@@ -244,8 +259,8 @@ const Admin = () => {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.topbar}>
+    <div className={`${styles.page} admin-ui`}>
+      <header className={styles.topbar}>
         <div className={styles.topbarLeft}>
           <button
             type="button"
@@ -255,17 +270,19 @@ const Admin = () => {
           >
             <MdMenu aria-hidden="true" />
           </button>
-          <IoSettingsSharp size={20} className={styles.topbarIcon} />
-          <span className={styles.topbarTitle}>Portfolio Admin</span>
+          <Monogram size={30} />
+          <span className={styles.topbarTitle}>Admin</span>
         </div>
         <div className={styles.topbarRight}>
           <span className={styles.userEmail}>{user.email}</span>
-          <button type="button" className="btn-outline" onClick={() => navigate('/')}>
-            <MdHome aria-hidden="true" /> View site
+          <button type="button" className="btn-primary" onClick={() => navigate('/')}>
+            <MdHome aria-hidden="true" /> <span className={styles.hideNarrow}>View site</span>
           </button>
-          <button type="button" className="btn-outline" onClick={handleSignOut}>Sign out</button>
+          <button type="button" className="btn-cancel" onClick={handleSignOut}>
+            <MdLogout aria-hidden="true" /> <span className={styles.hideNarrow}>Sign out</span>
+          </button>
         </div>
-      </div>
+      </header>
 
       <div className={styles.shell}>
         {navOpen && (
@@ -281,31 +298,17 @@ const Admin = () => {
               {SECTIONS.filter(s => s.group === group).map(s => {
                 const isActive = s.id === view.id;
                 return (
-                  <div
+                  <button
                     key={s.id}
+                    type="button"
                     className={[styles.navItem, isActive ? styles.navItemActive : ''].join(' ')}
+                    style={toneStyle(s.tone)}
+                    onClick={() => openSection(s.id)}
+                    aria-current={isActive ? 'page' : undefined}
                   >
-                    <button
-                      type="button"
-                      className={styles.navItemBtn}
-                      onClick={() => openSection(s.id)}
-                      aria-current={isActive ? 'page' : undefined}
-                    >
-                      <span className={styles.navIcon} aria-hidden="true">{s.icon}</span>
-                      <span className={styles.navLabel}>{s.title}</span>
-                    </button>
-                    {s.quickAdd && (
-                      <div className={styles.navKebab}>
-                        <KebabMenu
-                          ariaLabel={`${s.title} options`}
-                          items={[
-                            { label: 'Add entry',      onSelect: () => openSection(s.id, true) },
-                            { label: 'Manage entries', onSelect: () => openSection(s.id) },
-                          ]}
-                        />
-                      </div>
-                    )}
-                  </div>
+                    <span className={styles.navIcon} aria-hidden="true">{s.icon}</span>
+                    <span className={styles.navLabel}>{s.title}</span>
+                  </button>
                 );
               })}
             </div>
@@ -314,8 +317,14 @@ const Admin = () => {
 
         <main className={styles.content} ref={scrollWrapperRef}>
           <div className={styles.contentInner} ref={scrollContentRef}>
-            <h2 className={styles.sectionTitle}>{activeSection.title}</h2>
-            <div key={view.id} className={styles.sectionBody}>
+            <div className={styles.sectionHead} style={toneStyle(activeSection.tone)}>
+              <span className={styles.sectionIcon} aria-hidden="true">{activeSection.icon}</span>
+              <div>
+                <h1 className={styles.sectionTitle}>{activeSection.title}</h1>
+                <p className={styles.sectionDesc}>{activeSection.desc}</p>
+              </div>
+            </div>
+            <div key={view.id} className={styles.sectionBody} style={toneStyle(activeSection.tone)}>
               {renderSection()}
             </div>
           </div>

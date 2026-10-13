@@ -6,22 +6,8 @@ write to Firestore; the site itself never calls the GitHub API.
 
 | Script | Reads | Writes | Drives |
 | --- | --- | --- | --- |
-| `syncGitHubProjects.mjs` | the repo list in `portfolio/githubConfig` | `githubProjects/*` | Projects → *The bench* |
-| `syncStudioSites.mjs` | every repo in the `FM-Web-Studio` org | `studioSites/*` | Home → *Selected work*, Projects → *Live in production* |
-
-`cleanupRecords.mjs` is run by hand, not by CI. It removes fields the site no
-longer stores: `period` on experience and education (the site derives it from
-`start` and `end`), and leftovers nothing reads. Dry run by default, and it
-backs up every document it touches to `scripts/backups/` (git-ignored):
-
-```bash
-node cleanupRecords.mjs                         # prints every change, writes nothing
-node cleanupRecords.mjs --apply                 # copies periods into start/end, drops dead fields
-node cleanupRecords.mjs --apply --drop-periods  # also deletes period; run after deploying
-```
-
-It reads `SERVICE_ACCOUNT` from `frontend/.env.local` when it is not set in the
-environment.
+| `syncGitHubProjects.mjs` | the repo list in `portfolio/githubConfig` | `githubProjects/*` | Projects → *Personal projects* |
+| `syncStudioSites.mjs` | every repo in the `FM-Web-Studio` org | `studioSites/*` | Home → *Selected work*, Projects → *Client sites* |
 
 `lib/gh.mjs` holds the shared GitHub helpers (auth headers, pagination, reading a
 file or README out of a repo); `lib/firebase.mjs` resolves credentials and hands

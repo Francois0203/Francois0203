@@ -17,7 +17,7 @@ const parseAccent = (text = '') => {
 
 const SWOOSH = 'M2 9 C 25 5, 60 12, 98 6';
 
-// Two-voice headline: the *asterisked* phrase gets a hand-drawn marker stroke in `tone`.
+// Words wrapped in *asterisks* get a marker underline.
 const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone = 'yellow', ...rest }) => {
   const segments = parseAccent(text);
   const children = [];

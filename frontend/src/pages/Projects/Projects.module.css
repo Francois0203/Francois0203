@@ -59,7 +59,7 @@
 }
 
 
-/* ── Filter ─────────────────────────────────────────────────────────────── */
+/* Filter */
 
 .filter {
     display: flex;
@@ -104,7 +104,7 @@
     color: var(--ink-3);
 }
 
-/* ── Repositories ───────────────────────────────────────────────────────── */
+/* Repositories */
 
 .repos { display: flex; flex-direction: column; gap: 0.6rem; }
 
@@ -190,7 +190,7 @@
     transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
 }
 
-.readme:hover { background: var(--c-yellow); color: #1f1f1f; }
+.readme:hover { background: var(--sel, var(--c-yellow)); color: var(--sel-on, #1f1f1f); }
 
 @media (max-width: 760px) {
     .repo { grid-template-columns: auto minmax(0, 1fr); row-gap: 0.5rem; }

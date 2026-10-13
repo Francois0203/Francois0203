@@ -60,7 +60,7 @@ export const PLATFORMS = [
 const BY_KEY = Object.fromEntries(PLATFORMS.map(p => [p.key, p]));
 BY_KEY.x = BY_KEY.twitter;
 
-// The platform for a social entry: by its key, else by its URL, else a plain website.
+// Find the platform by key, then by URL, else a plain website.
 export const platformFor = (key = '', url = '') => {
   const k = String(key).toLowerCase().replace(/[^a-z]/g, '');
   if (BY_KEY[k]) return BY_KEY[k];

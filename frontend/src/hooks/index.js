@@ -1,10 +1,5 @@
 export * from './useTheme';
 export * from './useAnimations';
-export { default as useReveal }          from './useReveal';
-export { default as useActiveSection }   from './useActiveSection';
-export { default as usePortfolioData }   from './usePortfolioData';
-export { default as useSiteCopy }        from './useSiteCopy';
 export { default as useGitHubProjects }  from './useGitHubProjects';
 export { default as useStudioSites }     from './useStudioSites';
-export { default as useAuth }            from './useAuth';
-export { default as useMomentumScroll, scrollPageTo } from './useMomentumScroll';
+export { scrollPageTo } from './useMomentumScroll';
