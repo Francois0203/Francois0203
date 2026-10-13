@@ -8,7 +8,7 @@ import Intro from './components/Intro';
 import { useTheme, useAnimations, scrollPageTo } from './hooks';
 import { markSeen } from './hooks/useReveal';
 import { ContentProvider } from './context/ContentContext';
-import { NAVIGATION_PAGES } from './content/navigation';
+import { NAVIGATION_PAGES, fillOf } from './content/navigation';
 import styles from './App.module.css';
 
 const ScrollToTop = () => {
@@ -85,8 +85,8 @@ const useSelectionTone = () => {
   useEffect(() => {
     const tone = NAVIGATION_PAGES.find(p => p.to === pathname)?.tone ?? 'yellow';
     const root = document.documentElement.style;
-    root.setProperty('--sel', `var(--c-${tone})`);
-    root.setProperty('--sel-on', tone === 'blue' ? '#ffffff' : '#1f1f1f');
+    root.setProperty('--sel', fillOf(tone));
+    root.setProperty('--sel-on', '#1f1f1f');
   }, [pathname]);
 };
 

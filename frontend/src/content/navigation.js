@@ -5,11 +5,14 @@ export const NAVIGATION_PAGES = [
   { label: 'Connect',  to: '/connect',  blurb: 'Send a letter, or find me elsewhere', tone: 'orange' },
 ];
 
+// A colour that dark text stays readable on. Indigo is too dark, so it uses its softer shade.
+export const fillOf = (tone = 'yellow') => (tone === 'blue' ? 'var(--c-blue-soft)' : `var(--c-${tone})`);
+
 // The colours for a page's tab.
 export const tabStyle = (tone = 'yellow') => ({
-  '--tab': `var(--c-${tone})`,
+  '--tab': fillOf(tone),
   '--tab-deep': `var(--c-${tone}-deep)`,
-  '--tab-on': tone === 'blue' ? '#ffffff' : '#1f1f1f',
+  '--tab-on': '#1f1f1f',
 });
 
 // The next page, looping back to the first.

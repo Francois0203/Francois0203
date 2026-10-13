@@ -387,6 +387,7 @@ a.wayValue:hover { color: var(--c-orange-ink); }
     border: 2px dashed var(--ink);
     border-radius: var(--r-card);
     background: color-mix(in srgb, var(--c-orange) 14%, var(--surface));
+    --knockout: color-mix(in srgb, var(--c-orange) 14%, var(--surface));
 }
 
 .supportCopy {

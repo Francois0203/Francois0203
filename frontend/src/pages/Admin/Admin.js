@@ -28,6 +28,7 @@ import MessagesSection  from './sections/MessagesSection';
 import DonationSection  from './sections/DonationSection';
 import SiteCopySection  from './sections/SiteCopySection';
 import { periodOf } from '../../content/records';
+import { fillOf } from '../../content/navigation';
 import styles from './Admin.module.css';
 import formStyles from './AdminForms.module.css';
 
@@ -111,8 +112,8 @@ const Admin = () => {
   useEffect(() => {
     const tone = (SECTIONS.find(s => s.id === view.id) ?? SECTIONS[0]).tone;
     const root = document.documentElement.style;
-    root.setProperty('--sel', `var(--c-${tone})`);
-    root.setProperty('--sel-on', tone === 'blue' ? '#ffffff' : '#1f1f1f');
+    root.setProperty('--sel', fillOf(tone));
+    root.setProperty('--sel-on', '#1f1f1f');
   }, [view.id]);
 
   // Close the mobile drawer on Escape.

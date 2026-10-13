@@ -43,6 +43,7 @@
 
     /* The five colours, each with a darker shade for text. */
     --c-blue: #5a63ff;
+    --c-blue-soft: #8f95ff;
     --c-green: #35d6a3;
     --c-pink: #bda8ff;
     --c-orange: #ff7d5e;

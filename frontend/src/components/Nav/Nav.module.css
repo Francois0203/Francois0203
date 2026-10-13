@@ -41,15 +41,29 @@
 }
 
 .markName {
+    position: relative;
     font-size: var(--text-lg);
     font-weight: 500;
     letter-spacing: -0.02em;
-    background: linear-gradient(transparent 58%, var(--c-yellow) 58% 92%, transparent 92%) no-repeat 0 0 / 0% 100%;
-    transition: background-size var(--t) var(--ease);
 }
 
-.mark:hover .markName,
-.markHome .markName { background-size: 100% 100%; }
+/* "You are here" on Home: a marker bar under the name, never behind it. */
+.markName::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -7px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--c-yellow);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t) var(--ease);
+}
+
+.mark:hover .markName::after,
+.markHome .markName::after { transform: scaleX(1); }
 
 .routes {
     display: flex;

@@ -11,10 +11,19 @@
     left: -0.04em;
     bottom: -0.2em;
     width: calc(100% + 0.08em);
-    height: 0.24em;
+    height: 0.22em;
     overflow: visible;
     clip-path: inset(-50% 100% -50% -5%);
     transition: clip-path 800ms var(--ease) calc(min(var(--mi, 0), 14) * var(--step, 60ms) + 350ms);
+}
+
+/* A thin gap in the background colour around each letter, so the marker breaks
+   around tails like g and p instead of running through them. */
+.marked :global(.mask) > * {
+    --k: var(--knockout, var(--ground));
+    text-shadow:
+        0.045em 0 var(--k), -0.045em 0 var(--k), 0 0.045em var(--k), 0 -0.045em var(--k),
+        0.032em 0.032em var(--k), -0.032em 0.032em var(--k), 0.032em -0.032em var(--k), -0.032em -0.032em var(--k);
 }
 
 .squiggle path {
