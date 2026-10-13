@@ -5,18 +5,18 @@ const OUT = process.env.OUT_DIR || 'dist';
 
 const THEMES = {
   light: {
-    bg0: '#fdf6e3', bg1: '#f7eed8',
-    text: '#2a1810', muted: '#8a6a4a', grid: '#e3d3b4',
-    line: '#b8651c', point: '#7a3e10',
-    fill0: '#e07b1f', fill1: '#f5b56b',
-    tile: '#f2e3c4', accent: '#7a3e10',
+    bg0: '#f7f3ea', bg1: '#f1ebdd',
+    text: '#1f1f1f', muted: '#8a847c', grid: '#e6dfcf',
+    line: '#5a63ff', point: '#2b33c4',
+    fill0: '#5a63ff', fill1: '#bda8ff',
+    tile: '#efe8da', accent: '#2b33c4',
   },
   dark: {
-    bg0: '#1c1208', bg1: '#120a04',
-    text: '#f7e8cd', muted: '#b08a63', grid: '#3a2612',
-    line: '#e89542', point: '#f5b56b',
-    fill0: '#c47020', fill1: '#e89542',
-    tile: '#231708', accent: '#f5b56b',
+    bg0: '#1d1c1a', bg1: '#171615',
+    text: '#f3efea', muted: '#847d74', grid: '#2f2d2a',
+    line: '#8f95ff', point: '#bda8ff',
+    fill0: '#5a63ff', fill1: '#bda8ff',
+    tile: '#232220', accent: '#bda8ff',
   },
 };
 
@@ -153,7 +153,7 @@ function renderChart(weeks, totals, t) {
     <clipPath id="wipe"><rect id="wiperect" x="0" y="0" width="${W}" height="${H}"/></clipPath>
   </defs>
   <style>
-    .ttl { font: 600 15px Georgia, 'Times New Roman', serif; fill: ${t.text}; }
+    .ttl { font: 700 15px 'Bricolage Grotesque', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: ${t.text}; }
     .sub { font: 400 11.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: ${t.muted}; letter-spacing: .04em; }
     .ax  { font: 400 10px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: ${t.muted}; }
     .pk  { font: 600 10.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: ${t.accent}; }
@@ -218,7 +218,7 @@ function renderStats(tiles, t) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(tiles.map((x) => `${x.label}: ${x.value}`).join('. '))}">
   <title>GitHub activity at a glance</title>
   <style>
-    .num { font: 600 26px Georgia, 'Times New Roman', serif; fill: ${t.accent}; }
+    .num { font: 800 26px 'Bricolage Grotesque', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; fill: ${t.accent}; }
     .lbl { font: 500 9.5px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; fill: ${t.muted}; letter-spacing: .12em; text-transform: uppercase; }
     .tile { opacity: 0; animation: pop 620ms cubic-bezier(.22,.61,.36,1) forwards; }
     @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

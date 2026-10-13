@@ -42,8 +42,8 @@ jobs:
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            dist/snake-light.svg?color_snake=%237a3e10&color_dots=%23f2e3c4,%23f5b56b,%23e07b1f,%23b8651c,%237a3e10
-            dist/snake-dark.svg?color_snake=%23f5b56b&color_dots=%231c1208,%237a3e10,%23c47020,%23e89542,%23f5b56b
+            dist/snake-light.svg?color_snake=%23ff7d5e&color_dots=%23efe8da,%23d7ccff,%23bda8ff,%235a63ff,%232b33c4
+            dist/snake-dark.svg?color_snake=%23ffde4d&color_dots=%23232220,%233b3570,%235a3cc9,%235a63ff,%23bda8ff
 
       - name: List what will be published
         run: ls -l dist
