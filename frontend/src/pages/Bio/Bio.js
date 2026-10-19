@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import useReveal from '../../hooks/useReveal';
@@ -17,7 +17,6 @@ import Headline from '../../components/Headline';
 import SocialIcon from '../../components/SocialIcon';
 import Drift from '../../components/Drift';
 import Credentials from '../../components/Credentials';
-import PrintCV from './PrintCV';
 import styles from './Bio.module.css';
 
 
@@ -143,13 +142,48 @@ const Bio = () => {
   const name = personal.name ?? '';
   const summary = personal.summary || t.lede;
 
-  // Only print a complete record. A half-loaded CV is worse than none.
-  const printCv = () => {
+  const [cvBusy, setCvBusy] = useState(false);
+
+  // Fetch the PDF engine while the visitor reads, so the button answers at once.
+  useEffect(() => {
+    if (!data) return undefined;
+    const warm = () => { import('./CvDocument'); };
+    if ('requestIdleCallback' in window) {
+      const handle = requestIdleCallback(warm, { timeout: 4000 });
+      return () => cancelIdleCallback(handle);
+    }
+    const timer = setTimeout(warm, 1500);
+    return () => clearTimeout(timer);
+  }, [data]);
+
+  // Builds the PDF from the data already on the page. A half-loaded CV is worse than none.
+  const downloadCv = async () => {
     if (data?.failed?.length) {
       toast.error(`${t.cvIncomplete} (${data.failed.join(', ')})`);
       return;
     }
-    window.print();
+    setCvBusy(true);
+    try {
+      const { renderCv } = await import('./CvDocument');
+      const blob = await renderCv({
+        name, photo, personal, contact, social, experience, education, certifications, skills,
+        skillGroups: data?.skills?.categories ?? [],
+        interests, languages, summary: personal.summary ?? '', t, badges,
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${name || 'CV'} CV.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+      console.error(err);
+      toast.error(t.cvFailed);
+    } finally {
+      setCvBusy(false);
+    }
   };
 
   const contents = [
@@ -201,7 +235,9 @@ const Bio = () => {
               </>
             )}
             <div className={styles.headActions} data-rise data-print-hide style={{ '--i': 3 }}>
-              <Button variant="line" size="sm" disabled={loading || !data} onClick={printCv}>{t.printLabel}</Button>
+              <Button variant="line" size="sm" disabled={loading || !data || cvBusy} aria-busy={cvBusy} onClick={downloadCv}>
+                {cvBusy ? t.cvPreparing : t.printLabel}
+              </Button>
             </div>
           </div>
         </div>
@@ -335,24 +371,6 @@ const Bio = () => {
           )}
         </div>
       </div>
-
-      <PrintCV
-        name={name}
-        photo={photo}
-        personal={personal}
-        contact={contact}
-        social={social}
-        experience={experience}
-        education={education}
-        certifications={certifications}
-        skills={skills}
-        skillGroups={data?.skills?.categories ?? []}
-        interests={interests}
-        languages={languages}
-        summary={personal.summary ?? ''}
-        t={t}
-        badges={badges}
-      />
     </div>
   );
 };

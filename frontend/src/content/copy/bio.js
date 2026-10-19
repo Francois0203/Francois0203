@@ -3,7 +3,9 @@
 export const BIO_FIELDS = [
   { key: 'eyebrow', label: 'Line above the name', type: 'text', default: 'curriculum vitae' },
   { key: 'lede',    label: 'Profile paragraph (fallback when the personal summary is empty)', type: 'textarea', default: 'I put systems into production and keep them there: containers, pipelines and the cloud underneath them.' },
-  { key: 'printLabel', label: 'Print button', type: 'text', default: 'Print CV' },
+  { key: 'printLabel', label: 'CV button', type: 'text', default: 'Download CV' },
+  { key: 'cvPreparing', label: 'CV button - while the PDF is being made', type: 'text', default: 'Preparing…' },
+  { key: 'cvFailed', label: 'CV - message when the PDF could not be made', type: 'text', default: 'The CV could not be made. Refresh and try again.' },
 
   { key: 'profileHeading', label: 'Profile heading', type: 'text', default: 'Profile' },
   { key: 'experienceHeading', label: 'Experience heading', type: 'text', default: 'Experience' },
