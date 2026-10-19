@@ -1,6 +1,6 @@
 import { periodOf, isCurrent, startKey } from '../../content/records';
 import { platformFor } from '../../components/SocialIcon';
-import { toCredential, onPath } from '../../components/Credentials';
+import { toCredential } from '../../components/Credentials';
 import styles from './PrintCV.module.css';
 
 // "https://www.github.com/name/" -> "github.com/name", allowed to wrap after each slash.
@@ -49,7 +49,7 @@ const PrintCV = ({ name, photo, personal, contact, social: allSocial, experience
     if (!g.items.includes(label)) g.items.push(label);
   });
 
-  const certs = certifications.map(c => ({ ...toCredential(c), path: onPath(c) }))
+  const certs = certifications.map(toCredential)
     .filter(c => c.status !== 'planned' && c.name)
     .sort((a, b) => (a.status === 'earned' ? 0 : 1) - (b.status === 'earned' ? 0 : 1) || a.order - b.order);
 
@@ -147,8 +147,8 @@ const PrintCV = ({ name, photo, personal, contact, social: allSocial, experience
                   <h3>{c.name}</h3>
                   <p>
                     {c.status === 'earned'
-                      ? <>{c.issuer}{c.issuer && c.issued && ', '}<span className={styles.date}>{shortDates(c.issued)}</span></>
-                      : [t.cvInProgress, c.status === 'booked' && c.examDate && `${badges.statusBooked} ${c.examDate}`].filter(Boolean).join(', ')}
+                      ? <>{c.issuer}{c.issuer && c.date && ', '}<span className={styles.date}>{shortDates(c.date)}</span></>
+                      : [t.cvInProgress, c.status === 'booked' && c.date && `${badges.statusBooked} ${c.date}`].filter(Boolean).join(', ')}
                   </p>
                 </div>
               ))}

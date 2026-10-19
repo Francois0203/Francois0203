@@ -81,7 +81,7 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
                 required={f.required}
                 value={form[f.key]}
                 onChange={e => set(f.key, e.target.value)}
-                placeholder={f.type === 'tags' ? 'Comma-separated…' : undefined}
+                placeholder={f.placeholder ?? (f.type === 'tags' ? 'Comma-separated…' : undefined)}
               />
             )}
           </div>

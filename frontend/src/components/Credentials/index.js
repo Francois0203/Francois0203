@@ -1,1 +1,1 @@
-export { default, toCredential, onPath } from './Credentials';
+export { default, toCredential } from './Credentials';

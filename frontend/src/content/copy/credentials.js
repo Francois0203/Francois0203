@@ -9,6 +9,5 @@ export const CREDENTIALS_FIELDS = [
   { key: 'statusStudying', label: 'Status - studying', type: 'text', default: 'studying' },
   { key: 'statusPlanned',  label: 'Status - planned',  type: 'text', default: 'planned' },
 
-  { key: 'expiresLabel', label: 'Before the expiry date', type: 'text', default: 'valid to' },
   { key: 'verifyLabel',  label: 'Verify link', type: 'text', default: 'Verify badge' },
 ];

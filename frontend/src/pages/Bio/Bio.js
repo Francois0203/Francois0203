@@ -16,7 +16,7 @@ import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
 import SocialIcon from '../../components/SocialIcon';
 import Drift from '../../components/Drift';
-import Credentials, { toCredential, onPath } from '../../components/Credentials';
+import Credentials from '../../components/Credentials';
 import PrintCV from './PrintCV';
 import styles from './Bio.module.css';
 
@@ -124,10 +124,6 @@ const Bio = () => {
   const experience = data?.experience ?? [];
   const education = data?.education ?? [];
   const certifications = data?.certifications ?? [];
-  const pathCerts = certifications.filter(onPath);
-  const otherCerts = certifications
-    .filter(c => !onPath(c))
-    .sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
 
   const skills = useMemo(() => flattenSkills(data?.skills), [data]);
 
@@ -314,32 +310,7 @@ const Bio = () => {
 
           {certifications.length > 0 && (
             <Section id="certifications" title={t.certificationsHeading} tone="pink">
-              <Credentials items={pathCerts} labels={badges} detailed />
-
-              {otherCerts.length > 0 && (
-                <>
-                  {pathCerts.length > 0 && <h3 className={styles.subTitle}>{t.otherCertificationsHeading}</h3>}
-                  <div className={styles.cards}>
-                    {otherCerts.map((raw, i) => {
-                      const c = toCredential(raw);
-                      return (
-                        <Card
-                          key={c.id ?? i}
-                          i={i}
-                          tone={TONES[(i + 3) % TONES.length]}
-                          title={c.name}
-                          org={c.issuer}
-                          when={[
-                            c.issued,
-                            c.expires && (/expire/i.test(c.expires) ? c.expires : `${badges.expiresLabel} ${c.expires}`),
-                          ].filter(Boolean).join(', ')}
-                          note={c.note}
-                        />
-                      );
-                    })}
-                  </div>
-                </>
-              )}
+              <Credentials items={certifications} labels={badges} detailed />
             </Section>
           )}
 

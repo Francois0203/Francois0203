@@ -15,7 +15,7 @@ import Shape from '../../components/Shape';
 import Skeleton, { Bone } from '../../components/Skeleton';
 import SupportButton from '../../components/SupportButton';
 import SocialIcon, { platformFor } from '../../components/SocialIcon';
-import { toCredential, onPath } from '../../components/Credentials';
+import { toCredential } from '../../components/Credentials';
 import styles from './Connect.module.css';
 
 const EMPTY = { name: '', email: '', message: '' };
@@ -82,7 +82,7 @@ const Connect = () => {
       title: [e.degree, e.field].filter(Boolean).join(' in ') || e.institution,
       detail: e.institution,
     }));
-    const exams = (data?.certifications ?? []).filter(onPath).map(toCredential)
+    const exams = (data?.certifications ?? []).map(toCredential)
       .filter(c => c.status === 'booked' || c.status === 'studying')
       .sort((a, b) => a.order - b.order)
       .slice(0, 1)
@@ -91,7 +91,7 @@ const Connect = () => {
         shape: 'hexagon',
         colour: 'yellow',
         title: c.name,
-        detail: c.status === 'booked' ? [badges.statusBooked, c.examDate].filter(Boolean).join(', ') : badges.statusStudying,
+        detail: c.status === 'booked' ? [badges.statusBooked, c.date].filter(Boolean).join(', ') : badges.statusStudying,
       }));
     return [...degrees, ...exams];
   }, [data, badges.statusBooked, badges.statusStudying]);

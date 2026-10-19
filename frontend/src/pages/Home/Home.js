@@ -9,7 +9,7 @@ import { HOME_FIELDS } from '../../content/copy/home';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { periodOf, isCurrent, startKey } from '../../content/records';
-import Credentials, { toCredential, onPath } from '../../components/Credentials';
+import Credentials, { toCredential } from '../../components/Credentials';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
@@ -99,7 +99,7 @@ const Home = () => {
   const user = github?.url ? github.url.replace(/\/$/, '').split('/').pop() : null;
   const photo = personal.photoUrl || (user ? `https://github.com/${user}.png` : null);
 
-  const certifications = useMemo(() => (data?.certifications ?? []).filter(onPath), [data]);
+  const certifications = useMemo(() => data?.certifications ?? [], [data]);
   const nextCert = useMemo(() => certifications.map(toCredential)
     .filter(c => c.status === 'booked' || c.status === 'studying')
     .sort((a, b) => a.order - b.order)[0], [certifications]);
@@ -120,9 +120,9 @@ const Home = () => {
         kind: t.storyNextKind,
         place: shortCert(nextCert.name),
         what: nextCert.status === 'booked' ? badges.statusBooked : badges.statusStudying,
-        period: nextCert.examDate || String(new Date().getFullYear()),
+        period: (nextCert.status === 'booked' && nextCert.date) || String(new Date().getFullYear()),
         start: String(new Date().getFullYear()),
-        end: nextCert.examDate || '',
+        end: nextCert.status === 'booked' ? nextCert.date : '',
         next: true,
         note: t.storyNextNote,
         tags: certifications.map(toCredential).map(c => c.code).filter(Boolean),

@@ -58,14 +58,11 @@ const EDUCATION_FIELDS = [
 const CERTIFICATION_FIELDS = [
   { key: 'credential',  label: 'Credential',  type: 'text',     required: true  },
   { key: 'issuer',      label: 'Issuer',      type: 'text',     required: true  },
-  { key: 'code',        label: 'Exam code (puts it on the badge path)', type: 'text' },
-  { key: 'level',       label: 'Level',       type: 'text'                      },
+  { key: 'code',        label: 'Exam code (optional, e.g. CLF-C02)', type: 'text' },
   { key: 'status',      label: 'Status',      type: 'select', options: ['planned', 'studying', 'booked', 'earned'] },
-  { key: 'examDate',    label: 'Exam date',   type: 'text'                      },
-  { key: 'start',       label: 'Issued',      type: 'text'                      },
-  { key: 'end',         label: 'Expires',     type: 'text'                      },
-  { key: 'badgeUrl',    label: 'Badge image URL (Credly)', type: 'text'         },
-  { key: 'verifyUrl',   label: 'Verify URL (Credly)',      type: 'text'         },
+  { key: 'start',       label: 'Date (issued if earned, exam date if booked)', type: 'text' },
+  { key: 'badgeUrl',    label: 'Badge image URL (shown once earned)', type: 'text', placeholder: 'https://images.credly.com/size/340x340/images/<id>/image.png' },
+  { key: 'verifyUrl',   label: 'Verify URL (shown once earned)', type: 'text', placeholder: 'https://www.credly.com/badges/<id>/public_url' },
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'showOnCv',    label: 'Show on the printed CV', type: 'toggle', default: true, hint: 'Untick to keep it on the website but leave it off the CV.' },
 ];
