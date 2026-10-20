@@ -17,6 +17,10 @@ export const BIO_FIELDS = [
 
   { key: 'cvInterestsHeading', label: 'Printed CV - interests heading', type: 'text', default: 'Interests' },
   { key: 'cvLanguagesHeading', label: 'Printed CV - languages heading', type: 'text', default: 'Languages' },
+  { key: 'cvContactHeading', label: 'Printed CV - contact heading', type: 'text', default: 'Contact' },
+  { key: 'cvEmailLabel', label: 'Printed CV - email label', type: 'text', default: 'Email' },
+  { key: 'cvPhoneLabel', label: 'Printed CV - phone label', type: 'text', default: 'Phone' },
+  { key: 'cvLocationLabel', label: 'Printed CV - location label', type: 'text', default: 'Based in' },
   { key: 'cvProfilesHeading', label: 'Printed CV - online profiles heading', type: 'text', default: 'Profiles' },
   { key: 'cvInProgress', label: 'Printed CV - label for a certification in progress', type: 'text', default: 'in progress' },
   { key: 'cvPage', label: 'Printed CV - footer word for page (page 2 onwards)', type: 'text', default: 'Page' },
