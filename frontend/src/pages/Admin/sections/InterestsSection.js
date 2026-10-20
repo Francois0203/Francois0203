@@ -1,42 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { MdAdd } from 'react-icons/md';
+import React, { useState, useEffect, useRef } from 'react';
 import { subscribeInterests, updateInterests, subscribePersonal, updatePersonal } from '../../../firebase/admin';
 import { useToast } from '../../../components';
-import { SortableList } from './Sortable';
+import TagInput from './TagInput';
+import useUnsaved from './useUnsaved';
 import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
 const InterestsSection = () => {
   const { toast } = useToast();
   const [items, setItems]   = useState([]);
-  const [input, setInput]   = useState('');
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [onCv, setOnCv]     = useState(true);
+  const [dirty, setDirty]   = useState(false);
+  const dirtyRef = useRef(false);
+  useUnsaved(dirty);
 
   useEffect(() => {
+    // An incoming snapshot never overwrites edits that are not saved yet.
     const unsubI = subscribeInterests(
-      data => { setItems(data); setLoaded(true); },
+      data => { if (!dirtyRef.current) setItems(data); setLoaded(true); },
       () => { setLoaded(true); toast.error('Failed to load interests'); },
     );
     // The switch is stored with the personal details, as cvInterests.
-    const unsubP = subscribePersonal(d => setOnCv(d?.cvInterests !== false), () => {});
+    const unsubP = subscribePersonal(d => { if (!dirtyRef.current) setOnCv(d?.cvInterests !== false); }, () => {});
     return () => { unsubI(); unsubP(); };
   }, [toast]);
 
-  const add = () => {
-    const v = input.trim();
-    if (!v || items.includes(v)) return;
-    setItems(prev => [...prev, v]);
-    setInput('');
-  };
-
-  const remove = (item) => setItems(prev => prev.filter(i => i !== item));
+  const touch = () => { dirtyRef.current = true; setDirty(true); };
 
   const handleSave = async () => {
     setSaving(true);
     try {
       await Promise.all([updateInterests(items), updatePersonal({ cvInterests: onCv })]);
+      dirtyRef.current = false;
+      setDirty(false);
       toast.success('Interests updated');
     } catch {
       toast.error('Failed to save interests');
@@ -49,49 +47,24 @@ const InterestsSection = () => {
 
   return (
     <div>
-      {items.length > 1 && (
-        <p className={formStyles.meta} style={{ marginBottom: 'var(--spacing-sm)' }}>
-          Drag to change the order, then save.
-        </p>
-      )}
-
-      <SortableList
-        items={items}
-        getId={item => item}
-        onReorder={setItems}
-        layout="wrap"
-        className={formStyles.chips}
-        itemClassName={formStyles.chipSlot}
-      >
-        {(item, i, handle) => (
-          <span className={formStyles.chipRemovable}>
-            <span {...handle} className={formStyles.chipDraggable} aria-label={`Move ${item}`}>{item}</span>
-            <button type="button" onClick={() => remove(item)} aria-label={`Remove ${item}`}>×</button>
-          </span>
-        )}
-      </SortableList>
-
-      <div className={formStyles.inlineAdd}>
-        <div className="input-container">
-          <label>New interest</label>
-          <input
-            type="text"
-            placeholder="e.g. Photography"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && add()}
-          />
-        </div>
-        <button type="button" className="btn-primary" onClick={add}><MdAdd aria-hidden="true" /> Add</button>
+      <div className="input-container">
+        <label htmlFor="interests-input">Interests</label>
+        <TagInput
+          id="interests-input"
+          value={items}
+          onChange={next => { touch(); setItems(next); }}
+          placeholder="Add an interest, e.g. Photography"
+        />
       </div>
 
       <label className={formStyles.toggleRow} style={{ marginTop: 'var(--spacing-md)' }}>
-        <input type="checkbox" checked={onCv} onChange={e => setOnCv(e.target.checked)} />
+        <input type="checkbox" checked={onCv} onChange={e => { touch(); setOnCv(e.target.checked); }} />
         <span><strong>Show interests on the printed CV</strong></span>
       </label>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
+        {dirty && <span className={formStyles.unsaved} role="status">Unsaved changes</span>}
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving || !dirty}>
           {saving ? 'Saving…' : 'Save Interests'}
         </button>
       </div>

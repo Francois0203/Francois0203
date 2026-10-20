@@ -64,6 +64,44 @@
   backdrop-filter: blur(6px);
 }
 
+/* Sits at the left of the save bar while there are edits to save. */
+.unsaved {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-right: auto;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--c-orange-deep);
+}
+
+.unsaved::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-orange);
+}
+
+/* A card title you can click and rename in place; it only looks like a field on hover or focus. */
+.cardHeader input.titleInput:not([type='checkbox']):not([type='radio']):not([type='file']) {
+  flex: 1;
+  min-width: 0;
+  height: 2.1rem;
+  padding: 0 0.5rem;
+  margin-left: -0.5rem;
+  border: 1.5px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cardHeader input.titleInput:not([type='checkbox']):not([type='radio']):not([type='file']):hover { border-color: var(--rule-strong); }
+.cardHeader input.titleInput:not([type='checkbox']):not([type='radio']):not([type='file']):focus { border-color: var(--ink); background: var(--surface); }
+
 /* Inside a modal the bar is a plain footer. */
 .formActions {
   display: flex;

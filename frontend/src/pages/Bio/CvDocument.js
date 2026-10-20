@@ -308,14 +308,11 @@ const CvDocument = ({ name, photo, personal, contact, social: allSocial, experie
   );
 };
 
-// GitHub's /<user>.png redirect carries no CORS header, so fetch the avatar host directly.
-const fetchable = (url) => url.replace(/^https:\/\/github\.com\/([^/]+)\.png$/i, 'https://avatars.githubusercontent.com/$1');
-
 // The photo is inlined first, so a blocked or missing image drops it instead of failing the CV.
 const inline = async (url) => {
   if (!url || url.startsWith('data:')) return url;
   try {
-    const res = await fetch(fetchable(url));
+    const res = await fetch(url);
     if (!res.ok) return null;
     const blob = await res.blob();
     return await new Promise((resolve, reject) => {

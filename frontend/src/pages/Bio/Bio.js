@@ -5,6 +5,7 @@ import useReveal from '../../hooks/useReveal';
 import useActiveSection from '../../hooks/useActiveSection';
 import { scrollPageTo } from '../../hooks';
 import { resolveGroup } from '../../content/copy/resolve';
+import { githubAvatar } from '../../content/avatar';
 import { BIO_FIELDS } from '../../content/copy/bio';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { periodOf, isCurrent } from '../../content/records';
@@ -136,9 +137,7 @@ const Bio = () => {
     [personal],
   );
 
-  const github = social.find(s => (s.key || '').toLowerCase() === 'github');
-  const user = github?.url ? github.url.replace(/\/$/, '').split('/').pop() : null;
-  const photo = personal.photoUrl || (user ? `https://github.com/${user}.png` : null);
+  const photo = personal.photoUrl || githubAvatar(social);
   const name = personal.name ?? '';
   const summary = personal.summary || t.lede;
 

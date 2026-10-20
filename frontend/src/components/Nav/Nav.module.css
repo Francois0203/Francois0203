@@ -112,42 +112,42 @@
 .controls {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.55rem;
     margin-left: 0.5rem;
 }
 
-.icon {
+/* Solid stickers, not outlines: before the bar turns solid on scroll they sit straight on
+   the graph paper and the drifting shapes, and need their own ground to stay visible. */
+.icon,
+.menu {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
     padding: 0;
-    border: 1px solid var(--rule-strong);
+    border: 1.5px solid var(--ink);
     border-radius: var(--r-control);
-    background: none;
+    background: var(--surface);
+    box-shadow: 2px 2px 0 var(--ink);
     color: var(--ink);
     cursor: pointer;
-    transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+    transition:
+        transform var(--t-fast) var(--ease),
+        box-shadow var(--t-fast) var(--ease),
+        background-color var(--t-fast) var(--ease);
 }
 
 .icon svg { width: 17px; height: 17px; }
-.icon:hover { color: var(--ink); background: var(--surface-2); }
-.iconOn { background: var(--c-pink); color: #1f1f1f; border-color: transparent; }
+.icon:hover,
+.menu:hover { background: var(--surface-2); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+.icon:active,
+.menu:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.iconOn,
+.iconOn:hover { background: var(--c-pink); color: #1f1f1f; }
 
 
-.menu {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--ink);
-    cursor: pointer;
-}
+.menu { display: none; }
 
 .bars,
 .barsOpen {
@@ -280,4 +280,10 @@
 
 @media (prefers-reduced-motion: reduce) {
     .big { opacity: 1; transform: none; animation: none; }
+    .icon:hover, .icon:active, .menu:hover, .menu:active { transform: none; }
 }
+
+:global([data-no-animations='true']) .icon:hover,
+:global([data-no-animations='true']) .icon:active,
+:global([data-no-animations='true']) .menu:hover,
+:global([data-no-animations='true']) .menu:active { transform: none; }

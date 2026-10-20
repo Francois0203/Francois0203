@@ -5,6 +5,7 @@ import useSiteCopy from '../../hooks/useSiteCopy';
 import useReveal from '../../hooks/useReveal';
 import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
+import { githubAvatar } from '../../content/avatar';
 import { HOME_FIELDS } from '../../content/copy/home';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
@@ -95,9 +96,7 @@ const Home = () => {
   const social = data?.social ?? [];
   const name = personal.name ?? 'Francois Meiring';
 
-  const github = social.find(s => (s.key || '').toLowerCase() === 'github');
-  const user = github?.url ? github.url.replace(/\/$/, '').split('/').pop() : null;
-  const photo = personal.photoUrl || (user ? `https://github.com/${user}.png` : null);
+  const photo = personal.photoUrl || githubAvatar(social);
 
   const certifications = useMemo(() => data?.certifications ?? [], [data]);
   const nextCert = useMemo(() => certifications.map(toCredential)

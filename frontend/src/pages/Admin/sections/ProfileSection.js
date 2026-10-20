@@ -6,6 +6,7 @@ import {
   subscribeSocial,
 } from '../../../firebase/admin';
 import { useToast } from '../../../components';
+import { githubAvatar } from '../../../content/avatar';
 import { FormSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
@@ -59,11 +60,7 @@ const ProfileSection = () => {
       () => { setLoaded(true); toast.error('Failed to load profile'); },
     );
     const unsubC = subscribeContact(setContact,   () => toast.error('Failed to load contact'));
-    const unsubS = subscribeSocial((list) => {
-      const gh = list.find(s => (s.key || '').toLowerCase() === 'github');
-      const user = gh?.url ? gh.url.replace(/\/$/, '').split('/').pop() : null;
-      setGithub(user ? `https://github.com/${user}.png` : null);
-    }, () => {});
+    const unsubS = subscribeSocial(list => setGithub(githubAvatar(list)), () => {});
     return () => { unsubP(); unsubC(); unsubS(); };
   }, [toast]);
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '../../../components';
+import TagInput from './TagInput';
 import formStyles from '../AdminForms.module.css';
 
 const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
@@ -8,7 +9,7 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
     const f = {};
     fields.forEach(({ key, type, default: fallback }) => {
       if (type === 'toggle') f[key] = initial[key] ?? fallback ?? false;
-      else if (type === 'tags') f[key] = (initial[key] ?? []).join(', ');
+      else if (type === 'tags') f[key] = (initial[key] ?? []).map(v => (typeof v === 'string' ? v : v?.name ?? '')).filter(Boolean);
       else f[key] = String(initial[key] ?? '');
     });
     return f;
@@ -29,7 +30,7 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
       if (type === 'toggle') {
         payload[key] = Boolean(form[key]);
       } else if (type === 'tags') {
-        payload[key] = form[key].split(',').map(s => s.trim()).filter(Boolean);
+        payload[key] = form[key];
       } else if (type === 'number') {
         payload[key] = form[key] !== '' ? Number(form[key]) : undefined;
       } else {
@@ -74,6 +75,8 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
                 onChange={e => set(f.key, e.target.value)}
                 rows={4}
               />
+            ) : f.type === 'tags' ? (
+              <TagInput id={`rf-${f.key}`} value={form[f.key]} onChange={v => set(f.key, v)} placeholder={f.placeholder ?? 'Add a tag, e.g. React'} hint={false} />
             ) : (
               <input
                 id={`rf-${f.key}`}
@@ -81,7 +84,7 @@ const RecordForm = ({ fields, initial = {}, onSave, onCancel, saving }) => {
                 required={f.required}
                 value={form[f.key]}
                 onChange={e => set(f.key, e.target.value)}
-                placeholder={f.placeholder ?? (f.type === 'tags' ? 'Comma-separated…' : undefined)}
+                placeholder={f.placeholder}
               />
             )}
           </div>

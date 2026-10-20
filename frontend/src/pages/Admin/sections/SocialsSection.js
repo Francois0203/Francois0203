@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MdAdd, MdDeleteOutline } from 'react-icons/md';
 import { subscribeSocial, updateSocial } from '../../../firebase/admin';
 import { useToast, SearchableDropdown, KebabMenu } from '../../../components';
 import { SortableList, DragHandle, withIds, stripIds } from './Sortable';
 import { PLATFORMS } from '../../../components/SocialIcon';
+import useUnsaved from './useUnsaved';
 import { ListSkeleton } from './Skeletons';
 import formStyles from '../AdminForms.module.css';
 
@@ -19,38 +20,51 @@ const SocialsSection = () => {
   const [loaded, setLoaded] = useState(false);
   const [newKey, setNewKey]       = useState('github');
   const [newUrl, setNewUrl]       = useState('');
+  const [dirty, setDirty]         = useState(false);
+  const dirtyRef = useRef(false);
+  useUnsaved(dirty);
+
+  // Every edit goes through here, so the save bar knows there is something to save.
+  const change = (updater) => {
+    dirtyRef.current = true;
+    setDirty(true);
+    setPlatforms(updater);
+  };
 
   useEffect(() => {
+    // An incoming snapshot never overwrites edits that are not saved yet.
     return subscribeSocial(
-      data => { setPlatforms(withIds(data)); setLoaded(true); },
+      data => { if (!dirtyRef.current) setPlatforms(withIds(data)); setLoaded(true); },
       () => { setLoaded(true); toast.error('Failed to load socials'); },
     );
   }, [toast]);
 
   const set = (i, field, value) =>
-    setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p));
+    change(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p));
 
   // Keep `platform` the same as `key`.
   const labelOf = (key) => platformOption(key)?.label ?? key;
   const setPlatform = (i, key) =>
-    setPlatforms(prev => prev.map((p, idx) => idx === i ? { ...p, key, platform: labelOf(key) } : p));
+    change(prev => prev.map((p, idx) => idx === i ? { ...p, key, platform: labelOf(key) } : p));
 
   const add = () => {
     const url = newUrl.trim();
     if (!url) return;
-    setPlatforms(prev => [...prev, ...withIds([{ key: newKey, platform: labelOf(newKey), url }])]);
+    change(prev => [...prev, ...withIds([{ key: newKey, platform: labelOf(newKey), url }])]);
     setNewUrl('');
   };
 
   const remove = (i) => {
     if (!window.confirm('Remove this social link?')) return;
-    setPlatforms(prev => prev.filter((_, idx) => idx !== i));
+    change(prev => prev.filter((_, idx) => idx !== i));
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
       await updateSocial(stripIds(platforms.filter(p => p.url?.trim())));
+      dirtyRef.current = false;
+      setDirty(false);
       toast.success('Social links updated');
     } catch {
       toast.error('Failed to save socials');
@@ -65,14 +79,14 @@ const SocialsSection = () => {
     <div>
       {platforms.length > 1 && (
         <p className={formStyles.meta} style={{ marginBottom: 'var(--spacing-md)' }}>
-          Drag to change the order they appear in, then save.
+          Drag to change the order they appear in.
         </p>
       )}
 
       <SortableList
         items={platforms}
         getId={p => p._id}
-        onReorder={setPlatforms}
+        onReorder={next => change(() => next)}
         itemClassName={formStyles.card}
       >
         {(p, i, handle) => (
@@ -147,7 +161,8 @@ const SocialsSection = () => {
       </div>
 
       <div className={formStyles.actions}>
-        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving}>
+        {dirty && <span className={formStyles.unsaved} role="status">Unsaved changes</span>}
+        <button type="submit" className="btn-save" onClick={handleSave} disabled={saving || !dirty}>
           {saving ? 'Saving…' : 'Save Socials'}
         </button>
       </div>
