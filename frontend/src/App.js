@@ -9,6 +9,7 @@ import { useTheme, useAnimations, scrollPageTo } from './hooks';
 import { markSeen } from './hooks/useReveal';
 import { ContentProvider } from './context/ContentContext';
 import { NAVIGATION_PAGES, fillOf } from './content/navigation';
+import { metaFor, absoluteUrl } from './content/seo';
 import styles from './App.module.css';
 
 const ScrollToTop = () => {
@@ -90,6 +91,27 @@ const useSelectionTone = () => {
   }, [pathname]);
 };
 
+// The build gives each route its own head; this keeps it right after in-app navigation.
+const setHeadTag = (selector, create, attr, value) => {
+  let tag = document.head.querySelector(selector);
+  if (value == null) { tag?.remove(); return; }
+  if (!tag) { tag = create(); document.head.appendChild(tag); }
+  tag.setAttribute(attr, value);
+};
+
+const usePageMeta = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const page = metaFor(pathname);
+    const url = page.noindex ? null : absoluteUrl(page.path);
+    document.title = page.title;
+    const meta = (key, name) => () => Object.assign(document.createElement('meta'), { [key]: name });
+    setHeadTag('meta[name="description"]', meta('name', 'description'), 'content', page.description ?? null);
+    setHeadTag('meta[name="robots"]', meta('name', 'robots'), 'content', page.noindex ? 'noindex, nofollow' : null);
+    setHeadTag('link[rel="canonical"]', () => Object.assign(document.createElement('link'), { rel: 'canonical' }), 'href', url);
+  }, [pathname]);
+};
+
 const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const links = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
@@ -118,6 +140,7 @@ const AppLayout = () => {
 const App = () => {
   useTheme();
   useAnimations();
+  usePageMeta();
 
   return (
     <ToastProvider>

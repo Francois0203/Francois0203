@@ -2,10 +2,21 @@
   "hosting": {
     "public": "frontend/dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "trailingSlash": false,
     "rewrites": [
+      { "source": "/bio", "destination": "/bio.html" },
+      { "source": "/projects", "destination": "/projects.html" },
+      { "source": "/connect", "destination": "/connect.html" },
+      { "source": "/admin", "destination": "/admin.html" }
+    ],
+    "headers": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/admin",
+        "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+      },
+      {
+        "source": "/admin.html",
+        "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
       }
     ]
   },
