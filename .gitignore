@@ -66,3 +66,9 @@ logs/
 # Misc
 .npmrc
 *.tgz
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
