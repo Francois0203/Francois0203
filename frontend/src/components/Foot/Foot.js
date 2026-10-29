@@ -61,7 +61,7 @@ const Foot = () => {
           </div>
         )}
 
-        <Playground items={[...new Set(tools)]} caption={t.stackCaption} />
+        {pathname === '/' && <Playground items={[...new Set(tools)]} caption={t.stackCaption} />}
 
         <div className={styles.strip}>
           <span className={styles.stripLabel}>Pages</span>
