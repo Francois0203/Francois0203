@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import useReveal from '../../hooks/useReveal';
@@ -254,6 +255,7 @@ const Connect = () => {
                     name="name"
                     type="text"
                     autoComplete="name"
+                    maxLength={100}
                     aria-label="Your name"
                     className={styles.blank}
                     style={{ '--w': `${Math.max(8, form.name.length + 1)}ch` }}
@@ -269,6 +271,7 @@ const Connect = () => {
                     name="email"
                     type="email"
                     autoComplete="email"
+                    maxLength={254}
                     aria-label="Your email"
                     className={styles.blank}
                     style={{ '--w': `${Math.max(14, form.email.length + 1)}ch` }}
@@ -286,6 +289,7 @@ const Connect = () => {
                   id="message"
                   name="message"
                   rows={6}
+                  maxLength={5000}
                   aria-label="Your message"
                   placeholder={t.letterPlaceholder}
                   className={styles.ruled}
@@ -296,6 +300,10 @@ const Connect = () => {
                   aria-describedby={shownError('message') ? 'message-error' : undefined}
                 />
                 {shownError('message') && <p className={styles.error} id="message-error">{shownError('message')}</p>}
+
+                <p className={styles.privacy}>
+                  {t.privacyNote} <Link to="/privacy">Privacy policy</Link>
+                </p>
 
                 <div className={styles.letterFoot}>
                   <p className={styles.signOff}>

@@ -29,6 +29,18 @@ export const PAGE_META = [
     title: 'Connect | Francois Meiring',
     description: 'Get in touch with Francois Meiring by letter, or find him on LinkedIn and GitHub.',
   },
+  {
+    path: '/privacy',
+    file: 'privacy.html',
+    title: 'Privacy policy | Francois Meiring',
+    description: 'What this site collects, why, how long it is kept, and your rights under POPIA and the GDPR.',
+  },
+  {
+    path: '/terms',
+    file: 'terms.html',
+    title: 'Terms of use | Francois Meiring',
+    description: 'The terms for using this site: ownership, trademarks, acceptable use, liability and governing law.',
+  },
 ];
 
 // Pages that must never be indexed. They still get their own file so the noindex is in the HTML.

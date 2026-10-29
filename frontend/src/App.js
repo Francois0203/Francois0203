@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Routes, Route, Outlet, useLocation, useNavigationType } from 'react-router-dom';
-import { NotFound, Loading, Connect, Projects, Bio, Home, Admin } from './pages';
+import { NotFound, Loading, Connect, Projects, Bio, Home, Admin, Privacy, Terms } from './pages';
 import { ToastProvider } from './components';
 import Nav from './components/Nav';
 import Foot from './components/Foot';
@@ -155,6 +155,8 @@ const App = () => {
             <Route path="bio" element={<Bio />} />
             <Route path="projects" element={<Projects />} />
             <Route path="connect" element={<Connect />} />
+            <Route path="privacy" element={<Privacy />} />
+            <Route path="terms" element={<Terms />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

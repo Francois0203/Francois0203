@@ -127,6 +127,17 @@
     color: var(--ink-2);
 }
 
+.legal {
+    display: inline-flex;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    text-transform: uppercase;
+}
+
+.legal a { color: var(--ink-2); }
+.legal a:hover { color: var(--ink); }
+
 .next,
 .toTop {
     display: inline-flex;

@@ -8,3 +8,5 @@ export const Projects = lazy(() => import('./Projects'));
 export const Connect  = lazy(() => import('./Connect'));
 export const NotFound = lazy(() => import('./Not Found'));
 export const Admin    = lazy(() => import('./Admin'));
+export const Privacy  = lazy(() => import('./Legal').then(m => ({ default: m.Privacy })));
+export const Terms    = lazy(() => import('./Legal').then(m => ({ default: m.Terms })));

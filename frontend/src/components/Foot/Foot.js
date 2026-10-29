@@ -76,7 +76,11 @@ const Foot = () => {
         </div>
 
         <div className={styles.fine}>
-          <p className={styles.sign}><Monogram size={28} /> {name}, {year}</p>
+          <p className={styles.sign}><Monogram size={28} /> &copy; {year} {name}</p>
+          <nav className={styles.legal} aria-label="Legal">
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
+          </nav>
           {next && (
             <Link to={next.to} className={styles.next}>
               {t.nextLabel}: {next.label}

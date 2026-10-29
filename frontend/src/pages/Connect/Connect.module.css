@@ -314,6 +314,18 @@ a.wayValue:hover { color: var(--c-orange-ink); }
     color: var(--tone-error);
 }
 
+.privacy {
+    margin: 0 0 0.75rem;
+    font-size: var(--text-xs);
+    color: var(--ink-3);
+}
+
+.privacy a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .letterFoot {
     display: flex;
     align-items: flex-end;

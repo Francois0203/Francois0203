@@ -129,7 +129,7 @@ exports.onContactMessage = onDocumentCreated(
         text: buildText(payload),
         html: buildHtml(payload),
       });
-      logger.info('Contact notification sent', { id: event.params.id, from: payload.email });
+      logger.info('Contact notification sent', { id: event.params.id });
     } catch (err) {
       logger.error('Failed to send contact notification', {
         id: event.params.id,

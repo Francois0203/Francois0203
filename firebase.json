@@ -7,9 +7,25 @@
       { "source": "/bio", "destination": "/bio.html" },
       { "source": "/projects", "destination": "/projects.html" },
       { "source": "/connect", "destination": "/connect.html" },
+      { "source": "/privacy", "destination": "/privacy.html" },
+      { "source": "/terms", "destination": "/terms.html" },
       { "source": "/admin", "destination": "/admin.html" }
     ],
     "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://francois-portfolio.web.app https://francois-portfolio.firebaseapp.com; base-uri 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests" },
+          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+          { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()" }
+        ]
+      },
+      {
+        "source": "/assets/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      },
       {
         "source": "/admin",
         "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]

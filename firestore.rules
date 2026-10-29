@@ -23,8 +23,22 @@ service cloud.firestore {
     // Client sites, synced from the FM-Web-Studio org by syncStudioSites.mjs.
     match /studioSites/{doc}    { allow read: if true; allow write: if isAdmin(); }
 
+    // A letter from the Connect form, exactly as frontend/src/firebase/contact.js writes it.
+    // expireAt feeds the TTL policy that deletes it; the window allows for a visitor's clock being off.
+    function isValidContact(d) {
+      return d.keys().hasOnly(['name', 'email', 'message', 'createdAt', 'expireAt'])
+        && d.keys().hasAll(['name', 'email', 'message', 'createdAt', 'expireAt'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 100
+        && d.email is string && d.email.size() <= 254 && d.email.matches('^[^ @]+@[^ @]+[.][^ @]+$')
+        && d.message is string && d.message.size() > 0 && d.message.size() <= 5000
+        && d.createdAt == request.time
+        && d.expireAt is timestamp
+        && d.expireAt > request.time + duration.value(300, 'd')
+        && d.expireAt < request.time + duration.value(400, 'd');
+    }
+
     // Contact form: visitors may submit; admin may read and delete.
-    match /contacts/{doc}       { allow create: if true; allow read, delete: if isAdmin(); allow update: if false; }
+    match /contacts/{doc}       { allow create: if isValidContact(request.resource.data); allow read, delete: if isAdmin(); allow update: if false; }
 
     // Everything else is denied by default.
     match /{document=**}        { allow read, write: if false; }

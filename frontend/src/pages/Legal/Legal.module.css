@@ -1,0 +1,72 @@
+.page {
+    position: relative;
+    max-width: calc(var(--measure) + 2 * var(--gutter));
+    margin: 0 auto;
+    padding: calc(72px + clamp(2rem, 6vh, 4rem)) var(--gutter) var(--block);
+}
+
+.head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--rule-strong);
+}
+
+.title {
+    margin: 0;
+    font-size: var(--display-lg);
+}
+
+.intro {
+    margin: 0;
+    font-size: var(--text-lg);
+    color: var(--ink-2);
+}
+
+.section {
+    padding-top: 2rem;
+}
+
+.heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0 0 0.75rem;
+    font-size: var(--display-sm);
+}
+
+.num {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    color: var(--ink-3);
+}
+
+.section p,
+.section li {
+    line-height: 1.65;
+    color: var(--ink-2);
+}
+
+.section p { margin: 0 0 0.85rem; }
+
+.section ul {
+    margin: 0 0 0.85rem;
+    padding-left: 1.25rem;
+}
+
+.section li + li { margin-top: 0.4rem; }
+
+.page a {
+    color: var(--accent-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.other {
+    margin: 2.5rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule-strong);
+    color: var(--ink-2);
+}

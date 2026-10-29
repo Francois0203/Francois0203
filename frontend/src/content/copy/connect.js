@@ -13,6 +13,7 @@ export const CONNECT_FIELDS = [
   { key: 'sentTitle', label: 'Sent - title', type: 'text', default: 'It is on its way.' },
   { key: 'sentText', label: 'Sent - text', type: 'textarea', default: 'I read everything that comes through here, and I answer.' },
   { key: 'sentAgain', label: 'Sent - button', type: 'text', default: 'Write another' },
+  { key: 'privacyNote', label: 'Letter - privacy note (the policy link follows it)', type: 'text', default: 'I use what you send only to reply, and it is deleted after 12 months.' },
   { key: 'sendFailed', label: 'Error when sending fails', type: 'text', default: 'That did not send. Try again, or email me directly.' },
   { key: 'nameMissing', label: 'Error - no name', type: 'text', default: 'Your name, so I know who I am replying to.' },
   { key: 'emailMissing', label: 'Error - no email', type: 'text', default: 'An address I can reach you at.' },
