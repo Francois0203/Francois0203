@@ -114,7 +114,7 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     height: 2.5rem;
     border-radius: 50%;
     background: var(--ground);
-    box-shadow: 0 0 0 1.5px var(--ink);
+    box-shadow: 0 0 0 1px var(--rule-strong);
     color: var(--ink);
     transition: transform var(--t) var(--spring), background-color var(--t-fast) var(--ease);
 }
@@ -233,7 +233,7 @@ a.cVal:hover { color: var(--c-blue-ink); text-decoration: underline; }
     height: 14px;
     border-radius: 50%;
     background: var(--tone);
-    box-shadow: 0 0 0 1.5px var(--ink);
+    box-shadow: 0 0 0 1px var(--rule-strong);
 }
 
 .jobHead {

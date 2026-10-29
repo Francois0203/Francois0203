@@ -29,7 +29,7 @@
     padding: 0.3rem;
     border-radius: 6px;
     background: var(--surface);
-    box-shadow: 0 0 0 1.5px var(--ink), 3px 4px 0 1.5px var(--ink);
+    box-shadow: var(--lift-hover);
     animation: menuIn 160ms var(--ease) both;
 }
 

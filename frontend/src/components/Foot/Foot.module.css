@@ -100,7 +100,7 @@
     height: 8px;
     border-radius: 50%;
     background: var(--tab);
-    box-shadow: 0 0 0 1.5px var(--ink);
+    box-shadow: 0 0 0 1px var(--rule-strong);
 }
 
 .page:hover { color: var(--ink); }

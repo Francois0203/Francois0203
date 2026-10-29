@@ -91,6 +91,7 @@ const RecordSection = ({ title, fields, subscribe, onCreate, onUpdate, onDelete,
             <button type="button" className={formStyles.listRowContent} onClick={() => setModal({ mode: 'edit', record: rec })}>
               {renderSummary(rec)}
               {rec.showOnCv === false && <span className={formStyles.notOnCv}>not on CV</span>}
+              {rec.showOnHome === false && <span className={formStyles.notOnCv}>not on home</span>}
             </button>
             <KebabMenu
               ariaLabel={`Options for ${title.toLowerCase()} entry ${i + 1}`}

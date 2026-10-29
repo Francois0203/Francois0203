@@ -14,30 +14,20 @@ import Credentials, { toCredential } from '../../components/Credentials';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
-import Portrait from '../../components/Portrait';
+import ToyBox from '../../components/ToyBox';
+import { iconFor } from '../../content/toys';
 import Story from '../../components/Story';
-import RunsOn from '../../components/RunsOn';
 import Curtain from '../../components/Curtain';
 import Showcase, { ShowcaseSkeleton } from '../../components/Showcase';
 import Skeleton, { Bone } from '../../components/Skeleton';
 import styles from './Home.module.css';
 
-
 const itemLabel = (s) => (typeof s === 'string' ? s : s?.name ?? s?.title ?? String(s));
 
-const flattenSkills = (skills) => {
-  if (!skills) return [];
-  if (Array.isArray(skills.categories))
-    return skills.categories.flatMap(c => (c.items ?? []).map(i => ({ label: itemLabel(i), group: c.name })));
-  if (Array.isArray(skills.items))
-    return skills.items.map(i => ({ label: itemLabel(i), group: null }));
-  return Object.entries(skills)
-    .filter(([, v]) => Array.isArray(v))
-    .flatMap(([name, arr]) => arr.map(i => ({ label: itemLabel(i), group: name })));
-};
+const onHome = (r) => r?.showOnHome !== false;
 
 const toChapters = ({ experience = [], education = [] }) => {
-  const ex = experience.map(e => ({
+  const ex = experience.filter(onHome).map(e => ({
     id: `exp-${e.id}`,
     place: e.company,
     what: e.role,
@@ -51,7 +41,7 @@ const toChapters = ({ experience = [], education = [] }) => {
     key: startKey(e),
   }));
 
-  const ed = education.map(e => ({
+  const ed = education.filter(onHome).map(e => ({
     id: `edu-${e.id}`,
     place: e.institution,
     what: [e.degree, e.field].filter(Boolean).join(', '),
@@ -75,6 +65,8 @@ const toChapters = ({ experience = [], education = [] }) => {
       return a.key === null ? -1 : 1;
     });
 };
+
+const TOY_TONES = ['yellow', 'green', 'pink', 'orange', 'blue'];
 
 const shortCert = (name) => name.replace(/^AWS Certified\s+/i, '');
 
@@ -104,12 +96,6 @@ const Home = () => {
     .sort((a, b) => a.order - b.order)[0], [certifications]);
 
   const role = (data?.experience ?? []).find(isCurrent);
-  const study = (data?.education ?? []).find(isCurrent);
-
-  const tools = useMemo(() => {
-    const all = flattenSkills(data?.skills).map(s => s.label);
-    return [...new Set(all)].slice(0, 16);
-  }, [data]);
 
   const chapters = useMemo(() => {
     const list = toChapters(data ?? {});
@@ -130,12 +116,13 @@ const Home = () => {
     return list;
   }, [data, nextCert, certifications, t.storyNextKind, t.storyNextNote, badges.statusBooked, badges.statusStudying]);
 
-  const facts = [
-    role && { key: 'now at', text: role.company, live: true, depth: 1.4 },
-    contact.location && { key: 'based', text: contact.location, depth: 0.8 },
-    nextCert && { key: nextCert.code.toLowerCase(), text: nextCert.status === 'booked' ? badges.statusBooked : badges.statusStudying, depth: 1.8 },
-    study && { key: 'studying', text: [study.degree, study.field].filter(Boolean).join(' ') || study.institution, depth: 1.1 },
-  ].filter(Boolean);
+  const toys = useMemo(() => {
+    const raw = data?.interests;
+    const interests = (Array.isArray(raw) ? raw : raw?.items ?? []).map(itemLabel).filter(Boolean);
+    const words = String(t.toyWords ?? '').split(',').map(w => w.trim()).filter(Boolean);
+    return [...new Set([...interests, ...words])]
+      .map((label, i) => ({ label, Icon: iconFor(label), tone: TOY_TONES[i % TOY_TONES.length] }));
+  }, [data, t.toyWords]);
 
   const chip = contact.availability?.status === 'open' ? t.availabilityLabel : (role ? String(role.role).toLowerCase() : 'devops and software engineering');
 
@@ -164,17 +151,10 @@ const Home = () => {
           </div>
         </div>
 
-        <div className={styles.heroPortrait} data-rise style={{ '--i': 2, '--rise': '28px' }}>
-          <Portrait src={photo} name={name} facts={facts} loading={loading} />
+        <div className={styles.heroToys}>
+          {!loading && <ToyBox photo={photo} name={name} toys={toys} hint={t.toyHint} hintTouch={t.toyHintTouch} />}
         </div>
       </section>
-
-      {/* Tools */}
-      {tools.length > 0 && (
-        <section className={`${styles.block} ${styles.toolsBlock}`}>
-          <RunsOn label={t.runsOnTitle} items={tools} />
-        </section>
-      )}
 
       {/* 2. How he got here */}
       {loading && (
@@ -197,11 +177,19 @@ const Home = () => {
 
       {chapters.length > 0 && (
         <section id="story" className={`${styles.block} ${styles.story}`}>
-          <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
-            <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
-            <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.storyLede}</p>
-          </header>
-          <Story chapters={chapters} photo={photo} name={name} />
+          <Story
+            chapters={chapters}
+            photo={photo}
+            name={name}
+            nowLabel={t.storyNow}
+            kinds={{ experience: t.storyKindWork, education: t.storyKindStudy }}
+            head={(
+              <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
+                <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
+                <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.storyLede}</p>
+              </header>
+            )}
+          />
         </section>
       )}
 

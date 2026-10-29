@@ -93,7 +93,7 @@
     flex: none;
     border-radius: 50%;
     background: var(--tab);
-    box-shadow: 0 0 0 1.5px var(--ink);
+    box-shadow: 0 0 0 1px var(--rule-strong);
     transition: transform var(--t) var(--spring);
 }
 
@@ -104,7 +104,7 @@
 .active:hover {
     background: var(--tab);
     color: var(--tab-on);
-    box-shadow: 0 0 0 1.5px var(--ink), 2px 3px 0 1.5px var(--ink);
+    box-shadow: var(--lift);
 }
 
 .active .tabDot { background: var(--tab-on); box-shadow: none; }
@@ -126,10 +126,10 @@
     width: 2.5rem;
     height: 2.5rem;
     padding: 0;
-    border: 1.5px solid var(--ink);
+    border: 0;
     border-radius: var(--r-control);
     background: var(--surface);
-    box-shadow: 2px 2px 0 var(--ink);
+    box-shadow: var(--lift);
     color: var(--ink);
     cursor: pointer;
     transition:
@@ -140,9 +140,9 @@
 
 .icon svg { width: 17px; height: 17px; }
 .icon:hover,
-.menu:hover { background: var(--surface-2); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+.menu:hover { background: var(--surface-2); transform: translateY(-1px); box-shadow: var(--lift-hover); }
 .icon:active,
-.menu:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.menu:active { transform: scale(0.95); box-shadow: var(--lift-press); }
 .iconOn,
 .iconOn:hover { background: var(--c-pink); color: #1f1f1f; }
 
@@ -246,7 +246,7 @@
     flex: none;
     border-radius: 50%;
     background: var(--tab);
-    box-shadow: 0 0 0 1.5px var(--ink);
+    box-shadow: 0 0 0 1px var(--rule-strong);
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     color: var(--tab-on);

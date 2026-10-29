@@ -24,7 +24,7 @@
 
 .fill,
 .line {
-    box-shadow: 0 0 0 1.5px var(--ink), 3px 4px 0 1.5px var(--ink);
+    box-shadow: var(--lift);
     transition:
         background-color var(--t-fast) var(--ease),
         color var(--t-fast) var(--ease),
@@ -33,10 +33,10 @@
 }
 
 .fill:hover,
-.line:hover { transform: translate(-1px, -2px); box-shadow: 0 0 0 1.5px var(--ink), 5px 6px 0 1.5px var(--ink); }
+.line:hover { transform: translateY(-2px); box-shadow: var(--lift-hover); }
 
 .fill:active,
-.line:active { transform: translate(3px, 4px); box-shadow: 0 0 0 1.5px var(--ink), 0 0 0 1.5px var(--ink); transition-duration: 80ms; }
+.line:active { transform: translateY(0) scale(0.97); box-shadow: var(--lift-press); transition-duration: 80ms; }
 
 .btn:disabled,
 .btn[aria-disabled='true'] { cursor: not-allowed; opacity: 0.45; transform: none; }

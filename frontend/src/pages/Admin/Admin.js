@@ -42,6 +42,7 @@ const EXPERIENCE_FIELDS = [
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'tags',        label: 'Tech tags',   type: 'tags'                      },
   { key: 'showOnCv',    label: 'Show on the printed CV', type: 'toggle', default: true, hint: 'Untick to keep it on the website but leave it off the CV.' },
+  { key: 'showOnHome',  label: 'Show on the home timeline', type: 'toggle', default: true, hint: 'Untick to keep it on the Bio page but leave it off the home page.' },
 ];
 
 const EDUCATION_FIELDS = [
@@ -53,6 +54,7 @@ const EDUCATION_FIELDS = [
   { key: 'description', label: 'Description', type: 'textarea'                  },
   { key: 'tags',        label: 'Tags',        type: 'tags'                      },
   { key: 'showOnCv',    label: 'Show on the printed CV', type: 'toggle', default: true, hint: 'Untick to keep it on the website but leave it off the CV.' },
+  { key: 'showOnHome',  label: 'Show on the home timeline', type: 'toggle', default: true, hint: 'Untick to keep it on the Bio page but leave it off the home page.' },
 ];
 
 const CERTIFICATION_FIELDS = [

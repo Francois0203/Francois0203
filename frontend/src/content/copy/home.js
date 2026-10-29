@@ -1,11 +1,16 @@
 export const HOME_FIELDS = [
   // Hero
-  { key: 'heroIntro', label: 'Hero - introduction', type: 'textarea', default: 'I am a DevOps engineer in Centurion. I look after the pipelines, containers and cloud that software runs on, and I build websites for small businesses.' },
+  { key: 'heroIntro', label: 'Hero - introduction', type: 'textarea', default: 'I am a DevOps engineer in Centurion. In plain words, I keep websites and apps running smoothly behind the scenes, and I build websites for small businesses.' },
   { key: 'heroCtaPrimary',   label: 'Hero - primary button', type: 'text', default: 'See my work' },
   { key: 'heroCtaSecondary', label: 'Hero - second button',  type: 'text', default: 'Get in touch' },
 
   // Only shown while the contact document's availability.status is 'open'.
   { key: 'availabilityLabel', label: 'Availability chip', type: 'text', default: 'open to part-time work' },
+
+  // Toy box around the photo. Interests come from the database; these words join them.
+  { key: 'toyWords',     label: 'Toy box - extra words (comma separated)', type: 'text', default: 'Websites, The cloud, Automation' },
+  { key: 'toyHint',      label: 'Toy box - hint (mouse)', type: 'text', default: 'Go on, grab one and throw it' },
+  { key: 'toyHintTouch', label: 'Toy box - hint (touch)', type: 'text', default: 'Tap to shake things up' },
 
   { key: 'runsOnTitle', label: 'Tools strip - label', type: 'text', default: 'day to day' },
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Skeleton, { Bone } from '../Skeleton';
+import { gsap, ScrollTrigger, useGSAP, motionOff } from '../../hooks/gsap';
 import styles from './Showcase.module.css';
 
 const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
@@ -160,12 +161,30 @@ export const ShowcaseSkeleton = ({ count = 2 }) => (
 );
 
 // Client websites as simple cards: what it is, who it is for, and one button to open it.
-const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => (
-  <ul className={styles.grid}>
-    {sites.map((site, i) => (
-      <Card key={site.id ?? i} site={site} tone={TONES[i % TONES.length]} visitLabel={visitLabel} />
-    ))}
-  </ul>
-);
+const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
+  const grid = useRef(null);
+
+  useGSAP(() => {
+    if (motionOff()) return;
+    const cards = gsap.utils.toArray(grid.current.children);
+    gsap.set(cards, { autoAlpha: 0, y: 70, rotation: (i) => (i % 2 ? 2.5 : -2.5) });
+    ScrollTrigger.batch(cards, {
+      start: 'top 88%',
+      once: true,
+      onEnter: (batch) => gsap.to(batch, {
+        autoAlpha: 1, y: 0, rotation: 0, duration: 0.9, stagger: 0.12, ease: 'back.out(1.4)',
+        clearProps: 'transform,opacity,visibility',
+      }),
+    });
+  }, { scope: grid, dependencies: [sites.length] });
+
+  return (
+    <ul ref={grid} className={styles.grid}>
+      {sites.map((site, i) => (
+        <Card key={site.id ?? i} site={site} tone={TONES[i % TONES.length]} visitLabel={visitLabel} />
+      ))}
+    </ul>
+  );
+};
 
 export default Showcase;

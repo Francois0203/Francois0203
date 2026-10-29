@@ -98,13 +98,13 @@
     flex-wrap: wrap;
 }
 
-.heroPortrait { min-width: 0; }
+.heroToys { min-width: 0; min-height: clamp(420px, 58vh, 560px); }
+
+@media (max-width: 960px) { .heroToys { min-height: clamp(400px, 105vw, 520px); } }
 
 /* 2. Story */
 
 .story { padding-bottom: 0; }
-
-.toolsBlock { padding-top: 0; }
 
 /* The story's shape while it loads: the portrait ring beside a chapter card. */
 .storyWait {

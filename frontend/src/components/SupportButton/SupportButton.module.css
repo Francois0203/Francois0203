@@ -13,7 +13,7 @@
     padding: 0 1.5rem 0 0.55rem;
     border-radius: var(--r-control);
     background: var(--surface);
-    box-shadow: 0 0 0 1.5px var(--ink), 4px 5px 0 0 var(--tone), 4px 5px 0 1.5px var(--ink);
+    box-shadow: var(--lift), 0 10px 26px -14px var(--tone);
     font-family: var(--font-display);
     font-size: var(--text-lg);
     font-weight: 600;
@@ -33,7 +33,7 @@
     flex: none;
     border-radius: 50%;
     background: var(--tone);
-    box-shadow: 0 0 0 1.5px var(--ink);
+    box-shadow: none;
 }
 
 .heart svg {
@@ -59,16 +59,16 @@
 .support:hover,
 .support:focus-visible {
     color: var(--ink);
-    transform: translate(-2px, -3px);
-    box-shadow: 0 0 0 1.5px var(--ink), 7px 9px 0 0 var(--tone), 7px 9px 0 1.5px var(--ink);
+    transform: translateY(-2px);
+    box-shadow: var(--lift-hover), 0 16px 34px -14px var(--tone);
 }
 
 .support:hover .heart svg { animation: beat 900ms var(--ease) infinite; }
 .support:hover .arrow { transform: translate(2px, -2px); }
 
 .support:active {
-    transform: translate(3px, 4px);
-    box-shadow: 0 0 0 1.5px var(--ink), 1px 1px 0 0 var(--tone), 1px 1px 0 1.5px var(--ink);
+    transform: scale(0.97);
+    box-shadow: var(--lift-press);
     transition-duration: 80ms;
 }
 
