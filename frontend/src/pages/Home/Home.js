@@ -9,6 +9,8 @@ import { githubAvatar } from '../../content/avatar';
 import { HOME_FIELDS } from '../../content/copy/home';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
+import { PHOTOS_FIELDS } from '../../content/copy/photos';
+import PhotoTable from '../../components/PhotoTable';
 import { periodOf, isCurrent, startKey } from '../../content/records';
 import Credentials, { toCredential } from '../../components/Credentials';
 import Button from '../../components/Button';
@@ -82,6 +84,7 @@ const Home = () => {
   const t = resolveGroup(HOME_FIELDS, overrides.home);
   const tp = resolveGroup(PROJECTS_FIELDS, overrides.projects);
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
+  const tph = resolveGroup(PHOTOS_FIELDS, overrides.photos);
 
   const personal = data?.personal ?? {};
   const contact = data?.contact ?? {};
@@ -96,6 +99,14 @@ const Home = () => {
     .sort((a, b) => a.order - b.order)[0], [certifications]);
 
   const role = (data?.experience ?? []).find(isCurrent);
+
+  const allPhotos = useMemo(() => data?.photos ?? [], [data]);
+  const homePhotos = useMemo(() => allPhotos.filter(p => p.onHome !== false && p.src && !p.chapter), [allPhotos]);
+  const photosFor = useMemo(() => {
+    const map = {};
+    allPhotos.filter(p => p.chapter && p.src).forEach((p) => { (map[p.chapter] ??= []).push(p); });
+    return map;
+  }, [allPhotos]);
 
   const chapters = useMemo(() => {
     const list = toChapters(data ?? {});
@@ -128,6 +139,7 @@ const Home = () => {
 
   const [heroRef, heroShown] = useReveal({ threshold: 0 });
   const [storyRef, storyShown] = useReveal({ threshold: 0.3 });
+  const [photosRef, photosShown] = useReveal({ threshold: 0.3 });
   const [workRef, workShown] = useReveal({ threshold: 0.3 });
   const [pathRef, pathShown] = useReveal({ threshold: 0.3 });
 
@@ -156,7 +168,28 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. How he got here */}
+      {/* 2. Off the clock */}
+      {homePhotos.length > 0 && (
+        <section id="photos" className={`${styles.block} ${styles.photos}`}>
+          <header ref={photosRef} className={styles.headRow} data-shown={photosShown ? '' : undefined}>
+            <div className={styles.head}>
+              <Headline text={tph.homeTitle} tone="orange" className={styles.headTitle} />
+              <p className={styles.lede} data-rise style={{ '--i': 4 }}>
+                {tph.homeLede} <span className={styles.hintFine}>{tph.homeHint}</span><span className={styles.hintTouch}>{tph.homeHintTouch}</span>
+              </p>
+            </div>
+            <div data-rise style={{ '--i': 6 }}>
+              <Button as={Link} to="/bio#interests" variant="text" arrow>{tph.homeMore}</Button>
+            </div>
+          </header>
+          <PhotoTable
+            photos={homePhotos}
+            labels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
+          />
+        </section>
+      )}
+
+      {/* 3. How he got here */}
       {loading && (
         <section className={`${styles.block} ${styles.story}`}>
           <header className={styles.head} data-shown="">
@@ -183,6 +216,9 @@ const Home = () => {
             name={name}
             nowLabel={t.storyNow}
             kinds={{ experience: t.storyKindWork, education: t.storyKindStudy }}
+            photosFor={photosFor}
+            photosLabel={tph.storyPhotos}
+            viewerLabels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
             head={(
               <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
                 <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
@@ -196,7 +232,7 @@ const Home = () => {
       {/* Interval */}
       <Curtain label={t.curtainLabel} />
 
-      {/* 3. What he has built */}
+      {/* 4. What he has built */}
       <section id="work" className={styles.block}>
         <header ref={workRef} className={styles.headRow} data-shown={workShown ? '' : undefined}>
           <p className={styles.lede} data-rise style={{ '--i': 1 }}>{t.workLede}</p>
@@ -211,7 +247,7 @@ const Home = () => {
             : <Showcase sites={sites} visitLabel={tp.visitLabel} />}
       </section>
 
-      {/* 4. What is next */}
+      {/* 5. What is next */}
       {certifications.length > 0 && (
         <section id="certifications" className={styles.block}>
           <header ref={pathRef} className={styles.head} data-shown={pathShown ? '' : undefined}>

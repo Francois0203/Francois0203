@@ -18,6 +18,8 @@ import Headline from '../../components/Headline';
 import SocialIcon from '../../components/SocialIcon';
 import Drift from '../../components/Drift';
 import Credentials from '../../components/Credentials';
+import Gallery from '../../components/Gallery';
+import { PHOTOS_FIELDS } from '../../content/copy/photos';
 import styles from './Bio.module.css';
 
 
@@ -117,6 +119,8 @@ const Bio = () => {
   const { overrides } = useSiteCopy();
   const t = resolveGroup(BIO_FIELDS, overrides.bio);
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
+  const tph = resolveGroup(PHOTOS_FIELDS, overrides.photos);
+  const photos = useMemo(() => (data?.photos ?? []).filter(p => p.src), [data]);
 
   const personal = data?.personal ?? {};
   const contact = data?.contact ?? {};
@@ -157,8 +161,9 @@ const Bio = () => {
 
   // Builds the PDF from the data already on the page. A half-loaded CV is worse than none.
   const downloadCv = async () => {
-    if (data?.failed?.length) {
-      toast.error(`${t.cvIncomplete} (${data.failed.join(', ')})`);
+    const missing = (data?.failed ?? []).filter(k => k !== 'photos');
+    if (missing.length) {
+      toast.error(`${t.cvIncomplete} (${missing.join(', ')})`);
       return;
     }
     setCvBusy(true);
@@ -191,7 +196,7 @@ const Bio = () => {
     education.length > 0 && { id: 'education', label: t.educationHeading },
     certifications.length > 0 && { id: 'certifications', label: t.certificationsHeading },
     skills.length > 0 && { id: 'skills', label: t.skillsHeading },
-    (interests.length > 0 || languages.length > 0) && { id: 'interests', label: t.interestsHeading },
+    (interests.length > 0 || languages.length > 0 || photos.length > 0) && { id: 'interests', label: t.interestsHeading },
   ].filter(Boolean);
 
   const [headRef, headShown] = useReveal({ threshold: 0 });
@@ -355,8 +360,14 @@ const Bio = () => {
             </Section>
           )}
 
-          {(interests.length > 0 || languages.length > 0) && (
+          {(interests.length > 0 || languages.length > 0 || photos.length > 0) && (
             <Section id="interests" title={t.interestsHeading} tone="blue">
+              {photos.length > 0 && (
+                <>
+                  <p className={styles.galleryLede}>{tph.bioLede}</p>
+                  <Gallery photos={photos} labels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }} />
+                </>
+              )}
               <ul className={styles.chips}>
                 {interests.map(n => <li key={n}><Chip>{n}</Chip></li>)}
               </ul>

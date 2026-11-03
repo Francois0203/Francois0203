@@ -22,6 +22,8 @@ service cloud.firestore {
     match /githubProjects/{doc} { allow read: if true; allow write: if isAdmin(); }
     // Client sites, synced from the FM-Web-Studio org by syncStudioSites.mjs.
     match /studioSites/{doc}    { allow read: if true; allow write: if isAdmin(); }
+    // Photo gallery; the image files live in Storage under photos/.
+    match /photos/{doc}         { allow read: if true; allow write: if isAdmin(); }
 
     // A letter from the Connect form, exactly as frontend/src/firebase/contact.js writes it.
     // expireAt feeds the TTL policy that deletes it; the window allows for a visitor's clock being off.

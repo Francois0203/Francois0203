@@ -141,3 +141,28 @@
     }
 }
 
+
+/* Off the clock */
+
+.photos { padding-bottom: clamp(1rem, 4vh, 3rem); }
+
+.photos .headRow { margin-bottom: clamp(1rem, 3vw, 2rem); }
+
+.photos .head { margin-bottom: 0; }
+
+.hintFine,
+.hintTouch {
+    display: block;
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    color: var(--ink-3);
+    white-space: nowrap;
+}
+
+.hintTouch { display: none; }
+
+@media (hover: none), (pointer: coarse), (max-width: 759px) {
+    .hintFine { display: none; }
+    .hintTouch { display: block; }
+}

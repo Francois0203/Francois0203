@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaGithub } from 'react-icons/fa';
 import {
   MdPerson, MdBadge, MdEditNote, MdBuild, MdWork, MdSchool, MdFavorite,
-  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdLogout, MdVerified, MdPublic,
+  MdShare, MdVolunteerActivism, MdMailOutline, MdMenu, MdHome, MdLogout, MdVerified, MdPublic, MdPhotoLibrary,
 } from 'react-icons/md';
 import useAuth from '../../hooks/useAuth';
 import useMomentumScroll from '../../hooks/useMomentumScroll';
@@ -20,6 +20,7 @@ import ProfileSection         from './sections/ProfileSection';
 import PersonalDetailsSection from './sections/PersonalDetailsSection';
 import SkillsSection          from './sections/SkillsSection';
 import InterestsSection from './sections/InterestsSection';
+import PhotosSection    from './sections/PhotosSection';
 import SocialsSection   from './sections/SocialsSection';
 import RecordSection    from './sections/RecordSection';
 import GitHubSection    from './sections/GitHubSection';
@@ -80,6 +81,7 @@ const SECTIONS = [
   { id: 'experience', group: 'Content',  tone: 'green',  title: 'Experience',        desc: 'Jobs. The CV always lists them newest first.', icon: <MdWork /> },
   { id: 'education',  group: 'Content',  tone: 'orange', title: 'Education',         desc: 'Degrees and schooling.', icon: <MdSchool /> },
   { id: 'certifications', group: 'Content', tone: 'pink', title: 'Certifications',   desc: 'The AWS path and other certificates.', icon: <MdVerified /> },
+  { id: 'photos',     group: 'Content',  tone: 'yellow', title: 'Photos',            desc: 'Pictures for the home page, the story and the Bio page.', icon: <MdPhotoLibrary /> },
   { id: 'interests',  group: 'Content',  tone: 'orange', title: 'Interests',         desc: 'Things you do outside work.', icon: <MdFavorite /> },
   { id: 'socials',    group: 'Content',  tone: 'blue',   title: 'Social Links',      desc: 'Profiles linked across the site.', icon: <MdShare /> },
   { id: 'donation',   group: 'Content',  tone: 'yellow', title: 'Donation',          desc: 'The support link on the Connect page.', icon: <MdVolunteerActivism /> },
@@ -188,6 +190,7 @@ const Admin = () => {
       case 'copy':      return <SiteCopySection />;
       case 'skills':    return <SkillsSection />;
       case 'interests': return <InterestsSection />;
+      case 'photos':    return <PhotosSection />;
       case 'socials':   return <SocialsSection />;
       case 'donation':  return <DonationSection />;
       case 'studio':    return <StudioSection />;

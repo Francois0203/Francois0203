@@ -4,6 +4,7 @@ import { PROJECTS_FIELDS } from './projects';
 import { CONNECT_FIELDS }  from './connect';
 import { FOOTER_FIELDS }   from './footer';
 import { CREDENTIALS_FIELDS } from './credentials';
+import { PHOTOS_FIELDS }   from './photos';
 
 export const COPY_SCHEMA = [
   { key: 'home',     label: 'Home',     fields: HOME_FIELDS },
@@ -13,6 +14,7 @@ export const COPY_SCHEMA = [
   // Not pages: the footer and the badges appear on several.
   { key: 'footer',   label: 'Footer',   fields: FOOTER_FIELDS },
   { key: 'credentials', label: 'Certifications', fields: CREDENTIALS_FIELDS },
+  { key: 'photos',   label: 'Photos',   fields: PHOTOS_FIELDS },
 ];
 
 export { resolveGroup } from './resolve';

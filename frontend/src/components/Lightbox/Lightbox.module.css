@@ -1,0 +1,129 @@
+.scrim {
+    --scrim: 1;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 4.5rem 1rem 1.5rem;
+    background: rgba(18, 17, 16, calc(0.92 * var(--scrim)));
+    backdrop-filter: blur(calc(14px * var(--scrim)));
+    -webkit-backdrop-filter: blur(calc(14px * var(--scrim)));
+    color: #f3efea;
+    overscroll-behavior: contain;
+}
+
+.frame {
+    position: relative;
+    flex: none;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--tint);
+    box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.8);
+    touch-action: none;
+    cursor: grab;
+    will-change: transform;
+}
+
+.frame:active { cursor: grabbing; }
+
+.thumb,
+.full {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.thumb { filter: blur(8px); transform: scale(1.04); }
+
+.full {
+    opacity: 0;
+    transition: opacity 420ms var(--ease);
+}
+
+.full[data-loaded] { opacity: 1; }
+
+.text {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: min(100%, 760px);
+}
+
+.caption {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+}
+
+.title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--display-sm);
+    font-weight: 600;
+    letter-spacing: var(--track-display);
+}
+
+.meta,
+.count {
+    margin: 0.3rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    color: rgba(243, 239, 234, 0.6);
+}
+
+.note {
+    margin: 0.6rem auto 0;
+    max-width: 52ch;
+    font-size: var(--text-md);
+    color: rgba(243, 239, 234, 0.82);
+}
+
+.close,
+.nav {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 1px solid rgba(243, 239, 234, 0.22);
+    border-radius: 50%;
+    background: rgba(243, 239, 234, 0.08);
+    color: inherit;
+    cursor: pointer;
+    transition: background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+
+.close:hover,
+.nav:hover { background: rgba(243, 239, 234, 0.18); }
+
+.close:active,
+.nav:active { transform: scale(0.92); }
+
+.close:focus-visible,
+.nav:focus-visible { outline: 2px solid var(--c-yellow); outline-offset: 3px; }
+
+.close svg,
+.nav svg {
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}

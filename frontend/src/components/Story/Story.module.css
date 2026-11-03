@@ -93,6 +93,17 @@
 
 .photo img { width: 100%; height: 100%; object-fit: cover; }
 
+.photo .scene {
+    position: absolute;
+    inset: 0;
+    background: var(--tint);
+    animation: sceneIn 900ms var(--ease) both;
+}
+
+@keyframes sceneIn {
+    from { opacity: 0; transform: scale(1.18); filter: blur(10px); }
+}
+
 .initials {
     display: grid;
     place-items: center;
@@ -230,7 +241,7 @@
 .chapter {
     display: flex;
     align-items: center;
-    min-height: calc(var(--screen) * 0.8);
+    min-height: calc(var(--screen) * 0.62);
 }
 
 .chapterInner {
@@ -239,7 +250,7 @@
     background: var(--surface);
     box-shadow: var(--card-shadow);
     border-left: 6px solid var(--rule);
-    opacity: 0.35;
+    opacity: 0.5;
     transform: translateX(10px);
     transition:
         opacity 500ms var(--ease),
@@ -426,7 +437,7 @@
     .count { order: 3; margin-left: auto; white-space: nowrap; }
 
     .chapters { padding: 2rem 0 0; }
-    .chapter { min-height: calc(var(--screen) * 0.7); }
+    .chapter { min-height: calc(var(--screen) * 0.6); }
     .chapterInner { transform: none; }
 }
 
@@ -436,3 +447,57 @@
     .bar::before { transition: none; transform: none; }
     .photo { transform: none; }
 }
+
+/* Photos from this stop */
+
+.shots {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 1.25rem;
+}
+
+.shotsLabel {
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    color: var(--ink-3);
+    white-space: nowrap;
+}
+
+.shots ul {
+    display: flex;
+    margin: 0;
+    padding: 0 0 0 0.5rem;
+    list-style: none;
+}
+
+.shots li + li { margin-left: -0.6rem; }
+
+.shot {
+    display: block;
+    width: 3.6rem;
+    height: 3.6rem;
+    padding: 0;
+    overflow: hidden;
+    border: 3px solid var(--surface);
+    border-radius: 12px;
+    background: var(--tint);
+    box-shadow: var(--lift);
+    cursor: zoom-in;
+    transform: rotate(calc((var(--k) - 1) * 4deg));
+    transition: transform 380ms var(--spring), box-shadow var(--t) var(--ease);
+}
+
+.shot img { width: 100%; height: 100%; object-fit: cover; }
+
+.shot:hover,
+.shot:focus-visible {
+    position: relative;
+    z-index: 2;
+    transform: translateY(-6px) rotate(0deg) scale(1.12);
+    box-shadow: var(--lift-hover);
+}
+
+.shot:focus-visible { outline: 2px solid var(--chapter-ink); outline-offset: 2px; }
+
+.shot:active { transform: scale(0.96); }

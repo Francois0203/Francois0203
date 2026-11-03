@@ -30,15 +30,16 @@ const orderedCollection = async (col) => {
 const getExperience     = () => orderedCollection('experience');
 const getEducation      = () => orderedCollection('education');
 const getCertifications = () => orderedCollection('certifications');
+const getPhotos         = () => orderedCollection('photos');
 
 
 export const getPortfolio = () =>
   Promise.allSettled([
     getPersonal(), getContact(), getSocial(), getDonation(),
     getSkills(), getInterests(), getExperience(), getEducation(),
-    getCertifications(),
+    getCertifications(), getPhotos(),
   ]).then(results => {
-    const keys = ['personal', 'contact', 'social', 'donation', 'skills', 'interests', 'experience', 'education', 'certifications'];
+    const keys = ['personal', 'contact', 'social', 'donation', 'skills', 'interests', 'experience', 'education', 'certifications', 'photos'];
     const data = Object.fromEntries(keys.map((k, i) => [k, results[i].status === 'fulfilled' ? results[i].value : null]));
     // Lists the parts that failed to load, so the CV can refuse to print half a record.
     data.failed = keys.filter((_, i) => results[i].status === 'rejected');

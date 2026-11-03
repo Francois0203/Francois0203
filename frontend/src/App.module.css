@@ -11,3 +11,18 @@
   z-index: var(--z-page);
   flex: 1;
 }
+
+/* Each page eases in when you arrive on it. */
+.route {
+  animation: routeIn 650ms var(--ease) backwards;
+}
+
+@keyframes routeIn {
+  from { opacity: 0; transform: translateY(16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route { animation: none; }
+}
+
+:global([data-no-animations='true']) .route { animation: none; }

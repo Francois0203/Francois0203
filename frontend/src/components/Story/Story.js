@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Lightbox from '../Lightbox';
 import Shape from '../Shape';
 import styles from './Story.module.css';
 
@@ -54,7 +55,10 @@ const spanOf = (c) => {
   };
 };
 
-const Story = ({ chapters = [], photo, name = '' }) => {
+const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 'photos', viewerLabels }) => {
+  const [viewer, setViewer] = useState(null);
+  const thumbs = useRef({});
+  const originOf = useCallback((i) => thumbs.current[`${viewer?.chapter}-${i}`]?.querySelector('img'), [viewer?.chapter]);
   const sectionRef = useRef(null);
   const ringRef = useRef(null);
   const [active, setActive] = useState(0);
@@ -105,6 +109,7 @@ const Story = ({ chapters = [], photo, name = '' }) => {
   const initials = name.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('');
   const colour = PALETTE[active % PALETTE.length];
   const shape = KIND_SHAPE[current.kind] ?? 'star';
+  const scene = (photosFor[current.id] ?? [])[0];
 
   return (
     <div
@@ -146,6 +151,15 @@ const Story = ({ chapters = [], photo, name = '' }) => {
               {photo
                 ? <img src={photo} alt="" width="320" height="320" loading="lazy" />
                 : <span className={styles.initials}>{initials}</span>}
+              {scene && (
+                <img
+                  key={scene.id}
+                  className={styles.scene}
+                  src={scene.thumb || scene.src}
+                  alt=""
+                  style={{ '--tint': scene.tint ?? 'transparent' }}
+                />
+              )}
             </div>
 
             <ul className={styles.tags} key={`t${active}`} aria-hidden="true">
@@ -205,6 +219,27 @@ const Story = ({ chapters = [], photo, name = '' }) => {
                   </div>
                 )}
                 {c.note && <p className={styles.note}>{c.note}</p>}
+                {(photosFor[c.id] ?? []).length > 0 && (
+                  <div className={styles.shots}>
+                    <span className={styles.shotsLabel}>{photosFor[c.id].length} {photosLabel}</span>
+                    <ul>
+                      {photosFor[c.id].slice(0, 4).map((p, k) => (
+                        <li key={p.id ?? k}>
+                          <button
+                            type="button"
+                            ref={(el) => { thumbs.current[`${c.id}-${k}`] = el; }}
+                            className={styles.shot}
+                            style={{ '--tint': p.tint ?? 'var(--surface-2)', '--k': k }}
+                            onClick={() => setViewer({ chapter: c.id, index: k })}
+                            aria-label={p.caption || `${c.place}, photo ${k + 1}`}
+                          >
+                            <img src={p.thumb || p.src} alt="" loading="lazy" decoding="async" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {c.tags?.length > 0 && (
                   <ul className={styles.chapterTags}>
                     {c.tags.map(t => <li key={t}>{t}</li>)}
@@ -215,6 +250,15 @@ const Story = ({ chapters = [], photo, name = '' }) => {
           );
         })}
       </ol>
+
+      <Lightbox
+        photos={viewer ? photosFor[viewer.chapter] ?? [] : []}
+        index={viewer?.index ?? null}
+        originOf={originOf}
+        onIndex={(index) => setViewer(v => (v ? { ...v, index } : v))}
+        onClose={() => setViewer(null)}
+        labels={viewerLabels}
+      />
     </div>
   );
 };

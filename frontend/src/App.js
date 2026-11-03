@@ -46,7 +46,7 @@ const ScrollToTop = () => {
         const target = document.querySelector(hash);
         if (target) { scrollPageTo(target, { immediate: true }); return; }
         tries += 1;
-        if (tries < 12) timer = setTimeout(land, 90);
+        if (tries < 50) timer = setTimeout(land, 90);
       };
       timer = setTimeout(land, 0);
       return () => clearTimeout(timer);
@@ -115,6 +115,7 @@ const usePageMeta = () => {
 const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const links = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
+  const { pathname } = useLocation();
   useSelectionTone();
   useSeenPages();
 
@@ -127,7 +128,9 @@ const AppLayout = () => {
 
         <main className={styles.main}>
           <Suspense fallback={<Loading />}>
-            <Outlet />
+            <div key={pathname} className={styles.route}>
+              <Outlet />
+            </div>
           </Suspense>
         </main>
 

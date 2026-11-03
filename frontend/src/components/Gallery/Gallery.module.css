@@ -1,0 +1,89 @@
+.wall {
+    columns: 3 220px;
+    column-gap: 1rem;
+    margin: 0 0 1.75rem;
+    padding: 0;
+    list-style: none;
+}
+
+.wall > li {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    transition:
+        opacity 700ms var(--ease) var(--d, 0ms),
+        transform 900ms var(--ease) var(--d, 0ms);
+}
+
+.wall > li[data-in] {
+    opacity: 1;
+    transform: none;
+}
+
+.tile {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: zoom-in;
+}
+
+.frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--r-node);
+    background: var(--tint);
+    box-shadow: var(--card-shadow);
+    transition: box-shadow var(--t) var(--ease), transform 500ms var(--spring);
+}
+
+.frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease), filter 600ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .tile:hover .frame {
+        transform: translateY(-4px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .tile:hover .frame img { transform: scale(1.06); }
+}
+
+.tile:active .frame { transform: scale(0.98); }
+
+.tile:focus-visible { outline: none; }
+.tile:focus-visible .frame { outline: 3px solid var(--c-blue); outline-offset: 3px; }
+
+.label {
+    display: grid;
+    gap: 0.1rem;
+    padding: 0.6rem 0.2rem 0;
+}
+
+.caption {
+    font-weight: 600;
+    font-size: var(--text-sm);
+}
+
+.meta {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wall > li { opacity: 1; transform: none; transition: none; }
+}
+
+:global([data-no-animations='true']) .wall > li { opacity: 1; transform: none; transition: none; }
