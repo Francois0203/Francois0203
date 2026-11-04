@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Skeleton, { Bone } from '../Skeleton';
 import { gsap, ScrollTrigger, useGSAP, motionOff } from '../../hooks/gsap';
+import useTilt from '../../hooks/useTilt';
+import { useCopy } from '../../content/copy/store';
 import styles from './Showcase.module.css';
 
 const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
@@ -44,8 +46,7 @@ const liveAllowed = () => typeof window !== 'undefined'
   && !window.matchMedia('(pointer: coarse)').matches
   && !navigator.connection?.saveData;
 
-// The real site, scaled down and frozen for clicks. It loads once the card is near
-// the screen and fades in over the screenshot after it has drawn.
+// The real site, scaled down and click-proof, loaded when its card comes near.
 const LiveView = ({ url, title }) => {
   const ref = useRef(null);
   const [near, setNear] = useState(false);
@@ -82,7 +83,9 @@ const LiveView = ({ url, title }) => {
   );
 };
 
-const Card = ({ site, tone, visitLabel }) => {
+const Card = ({ site, tone, visitLabel, index }) => {
+  const ref = useRef(null);
+  useTilt(ref, { max: 4 });
   const [live, setLive] = useState(false);
   useEffect(() => { setLive(liveAllowed()); }, []);
   const [main, ...more] = linksOf(site);
@@ -91,7 +94,8 @@ const Card = ({ site, tone, visitLabel }) => {
   const about = site.tagline || site.client;
 
   return (
-    <li className={styles.card} style={{ '--tone': `var(--c-${tone})` }}>
+    <li ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }}>
+      <span className={styles.sheen} aria-hidden="true" />
       <div className={styles.cover} aria-hidden="true">
         <div className={styles.window}>
           <span className={styles.bar}>
@@ -127,6 +131,7 @@ const Card = ({ site, tone, visitLabel }) => {
           {visitLabel}
           <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>
         </span>
+        <span className={styles.host}>{host(main.url)}</span>
         {more.map(m => (
           <a key={m.url} className={styles.more} href={m.url} target="_blank" rel="noopener noreferrer">{m.label || host(m.url)}</a>
         ))}
@@ -136,29 +141,32 @@ const Card = ({ site, tone, visitLabel }) => {
 };
 
 // Card-shaped placeholders while the sites load.
-export const ShowcaseSkeleton = ({ count = 2 }) => (
-  <Skeleton label="Loading client websites">
-    <ul className={styles.grid}>
-      {Array.from({ length: count }, (_, i) => (
-        <li key={i} className={`${styles.card} ${styles.ghost}`}>
-          <div className={styles.cover}>
-            <div className={styles.window}>
-              <span className={styles.bar}><i /><i /><i /><Bone w="45%" h="0.9rem" r="999px" /></span>
-              <div className={styles.screen}><Bone h="100%" r="0" /></div>
+export const ShowcaseSkeleton = ({ count = 2 }) => {
+  const { loadingSites } = useCopy('a11y');
+  return (
+    <Skeleton label={loadingSites}>
+      <ul className={styles.grid}>
+        {Array.from({ length: count }, (_, i) => (
+          <li key={i} className={`glass ${styles.card} ${styles.ghost}`}>
+            <div className={styles.cover}>
+              <div className={styles.window}>
+                <span className={styles.bar}><i /><i /><i /><Bone w="45%" h="0.9rem" r="999px" /></span>
+                <div className={styles.screen}><Bone h="100%" r="0" /></div>
+              </div>
             </div>
-          </div>
-          <div className={styles.text}>
-            <Bone w="55%" h="1.4rem" />
-            <Bone w="80%" h="0.85rem" style={{ marginTop: '0.6rem' }} />
-            <Bone w="95%" h="0.75rem" style={{ marginTop: '0.9rem' }} />
-            <Bone w="70%" h="0.75rem" style={{ marginTop: '0.4rem' }} />
-          </div>
-          <div className={styles.foot}><Bone w="9rem" h="2.3rem" r="999px" /></div>
-        </li>
-      ))}
-    </ul>
-  </Skeleton>
-);
+            <div className={styles.text}>
+              <Bone w="55%" h="1.4rem" />
+              <Bone w="80%" h="0.85rem" style={{ marginTop: '0.6rem' }} />
+              <Bone w="95%" h="0.75rem" style={{ marginTop: '0.9rem' }} />
+              <Bone w="70%" h="0.75rem" style={{ marginTop: '0.4rem' }} />
+            </div>
+            <div className={styles.foot}><Bone w="9rem" h="2.3rem" r="999px" /></div>
+          </li>
+        ))}
+      </ul>
+    </Skeleton>
+  );
+};
 
 // Client websites as simple cards: what it is, who it is for, and one button to open it.
 const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
@@ -167,12 +175,12 @@ const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
   useGSAP(() => {
     if (motionOff()) return;
     const cards = gsap.utils.toArray(grid.current.children);
-    gsap.set(cards, { autoAlpha: 0, y: 70, rotation: (i) => (i % 2 ? 2.5 : -2.5) });
+    gsap.set(cards, { autoAlpha: 0, y: 90, rotationX: 18, transformPerspective: 1200, transformOrigin: '50% 100%' });
     ScrollTrigger.batch(cards, {
       start: 'top 88%',
       once: true,
       onEnter: (batch) => gsap.to(batch, {
-        autoAlpha: 1, y: 0, rotation: 0, duration: 0.9, stagger: 0.12, ease: 'back.out(1.4)',
+        autoAlpha: 1, y: 0, rotationX: 0, duration: 1.1, stagger: 0.12, ease: 'expo.out',
         clearProps: 'transform,opacity,visibility',
       }),
     });
@@ -181,7 +189,7 @@ const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
   return (
     <ul ref={grid} className={styles.grid}>
       {sites.map((site, i) => (
-        <Card key={site.id ?? i} site={site} tone={TONES[i % TONES.length]} visitLabel={visitLabel} />
+        <Card key={site.id ?? i} index={i} site={site} tone={TONES[i % TONES.length]} visitLabel={visitLabel} />
       ))}
     </ul>
   );

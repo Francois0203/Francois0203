@@ -1,0 +1,170 @@
+.drop {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    margin-bottom: var(--spacing-lg);
+    padding: 2.25rem 1.5rem;
+    border: 2px dashed color-mix(in srgb, var(--tone, var(--c-blue)) 45%, var(--rule-strong));
+    border-radius: var(--r-card);
+    background: var(--glass);
+    text-align: center;
+    transition: border-color var(--t) var(--ease), background-color var(--t) var(--ease), transform var(--t) var(--spring);
+}
+
+.drop[data-over] {
+    border-color: var(--tone, var(--c-blue));
+    border-style: solid;
+    background: color-mix(in srgb, var(--tone, var(--c-blue)) 14%, var(--glass));
+    transform: scale(1.015);
+}
+
+.dropIcon {
+    width: 2.6rem;
+    height: 2.6rem;
+    color: var(--tone-ink, var(--c-blue-ink));
+    transition: transform var(--t) var(--spring);
+}
+
+.drop[data-over] .dropIcon { transform: translateY(-6px) scale(1.15) rotate(-6deg); }
+
+.dropTitle {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 650;
+    color: var(--ink);
+}
+
+.dropHint {
+    max-width: 44ch;
+    margin: 0 0 0.5rem;
+    font-size: var(--text-sm);
+    color: var(--ink-2);
+}
+
+.uploads {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.upload {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+    border-radius: var(--r-node);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-cast);
+    animation: pop 360ms var(--spring) backwards;
+}
+
+.upload img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; filter: blur(1px); }
+
+.uploadBar {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--tone, var(--c-blue)), var(--ok));
+    transform-origin: left;
+    transform: scaleX(var(--p, 0));
+    transition: transform 200ms linear;
+}
+
+.uploadText {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1rem;
+}
+
+.tile {
+    position: relative;
+    border-radius: var(--r-node);
+    background: var(--glass);
+    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--glass-cast);
+    transition: box-shadow var(--t) var(--ease);
+}
+
+.tile:hover { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone, var(--c-blue)) 55%, var(--glass-line)), var(--glass-hi), var(--glass-cast-hover); }
+.tile[data-dragging] { z-index: 5; box-shadow: inset 0 0 0 1.5px var(--tone, var(--c-blue)), var(--glass-cast-hover); }
+
+.tileImage {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--r-node) var(--r-node) 0 0;
+    background: var(--tint);
+    cursor: pointer;
+}
+
+.tileImage img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--t-slow) var(--ease-out); }
+.tileImage:hover img { transform: scale(1.06); }
+
+.tileBar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.35rem 0.45rem 0.25rem;
+}
+
+.tileText { display: grid; flex: 1; min-width: 0; }
+
+.tileCaption {
+    overflow: hidden;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tileCaption em { font-weight: 400; color: var(--ink-3); }
+
+.tileMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    overflow: hidden;
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    color: var(--ink-3);
+}
+
+.tileMeta svg { color: var(--tone-ink, var(--c-blue-ink)); }
+
+.formPreview {
+    margin: 0 0 var(--spacing-lg);
+    overflow: hidden;
+    border-radius: var(--r-node);
+    background: var(--tint);
+    box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+
+.formPreview img { display: block; width: 100%; max-height: 320px; object-fit: contain; }
+
+.formActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--rule);
+}
+
+@keyframes pop { from { opacity: 0; transform: scale(0.8); } }

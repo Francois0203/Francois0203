@@ -1,14 +1,14 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { Routes, Route, Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { NotFound, Loading, Connect, Projects, Bio, Home, Admin, Privacy, Terms } from './pages';
-import { ToastProvider } from './components';
+import { ToastProvider, Backdrop } from './components';
 import Nav from './components/Nav';
 import Foot from './components/Foot';
 import Intro from './components/Intro';
 import { useTheme, useAnimations, scrollPageTo } from './hooks';
 import { markSeen } from './hooks/useReveal';
 import { ContentProvider } from './context/ContentContext';
-import { NAVIGATION_PAGES, fillOf } from './content/navigation';
+import { NAVIGATION_PAGES, fillOf, useNavPages } from './content/navigation';
 import { metaFor, absoluteUrl } from './content/seo';
 import styles from './App.module.css';
 
@@ -87,7 +87,8 @@ const useSelectionTone = () => {
     const tone = NAVIGATION_PAGES.find(p => p.to === pathname)?.tone ?? 'yellow';
     const root = document.documentElement.style;
     root.setProperty('--sel', fillOf(tone));
-    root.setProperty('--sel-on', '#1f1f1f');
+    root.setProperty('--sel-on', 'var(--on-bright)');
+    root.setProperty('--page-tone', `var(--c-${tone})`);
   }, [pathname]);
 };
 
@@ -114,7 +115,7 @@ const usePageMeta = () => {
 
 const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
-  const links = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
+  const links = useNavPages();
   const { pathname } = useLocation();
   useSelectionTone();
   useSeenPages();
@@ -147,6 +148,7 @@ const App = () => {
 
   return (
     <ToastProvider>
+      <Backdrop />
       <ScrollToTop />
 
       <Suspense fallback={<Loading />}>

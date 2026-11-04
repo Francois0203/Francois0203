@@ -1,0 +1,24 @@
+.switch {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
+}
+
+.switch:hover { background: var(--glass-strong); color: var(--ink); box-shadow: inset 0 0 0 1px var(--glass-line); }
+.switch:active { transform: scale(0.88); }
+.switch svg { width: 1.2rem; height: 1.2rem; overflow: visible; }
+
+.core { transform-origin: center; transition: transform 500ms var(--spring); }
+.bite { transition: cx 500ms var(--ease-out), cy 500ms var(--ease-out); }
+.rays { transform-origin: center; transition: transform 500ms var(--spring), opacity 300ms var(--ease); }
+.icon[data-dark] .core { transform: scale(1.5); }
+.icon[data-dark] .bite { cx: 16; cy: 8; }
+.icon[data-dark] .rays { transform: rotate(-90deg) scale(0.4); opacity: 0; }

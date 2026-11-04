@@ -4,6 +4,7 @@ import { getGitHubProjects } from '../firebase/github';
 import { getStudioSites } from '../firebase/studio';
 import { COPY_SCHEMA, resolveGroup } from '../content/copy';
 import { tidy } from '../content/tidy';
+import { setCopyOverrides } from '../content/copy/store';
 
 
 const ContentContext = createContext(null);
@@ -29,7 +30,11 @@ export function ContentProvider({ children }) {
 
     // If the copy fails to load, the defaults are used.
     getCopy()
-      .then(overrides => setCopy({ overrides: tidy(overrides ?? {}), loading: false }))
+      .then((overrides) => {
+        const clean = tidy(overrides ?? {});
+        setCopyOverrides(clean);
+        setCopy({ overrides: clean, loading: false });
+      })
       .catch(() => setCopy({ overrides: {}, loading: false }));
 
     getGitHubProjects()

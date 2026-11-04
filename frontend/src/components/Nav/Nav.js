@@ -1,45 +1,54 @@
-import { useCallback, useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { tabStyle } from '../../content/navigation';
-import { useAnimations } from '../../hooks';
 import Monogram from '../Monogram';
+import ThemeSwitch from '../ThemeSwitch';
+import MotionSwitch from '../MotionSwitch';
+import CvButton from '../CvButton';
+import usePortfolioData from '../../hooks/usePortfolioData';
+import { useCopy } from '../../content/copy/store';
 import styles from './Nav.module.css';
-
-const SunIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-    <circle cx="12" cy="12" r="4.2" />
-    <path d="M12 2.6v2.4M12 19v2.4M21.4 12H19M5 12H2.6M18.6 5.4l-1.7 1.7M7.1 16.9l-1.7 1.7M18.6 18.6l-1.7-1.7M7.1 7.1L5.4 5.4" strokeLinecap="round" />
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-    <path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1Z" strokeLinejoin="round" />
-  </svg>
-);
-
-const MotionIcon = ({ off }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-    {off
-      ? <path d="M9 5v14M15 5v14" strokeLinecap="round" />
-      : <path d="M3 12h4l2.5-6 5 12L17 12h4" strokeLinecap="round" strokeLinejoin="round" />}
-  </svg>
-);
 
 const Nav = ({ links = [], theme, toggleTheme }) => {
   const [stuck, setStuck] = useState(false);
   const [open, setOpen] = useState(false);
-  const { reduceAnimations, toggleAnimations } = useAnimations();
-  const isDark = theme !== 'light';
+  const [spot, setSpot] = useState(null);
+  const { pathname } = useLocation();
+  const words = useCopy('a11y');
+  const site = useCopy('site');
+  const { data } = usePortfolioData();
+  const name = data?.personal?.name || site.name;
+  const railRef = useRef(null);
+  const pages = links.filter(l => l.to !== '/');
 
-  const sentinel = useCallback((node) => {
-    if (!node) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => setStuck(!entry.isIntersecting),
-      { threshold: 0 },
-    );
-    obs.observe(node);
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // The glass pill slides under whichever link is hovered, else the current page.
+  const place = useCallback((el) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    if (!el) { rail.style.setProperty('--io', '0'); return; }
+    rail.style.setProperty('--io', '1');
+    rail.style.setProperty('--ix', `${el.offsetLeft}px`);
+    rail.style.setProperty('--iw', `${el.offsetWidth}px`);
+    rail.style.setProperty('--itone', getComputedStyle(el).getPropertyValue('--tab'));
+  }, []);
+
+  const current = () => railRef.current?.querySelector('[aria-current="page"]') ?? null;
+
+  useLayoutEffect(() => { place(spot ?? current()); });
+
+  useEffect(() => {
+    const onResize = () => place(current());
+    window.addEventListener('resize', onResize);
+    document.fonts?.ready.then(onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [place, pathname]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -57,73 +66,61 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
 
   return (
     <>
-      <div ref={sentinel} className={styles.sentinel} aria-hidden="true" />
+      <header className={styles.wrap} data-stuck={stuck ? '' : undefined} data-print-hide>
+        <div className={`glass ${styles.bar}`} data-tone="blue">
+          <NavLink to="/" end className={styles.mark} onClick={close} aria-label={words.homeLink}>
+            <Monogram size={30} />
+            <span className={styles.markName}>{name}</span>
+          </NavLink>
 
-      <header className={`${styles.bar} ${stuck ? styles.stuck : ''}`} data-print-hide>
-        <NavLink to="/" end className={({ isActive }) => `${styles.mark} ${isActive ? styles.markHome : ''}`} onClick={close} aria-label="Home">
-          <Monogram size={34} />
-          <span className={styles.markName}>Francois Meiring</span>
-        </NavLink>
+          <nav className={styles.routes} aria-label={words.siteNav} ref={railRef} onPointerLeave={() => setSpot(null)}>
+            <span className={styles.indicator} aria-hidden="true" />
+            {pages.map(({ label, to, tone }) => (
+              <NavLink
+                key={to}
+                to={to}
+                style={tabStyle(tone)}
+                className={styles.route}
+                onPointerEnter={(e) => setSpot(e.currentTarget)}
+                onFocus={(e) => setSpot(e.currentTarget)}
+                onBlur={() => setSpot(null)}
+              >
+                {label}
+              </NavLink>
+            ))}
+          </nav>
 
-        <nav className={styles.routes} aria-label="Site">
-          {links.filter(l => l.to !== '/').map(({ label, to, tone }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              style={tabStyle(tone)}
-              className={({ isActive }) => `${styles.route} ${isActive ? styles.active : ''}`}
+          <div className={styles.controls}>
+            <CvButton className={styles.cv} />
+            <ThemeSwitch theme={theme} onToggle={toggleTheme} />
+            <MotionSwitch />
+
+            <button
+              type="button"
+              className={styles.menu}
+              onClick={() => setOpen(v => !v)}
+              aria-expanded={open}
+              aria-label={open ? words.closeMenu : words.openMenu}
             >
-              <span className={styles.tabDot} aria-hidden="true" />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className={styles.controls}>
-          <button
-            type="button"
-            className={styles.icon}
-            onClick={toggleTheme}
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {isDark ? <MoonIcon /> : <SunIcon />}
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.icon} ${reduceAnimations ? styles.iconOn : ''}`}
-            onClick={toggleAnimations}
-            aria-pressed={reduceAnimations}
-            aria-label={reduceAnimations ? 'Enable motion' : 'Reduce motion'}
-          >
-            <MotionIcon off={reduceAnimations} />
-          </button>
-
-          <button
-            type="button"
-            className={styles.menu}
-            onClick={() => setOpen(v => !v)}
-            aria-expanded={open}
-            aria-label={open ? 'Close menu' : 'Open menu'}
-          >
-            <span className={open ? styles.barsOpen : styles.bars} aria-hidden="true" />
-          </button>
+              <span className={styles.bars} data-open={open ? '' : undefined} aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className={`${styles.overlay} ${open ? styles.overlayOpen : ''}`} hidden={!open}>
-        <nav aria-label="Site, expanded">
+      <div className={styles.sheet} data-open={open ? '' : undefined} hidden={!open} data-print-hide>
+        <nav aria-label={words.siteNav} className={styles.sheetNav}>
           {links.map(({ label, to, blurb, tone }, i) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
               onClick={close}
-              className={({ isActive }) => `${styles.big} ${isActive ? styles.bigActive : ''}`}
+              className={`glass ${styles.big}`}
+              data-tone={tone}
               style={{ '--i': i, ...tabStyle(tone) }}
             >
-              <span className={styles.bigIndex}>{String(i + 1).padStart(2, '0')}</span>
+              <span className={styles.bigDot} aria-hidden="true" />
               <span className={styles.bigText}>
                 {label}
                 <span className={styles.bigBlurb}>{blurb}</span>

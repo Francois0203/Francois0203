@@ -1,0 +1,19 @@
+.inbox { display: grid; }
+
+.inbox > article:nth-child(2) { animation-delay: 60ms; }
+.inbox > article:nth-child(3) { animation-delay: 120ms; }
+.inbox > article:nth-child(n + 4) { animation-delay: 180ms; }
+
+.avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.6rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone, var(--c-orange)) 55%, white), var(--tone, var(--c-orange)) 70%);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--ink);
+    vertical-align: middle;
+}

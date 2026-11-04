@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { gsap, motionOff } from '../../hooks/gsap';
+import { useCopy } from '../../content/copy/store';
 import styles from './Lightbox.module.css';
 
 const fit = (photo) => {
@@ -17,6 +18,7 @@ const fit = (photo) => {
 
 // Opens out of the picture that was clicked and folds back into it on close.
 const Lightbox = ({ photos = [], index, originOf, onClose, onIndex, labels = {} }) => {
+  const words = useCopy('photos');
   const open = index != null && photos[index];
   const scrimRef = useRef(null);
   const frameRef = useRef(null);
@@ -156,7 +158,7 @@ const Lightbox = ({ photos = [], index, originOf, onClose, onIndex, labels = {} 
 
   if (!open || typeof document === 'undefined') return null;
 
-  const meta = [photo.where, photo.when].filter(Boolean).join(' · ');
+  const meta = [photo.where, photo.when].filter(Boolean).join(', ');
 
   return createPortal(
     <div
@@ -164,17 +166,17 @@ const Lightbox = ({ photos = [], index, originOf, onClose, onIndex, labels = {} 
       className={styles.scrim}
       role="dialog"
       aria-modal="true"
-      aria-label={photo.caption || meta || 'Photo'}
+      aria-label={photo.caption || meta || words.viewerPhoto}
       onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >
-      <button ref={closeRef} type="button" className={styles.close} onClick={close} aria-label={labels.close ?? 'Close photo'}>
+      <button ref={closeRef} type="button" className={styles.close} onClick={close} aria-label={labels.close ?? words.viewerClose}>
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
       </button>
 
       <div
         ref={frameRef}
         className={styles.frame}
-        style={{ width: size?.w, height: size?.h, '--tint': photo.tint ?? '#333' }}
+        style={{ width: size?.w, height: size?.h, '--tint': photo.tint ?? 'var(--surface-2)' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -194,7 +196,7 @@ const Lightbox = ({ photos = [], index, originOf, onClose, onIndex, labels = {} 
 
       <div ref={textRef} className={styles.text}>
         {photos.length > 1 && (
-          <button type="button" className={styles.nav} onClick={() => go(-1)} aria-label={labels.prev ?? 'Previous photo'}>
+          <button type="button" className={styles.nav} onClick={() => go(-1)} aria-label={labels.prev ?? words.viewerPrev}>
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6" /></svg>
           </button>
         )}
@@ -207,7 +209,7 @@ const Lightbox = ({ photos = [], index, originOf, onClose, onIndex, labels = {} 
           )}
         </div>
         {photos.length > 1 && (
-          <button type="button" className={styles.nav} onClick={() => go(1)} aria-label={labels.next ?? 'Next photo'}>
+          <button type="button" className={styles.nav} onClick={() => go(1)} aria-label={labels.next ?? words.viewerNext}>
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6" /></svg>
           </button>
         )}

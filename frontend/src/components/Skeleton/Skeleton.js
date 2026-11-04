@@ -1,7 +1,9 @@
+import styles from './Skeleton.module.css';
+
 // A grey loading shape. Size it with w and h, round it with r.
 export const Bone = ({ w = '100%', h = '1rem', r, className = '', style }) => (
   <span
-    className={`skeleton ${className}`}
+    className={`skeleton ${styles.bone} ${className}`}
     style={{ width: w, height: h, ...(r !== undefined ? { borderRadius: r } : {}), ...style }}
     aria-hidden="true"
   />
@@ -9,7 +11,7 @@ export const Bone = ({ w = '100%', h = '1rem', r, className = '', style }) => (
 
 // Wraps a group of bones and tells screen readers that something is loading.
 const Skeleton = ({ label = 'Loading', className = '', children }) => (
-  <div className={className} role="status">
+  <div className={[styles.group, className].filter(Boolean).join(' ')} role="status">
     <span className="sr-only">{label}</span>
     {children}
   </div>

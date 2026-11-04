@@ -1,0 +1,5 @@
+.photo { animation: swap 520ms var(--spring) both; }
+
+@keyframes swap { from { opacity: 0; transform: scale(1.15) rotate(-6deg); } }
+
+.cvToggle { margin: 0.5rem 0 0; }

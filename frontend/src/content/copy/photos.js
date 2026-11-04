@@ -11,4 +11,5 @@ export const PHOTOS_FIELDS = [
   { key: 'viewerClose', label: 'Photo viewer - close button (read aloud)', type: 'text', default: 'Close photo' },
   { key: 'viewerNext', label: 'Photo viewer - next button (read aloud)', type: 'text', default: 'Next photo' },
   { key: 'viewerPrev', label: 'Photo viewer - previous button (read aloud)', type: 'text', default: 'Previous photo' },
+  { key: 'viewerPhoto', label: 'Photo viewer - name of a photo with no caption (read aloud)', type: 'text', default: 'Photo' },
 ];

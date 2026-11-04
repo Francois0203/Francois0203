@@ -1,0 +1,296 @@
+/* Element defaults and shared classes for the site and /admin. */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+    background: var(--ground);
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    background: transparent;
+    font-family: var(--font-text);
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#root { position: relative; isolation: isolate; }
+
+img, svg, video, canvas { display: block; max-width: 100%; }
+img, video { height: auto; }
+
+h1, h2, h3, h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 92%;
+    line-height: 1;
+    letter-spacing: var(--track-display);
+    color: var(--ink);
+    text-wrap: balance;
+}
+
+h1 { font-size: var(--display-xl); }
+h2 { font-size: var(--display-lg); }
+h3 { font-size: var(--display-sm); line-height: 1.15; letter-spacing: -0.02em; }
+h4 { font-size: var(--text-lg); line-height: 1.25; letter-spacing: -0.01em; }
+
+h1 em, h2 em, h3 em { font-style: normal; color: inherit; }
+
+h5, .label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    font-weight: 450;
+    letter-spacing: var(--track-label);
+    color: var(--ink-3);
+}
+
+p { margin: 0 0 1rem; color: var(--ink-2); text-wrap: pretty; }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 600; color: var(--ink); }
+
+a {
+    color: var(--ink);
+    text-decoration-color: var(--rule-strong);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: color var(--t-fast) var(--ease), text-decoration-color var(--t-fast) var(--ease);
+}
+
+a:hover { color: var(--accent-text); text-decoration-color: currentColor; }
+
+hr { height: 0; margin: 0; border: 0; border-top: 1px solid var(--rule); }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+input, select, textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: var(--glass-strong);
+    border: 1px solid var(--rule-strong);
+    border-radius: var(--r-field);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+}
+
+input::placeholder, textarea::placeholder { color: var(--ink-3); }
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--c-blue);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-blue) 22%, transparent);
+}
+
+textarea { min-height: 8rem; resize: vertical; }
+
+label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: var(--text-sm);
+    font-weight: 550;
+    color: var(--ink-2);
+}
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--rule); }
+th { font-family: var(--font-mono); font-size: var(--mono-label); color: var(--ink-3); font-weight: 400; }
+
+code, pre { font-family: var(--font-mono); font-size: 0.86em; }
+
+pre {
+    padding: 1rem;
+    overflow-x: auto;
+    background: var(--glass-strong);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-node);
+}
+
+::selection { background: var(--sel, var(--c-yellow)); color: var(--sel-on, var(--on-bright)); }
+
+:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 3px; border-radius: 6px; }
+
+* { scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--rule-strong); border: 3px solid transparent; background-clip: content-box; border-radius: 999px; }
+
+/* Glass panel. data-tone colours its rim, .blur adds real blur. */
+.glass {
+    --rim-a: color-mix(in srgb, var(--rim, var(--c-blue)) 85%, white);
+    --rim-b: var(--rim-2, var(--c-pink));
+    position: relative;
+    background: var(--glass);
+    border-radius: var(--r-card);
+    box-shadow: var(--glass-hi), var(--glass-cast);
+}
+
+.glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: linear-gradient(var(--rim-angle, 135deg), var(--rim-a), var(--glass-line) 38%, var(--glass-line) 62%, var(--rim-b));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.glass.blur { -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+
+[data-tone='blue'] { --rim: var(--c-blue); --rim-2: var(--c-pink); --tone: var(--c-blue); --tone-ink: var(--c-blue-ink); }
+[data-tone='green'] { --rim: var(--c-green); --rim-2: var(--c-blue); --tone: var(--c-green); --tone-ink: var(--c-green-ink); }
+[data-tone='pink'] { --rim: var(--c-pink); --rim-2: var(--c-orange); --tone: var(--c-pink); --tone-ink: var(--c-pink-ink); }
+[data-tone='orange'] { --rim: var(--c-orange); --rim-2: var(--c-yellow); --tone: var(--c-orange); --tone-ink: var(--c-orange-ink); }
+[data-tone='yellow'] { --rim: var(--c-yellow); --rim-2: var(--c-green); --tone: var(--c-yellow); --tone-ink: var(--c-yellow-ink); }
+[data-tone='red'] { --rim: var(--danger); --rim-2: var(--c-orange); --tone: var(--danger); --tone-ink: var(--tone-error); }
+
+/* Each child of a [data-tones] row gets its own colour. */
+[data-tones] > :nth-child(5n + 1) { --hc: var(--c-blue); --hc-on: var(--on-deep); }
+[data-tones] > :nth-child(5n + 2) { --hc: var(--c-green); --hc-on: var(--on-bright); }
+[data-tones] > :nth-child(5n + 3) { --hc: var(--c-orange); --hc-on: var(--on-bright); }
+[data-tones] > :nth-child(5n + 4) { --hc: var(--c-pink); --hc-on: var(--on-bright); }
+[data-tones] > :nth-child(5n + 5) { --hc: var(--c-yellow); --hc-on: var(--on-bright); }
+
+/* Loading placeholder with a light sweep. */
+.skeleton {
+    display: block;
+    border-radius: 8px;
+    background: linear-gradient(100deg,
+        color-mix(in srgb, var(--ink) 8%, transparent) 30%,
+        color-mix(in srgb, var(--ink) 3%, transparent) 50%,
+        color-mix(in srgb, var(--ink) 8%, transparent) 70%) 0 0 / 300% 100%;
+    animation: sheen 1.5s linear infinite;
+}
+
+@keyframes sheen {
+    from { background-position: 150% 0; }
+    to { background-position: -150% 0; }
+}
+
+/* A small spinning ring. Size it with font-size or width. */
+.spinner {
+    display: inline-block;
+    width: 1.15em;
+    height: 1.15em;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes shake {
+    10%, 90% { transform: translateX(-2px); }
+    20%, 80% { transform: translateX(4px); }
+    30%, 50%, 70% { transform: translateX(-7px); }
+    40%, 60% { transform: translateX(7px); }
+}
+
+.shake { animation: shake 0.5s var(--ease) both; }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Scroll reveal. Parents get data-shown, children rise in by --i. */
+[data-rise] {
+    opacity: 0;
+    transform: translate3d(0, var(--rise, 18px), 0) scale(0.985);
+    filter: blur(6px);
+    transition:
+        opacity var(--t-slow) var(--ease-out) var(--delay, 0ms),
+        transform var(--t-slow) var(--ease-out) var(--delay, 0ms),
+        filter var(--t-slow) var(--ease-out) var(--delay, 0ms);
+}
+
+[data-shown] [data-rise],
+[data-shown][data-rise] { opacity: 1; transform: none; filter: none; }
+
+/* Headline words rise out of a clipped line. */
+.mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding: 0.14em 0.06em 0.12em;
+    margin: -0.14em -0.06em -0.12em;
+}
+
+.mask > * {
+    display: inline-block;
+    transform: translate3d(0, 110%, 0) rotate(4deg);
+    transform-origin: left bottom;
+    transition: transform 900ms var(--ease-out) var(--delay, 0ms);
+}
+
+[data-shown] .mask > * { transform: none; }
+
+[data-rise],
+.mask > * { --delay: calc(min(var(--i, 0), 14) * var(--step, 60ms)); }
+
+/* Scroll-linked depth: elements drift as they pass through the screen. */
+@supports (animation-timeline: view()) {
+    [data-parallax] {
+        animation: parallax linear both;
+        animation-timeline: view();
+    }
+
+    [data-scale-in] {
+        animation: scale-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 35%;
+    }
+}
+
+@keyframes parallax {
+    from { transform: translate3d(0, calc(var(--depth, 40px)), 0); }
+    to { transform: translate3d(0, calc(var(--depth, 40px) * -1), 0); }
+}
+
+@keyframes scale-in {
+    from { transform: perspective(1200px) rotateX(14deg) scale(0.92); opacity: 0.4; }
+    to { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    [data-rise] { opacity: 1; transform: none; filter: none; }
+    .mask > * { transform: none; }
+    .spinner { animation-duration: 0.7s !important; animation-iteration-count: infinite !important; }
+}
+
+[data-no-animations='true'] *,
+[data-no-animations='true'] *::before,
+[data-no-animations='true'] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+}
+
+[data-no-animations='true'] [data-rise] { opacity: 1; transform: none; filter: none; }
+[data-no-animations='true'] .mask > * { transform: none; }
+[data-no-animations='true'] .spinner { animation: spin 0.7s linear infinite !important; }

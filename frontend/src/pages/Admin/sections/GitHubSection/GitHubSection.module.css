@@ -1,0 +1,15 @@
+.list { display: grid; }
+
+.rank {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.6rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--tone, var(--c-blue)) 18%, transparent);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--tone-ink, var(--ink));
+}

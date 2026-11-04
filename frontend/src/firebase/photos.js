@@ -1,7 +1,8 @@
 import {
   collection, doc, onSnapshot, setDoc, updateDoc, deleteDoc, serverTimestamp,
+  getDocs, getDoc, query, where, writeBatch,
 } from 'firebase/firestore';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject, listAll, getMetadata } from 'firebase/storage';
 import { app, db } from './index';
 
 // Admin only. The public site reads photos through getPortfolio and never loads Storage.
@@ -71,33 +72,65 @@ const put = (path, blob, onProgress) => new Promise((resolve, reject) => {
 
 const extOf = (blob) => (blob.type === 'image/webp' ? 'webp' : 'jpg');
 
-// Shrinks the file in the browser, uploads a full and a small copy, then records it.
-export const uploadPhoto = async (file, meta = {}, onProgress) => {
-  const prepared = await preparePhoto(file);
-  const id = doc(photosCol).id;
-  const srcPath = `photos/${id}-full.${extOf(prepared.full)}`;
-  const thumbPath = `photos/${id}-thumb.${extOf(prepared.thumb)}`;
+const removeFile = (path) => (path
+  ? deleteObject(ref(storage, path)).catch((e) => { if (e?.code !== 'storage/object-not-found') throw e; })
+  : Promise.resolve());
+
+// Uploads a full and a small copy. If anything fails, whatever did upload is removed again.
+const uploadPair = async (prepared, stem, onProgress) => {
+  const srcPath = `photos/${stem}-full.${extOf(prepared.full)}`;
+  const thumbPath = `photos/${stem}-thumb.${extOf(prepared.thumb)}`;
   const total = prepared.full.size + prepared.thumb.size;
   let fullDone = 0;
   let thumbDone = 0;
   const report = () => onProgress?.((fullDone * prepared.full.size + thumbDone * prepared.thumb.size) / total);
-
-  const [src, thumb] = await Promise.all([
+  const results = await Promise.allSettled([
     put(srcPath, prepared.full, p => { fullDone = p; report(); }),
     put(thumbPath, prepared.thumb, p => { thumbDone = p; report(); }),
   ]);
+  if (results.some(r => r.status === 'rejected')) {
+    await Promise.allSettled([removeFile(srcPath), removeFile(thumbPath)]);
+    throw results.find(r => r.status === 'rejected').reason;
+  }
+  return { src: results[0].value, thumb: results[1].value, srcPath, thumbPath };
+};
 
-  await setDoc(doc(photosCol, id), {
-    src, thumb, srcPath, thumbPath,
-    w: prepared.w, h: prepared.h, tint: prepared.tint,
-    caption: '', where: '', when: '', note: '', chapter: '',
-    onHome: true,
-    order: 0,
-    ...meta,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+// Shrinks the file in the browser, uploads both copies, then records it.
+export const uploadPhoto = async (file, meta = {}, onProgress) => {
+  const prepared = await preparePhoto(file);
+  const id = doc(photosCol).id;
+  const files = await uploadPair(prepared, id, onProgress);
+  try {
+    await setDoc(doc(photosCol, id), {
+      ...files,
+      w: prepared.w, h: prepared.h, tint: prepared.tint,
+      caption: '', where: '', when: '', note: '', chapter: '',
+      onHome: true,
+      order: 0,
+      ...meta,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  } catch (err) {
+    await Promise.allSettled([removeFile(files.srcPath), removeFile(files.thumbPath)]);
+    throw err;
+  }
   return id;
+};
+
+// Swaps the picture of an existing photo and deletes the old files once the new ones are in use.
+export const replacePhotoImage = async (photo, file, onProgress) => {
+  const prepared = await preparePhoto(file);
+  const files = await uploadPair(prepared, `${photo.id}-${Date.now()}`, onProgress);
+  try {
+    await updateDoc(doc(photosCol, photo.id), {
+      ...files, w: prepared.w, h: prepared.h, tint: prepared.tint, updatedAt: serverTimestamp(),
+    });
+  } catch (err) {
+    await Promise.allSettled([removeFile(files.srcPath), removeFile(files.thumbPath)]);
+    throw err;
+  }
+  await Promise.allSettled([removeFile(photo.srcPath), removeFile(photo.thumbPath)]);
 };
 
 export const subscribePhotos = (cb, onErr) =>
@@ -110,11 +143,47 @@ export const subscribePhotos = (cb, onErr) =>
 export const updatePhoto = (id, data) =>
   updateDoc(doc(photosCol, id), { ...data, updatedAt: serverTimestamp() });
 
-const removeFile = (path) => (path
-  ? deleteObject(ref(storage, path)).catch((e) => { if (e?.code !== 'storage/object-not-found') throw e; })
-  : Promise.resolve());
-
+// The entry goes first so the site never points at a missing file, then the files.
 export const deletePhoto = async (photo) => {
-  await Promise.all([removeFile(photo.srcPath), removeFile(photo.thumbPath)]);
   await deleteDoc(doc(photosCol, photo.id));
+  await Promise.allSettled([removeFile(photo.srcPath), removeFile(photo.thumbPath)]);
+};
+
+// Story photos of a deleted job or degree go back to being plain photos.
+export const releaseChapter = async (chapter) => {
+  const snap = await getDocs(query(photosCol, where('chapter', '==', chapter)));
+  if (snap.empty) return 0;
+  const batch = writeBatch(db);
+  snap.docs.forEach(d => batch.update(d.ref, { chapter: '', updatedAt: serverTimestamp() }));
+  await batch.commit();
+  return snap.size;
+};
+
+const HOUR = 60 * 60 * 1000;
+
+// Removes unused image files over an hour old, and story links to entries that are gone.
+export const sweepPhotos = async () => {
+  const [snap, listing] = await Promise.all([getDocs(photosCol), listAll(ref(storage, 'photos'))]);
+  const used = new Set(snap.docs.flatMap(d => [d.get('srcPath'), d.get('thumbPath')]).filter(Boolean));
+  let files = 0;
+  for (const item of listing.items) {
+    if (used.has(item.fullPath)) continue;
+    const meta = await getMetadata(item).catch(() => null);
+    if (meta && Date.now() - new Date(meta.timeCreated).getTime() > HOUR) {
+      await removeFile(item.fullPath);
+      files += 1;
+    }
+  }
+  let links = 0;
+  for (const d of snap.docs) {
+    const chapter = d.get('chapter');
+    const m = /^(exp|edu)-(.+)$/.exec(chapter ?? '');
+    if (!m) continue;
+    const owner = await getDoc(doc(db, m[1] === 'exp' ? 'experience' : 'education', m[2]));
+    if (!owner.exists()) {
+      await updateDoc(d.ref, { chapter: '', updatedAt: serverTimestamp() });
+      links += 1;
+    }
+  }
+  return { files, links };
 };

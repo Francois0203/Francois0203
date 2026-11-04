@@ -1,27 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
 import useReveal from '../../hooks/useReveal';
 import useActiveSection from '../../hooks/useActiveSection';
-import { scrollPageTo } from '../../hooks';
+import useCvDownload from '../../hooks/useCvDownload';
 import { resolveGroup } from '../../content/copy/resolve';
 import { githubAvatar } from '../../content/avatar';
 import { BIO_FIELDS } from '../../content/copy/bio';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
+import { PHOTOS_FIELDS } from '../../content/copy/photos';
 import { periodOf, isCurrent } from '../../content/records';
-import Stack from '../../components/Stack';
 import Skeleton, { Bone } from '../../components/Skeleton';
-import { useToast } from '../../components';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
-import Headline from '../../components/Headline';
+import Glass from '../../components/Glass';
+import Draggable from '../../components/Draggable';
 import SocialIcon from '../../components/SocialIcon';
-import Drift from '../../components/Drift';
 import Credentials from '../../components/Credentials';
+import Stack from '../../components/Stack';
 import Gallery from '../../components/Gallery';
-import { PHOTOS_FIELDS } from '../../content/copy/photos';
+import Chapter from './Chapter';
+import Contents from './Contents';
+import Job from './Job';
+import Course from './Course';
+import { useCopy } from '../../content/copy/store';
 import styles from './Bio.module.css';
-
 
 const itemLabel = (s) => (typeof s === 'string' ? s : s?.name ?? s?.title ?? String(s));
 
@@ -38,84 +41,24 @@ const flattenSkills = (skills) => {
 
 const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
 
-const Job = ({ title, org, when, note, tags, current, tone, i }) => (
-  <article className={styles.job} style={{ '--tone': `var(--c-${tone})`, '--i': i }} data-rise>
-    <span className={styles.node} aria-hidden="true" />
-    <header className={styles.jobHead}>
-      <div className={styles.jobTitle}>
-        <h3>{title}</h3>
-        {org && <p className={styles.org}>{org}</p>}
-      </div>
-      {when && (
-        <p className={styles.period}>
-          {current && <span className={styles.now}>now</span>}
-          {when}
-        </p>
-      )}
-    </header>
-    {note && <p className={styles.note}>{note}</p>}
-    {tags?.length > 0 && (
-      <ul className={styles.tags}>
-        {tags.map((tag, k) => <li key={k}>{tag}</li>)}
-      </ul>
-    )}
-  </article>
+const DownloadIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+  </svg>
 );
 
-const Card = ({ title, org, when, note, current, tone, i }) => (
-  <article className={styles.card} style={{ '--tone': `var(--c-${tone})`, '--i': i }} data-rise>
-    <p className={styles.cardWhen}>
-      {current && <span className={styles.now}>now</span>}
-      {when || 'Earlier'}
-    </p>
-    <h3>{title}</h3>
-    {org && <p className={styles.org}>{org}</p>}
-    {note && <p className={styles.cardNote}>{note}</p>}
-  </article>
-);
-
-// The shape of the record while it loads: a profile paragraph and two job cards.
-const RecordSkeleton = () => (
-  <Skeleton label="Loading the CV">
-    <div className={styles.section}>
-      <Bone w="11rem" h="2.6rem" style={{ marginBottom: '1.75rem' }} />
-      {[100, 96, 98, 60].map((w, i) => <Bone key={i} w={`${w}%`} h="1rem" style={{ marginBottom: '0.75rem' }} />)}
-    </div>
-    <div className={styles.section}>
-      <Bone w="14rem" h="2.6rem" style={{ marginBottom: '1.75rem' }} />
-      <div className={styles.timeline}>
-        {[0, 1].map(i => (
-          <div key={i} className={styles.job}>
-            <Bone w="45%" h="1.4rem" />
-            <Bone w="30%" h="0.9rem" style={{ marginTop: '0.6rem' }} />
-            <Bone w="100%" h="0.85rem" style={{ marginTop: '1.2rem' }} />
-            <Bone w="85%" h="0.85rem" style={{ marginTop: '0.5rem' }} />
-          </div>
-        ))}
-      </div>
-    </div>
+// The record while it loads: a paragraph and two cards.
+const RecordSkeleton = ({ label }) => (
+  <Skeleton label={label} className={styles.wait}>
+    <Bone w="11rem" h="2.6rem" />
+    {[100, 96, 98, 60].map((w, i) => <Bone key={i} w={`${w}%`} h="1rem" />)}
+    {[0, 1].map(i => <Bone key={`c${i}`} h="9rem" r="var(--r-card)" style={{ marginTop: '1rem' }} />)}
   </Skeleton>
 );
 
-const Section = ({ id, title, tone, children }) => {
-  const [ref, shown] = useReveal({ threshold: 0.04 });
-  return (
-    <section
-      id={id}
-      ref={ref}
-      className={styles.section}
-      data-shown={shown ? '' : undefined}
-      style={{ '--step': '70ms' }}
-    >
-      <Headline as="h2" text={`*${title}*`} tone={tone} className={styles.sectionTitle} />
-      {children}
-    </section>
-  );
-};
-
 const Bio = () => {
+  const a11y = useCopy('a11y');
   const { data, loading } = usePortfolioData();
-  const { toast } = useToast();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(BIO_FIELDS, overrides.bio);
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
@@ -130,192 +73,153 @@ const Bio = () => {
   const certifications = data?.certifications ?? [];
 
   const skills = useMemo(() => flattenSkills(data?.skills), [data]);
-
   const interests = useMemo(() => {
     const raw = data?.interests;
     return (Array.isArray(raw) ? raw : raw?.items ?? []).map(itemLabel).filter(Boolean);
   }, [data]);
-
-  const languages = useMemo(
-    () => (personal.languages ?? []).map(itemLabel).filter(Boolean),
-    [personal],
-  );
+  const languages = useMemo(() => (personal.languages ?? []).map(itemLabel).filter(Boolean), [personal]);
 
   const photo = personal.photoUrl || githubAvatar(social);
   const name = personal.name ?? '';
   const summary = personal.summary || t.lede;
 
-  const [cvBusy, setCvBusy] = useState(false);
-
-  // Fetch the PDF engine while the visitor reads, so the button answers at once.
-  useEffect(() => {
-    if (!data) return undefined;
-    const warm = () => { import('./CvDocument'); };
-    if ('requestIdleCallback' in window) {
-      const handle = requestIdleCallback(warm, { timeout: 4000 });
-      return () => cancelIdleCallback(handle);
-    }
-    const timer = setTimeout(warm, 1500);
-    return () => clearTimeout(timer);
-  }, [data]);
-
-  // Builds the PDF from the data already on the page. A half-loaded CV is worse than none.
-  const downloadCv = async () => {
-    const missing = (data?.failed ?? []).filter(k => k !== 'photos');
-    if (missing.length) {
-      toast.error(`${t.cvIncomplete} (${missing.join(', ')})`);
-      return;
-    }
-    setCvBusy(true);
-    try {
-      const { renderCv } = await import('./CvDocument');
-      const blob = await renderCv({
-        name, photo, personal, contact, social, experience, education, certifications, skills,
-        skillGroups: data?.skills?.categories ?? [],
-        interests, languages, summary: personal.summary ?? '', t, badges,
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${name || 'CV'} CV.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
-    } catch (err) {
-      console.error(err);
-      toast.error(t.cvFailed);
-    } finally {
-      setCvBusy(false);
-    }
-  };
+  const cv = useCvDownload();
 
   const contents = [
-    { id: 'profile', label: t.profileHeading },
-    experience.length > 0 && { id: 'experience', label: t.experienceHeading },
-    education.length > 0 && { id: 'education', label: t.educationHeading },
-    certifications.length > 0 && { id: 'certifications', label: t.certificationsHeading },
-    skills.length > 0 && { id: 'skills', label: t.skillsHeading },
-    (interests.length > 0 || languages.length > 0 || photos.length > 0) && { id: 'interests', label: t.interestsHeading },
+    { id: 'profile', label: t.profileHeading, tone: 'blue' },
+    experience.length > 0 && { id: 'experience', label: t.experienceHeading, tone: 'green' },
+    education.length > 0 && { id: 'education', label: t.educationHeading, tone: 'orange' },
+    certifications.length > 0 && { id: 'certifications', label: t.certificationsHeading, tone: 'pink' },
+    skills.length > 0 && { id: 'skills', label: t.skillsHeading, tone: 'yellow' },
+    (interests.length > 0 || languages.length > 0 || photos.length > 0) && { id: 'interests', label: t.interestsHeading, tone: 'blue' },
   ].filter(Boolean);
+  const number = (id) => contents.findIndex(c => c.id === id) + 1;
 
-  const [headRef, headShown] = useReveal({ threshold: 0 });
-  const ids = useMemo(() => contents.map(c => c.id), [contents.map(c => c.id).join('|')]);
+  const idKey = contents.map(c => c.id).join('|');
+  const ids = useMemo(() => idKey.split('|'), [idKey]);
   const active = useActiveSection(ids);
+  const [headRef, headShown] = useReveal({ threshold: 0 });
 
   return (
     <div className={styles.page}>
-      <Drift shapes={[
-        { kind: 'circle', colour: 'blue', x: '100%', y: '150px', size: 'clamp(180px, 22vw, 320px)', speed: 0.6, spin: 25, wide: true },
-      ]} />
-
-      <header
-        ref={headRef}
-        className={styles.head}
-        data-shown={headShown ? '' : undefined}
-        style={{ '--step': '70ms' }}
-      >
-        <div className={styles.identity}>
-          {loading ? (
-            <div className={styles.portrait}><Bone h="100%" r="0" /></div>
-          ) : photo && (
-            <div className={styles.portrait} data-rise style={{ '--i': 0 }}>
-              <img src={photo} alt="" width="320" height="320" fetchPriority="high" />
-            </div>
-          )}
-          <div className={styles.identityText}>
-            <div data-rise style={{ '--i': 0 }}>
-              <Chip dot="ink">{t.eyebrow}</Chip>
-            </div>
-            {loading ? (
-              <>
-                <Bone w="min(26rem, 80%)" h="3.6rem" />
-                <Bone w="14rem" h="1.3rem" />
-              </>
-            ) : (
-              <>
-                <h1 className={styles.name}><span className="mask"><span style={{ '--i': 1 }}>{name}</span></span></h1>
-                {personal.title && <p className={styles.title} data-rise style={{ '--i': 2 }}>{personal.title}</p>}
-              </>
-            )}
-            <div className={styles.headActions} data-rise data-print-hide style={{ '--i': 3 }}>
-              <Button variant="line" size="sm" disabled={loading || !data || cvBusy} aria-busy={cvBusy} onClick={downloadCv}>
-                {cvBusy ? t.cvPreparing : t.printLabel}
-              </Button>
-            </div>
+      <header ref={headRef} className={styles.hero} data-shown={headShown ? '' : undefined} style={{ '--step': '70ms' }}>
+        <div className={styles.intro}>
+          <div data-rise style={{ '--i': 0 }}>
+            <Chip dot="live">{t.eyebrow}</Chip>
           </div>
+
+          {loading ? (
+            <>
+              <Bone w="min(26rem, 80%)" h="4rem" />
+              <Bone w="14rem" h="1.3rem" />
+            </>
+          ) : (
+            <>
+              <h1 className={styles.name}>
+                {name.split(' ').map((w, i) => (
+                  <span key={i} className="mask"><span style={{ '--i': i + 1 }}>{w}</span></span>
+                )).reduce((a, b, i) => (i ? [...a, ' ', b] : [b]), [])}
+              </h1>
+              {personal.title && <p className={styles.role} data-rise style={{ '--i': 3 }}>{personal.title}</p>}
+            </>
+          )}
+
+          <div className={styles.actions} data-rise data-print-hide style={{ '--i': 4 }}>
+            <Button
+              variant="primary"
+              tone="blue"
+              size="lg"
+              icon={<DownloadIcon />}
+              status={cv.status}
+              disabled={loading || !data}
+              onClick={() => cv.run()}
+            >
+              {t.printLabel}
+            </Button>
+          </div>
+
+          <ul className={styles.contact} data-rise style={{ '--i': 5 }}>
+            {loading && [0, 1, 2].map(i => <li key={i}><Bone w="12rem" h="2.6rem" r="999px" /></li>)}
+            {contact.location && (
+              <li className={styles.pill} data-tone="green">
+                <span className={styles.pillKey}>{t.basedLabel}</span>
+                <span className={styles.pillVal}>{contact.location}</span>
+              </li>
+            )}
+            {contact.email && (
+              <li>
+                <a className={styles.pill} data-tone="blue" href={`mailto:${contact.email}`}>
+                  <span className={styles.pillKey}>{t.emailLabel}</span>
+                  <span className={styles.pillVal}>{contact.email}</span>
+                </a>
+              </li>
+            )}
+            {contact.phone && (
+              <li>
+                <a className={styles.pill} data-tone="orange" href={`tel:${String(contact.phone).split(' ').join('')}`}>
+                  <span className={styles.pillKey}>{t.phoneLabel}</span>
+                  <span className={styles.pillVal}>{contact.phone}</span>
+                </a>
+              </li>
+            )}
+          </ul>
         </div>
 
-        <ul className={styles.contact} data-rise style={{ '--i': 3 }}>
-          {loading && [0, 1, 2].map(i => (
-            <li key={i}><Bone w="3.5rem" h="0.8rem" /><Bone w={['80%', '90%', '60%'][i]} h="1rem" /></li>
-          ))}
-          {contact.location && (
-            <li><span className={styles.cKey}>Based</span><span className={styles.cVal}>{contact.location}</span></li>
-          )}
-          {contact.email && (
-            <li><span className={styles.cKey}>Email</span><a className={styles.cVal} href={`mailto:${contact.email}`}>{contact.email}</a></li>
-          )}
-          {contact.phone && (
-            <li><span className={styles.cKey}>Phone</span><a className={styles.cVal} href={`tel:${String(contact.phone).split(' ').join('')}`}>{contact.phone}</a></li>
-          )}
-          {social.length > 0 && (
-            <li className={styles.cSocial} data-tones>
-              {social.map((s, i) => (
-                <a
-                  key={s.key ?? i}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.cIcon}
-                  aria-label={s.platform || s.key}
-                  title={s.platform || s.key}
-                >
-                  <SocialIcon platform={s.key} url={s.url} />
-                </a>
-              ))}
-            </li>
-          )}
-        </ul>
+        <div className={styles.cardWrap} data-rise style={{ '--i': 2, '--rise': '40px' }}>
+          <Glass tone="pink" tilt={9} lift={18} pad="none" className={styles.card}>
+            <div className={styles.portrait}>
+              {loading ? <Bone w="100%" h="100%" r="0" /> : photo && (
+                <img src={photo} alt={name} width="480" height="480" fetchPriority="high" />
+              )}
+            </div>
+            <div className={styles.cardFoot}>
+              <div className={styles.cardName}>
+                <strong>{name}</strong>
+                {personal.title && <span>{personal.title}</span>}
+              </div>
+              {social.length > 0 && (
+                <div className={styles.social} data-tones>
+                  {social.map((s, i) => (
+                    <a
+                      key={s.key ?? i}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.socialLink}
+                      aria-label={s.platform || s.key}
+                      title={s.platform || s.key}
+                    >
+                      <SocialIcon platform={s.key} url={s.url} />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Glass>
+        </div>
       </header>
 
       <div className={styles.body}>
-        <nav className={styles.contents} aria-label="On this page" data-print-hide>
-          <h5>On this page</h5>
-          {contents.map(c => (
-            <a
-              key={c.id}
-              href={`#${c.id}`}
-              onClick={(e) => {
-                const target = document.getElementById(c.id);
-                if (!target) return;
-                e.preventDefault();
-                scrollPageTo(target, { offset: -96 });
-              }}
-              className={styles.contentsLink}
-              data-current={c.id === active ? '' : undefined}
-              aria-current={c.id === active ? 'true' : undefined}
-            >
-              <span className={styles.tick} aria-hidden="true" />
-              {c.label}
-            </a>
-          ))}
-        </nav>
+        <aside className={styles.rail}>
+          <Contents title={t.contentsLabel} items={contents} active={active} />
+        </aside>
 
         <div className={styles.record}>
-          {loading ? <RecordSkeleton /> : (
-            <Section id="profile" title={t.profileHeading} tone="blue">
-              <p className={styles.summary} data-rise>{summary}</p>
-            </Section>
+          {loading ? <RecordSkeleton label={a11y.loadingCv} /> : (
+            <Chapter id="profile" n={number('profile')} title={t.profileHeading} tone="blue">
+              <Glass tone="blue" pad="lg" className={styles.summary} data-rise style={{ '--i': 2 }}>
+                <p>{summary}</p>
+              </Glass>
+            </Chapter>
           )}
 
           {experience.length > 0 && (
-            <Section id="experience" title={t.experienceHeading} tone="green">
+            <Chapter id="experience" n={number('experience')} title={t.experienceHeading} tone="green">
               <div className={styles.timeline}>
                 {experience.map((e, i) => (
                   <Job
                     key={e.id ?? i}
-                    i={i}
+                    i={i + 2}
                     tone={TONES[i % TONES.length]}
                     title={e.role}
                     org={[e.company, e.location].filter(Boolean).join(', ')}
@@ -323,61 +227,69 @@ const Bio = () => {
                     note={e.description}
                     tags={e.tags}
                     current={isCurrent(e)}
+                    nowLabel={t.nowLabel}
                   />
                 ))}
               </div>
-            </Section>
+            </Chapter>
           )}
 
           {education.length > 0 && (
-            <Section id="education" title={t.educationHeading} tone="orange">
-              <div className={styles.cards}>
+            <Chapter id="education" n={number('education')} title={t.educationHeading} tone="orange">
+              <div className={styles.courses}>
                 {education.map((e, i) => (
-                  <Card
+                  <Course
                     key={e.id ?? i}
-                    i={i}
+                    i={i + 2}
                     tone={TONES[(i + 2) % TONES.length]}
-                    title={[e.degree, e.field].filter(Boolean).join(', ')}
+                    title={[e.degree, e.field].filter(Boolean).join(', ') || e.institution}
                     org={e.institution}
-                    when={periodOf(e)}
+                    when={periodOf(e) || t.earlierLabel}
                     note={e.description}
                     current={isCurrent(e)}
+                    nowLabel={t.nowLabel}
                   />
                 ))}
               </div>
-            </Section>
+            </Chapter>
           )}
 
           {certifications.length > 0 && (
-            <Section id="certifications" title={t.certificationsHeading} tone="pink">
+            <Chapter id="certifications" n={number('certifications')} title={t.certificationsHeading} tone="pink">
               <Credentials items={certifications} labels={badges} detailed />
-            </Section>
+            </Chapter>
           )}
 
           {skills.length > 0 && (
-            <Section id="skills" title={t.skillsHeading} tone="yellow">
+            <Chapter id="skills" n={number('skills')} title={t.skillsHeading} tone="yellow" aside={t.skillsHint}>
               <Stack entries={skills} />
-            </Section>
+            </Chapter>
           )}
 
           {(interests.length > 0 || languages.length > 0 || photos.length > 0) && (
-            <Section id="interests" title={t.interestsHeading} tone="blue">
+            <Chapter id="interests" n={number('interests')} title={t.interestsHeading} tone="blue">
               {photos.length > 0 && (
                 <>
-                  <p className={styles.galleryLede}>{tph.bioLede}</p>
+                  <p className={styles.galleryLede} data-rise style={{ '--i': 2 }}>{tph.bioLede}</p>
                   <Gallery photos={photos} labels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }} />
                 </>
               )}
-              <ul className={styles.chips}>
-                {interests.map(n => <li key={n}><Chip>{n}</Chip></li>)}
-              </ul>
+              {interests.length > 0 && (
+                <ul className={styles.interests} data-tones>
+                  {interests.map((n, i) => (
+                    <li key={n} data-rise style={{ '--i': i + 3 }}>
+                      <Draggable className={styles.interest}>{n}</Draggable>
+                    </li>
+                  ))}
+                </ul>
+              )}
               {languages.length > 0 && (
-                <p className={styles.langs}>
-                  <span className={styles.cKey}>{t.languagesLabel}</span>
+                <p className={styles.langs} data-rise style={{ '--i': 4 }}>
+                  <span className={styles.pillKey}>{t.languagesLabel}</span>
                   {languages.join(', ')}
                 </p>
               )}
-            </Section>
+            </Chapter>
           )}
         </div>
       </div>

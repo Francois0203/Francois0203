@@ -1,9 +1,16 @@
 # Portfolio Cloud Functions
 
-One function, `onContactMessage`: a Firestore trigger that fires when a visitor
-submits the Connect form (a new doc in the `contacts` collection) and emails a
-formatted summary to you. Replying to the notification replies to the visitor
-(their address is set as `Reply-To`).
+Two functions:
+
+- `sendMessage`: the Connect form posts here. It drops bots (a hidden trap field
+  and forms sent in under 3 seconds), then limits each sender to 2 letters per
+  10 minutes and 5 per day, each email address to 5 per day, and everyone
+  together to 40 per day. Repeats of the same letter are ignored. Only this
+  function can write to `contacts`; the database rules block everything else.
+  Limits are tracked in `rateLimits` with one-way scrambled keys that delete
+  themselves after a day. Change the numbers in `LIMITS` in `index.js`.
+- `onContactMessage`: fires when a letter is saved and emails it to you.
+  Replying to the email replies to the visitor.
 
 ## One-time setup
 

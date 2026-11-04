@@ -1,8 +1,6 @@
-// The privacy policy and terms. Plain data so the wording lives in one place.
-// A block is a paragraph (string) or a bullet list (array). [text](url) becomes a link.
-// Change LEGAL_UPDATED whenever the meaning of either document changes.
+// Default wording for the privacy policy and terms. The admin can override it.
 
-export const LEGAL_UPDATED = '29 October 2026';
+export const LEGAL_UPDATED = '4 November 2026';
 export const LEGAL_FALLBACK_EMAIL = 'francoismeiring0203@gmail.com';
 
 // How long a contact message is kept. The form writes the matching expiry date.
@@ -22,6 +20,7 @@ export const privacyPolicy = ({ email }) => ({
       heading: 'What I collect',
       blocks: [
         'When you send a letter through the Connect page: your name, your email address, your message, and the time it was sent. Nothing else is attached to it.',
+        'To stop the form being used for spam, it also keeps short one-way codes made from your network (IP) address and your email address, so it can count how many letters arrive from one place. The codes cannot be turned back into the originals, and they are deleted after 24 hours.',
         'When you visit any page: the site is served by Google Firebase Hosting, which, like every web host, receives your IP address, browser details and the page requested in order to deliver it. I do not run analytics, advertising or tracking scripts, and I do not build a profile of you.',
         'Please do not send special personal information (health, religion, political views and the like) or anything about children through the form. I do not need it.',
       ],
@@ -51,13 +50,13 @@ export const privacyPolicy = ({ email }) => ({
     {
       heading: 'How long I keep it',
       blocks: [
-        'Contact messages are deleted automatically 12 months after they arrive, and I delete the copy in my inbox on the same schedule. If we end up working together, I keep what is needed for that work only for as long as it, and any legal record-keeping duty, requires.',
+        'Contact messages are deleted automatically 12 months after they arrive, and I delete the copy in my inbox on the same schedule. The spam-protection codes described above are deleted after 24 hours. If we end up working together, I keep what is needed for that work only for as long as it, and any legal record-keeping duty, requires.',
       ],
     },
     {
       heading: 'Cookies and local storage',
       blocks: [
-        'This site sets no cookies of its own. It saves two preferences in your browser\'s local storage: light or dark theme, and whether you asked for reduced motion. They never leave your device, and clearing your browser data removes them.',
+        "This site sets no cookies of its own. It saves two preferences in your browser's local storage, light or dark theme and whether you asked for reduced motion, plus a copy of the site's wording so pages show the latest text straight away. None of it is about you, it never leaves your device, and clearing your browser data removes it.",
         'The Projects page can show live, scaled-down previews of websites I built for clients. On larger screens those sites load inside the page, and they are run by their owners, so they may set their own cookies under their own policies. Visiting a site through a link likewise takes you to that site\'s own terms and policies.',
       ],
     },

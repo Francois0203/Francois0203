@@ -93,10 +93,18 @@ async function main() {
     }
   }
 
-  if (success > 0) await batch.commit();
+  // Repos taken off the list are removed. The list decides, so a GitHub outage cannot wipe anything.
+  const listed = new Set(repos.filter(r => r?.owner && r?.repo).map(r => docId(r.owner, r.repo)));
+  const stored = await db.collection('githubProjects').get();
+  let pruned = 0;
+  stored.docs.forEach((d) => {
+    if (!listed.has(d.id)) { batch.delete(d.ref); pruned++; }
+  });
+
+  if (success > 0 || pruned > 0) await batch.commit();
 
   console.log(
-    `\n${success} synced, ${failed} failed.` +
+    `\n${success} synced, ${failed} failed, ${pruned} removed.` +
     (success > 0 ? ' Committed to Firestore.' : ''),
   );
 }

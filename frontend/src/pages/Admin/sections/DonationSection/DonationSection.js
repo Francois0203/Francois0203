@@ -1,0 +1,98 @@
+import { useState, useEffect } from 'react';
+import { subscribeDonation, updateDonation } from '../../../../firebase/admin';
+import { useToast } from '../../../../components';
+import { FormSkeleton } from '../../parts/Skeletons';
+import Button from '../../../../components/Button';
+import useAsyncAction from '../../../../hooks/useAsyncAction';
+import SaveBar from '../../parts/SaveBar';
+import formStyles from '../../AdminForms.module.css';
+import styles from './DonationSection.module.css';
+
+// Stored in portfolio/donation. Drives the support link on the Connect page.
+const FIELDS = [
+  { key: 'title',      label: 'Title',       type: 'text',     placeholder: 'Support my work' },
+  { key: 'message',    label: 'Message',     type: 'textarea', placeholder: 'A short line shown with the support link' },
+  { key: 'link',       label: 'Donation link (URL)', type: 'text', placeholder: 'https://' },
+  { key: 'buttonText', label: 'Button text', type: 'text',     placeholder: 'Buy me a coffee' },
+];
+
+const DonationSection = () => {
+  const { toast } = useToast();
+  const [data, setData]     = useState({});
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    return subscribeDonation(
+      (d) => { setData(d); setLoaded(true); },
+      () => { setLoaded(true); toast.error('Failed to load donation settings'); },
+    );
+  }, [toast]);
+
+  const set = (key, value) => setData(prev => ({ ...prev, [key]: value }));
+
+  const save = useAsyncAction(async () => {
+    try {
+      await updateDonation({
+        enabled:    !!data.enabled,
+        title:      data.title ?? '',
+        message:    data.message ?? '',
+        link:       data.link ?? '',
+        buttonText: data.buttonText ?? '',
+      });
+      toast.success('Donation settings updated');
+    } catch (err) {
+      toast.error('Failed to save donation settings');
+      throw err;
+    }
+  });
+
+
+  if (!loaded) return <FormSkeleton />;
+
+  return (
+    <div className={styles.root}>
+      <label className={formStyles.toggleRow}>
+        <input
+          type="checkbox"
+          checked={!!data.enabled}
+          onChange={e => set('enabled', e.target.checked)}
+        />
+        <span>
+          <strong>Show the support link</strong>
+          <span className={formStyles.toggleHint}>
+            When off, the support link is hidden on the Connect page.
+          </span>
+        </span>
+      </label>
+
+      <div className={formStyles.grid}>
+        {FIELDS.map(f => (
+          <div key={f.key} className="input-container">
+            <label htmlFor={`d-${f.key}`}>{f.label}</label>
+            {f.type === 'textarea' ? (
+              <textarea
+                id={`d-${f.key}`}
+                value={data[f.key] ?? ''}
+                onChange={e => set(f.key, e.target.value)}
+                placeholder={f.placeholder}
+                rows={3}
+              />
+            ) : (
+              <input
+                id={`d-${f.key}`}
+                type="text"
+                value={data[f.key] ?? ''}
+                onChange={e => set(f.key, e.target.value)}
+                placeholder={f.placeholder}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <SaveBar save={save} label="Save donation" />
+    </div>
+  );
+};
+
+export default DonationSection;

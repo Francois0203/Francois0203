@@ -1,7 +1,14 @@
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { defineString, defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 const nodemailer = require('nodemailer');
+const crypto = require('node:crypto');
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
+
+initializeApp();
+const db = getFirestore();
 
 const SMTP_HOST = defineString('SMTP_HOST', { default: 'smtp.gmail.com' });
 const SMTP_PORT = defineString('SMTP_PORT', { default: '465' });
@@ -136,5 +143,100 @@ exports.onContactMessage = onDocumentCreated(
         error: err?.message,
       });
     }
+  },
+);
+
+// Spam limits for the contact form.
+const LIMITS = {
+  perSenderShort: { count: 2, ms: 10 * 60 * 1000 },
+  perSenderDay: 5,
+  perEmailDay: 5,
+  everyoneDay: 40,
+  minFillMs: 3000,
+};
+const DAY = 24 * 60 * 60 * 1000;
+const KEEP_DAYS = 365;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// A one-way scramble, so no address or IP is ever stored as it is.
+const scramble = (value) => crypto.createHash('sha256').update(`fm-portfolio:${value}`).digest('hex').slice(0, 40);
+
+const clientIp = (req) => String(req?.headers?.['x-forwarded-for'] ?? req?.ip ?? 'unknown').split(',')[0].trim();
+
+const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
+// Deletes a few spent rate records each time, so the collection never grows.
+const sweepLimits = async () => {
+  const old = await db.collection('rateLimits').where('expireAt', '<', Timestamp.now()).limit(25).get();
+  if (old.empty) return;
+  const batch = db.batch();
+  old.docs.forEach(d => batch.delete(d.ref));
+  await batch.commit();
+};
+
+// The Connect form posts here. It checks for bots and limits, then saves the letter.
+exports.sendMessage = onCall(
+  {
+    region: 'europe-west1',
+    maxInstances: 5,
+    cors: [/francois-portfolio\.(web\.app|firebaseapp\.com)$/, /^https?:\/\/localhost(:\d+)?$/],
+  },
+  async (request) => {
+    const d = request.data ?? {};
+    const name = text(d.name, 100);
+    const email = text(d.email, 254);
+    const message = text(d.message, 5000);
+
+    // Bots fill the hidden field or post instantly. They get a quiet fake success.
+    if (text(d.company, 200) || Number(d.elapsed) < LIMITS.minFillMs) {
+      logger.info('Contact form: dropped a likely bot');
+      return { ok: true };
+    }
+    if (!name || !message || !EMAIL.test(email)) {
+      throw new HttpsError('invalid-argument', 'The name, email or message is missing or not valid.');
+    }
+
+    const now = Date.now();
+    const sender = scramble(clientIp(request.rawRequest));
+    const inbox = scramble(email.toLowerCase());
+    const fingerprint = scramble(`${email.toLowerCase()}|${message.toLowerCase()}`);
+    const day = new Date(now).toISOString().slice(0, 10);
+    const refs = {
+      sender: db.doc(`rateLimits/s-${sender}`),
+      inbox: db.doc(`rateLimits/e-${inbox}`),
+      repeat: db.doc(`rateLimits/m-${fingerprint}`),
+      everyone: db.doc(`rateLimits/day-${day}`),
+    };
+
+    const verdict = await db.runTransaction(async (tx) => {
+      const [s, e, m, all] = await Promise.all(Object.values(refs).map(r => tx.get(r)));
+      if (m.exists) return 'repeat';
+      const sentBy = (s.get('times') ?? []).filter(t => now - t < DAY);
+      const recent = sentBy.filter(t => now - t < LIMITS.perSenderShort.ms);
+      const sentTo = (e.get('times') ?? []).filter(t => now - t < DAY);
+      if (recent.length >= LIMITS.perSenderShort.count || sentBy.length >= LIMITS.perSenderDay || sentTo.length >= LIMITS.perEmailDay) return 'sender';
+      if ((all.get('count') ?? 0) >= LIMITS.everyoneDay) return 'everyone';
+
+      const expireAt = Timestamp.fromMillis(now + DAY);
+      tx.set(refs.sender, { times: [...sentBy, now], expireAt });
+      tx.set(refs.inbox, { times: [...sentTo, now], expireAt });
+      tx.set(refs.repeat, { expireAt });
+      tx.set(refs.everyone, { count: FieldValue.increment(1), expireAt: Timestamp.fromMillis(now + 2 * DAY) }, { merge: true });
+      tx.create(db.collection('contacts').doc(), {
+        name, email, message,
+        createdAt: FieldValue.serverTimestamp(),
+        expireAt: Timestamp.fromMillis(now + KEEP_DAYS * DAY),
+      });
+      return 'sent';
+    });
+
+    sweepLimits().catch(err => logger.warn('Rate limit sweep failed', { error: err?.message }));
+
+    if (verdict === 'repeat') return { ok: true };
+    if (verdict !== 'sent') {
+      logger.info('Contact form: limit reached', { verdict });
+      throw new HttpsError('resource-exhausted', verdict === 'everyone' ? 'everyone' : 'sender');
+    }
+    return { ok: true };
   },
 );

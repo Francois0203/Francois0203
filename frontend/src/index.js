@@ -8,11 +8,7 @@ import '@fontsource-variable/bricolage-grotesque';
 import '@fontsource-variable/onest';
 import '@fontsource-variable/jetbrains-mono';
 
-import './styles/tokens.css';
-import './styles/base.css';
-import './styles/reveal.css';
-import './styles/admin-support.css';
-import './styles/print.css';
+import './styles/index.css';
 
 function Boundary({ children }) {
   const location = useLocation();

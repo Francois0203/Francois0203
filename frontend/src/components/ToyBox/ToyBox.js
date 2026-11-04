@@ -39,8 +39,12 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
     const tiltY = gsap.quickTo(face, 'rotationX', { duration: 0.8, ease: 'power3.out' });
     const look = (e) => {
       const r = face.getBoundingClientRect();
-      tiltX(Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / window.innerWidth * 2)) * 12);
-      tiltY(Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / window.innerHeight * 2)) * -10);
+      const nx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width / 2) / window.innerWidth * 2));
+      const ny = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / window.innerHeight * 2));
+      tiltX(nx * 14);
+      tiltY(ny * -12);
+      face.style.setProperty('--mx', `${(50 + nx * 40).toFixed(1)}%`);
+      face.style.setProperty('--my', `${(40 + ny * 40).toFixed(1)}%`);
     };
 
     let lastBump = 0;
@@ -214,10 +218,15 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
 
   return (
     <div ref={boxRef} className={styles.box}>
+      <span className={styles.floor} aria-hidden="true" />
+      <span className={styles.shadow} aria-hidden="true" />
       <div ref={faceRef} className={styles.face}>
-        {photo && !failed
-          ? <img className={styles.photo} src={photo} alt={name} width="640" height="640" fetchPriority="high" onError={() => setFailed(true)} />
-          : <span className={styles.initials} role="img" aria-label={name}>{initials}</span>}
+        <span className={styles.bezel}>
+          {photo && !failed
+            ? <img className={styles.photo} src={photo} alt={name} width="640" height="640" fetchPriority="high" onError={() => setFailed(true)} />
+            : <span className={styles.initials} role="img" aria-label={name}>{initials}</span>}
+          <span className={styles.gloss} aria-hidden="true" />
+        </span>
       </div>
 
       <div className={styles.toys} aria-hidden="true">
@@ -230,7 +239,7 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
             onPointerEnter={() => { if (!boxRef.current?.dataset.grabbing) setHeld(i); }}
             onPointerLeave={() => { if (!boxRef.current?.dataset.grabbing) setHeld(null); }}
           >
-            {Icon ? <Icon className={styles.icon} /> : label}
+            {Icon ? <Icon className={styles.icon} /> : <><span className={styles.dot} />{label}</>}
           </span>
         ))}
       </div>

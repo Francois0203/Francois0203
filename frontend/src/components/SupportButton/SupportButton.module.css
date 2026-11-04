@@ -1,49 +1,88 @@
-@property --tone {
-    syntax: '<color>';
-    initial-value: #ff7d5e;
-    inherits: true;
-}
-
 .support {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.85rem;
-    height: 3.75rem;
-    padding: 0 1.5rem 0 0.55rem;
-    border-radius: var(--r-control);
-    background: var(--surface);
-    box-shadow: var(--lift), 0 10px 26px -14px var(--tone);
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    white-space: nowrap;
+    gap: 0.75rem;
+    height: 3.5rem;
+    padding: 0 1.4rem 0 0.5rem;
+    border-radius: 999px;
+    background: var(--glass-strong);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c-pink) 55%, var(--glass-line)), var(--lift), 0 14px 34px -16px var(--c-pink);
     color: var(--ink);
+    font-weight: 650;
     text-decoration: none;
-    animation: tones 12.5s steps(1, end) infinite;
-    transition: transform 220ms var(--spring), box-shadow 220ms var(--spring);
+    transition: transform var(--t) var(--spring), box-shadow var(--t) var(--ease);
 }
+
+/* A bright sheen that keeps running around the border. */
+@property --sweep {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.support::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2.5px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--sweep),
+        transparent 0deg,
+        var(--c-pink) 40deg,
+        var(--c-orange) 85deg,
+        var(--c-yellow) 120deg,
+        transparent 165deg,
+        transparent 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--c-orange) 60%, transparent));
+    animation: orbit 2.8s linear infinite;
+    pointer-events: none;
+}
+
+.support:hover::before { animation-duration: 1.4s; }
+
+@keyframes orbit { to { --sweep: 360deg; } }
+
+.support:hover {
+    color: var(--ink);
+    transform: translateY(-3px);
+    box-shadow: inset 0 0 0 1.5px var(--c-pink), var(--lift-hover), 0 20px 44px -16px var(--c-pink);
+}
+
+.support:active { transform: scale(0.95); transition-duration: 90ms; }
 
 .heart {
     display: grid;
     place-items: center;
-    width: 2.7rem;
-    height: 2.7rem;
-    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
     border-radius: 50%;
-    background: var(--tone);
-    box-shadow: none;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c-pink) 45%, white), var(--c-pink) 70%);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 14px -6px var(--c-pink);
 }
 
 .heart svg {
     width: 1.25rem;
     height: 1.25rem;
-    fill: #ffffff;
-    stroke: #1f1f1f;
-    stroke-width: 1.6;
-    stroke-linejoin: round;
+    fill: var(--surface);
+    animation: beat 1.4s var(--ease) infinite;
 }
+
+[data-theme='light'] .heart svg { fill: var(--ground-2); }
+
+.support:hover .heart svg { animation-duration: 0.7s; }
+
+@keyframes beat {
+    0%, 60%, 100% { transform: scale(1); }
+    15% { transform: scale(1.22); }
+    30% { transform: scale(0.95); }
+    45% { transform: scale(1.12); }
+}
+
+.label { white-space: nowrap; }
 
 .arrow {
     width: 1.1rem;
@@ -53,73 +92,26 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: transform 220ms var(--spring);
+    transition: transform var(--t) var(--spring);
 }
 
-.support:hover,
-.support:focus-visible {
-    color: var(--ink);
-    transform: translateY(-2px);
-    box-shadow: var(--lift-hover), 0 16px 34px -14px var(--tone);
-}
+.support:hover .arrow { transform: translate(3px, -3px); }
 
-.support:hover .heart svg { animation: beat 900ms var(--ease) infinite; }
-.support:hover .arrow { transform: translate(2px, -2px); }
-
-.support:active {
-    transform: scale(0.97);
-    box-shadow: var(--lift-press);
-    transition-duration: 80ms;
-}
-
-.support:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 5px; }
-
-.burst {
-    position: absolute;
-    left: 1.9rem;
-    top: 50%;
-    pointer-events: none;
-}
+.burst { position: absolute; left: 1.8rem; top: 50%; pointer-events: none; }
 
 .bit {
     position: absolute;
-    left: -7px;
-    top: -7px;
-    width: 14px;
-    height: 14px;
-    animation: fly 700ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
-    animation-delay: calc(var(--i) * 18ms);
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: -0.55rem 0 0 -0.55rem;
+    opacity: 0;
+    animation: fly 900ms var(--ease-out) calc(var(--i) * 25ms) forwards;
 }
 
-.bit svg { display: block; width: 100%; height: 100%; }
+.bit svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18)); }
 
 @keyframes fly {
-    0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
-    70% { opacity: 1; }
-    100% { transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); opacity: 0; }
+    0% { opacity: 1; transform: translate(0, 0) scale(0.3) rotate(0deg); }
+    60% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(1) rotate(var(--r)); }
 }
-
-@keyframes beat {
-    0%, 100% { transform: scale(1); }
-    18% { transform: scale(1.22); }
-    36% { transform: scale(0.95); }
-    54% { transform: scale(1.12); }
-}
-
-/* A new colour every few seconds. */
-@keyframes tones {
-    0% { --tone: var(--c-orange); }
-    20% { --tone: var(--c-yellow); }
-    40% { --tone: var(--c-green); }
-    60% { --tone: var(--c-pink); }
-    80% { --tone: var(--c-blue); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .support { animation: none; --tone: var(--c-orange); transition: none; }
-    .support:hover .heart svg { animation: none; }
-    .burst { display: none; }
-}
-
-:global([data-no-animations='true']) .support { animation: none; --tone: var(--c-orange); }
-:global([data-no-animations='true']) .burst { display: none; }

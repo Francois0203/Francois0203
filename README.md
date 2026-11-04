@@ -6,22 +6,22 @@
 </p>
 
 <p align="center">
-  <img alt="DevOps  |  Cloud  |  Software Engineering" src="https://readme-typing-svg.demolab.com?font=Bricolage+Grotesque&weight=600&size=21&pause=1200&color=5A63FF&center=true&vCenter=true&width=680&lines=DevOps%20%20%7C%20%20Cloud%20%20%7C%20%20Software%20Engineering%3BDocker%20%20%7C%20%20Kubernetes%20%20%7C%20%20GitHub%20Actions%3BDjango%20on%20Heroku%20and%20AWS%20%40%20Shareforce%3BOn%20the%20AWS%20path%3A%20Cloud%20Practitioner%20to%20DevOps%20Pro">
+  <img alt="DevOps  |  Cloud  |  Software Engineering" src="https://readme-typing-svg.demolab.com?font=Bricolage+Grotesque&weight=600&size=21&pause=1200&color=5B6CFF&center=true&vCenter=true&width=680&lines=DevOps%20%20%7C%20%20Cloud%20%20%7C%20%20Software%20Engineering%3BDocker%20%20%7C%20%20Kubernetes%20%20%7C%20%20GitHub%20Actions%3BDjango%20on%20Heroku%20and%20AWS%20%40%20Shareforce%3BOn%20the%20AWS%20path%3A%20Cloud%20Practitioner%20to%20DevOps%20Pro">
 </p>
 
 <p align="center">
-  <a href="https://francois-portfolio.web.app/"><img alt="Portfolio" src="https://img.shields.io/badge/Portfolio-2b33c4?style=for-the-badge&logo=firefox&logoColor=ffffff"></a>
-  <a href="https://www.linkedin.com/in/francois-meiring"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-08664b?style=for-the-badge&logo=linkedin&logoColor=ffffff"></a>
-  <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email" src="https://img.shields.io/badge/Email-b03a1e?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
-  <a href="https://orcid.org/0009-0004-7605-0618"><img alt="ORCID" src="https://img.shields.io/badge/ORCID-5a3cc9?style=for-the-badge&logo=orcid&logoColor=ffffff"></a>
-  <a href="https://www.hackerrank.com/profile/francoismeiring"><img alt="HackerRank" src="https://img.shields.io/badge/HackerRank-08664b?style=for-the-badge&logo=hackerrank&logoColor=ffffff"></a>
-  <a href="https://www.codewars.com/users/CriminalShrimp"><img alt="Codewars" src="https://img.shields.io/badge/Codewars-b03a1e?style=for-the-badge&logo=codewars&logoColor=ffffff"></a>
+  <a href="https://francois-portfolio.web.app/"><img alt="Portfolio" src="https://img.shields.io/badge/Portfolio-5b6cff?style=for-the-badge&logo=firefox&logoColor=ffffff"></a>
+  <a href="https://www.linkedin.com/in/francois-meiring"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-20c58b?style=for-the-badge&logo=linkedin&logoColor=ffffff"></a>
+  <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email" src="https://img.shields.io/badge/Email-ff7a4d?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
+  <a href="https://orcid.org/0009-0004-7605-0618"><img alt="ORCID" src="https://img.shields.io/badge/ORCID-a87bff?style=for-the-badge&logo=orcid&logoColor=ffffff"></a>
+  <a href="https://www.hackerrank.com/profile/francoismeiring"><img alt="HackerRank" src="https://img.shields.io/badge/HackerRank-20c58b?style=for-the-badge&logo=hackerrank&logoColor=ffffff"></a>
+  <a href="https://www.codewars.com/users/CriminalShrimp"><img alt="Codewars" src="https://img.shields.io/badge/Codewars-ff7a4d?style=for-the-badge&logo=codewars&logoColor=ffffff"></a>
 </p>
 
 <p align="center">
-  <img alt="Open to DevOps, cloud and platform engineering roles" src="https://img.shields.io/badge/Open%20to-DevOps%20%C2%B7%20Cloud%20%C2%B7%20Platform-2b33c4?style=flat-square&labelColor=1f1f1f">
-  <img alt="Based in Centurion, South Africa" src="https://img.shields.io/badge/Based%20in-Centurion%2C%20South%20Africa-08664b?style=flat-square&labelColor=1f1f1f">
-  <img alt="Languages: Afrikaans and English" src="https://img.shields.io/badge/Languages-Afrikaans%20%C2%B7%20English-5a3cc9?style=flat-square&labelColor=1f1f1f">
+  <img alt="Open to DevOps, cloud and platform engineering roles" src="https://img.shields.io/badge/Open%20to-DevOps%20%C2%B7%20Cloud%20%C2%B7%20Platform-5b6cff?style=flat-square&labelColor=12131c">
+  <img alt="Based in Centurion, South Africa" src="https://img.shields.io/badge/Based%20in-Centurion%2C%20South%20Africa-20c58b?style=flat-square&labelColor=12131c">
+  <img alt="Languages: Afrikaans and English" src="https://img.shields.io/badge/Languages-Afrikaans%20%C2%B7%20English-a87bff?style=flat-square&labelColor=12131c">
 </p>
 
 <p align="center">
@@ -34,38 +34,42 @@
 
 ---
 
-## About
+## Hi, I am Fran&ccedil;ois
 
-I work on the side of software that gets it into production and keeps it running: **containers, CI/CD pipelines and the cloud** underneath them.
+**In plain words:** I keep websites and apps running smoothly behind the scenes, and I build websites for small businesses.
 
-In my previous role I was one of two developers who built three enterprise systems from nothing and took them to production on **Docker and Kubernetes**, with GitHub CI/CD, Nginx, PostgreSQL, Redis and MinIO behind them. At **Shareforce** I work on a Django platform deployed across **Heroku and AWS**, including the pipelines it ships through.
-
-I am working through the **AWS certifications**, from Cloud Practitioner toward DevOps Engineer Professional, and alongside the job I am reading for an **MSc in Computer Science** on distributed computing for astronomical data processing.
-
-Away from the keyboard you will find me at the gym, on the squash court, on a hiking trail, or working through a guitar piece.
+**In engineering words:** I work on the side of software that gets it into production and keeps it there. That means **containers, CI/CD pipelines and the cloud** underneath them.
 
 <table>
 <tr>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 
-**Currently**
+**Now**
 
-Junior Software Developer at Shareforce (Pty) Ltd
+Junior Software Developer at **Shareforce**
 <br><sub>Django platform on Heroku and AWS</sub>
-<br>AWS Certified Cloud Practitioner <sub>exam booked</sub>
-<br>MSc. Computer Science at North-West University
 
 </td>
-<td width="50%" valign="top">
+<td width="33%" valign="top">
 
-**Focus areas**
+**Before**
 
-CI/CD &middot; containers &middot; Kubernetes
-<br>AWS &middot; reliability &middot; distributed systems
+One of two developers who rebuilt **Aquatico Scientific's** operational software
+<br><sub>Docker and Kubernetes in production</sub>
+
+</td>
+<td width="34%" valign="top">
+
+**Next**
+
+AWS Certified Cloud Practitioner <sub>exam booked</sub>
+<br>MSc. Computer Science <sub>North-West University</sub>
 
 </td>
 </tr>
 </table>
+
+Away from the keyboard you will find me at the gym, on the squash court, on a hiking trail, or working through a guitar piece.
 
 ---
 
@@ -172,40 +176,40 @@ Building at that scale with no senior engineer above us taught me the cost of de
 
 **Cloud &amp; Platform**
 
-<img alt="AWS" src="https://img.shields.io/badge/AWS-2b33c4?style=flat-square&logo=amazonwebservices&logoColor=ffffff">
-<img alt="Docker" src="https://img.shields.io/badge/Docker-2b33c4?style=flat-square&logo=docker&logoColor=ffffff">
-<img alt="Kubernetes" src="https://img.shields.io/badge/Kubernetes-2b33c4?style=flat-square&logo=kubernetes&logoColor=ffffff">
-<img alt="Linux" src="https://img.shields.io/badge/Linux-2b33c4?style=flat-square&logo=linux&logoColor=ffffff">
-<img alt="Nginx" src="https://img.shields.io/badge/Nginx-2b33c4?style=flat-square&logo=nginx&logoColor=ffffff">
-<img alt="Heroku" src="https://img.shields.io/badge/Heroku-2b33c4?style=flat-square&logo=heroku&logoColor=ffffff">
-<img alt="Firebase" src="https://img.shields.io/badge/Firebase-2b33c4?style=flat-square&logo=firebase&logoColor=ffffff">
-<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-2b33c4?style=flat-square&logo=postgresql&logoColor=ffffff">
-<img alt="Redis" src="https://img.shields.io/badge/Redis-2b33c4?style=flat-square&logo=redis&logoColor=ffffff">
-<img alt="MinIO" src="https://img.shields.io/badge/MinIO-2b33c4?style=flat-square&logo=minio&logoColor=ffffff">
+<img alt="AWS" src="https://img.shields.io/badge/AWS-5b6cff?style=flat-square&logo=amazonwebservices&logoColor=ffffff">
+<img alt="Docker" src="https://img.shields.io/badge/Docker-5b6cff?style=flat-square&logo=docker&logoColor=ffffff">
+<img alt="Kubernetes" src="https://img.shields.io/badge/Kubernetes-5b6cff?style=flat-square&logo=kubernetes&logoColor=ffffff">
+<img alt="Linux" src="https://img.shields.io/badge/Linux-5b6cff?style=flat-square&logo=linux&logoColor=ffffff">
+<img alt="Nginx" src="https://img.shields.io/badge/Nginx-5b6cff?style=flat-square&logo=nginx&logoColor=ffffff">
+<img alt="Heroku" src="https://img.shields.io/badge/Heroku-5b6cff?style=flat-square&logo=heroku&logoColor=ffffff">
+<img alt="Firebase" src="https://img.shields.io/badge/Firebase-5b6cff?style=flat-square&logo=firebase&logoColor=ffffff">
+<img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-5b6cff?style=flat-square&logo=postgresql&logoColor=ffffff">
+<img alt="Redis" src="https://img.shields.io/badge/Redis-5b6cff?style=flat-square&logo=redis&logoColor=ffffff">
+<img alt="MinIO" src="https://img.shields.io/badge/MinIO-5b6cff?style=flat-square&logo=minio&logoColor=ffffff">
 
 </td>
 <td valign="top" width="34%">
 
 **Delivery &amp; Building**
 
-<img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-08664b?style=flat-square&logo=githubactions&logoColor=ffffff">
-<img alt="CI/CD" src="https://img.shields.io/badge/CI%2FCD-08664b?style=flat-square">
-<img alt="Git" src="https://img.shields.io/badge/Git-08664b?style=flat-square&logo=git&logoColor=ffffff">
-<img alt="npm" src="https://img.shields.io/badge/npm-08664b?style=flat-square&logo=npm&logoColor=ffffff">
-<img alt="Python" src="https://img.shields.io/badge/Python-08664b?style=flat-square&logo=python&logoColor=ffffff">
-<img alt="Django" src="https://img.shields.io/badge/Django-08664b?style=flat-square&logo=django&logoColor=ffffff">
-<img alt="Node.js" src="https://img.shields.io/badge/Node.js-08664b?style=flat-square&logo=nodedotjs&logoColor=ffffff">
-<img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-08664b?style=flat-square&logo=javascript&logoColor=ffffff">
-<img alt="React" src="https://img.shields.io/badge/React-08664b?style=flat-square&logo=react&logoColor=ffffff">
+<img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub%20Actions-20c58b?style=flat-square&logo=githubactions&logoColor=ffffff">
+<img alt="CI/CD" src="https://img.shields.io/badge/CI%2FCD-20c58b?style=flat-square">
+<img alt="Git" src="https://img.shields.io/badge/Git-20c58b?style=flat-square&logo=git&logoColor=ffffff">
+<img alt="npm" src="https://img.shields.io/badge/npm-20c58b?style=flat-square&logo=npm&logoColor=ffffff">
+<img alt="Python" src="https://img.shields.io/badge/Python-20c58b?style=flat-square&logo=python&logoColor=ffffff">
+<img alt="Django" src="https://img.shields.io/badge/Django-20c58b?style=flat-square&logo=django&logoColor=ffffff">
+<img alt="Node.js" src="https://img.shields.io/badge/Node.js-20c58b?style=flat-square&logo=nodedotjs&logoColor=ffffff">
+<img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-20c58b?style=flat-square&logo=javascript&logoColor=ffffff">
+<img alt="React" src="https://img.shields.io/badge/React-20c58b?style=flat-square&logo=react&logoColor=ffffff">
 
 </td>
 <td valign="top" width="33%">
 
 **Professional**
 
-<img alt="Microservices" src="https://img.shields.io/badge/Microservices-b03a1e?style=flat-square">
-<img alt="System Architecture" src="https://img.shields.io/badge/System%20Architecture-b03a1e?style=flat-square">
-<img alt="Team Collaboration" src="https://img.shields.io/badge/Team%20Collaboration-b03a1e?style=flat-square">
+<img alt="Microservices" src="https://img.shields.io/badge/Microservices-ff7a4d?style=flat-square">
+<img alt="System Architecture" src="https://img.shields.io/badge/System%20Architecture-ff7a4d?style=flat-square">
+<img alt="Team Collaboration" src="https://img.shields.io/badge/Team%20Collaboration-ff7a4d?style=flat-square">
 
 </td>
 </tr>
@@ -235,23 +239,25 @@ Building at that scale with no senior engineer above us taught me the cost of de
 
 ## This Website
 
-**[francois-portfolio.web.app](https://francois-portfolio.web.app/)** is built from this repository. It is styled like an engineer's sketchbook: graph paper, five sticker colours, and shapes with hard outlines.
+**[francois-portfolio.web.app](https://francois-portfolio.web.app/)** is built from this repository. It is made of frosted glass over a living colour field: panels with coloured rims, a light that follows your pointer, and things you can pick up and throw.
 
 | Page | What is on it |
 |:--|:--|
-| **Home** | An intro that builds the FM logo from blocks, then my story as a scrolling timeline of real roles and qualifications, and the client sites I have built. |
-| **Bio** | A full CV on the page, and a **Print CV** button that produces a compact one-page A4 CV from the same data. |
-| **Projects** | Live client sites you can use in place, and my GitHub repositories with their READMEs rendered on the page. |
-| **Connect** | A contact form written as a letter, my profiles, and a way to support my studies. |
+| **Home** | An intro that builds the FM logo from glass tiles, my photo in a box of toys you can throw around, the client sites I have built, my story as a scrolling timeline, the AWS path, and photos from off the clock. |
+| **Bio** | The full CV on the page, and a **Download CV** button that builds a one-page A4 PDF in the browser from the same data. |
+| **Projects** | Live client sites you can preview in place, and my GitHub repositories with their READMEs rendered on the page. |
+| **Connect** | A contact form written as a letter, with a send button that shows a spinner, then a tick, or shakes if it fails. Plus my profiles and a way to support my studies. |
 
-**How it works**
+**How it is built**
 
-- **Frontend.** Vite and React 19 with CSS modules. Light and dark themes follow the device setting.
-- **Content.** Everything on the site, including every heading, lives in Firestore and is edited through a private admin page with Google sign-in, drag-to-reorder lists, profile photo upload, and per-item control over what appears on the printed CV.
+- **Frontend.** Vite and React 19 with CSS modules. One token file holds every colour, size and timing, and one global stylesheet holds the shared glass, motion and form styles. Every component and page lives in its own folder with its own script, stylesheet and index file.
+- **Feedback.** One toast system for the whole site (`toast.success`, `toast.error`, `toast.promise`), and one button that handles its own loading, success and failure states.
+- **Motion.** Scroll reveals, scroll-linked depth, pointer tilt and light, tap ripples, and physics you can play with. All of it switches off with the motion toggle or the device's reduced motion setting.
+- **Content.** Every word on the site lives in Firestore and is edited through a private admin page with Google sign-in, drag-to-reorder lists, photo upload, and control over what appears on the CV.
 - **Contact.** A Firebase Function emails me each message sent through the contact form.
-- **Automation.** GitHub Actions deploy the site on every push to `main`, sync my repositories and client sites into Firestore, and generate the graphics on this page.
+- **Automation.** GitHub Actions deploy the site on every push to `main`, sync my repositories and client sites into Firestore, and draw the graphics on this page.
 
-<sub>The graphics on this page are generated by `.github/workflows/contribution-snake.yml` and served from the `output` branch over jsDelivr.</sub>
+<sub>The graphics on this page are generated by `.github/workflows/refresh.yml` and served from the `output` branch over jsDelivr.</sub>
 
 ---
 
@@ -272,9 +278,9 @@ The full project list, and the client sites I have built, live at **[francois-po
 Open to **DevOps, cloud and platform engineering** roles.
 
 <p align="center">
-  <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email me" src="https://img.shields.io/badge/Email%20me-2b33c4?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
-  <a href="https://www.linkedin.com/in/francois-meiring"><img alt="Connect on LinkedIn" src="https://img.shields.io/badge/Connect%20on%20LinkedIn-08664b?style=for-the-badge&logo=linkedin&logoColor=ffffff"></a>
-  <a href="https://francois-portfolio.web.app/connect"><img alt="Contact form" src="https://img.shields.io/badge/Contact%20form-b03a1e?style=for-the-badge&logo=maildotru&logoColor=ffffff"></a>
+  <a href="mailto:francoismeiring0203@gmail.com"><img alt="Email me" src="https://img.shields.io/badge/Email%20me-5b6cff?style=for-the-badge&logo=gmail&logoColor=ffffff"></a>
+  <a href="https://www.linkedin.com/in/francois-meiring"><img alt="Connect on LinkedIn" src="https://img.shields.io/badge/Connect%20on%20LinkedIn-20c58b?style=for-the-badge&logo=linkedin&logoColor=ffffff"></a>
+  <a href="https://francois-portfolio.web.app/connect"><img alt="Contact form" src="https://img.shields.io/badge/Contact%20form-ff7a4d?style=for-the-badge&logo=maildotru&logoColor=ffffff"></a>
 </p>
 
 <p align="center">

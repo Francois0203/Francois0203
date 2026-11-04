@@ -11,7 +11,7 @@ const BURST = [
   { kind: 'ring', colour: 'yellow', x: 70, y: 30, r: 20 },
 ];
 
-// A sticker button. Its shadow changes colour, the heart beats, and a click throws confetti.
+// A glass button with a beating heart. A click throws glass confetti.
 const SupportButton = ({ href, children }) => {
   const [pops, setPops] = useState(0);
 
@@ -37,7 +37,7 @@ const SupportButton = ({ href, children }) => {
         <span className={styles.burst} key={pops} aria-hidden="true">
           {BURST.map((b, i) => (
             <span key={i} className={styles.bit} style={{ '--x': `${b.x}px`, '--y': `${b.y}px`, '--r': `${b.r}deg`, '--i': i }}>
-              <Shape kind={b.kind} colour={b.colour} />
+              <Shape kind={b.kind} colour={b.colour} sticker={false} />
             </span>
           ))}
         </span>

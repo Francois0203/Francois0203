@@ -1,3 +1,6 @@
+import { useId } from 'react';
+import styles from './Shape.module.css';
+
 const HEX = [[50, 6], [90, 28], [90, 72], [50, 94], [10, 72], [10, 28]];
 const TRI = [[50, 12], [92, 86], [8, 86]];
 const STAR = Array.from({ length: 16 }, (_, i) => {
@@ -20,31 +23,42 @@ const SHAPES = {
 };
 
 
-const layer = (shape, paint, extra, props = {}) => (
-  <g
-    style={{ fill: paint, stroke: paint }}
-    strokeWidth={shape.sw + extra}
-    strokeLinejoin="round"
-    dangerouslySetInnerHTML={{ __html: shape.m }}
-    {...props}
-  />
-);
-
-// A sticker-style shape with an outline and shadow.
-const Shape = ({ kind = 'circle', colour = 'blue', sticker = true, className = '', style, ...rest }) => {
+// A glass solid: tinted body, light from the top left, a bright rim.
+const Shape = ({ kind = 'circle', colour = 'blue', sticker, className = '', style, ...rest }) => {
   const shape = SHAPES[kind] ?? SHAPES.circle;
+  const id = useId().replace(/:/g, '');
+  const tone = `var(--c-${colour})`;
+  const paint = (fill, stroke, extra = 0, props = {}) => (
+    <g
+      style={{ fill, stroke }}
+      strokeWidth={shape.sw + extra}
+      strokeLinejoin="round"
+      dangerouslySetInnerHTML={{ __html: shape.m }}
+      {...props}
+    />
+  );
   return (
     <svg
       viewBox="0 0 100 100"
-      className={className}
-      style={{ overflow: 'visible', ...style }}
+      className={[styles.shape, className].filter(Boolean).join(' ')}
+      style={{ '--tone': tone, ...style }}
       aria-hidden="true"
       focusable="false"
       {...rest}
     >
-      {sticker && layer(shape, 'var(--ink)', 5, { transform: 'translate(4 5)' })}
-      {sticker && layer(shape, 'var(--ink)', 5)}
-      {layer(shape, `var(--c-${colour})`, 0)}
+      <defs>
+        <linearGradient id={`b${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="white" stopOpacity="0.85" />
+          <stop offset="0.45" stopColor="white" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id={`f${id}`} cx="0.35" cy="0.3" r="0.9">
+          <stop offset="0" className={styles.lit} />
+          <stop offset="1" className={styles.deep} />
+        </radialGradient>
+      </defs>
+      {paint(`url(#f${id})`, `url(#f${id})`)}
+      {paint(`url(#b${id})`, 'none', 0, { className: styles.gloss })}
+      {paint('none', 'rgba(255,255,255,0.6)', 1.5, { className: styles.rim })}
     </svg>
   );
 };

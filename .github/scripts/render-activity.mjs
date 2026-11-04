@@ -5,18 +5,18 @@ const OUT = process.env.OUT_DIR || 'dist';
 
 const THEMES = {
   light: {
-    bg0: '#f7f3ea', bg1: '#f1ebdd',
-    text: '#1f1f1f', muted: '#8a847c', grid: '#e6dfcf',
-    line: '#5a63ff', point: '#2b33c4',
-    fill0: '#5a63ff', fill1: '#bda8ff',
-    tile: '#efe8da', accent: '#2b33c4',
+    bg0: '#f6f7fb', bg1: '#eceef6',
+    text: '#12131c', muted: '#7a7f94', grid: '#dfe1ea',
+    line: '#5b6cff', point: '#2f3bd1',
+    fill0: '#5b6cff', fill1: '#a87bff',
+    tile: '#ffffff', accent: '#2f3bd1',
   },
   dark: {
-    bg0: '#1d1c1a', bg1: '#171615',
-    text: '#f3efea', muted: '#847d74', grid: '#2f2d2a',
-    line: '#8f95ff', point: '#bda8ff',
-    fill0: '#5a63ff', fill1: '#bda8ff',
-    tile: '#232220', accent: '#bda8ff',
+    bg0: '#0c0d14', bg1: '#06070b',
+    text: '#f3f4fa', muted: '#767b90', grid: '#1a1c27',
+    line: '#94a0ff', point: '#a87bff',
+    fill0: '#5b6cff', fill1: '#a87bff',
+    tile: '#12131c', accent: '#a87bff',
   },
 };
 

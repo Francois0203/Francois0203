@@ -1,0 +1,36 @@
+.panel {
+    --rx: 0deg;
+    --ry: 0deg;
+    --lz: 0px;
+    transition: transform 500ms var(--ease-out), box-shadow var(--t) var(--ease);
+}
+
+.strong { background: var(--glass-strong); }
+.flat { box-shadow: var(--glass-hi); }
+
+.none { padding: 0; }
+.sm { padding: 1rem; }
+.md { padding: clamp(1.25rem, 2.4vw, 1.75rem); }
+.lg { padding: clamp(1.5rem, 3.6vw, 2.75rem); }
+
+.tilt {
+    transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(var(--lz));
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.tilt[data-tilting] { transition: transform 120ms linear, box-shadow var(--t) var(--ease); box-shadow: var(--glass-hi), var(--glass-cast-hover); }
+
+/* The light spot that follows the pointer. */
+.sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, var(--sheen-alpha)), transparent 55%);
+    opacity: 0;
+    mix-blend-mode: soft-light;
+    transition: opacity var(--t) var(--ease);
+    pointer-events: none;
+}
+
+.tilt[data-tilting] .sheen { opacity: 1; }
