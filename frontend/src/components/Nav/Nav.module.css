@@ -1,289 +1,222 @@
-.sentinel {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
-}
-
-.bar {
+.wrap {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: var(--z-nav);
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    height: 72px;
-    padding: 0 var(--gutter);
-    padding-top: env(safe-area-inset-top, 0px);
-    border-bottom: 1px solid transparent;
-    transition:
-        background-color var(--t) var(--ease),
-        border-color var(--t) var(--ease);
+    justify-content: center;
+    padding: 0.9rem var(--gutter) 0;
+    pointer-events: none;
+    transition: padding 400ms var(--ease-out);
 }
 
-.stuck {
-    border-bottom-color: transparent;
-    background: color-mix(in srgb, var(--ground) 82%, transparent);
+.wrap[data-stuck] { padding-top: 0.55rem; }
+
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: var(--max);
+    height: 3.75rem;
+    padding: 0 0.55rem 0 0.9rem;
+    border-radius: var(--r-control);
+    background: var(--glass-weak);
     -webkit-backdrop-filter: var(--blur);
     backdrop-filter: var(--blur);
+    box-shadow: var(--glass-hi);
+    pointer-events: auto;
+    transition: max-width 500ms var(--ease-out), height 400ms var(--ease-out), background-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+    animation: slideIn 800ms 200ms var(--spring) both;
 }
+
+.wrap[data-stuck] .bar {
+    max-width: 980px;
+    height: 3.4rem;
+    background: var(--glass);
+    box-shadow: var(--glass-hi), var(--glass-cast);
+}
+
+@keyframes slideIn { from { opacity: 0; transform: translateY(-120%) scale(0.95); } }
 
 .mark {
     display: inline-flex;
     align-items: center;
-    gap: 0.7rem;
-    text-decoration: none;
+    gap: 0.6rem;
+    margin-right: auto;
     color: var(--ink);
-}
-
-.markName {
-    position: relative;
-    font-size: var(--text-lg);
-    font-weight: 500;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 650;
     letter-spacing: -0.02em;
 }
 
-/* "You are here" on Home: a marker bar under the name, never behind it. */
-.markName::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -7px;
-    height: 4px;
-    border-radius: 4px;
-    background: var(--c-yellow);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--t) var(--ease);
-}
+.mark:hover { color: var(--ink); }
 
-.mark:hover .markName::after,
-.markHome .markName::after { transform: scaleX(1); }
+.markName { font-size: 1.05rem; white-space: nowrap; }
 
 .routes {
+    --ix: 0px;
+    --iw: 0px;
+    --itone: var(--c-blue);
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    margin-left: auto;
+    gap: 0.15rem;
+    padding: 0.25rem;
+    border-radius: var(--r-control);
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.indicator {
+    position: absolute;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    left: 0;
+    width: var(--iw);
+    border-radius: var(--r-control);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--itone) 60%, white), var(--itone));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 6px 16px -6px var(--itone);
+    transform: translateX(var(--ix));
+    opacity: var(--io, 0);
+    transition: transform 460ms var(--spring), width 460ms var(--spring), background 300ms var(--ease), opacity 200ms var(--ease);
 }
 
 .route {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 0.55rem 1rem;
+    z-index: 1;
+    padding: 0.5rem 1rem;
     border-radius: var(--r-control);
-    font-size: var(--text-md);
-    font-weight: 500;
-    color: var(--ink);
+    color: var(--ink-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
     text-decoration: none;
-    transition: background-color var(--t-fast) var(--ease);
+    transition: color var(--t-fast) var(--ease), background-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--spring);
 }
 
-.route { gap: 0.5rem; }
+.route:hover,
+.route[aria-current='page'] { color: var(--on-bright); }
 
-.tabDot {
-    width: 9px;
-    height: 9px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--tab);
-    box-shadow: 0 0 0 1px var(--rule-strong);
-    transition: transform var(--t) var(--spring);
+/* While the pill sits under another link, the current page keeps a soft tint and readable text. */
+.routes:is(:hover, :focus-within) .route[aria-current='page']:not(:hover):not(:focus-visible) {
+    color: var(--tab-ink);
+    background: color-mix(in srgb, var(--tab) 16%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tab) 45%, transparent);
 }
 
-.route:hover { color: var(--ink); background: color-mix(in srgb, var(--tab) 30%, transparent); }
-.route:hover .tabDot { transform: scale(1.25); }
+.route:active { transform: scale(0.94); }
 
-.active,
-.active:hover {
-    background: var(--tab);
-    color: var(--tab-on);
-    box-shadow: var(--lift);
-}
+.controls { display: flex; align-items: center; gap: 0.3rem; }
 
-.active .tabDot { background: var(--tab-on); box-shadow: none; }
-
-.controls {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-left: 0.5rem;
-}
-
-/* Solid stickers, not outlines: before the bar turns solid on scroll they sit straight on
-   the graph paper and the drifting shapes, and need their own ground to stay visible. */
-.icon,
 .menu {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
     padding: 0;
     border: 0;
-    border-radius: var(--r-control);
-    background: var(--surface);
-    box-shadow: var(--lift);
-    color: var(--ink);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-2);
     cursor: pointer;
-    transition:
-        transform var(--t-fast) var(--ease),
-        box-shadow var(--t-fast) var(--ease),
-        background-color var(--t-fast) var(--ease);
+    transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
 }
 
-.icon svg { width: 17px; height: 17px; }
-.icon:hover,
-.menu:hover { background: var(--surface-2); transform: translateY(-1px); box-shadow: var(--lift-hover); }
-.icon:active,
-.menu:active { transform: scale(0.95); box-shadow: var(--lift-press); }
-.iconOn,
-.iconOn:hover { background: var(--c-pink); color: #1f1f1f; }
+.menu:hover { background: var(--glass-strong); color: var(--ink); box-shadow: inset 0 0 0 1px var(--glass-line); }
 
+.menu:active { transform: scale(0.88); }
+
+.cv { margin-right: 0.35rem; }
 
 .menu { display: none; }
 
 .bars,
-.barsOpen {
-    position: relative;
+.bars::before,
+.bars::after {
     display: block;
     width: 18px;
-    height: 1.5px;
+    height: 2px;
+    border-radius: 2px;
     background: currentColor;
-    transition: background-color var(--t-fast) var(--ease);
+    transition: transform 360ms var(--spring), background-color 200ms var(--ease);
 }
 
-.bars::before,
-.bars::after,
-.barsOpen::before,
-.barsOpen::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 18px;
-    height: 1.5px;
-    background: currentColor;
-    transition: transform var(--t) var(--ease);
-}
+.bars { position: relative; }
+.bars::before, .bars::after { content: ''; position: absolute; left: 0; }
+.bars::before { transform: translateY(-6px); }
+.bars::after { transform: translateY(6px); }
+.bars[data-open] { background: transparent; }
+.bars[data-open]::before { transform: rotate(45deg); }
+.bars[data-open]::after { transform: rotate(-45deg); }
 
-.bars::before { transform: translateY(-5px); }
-.bars::after { transform: translateY(5px); }
-.barsOpen { background: transparent; }
-.barsOpen::before { transform: rotate(45deg); }
-.barsOpen::after { transform: rotate(-45deg); }
-
-.overlay {
+.sheet {
     position: fixed;
     inset: 0;
-    z-index: var(--z-overlay);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    padding: 64px var(--gutter) 0;
-    background: color-mix(in srgb, var(--ground) 94%, transparent);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-}
-
-.overlayOpen { display: flex; }
-
-@media (pointer: coarse) {
-    .stuck {
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        background: color-mix(in srgb, var(--ground) 96%, transparent);
-    }
-
-    .overlay {
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        background: var(--ground);
-    }
-}
-
-.overlay nav {
+    z-index: calc(var(--z-nav) - 1);
     display: flex;
-    flex-direction: column;
+    align-items: flex-start;
+    padding: 5.5rem var(--gutter) 2rem;
+    background: color-mix(in srgb, var(--ground) 50%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(18px) saturate(140%);
+    animation: fade 260ms var(--ease) both;
 }
+
+.sheet[hidden] { display: none; }
+
+.sheetNav { display: grid; gap: 0.75rem; width: 100%; }
 
 .big {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
-    padding: 1rem 0;
-    border-top: 1px solid var(--rule);
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 9vw, 3.25rem);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: var(--track-display);
+    padding: 1.1rem 1.25rem;
     color: var(--ink);
     text-decoration: none;
-    opacity: 0;
-    transform: translateY(14px);
+    font-family: var(--font-display);
+    font-size: var(--display-sm);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    animation: drop 520ms calc(var(--i) * 60ms) var(--spring) both;
+    transition: transform var(--t) var(--spring);
 }
 
-.overlayOpen .big {
-    animation: bigIn 520ms var(--ease) forwards;
-    animation-delay: calc(var(--i) * 60ms);
-}
+.big:active { transform: scale(0.97); }
+.big:hover { color: var(--ink); }
 
-@keyframes bigIn {
-    to { opacity: 1; transform: none; }
-}
+.big[aria-current='page'] { background: color-mix(in srgb, var(--tone) 20%, var(--glass-strong)); }
 
-.bigIndex {
-    display: grid;
-    place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
+.bigDot {
     flex: none;
+    width: 0.9rem;
+    height: 0.9rem;
     border-radius: 50%;
-    background: var(--tab);
-    box-shadow: 0 0 0 1px var(--rule-strong);
-    font-family: var(--font-mono);
-    font-size: var(--mono-label);
-    color: var(--tab-on);
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 40%, white), var(--tone));
+    box-shadow: 0 4px 10px -3px var(--tone);
 }
 
-.big:nth-child(even) .bigIndex { border-radius: 30%; }
-
-.bigText { display: flex; flex-direction: column; gap: 0.35rem; }
+.bigText { display: flex; flex-direction: column; gap: 0.2rem; }
 
 .bigBlurb {
+    font-family: var(--font-text);
     font-size: var(--text-sm);
-    font-weight: 400;
+    font-weight: 450;
     letter-spacing: 0;
     color: var(--ink-2);
 }
 
-.bigActive { color: var(--tab-deep); }
+@keyframes fade { from { opacity: 0; } }
+@keyframes drop { from { opacity: 0; transform: translateY(-16px) scale(0.96); } }
 
-@media (max-width: 860px) {
-    .bar { height: 60px; gap: 0.5rem; }
+@media (max-width: 760px) {
     .routes { display: none; }
-    .controls { margin-left: auto; }
-    .menu { display: inline-flex; }
+    .menu { display: grid; }
+    .markName { font-size: 0.98rem; }
+    .cv { display: none; }
+}
+
+@media (max-width: 380px) {
     .markName { display: none; }
 }
-
-@media (min-width: 861px) {
-    .overlay,
-    .overlayOpen { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .big { opacity: 1; transform: none; animation: none; }
-    .icon:hover, .icon:active, .menu:hover, .menu:active { transform: none; }
-}
-
-:global([data-no-animations='true']) .icon:hover,
-:global([data-no-animations='true']) .icon:active,
-:global([data-no-animations='true']) .menu:hover,
-:global([data-no-animations='true']) .menu:active { transform: none; }

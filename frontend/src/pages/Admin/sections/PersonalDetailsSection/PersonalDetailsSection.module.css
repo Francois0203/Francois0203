@@ -1,0 +1,3 @@
+.root { display: grid; }
+
+.root > div:first-child > label { margin-top: var(--spacing-sm); }

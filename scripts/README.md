@@ -1,6 +1,6 @@
 # Scripts
 
-Two sync scripts run by `.github/workflows/sync-github.yml` (on every push to
+Two sync scripts run by `.github/workflows/refresh.yml` (on every push to
 `main`, monthly, or manually from the Actions tab). Both read from GitHub and
 write to Firestore; the site itself never calls the GitHub API.
 

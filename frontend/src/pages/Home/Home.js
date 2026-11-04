@@ -19,7 +19,7 @@ import Headline from '../../components/Headline';
 import ToyBox from '../../components/ToyBox';
 import { iconFor } from '../../content/toys';
 import Story from '../../components/Story';
-import Curtain from '../../components/Curtain';
+import Glass from '../../components/Glass';
 import Showcase, { ShowcaseSkeleton } from '../../components/Showcase';
 import Skeleton, { Bone } from '../../components/Skeleton';
 import styles from './Home.module.css';
@@ -79,7 +79,7 @@ const markName = (name) => {
 
 const Home = () => {
   const { data, loading } = usePortfolioData();
-  const { overrides } = useSiteCopy();
+  const { overrides, copy } = useSiteCopy();
   const { sites, loading: sitesLoading } = useStudioSites();
   const t = resolveGroup(HOME_FIELDS, overrides.home);
   const tp = resolveGroup(PROJECTS_FIELDS, overrides.projects);
@@ -89,7 +89,7 @@ const Home = () => {
   const personal = data?.personal ?? {};
   const contact = data?.contact ?? {};
   const social = data?.social ?? [];
-  const name = personal.name ?? 'Francois Meiring';
+  const name = personal.name || copy('site').name;
 
   const photo = personal.photoUrl || githubAvatar(social);
 
@@ -146,9 +146,9 @@ const Home = () => {
   return (
     <div className={styles.page}>
 
-      {/* 1. Who */}
+      {/* Hello */}
       <section ref={heroRef} className={styles.hero} data-shown={heroShown ? '' : undefined}>
-        <div className={styles.heroCopy}>
+        <div className={styles.heroCopy} data-parallax style={{ '--depth': '-36px' }}>
           <div data-rise style={{ '--i': 0 }}>
             <Chip dot="live">{chip}</Chip>
           </div>
@@ -158,17 +158,86 @@ const Home = () => {
           <p className={styles.intro} data-rise style={{ '--i': 4 }}>{t.heroIntro}</p>
 
           <div className={styles.actions} data-rise style={{ '--i': 5 }}>
-            <Button as={Link} to="/projects" variant="fill" arrow>{t.heroCtaPrimary}</Button>
-            <Button as={Link} to="/connect" variant="line">{t.heroCtaSecondary}</Button>
+            <Button as={Link} to="/projects" variant="primary" size="lg" arrow>{t.heroCtaPrimary}</Button>
+            <Button as={Link} to="/connect" variant="glass" size="lg">{t.heroCtaSecondary}</Button>
           </div>
         </div>
 
-        <div className={styles.heroToys}>
-          {!loading && <ToyBox photo={photo} name={name} toys={toys} hint={t.toyHint} hintTouch={t.toyHintTouch} />}
+        <div className={styles.heroToys} data-rise style={{ '--i': 2, '--rise': '30px' }}>
+          {loading
+            ? <div className={styles.heroWait}><Bone w="min(58%, 350px)" h="auto" r="50%" style={{ aspectRatio: '1' }} /></div>
+            : <ToyBox photo={photo} name={name} toys={toys} hint={t.toyHint} hintTouch={t.toyHintTouch} />}
         </div>
       </section>
 
-      {/* 2. Off the clock */}
+      {/* What he has built */}
+      <section id="work" className={styles.block}>
+        <header ref={workRef} className={styles.headRow} data-shown={workShown ? '' : undefined}>
+          <div className={styles.head}>
+            <Headline text={t.curtainLabel} tone="green" className={styles.headTitle} />
+            <p className={styles.lede} data-rise style={{ '--i': 3 }}>{t.workLede}</p>
+          </div>
+          <div data-rise style={{ '--i': 5 }}>
+            <Button as={Link} to="/projects" variant="text" arrow>{t.workCta}</Button>
+          </div>
+        </header>
+        {sitesLoading
+          ? <ShowcaseSkeleton />
+          : sites.length === 0
+            ? <p className={styles.empty}>{t.workEmpty}</p>
+            : <Showcase sites={sites} visitLabel={tp.visitLabel} />}
+      </section>
+
+      {/* How he got here */}
+      {loading && (
+        <section className={`${styles.block} ${styles.story}`}>
+          <Skeleton label={copy('a11y').loadingStory} className={styles.storyWait}>
+            <Bone w="min(100%, 340px)" h="auto" r="50%" className={styles.storyWaitRing} style={{ aspectRatio: '1' }} />
+            <div className={`glass ${styles.storyWaitCard}`}>
+              <Bone w="40%" h="0.8rem" />
+              <Bone w="70%" h="2.4rem" style={{ marginTop: '1rem' }} />
+              <Bone w="50%" h="1.1rem" style={{ marginTop: '0.75rem' }} />
+              <Bone w="95%" h="0.9rem" style={{ marginTop: '1.5rem' }} />
+              <Bone w="80%" h="0.9rem" style={{ marginTop: '0.5rem' }} />
+            </div>
+          </Skeleton>
+        </section>
+      )}
+
+      {chapters.length > 0 && (
+        <section id="story" className={`${styles.block} ${styles.story}`}>
+          <Story
+            chapters={chapters}
+            photo={photo}
+            name={name}
+            kinds={{ experience: t.storyKindWork, education: t.storyKindStudy }}
+            photosFor={photosFor}
+            photosLabel={tph.storyPhotos}
+            viewerLabels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
+            head={(
+              <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
+                <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
+                <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.storyLede}</p>
+              </header>
+            )}
+          />
+        </section>
+      )}
+
+      {/* What is next */}
+      {certifications.length > 0 && (
+        <section id="certifications" className={styles.block}>
+          <Glass tone="pink" pad="lg" className={styles.path} data-scale-in>
+            <header ref={pathRef} className={styles.pathHead} data-shown={pathShown ? '' : undefined}>
+              <Headline text={badges.title} tone="pink" className={styles.headTitle} />
+              <p className={styles.lede} data-rise style={{ '--i': 4 }}>{badges.lede}</p>
+            </header>
+            <Credentials items={certifications} labels={badges} />
+          </Glass>
+        </section>
+      )}
+
+      {/* Off the clock */}
       {homePhotos.length > 0 && (
         <section id="photos" className={`${styles.block} ${styles.photos}`}>
           <header ref={photosRef} className={styles.headRow} data-shown={photosShown ? '' : undefined}>
@@ -186,75 +255,6 @@ const Home = () => {
             photos={homePhotos}
             labels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
           />
-        </section>
-      )}
-
-      {/* 3. How he got here */}
-      {loading && (
-        <section className={`${styles.block} ${styles.story}`}>
-          <header className={styles.head} data-shown="">
-            <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
-          </header>
-          <Skeleton label="Loading the story" className={styles.storyWait}>
-            <Bone w="min(100%, 340px)" h="auto" r="50%" className={styles.storyWaitRing} style={{ aspectRatio: '1' }} />
-            <div className={styles.storyWaitCard}>
-              <Bone w="40%" h="0.8rem" />
-              <Bone w="70%" h="2.4rem" style={{ marginTop: '1rem' }} />
-              <Bone w="50%" h="1.1rem" style={{ marginTop: '0.75rem' }} />
-              <Bone w="95%" h="0.9rem" style={{ marginTop: '1.5rem' }} />
-              <Bone w="80%" h="0.9rem" style={{ marginTop: '0.5rem' }} />
-            </div>
-          </Skeleton>
-        </section>
-      )}
-
-      {chapters.length > 0 && (
-        <section id="story" className={`${styles.block} ${styles.story}`}>
-          <Story
-            chapters={chapters}
-            photo={photo}
-            name={name}
-            nowLabel={t.storyNow}
-            kinds={{ experience: t.storyKindWork, education: t.storyKindStudy }}
-            photosFor={photosFor}
-            photosLabel={tph.storyPhotos}
-            viewerLabels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
-            head={(
-              <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
-                <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
-                <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.storyLede}</p>
-              </header>
-            )}
-          />
-        </section>
-      )}
-
-      {/* Interval */}
-      <Curtain label={t.curtainLabel} />
-
-      {/* 4. What he has built */}
-      <section id="work" className={styles.block}>
-        <header ref={workRef} className={styles.headRow} data-shown={workShown ? '' : undefined}>
-          <p className={styles.lede} data-rise style={{ '--i': 1 }}>{t.workLede}</p>
-          <div data-rise style={{ '--i': 5 }}>
-            <Button as={Link} to="/projects" variant="text" arrow>{t.workCta}</Button>
-          </div>
-        </header>
-        {sitesLoading
-          ? <ShowcaseSkeleton />
-          : sites.length === 0
-            ? <p className={styles.empty}>{t.workEmpty}</p>
-            : <Showcase sites={sites} visitLabel={tp.visitLabel} />}
-      </section>
-
-      {/* 5. What is next */}
-      {certifications.length > 0 && (
-        <section id="certifications" className={styles.block}>
-          <header ref={pathRef} className={styles.head} data-shown={pathShown ? '' : undefined}>
-            <Headline text={badges.title} tone="pink" className={styles.headTitle} />
-            <p className={styles.lede} data-rise style={{ '--i': 4 }}>{badges.lede}</p>
-          </header>
-          <Credentials items={certifications} labels={badges} />
         </section>
       )}
     </div>

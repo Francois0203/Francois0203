@@ -4,6 +4,7 @@ import Lightbox from '../Lightbox';
 import styles from './PhotoTable.module.css';
 
 const TILT = [-7, 5, -3, 6, -5, 3, -6, 4];
+const TONES = ['blue', 'orange', 'green', 'pink', 'yellow'];
 const DEPTH = [0.6, -0.4, 1, -0.8, 0.5, -0.6, 0.9, -0.3];
 const WIDE = '(min-width: 760px) and (pointer: fine)';
 
@@ -24,10 +25,10 @@ const useWide = () => {
   return wide;
 };
 
-const Print = ({ photo, eager }) => (
-  <span className={styles.print}>
-    <span className={styles.tape} aria-hidden="true" />
-    <span className={styles.image} style={{ '--tint': photo.tint ?? '#ccc' }}>
+const Print = ({ photo, eager, tone }) => (
+  <span className={styles.print} data-tone={tone}>
+    <span className={styles.tab} aria-hidden="true" />
+    <span className={styles.image} style={{ '--tint': photo.tint ?? 'var(--surface-2)' }}>
       <img
         src={photo.thumb || photo.src}
         alt={photo.caption || ''}
@@ -39,7 +40,7 @@ const Print = ({ photo, eager }) => (
     <span className={styles.label}>
       <span className={styles.caption}>{photo.caption || photo.where || ' '}</span>
       {(photo.caption ? photo.where || photo.when : photo.when) && (
-        <span className={styles.meta}>{photo.caption ? [photo.where, photo.when].filter(Boolean).join(' · ') : photo.when}</span>
+        <span className={styles.meta}>{photo.caption ? [photo.where, photo.when].filter(Boolean).join(', ') : photo.when}</span>
       )}
     </span>
   </span>
@@ -194,7 +195,7 @@ const PhotoTable = ({ photos = [], labels = {} }) => {
               onClick={(e) => { if (!wide) setOpen(i); else if (e.detail === 0) setOpen(i); }}
               aria-label={[photo.caption, photo.where].filter(Boolean).join(', ') || `Photo ${i + 1}`}
             >
-              <Print photo={photo} eager={i < 3} />
+              <Print photo={photo} eager={i < 3} tone={TONES[i % TONES.length]} />
             </button>
           </div>
         );

@@ -15,9 +15,7 @@ const parseAccent = (text = '') => {
   return out;
 };
 
-const SWOOSH = 'M2 9 C 25 5, 60 12, 98 6';
-
-// Words wrapped in *asterisks* get a marker underline.
+// Words wrapped in *asterisks* get a coloured glass highlight that sweeps in.
 const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone = 'yellow', ...rest }) => {
   const segments = parseAccent(text);
   const children = [];
@@ -42,9 +40,6 @@ const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone 
     children.push(
       <span key={`e${s}`} className={styles.marked} style={{ '--marker': `var(--c-${tone})`, '--mi': i }}>
         {group}
-        <svg className={styles.squiggle} viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true">
-          <path d={SWOOSH} />
-        </svg>
       </span>,
     );
     if (tail) children.push(tail);

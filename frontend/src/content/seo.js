@@ -1,33 +1,38 @@
-// What search engines see for each route. The build writes one HTML file per page from this,
-// and the app updates the head from it on client-side navigation.
+// The title, description and share card for each page.
 export const SITE_URL = 'https://francois-portfolio.web.app';
 export const SITE_NAME = 'Francois Meiring';
 export const SITE_IMAGE = '/logo.png';
+
+export const SHARE_IMAGE = '/og/home.jpg';
+export const SHARE_ALT = 'Francois Meiring, DevOps and Software Engineer';
 
 export const PAGE_META = [
   {
     path: '/',
     file: 'index.html',
     title: 'Francois Meiring | DevOps and Software Engineer',
-    description: 'Francois Meiring. DevOps and software engineering: containers, pipelines, and the platforms teams run on.',
+    description: 'I keep websites and apps running smoothly behind the scenes, and I build websites for small businesses. DevOps and software engineering in Centurion.',
   },
   {
     path: '/bio',
     file: 'bio.html',
     title: 'Bio | Francois Meiring',
     description: 'The longer story: roles, qualifications, certifications and skills, with a downloadable CV.',
+    image: '/og/bio.jpg',
   },
   {
     path: '/projects',
     file: 'projects.html',
     title: 'Projects | Francois Meiring',
     description: 'Live client sites and open source repositories built and shipped by Francois Meiring.',
+    image: '/og/projects.jpg',
   },
   {
     path: '/connect',
     file: 'connect.html',
     title: 'Connect | Francois Meiring',
     description: 'Get in touch with Francois Meiring by letter, or find him on LinkedIn and GitHub.',
+    image: '/og/connect.jpg',
   },
   {
     path: '/privacy',

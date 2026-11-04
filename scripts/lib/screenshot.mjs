@@ -63,8 +63,7 @@ export async function screenshot(url, port = 9500 + Math.floor(Math.random() * 4
     const nav = await send('Page.navigate', { url });
     if (nav.error || nav.result?.errorText) return null;
 
-    // Wait until the page is really ready: loaded, fonts in, every visible image decoded,
-    // and nothing new requested for a moment. Scrolling once wakes lazy-loaded images.
+    // Wait for fonts, images and a quiet network before taking the picture.
     await send('Runtime.evaluate', {
       awaitPromise: true,
       expression: `(async () => {

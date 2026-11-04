@@ -1,7 +1,7 @@
 import { defineConfig, transformWithEsbuild } from 'vite'
 import react from '@vitejs/plugin-react'
 import {
-  SITE_NAME, SITE_IMAGE, PAGE_META, PRIVATE_META, NOT_FOUND_META, PERSON_SCHEMA, absoluteUrl,
+  SITE_NAME, SHARE_IMAGE, SHARE_ALT, PAGE_META, PRIVATE_META, NOT_FOUND_META, PERSON_SCHEMA, absoluteUrl,
 } from './src/content/seo.js'
 
 const escape = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -21,15 +21,24 @@ const headFor = (page) => {
     `<meta property="og:title" content="${escape(page.title)}" />`,
     `<meta property="og:description" content="${escape(page.description)}" />`,
     `<meta property="og:url" content="${url}" />`,
-    `<meta property="og:image" content="${absoluteUrl(SITE_IMAGE)}" />`,
-    '<meta name="twitter:card" content="summary" />',
+    '<meta property="og:locale" content="en_ZA" />',
+    `<meta property="og:image" content="${absoluteUrl(page.image ?? SHARE_IMAGE)}" />`,
+    `<meta property="og:image:secure_url" content="${absoluteUrl(page.image ?? SHARE_IMAGE)}" />`,
+    '<meta property="og:image:type" content="image/jpeg" />',
+    '<meta property="og:image:width" content="1200" />',
+    '<meta property="og:image:height" content="630" />',
+    `<meta property="og:image:alt" content="${escape(SHARE_ALT)}" />`,
+    '<meta name="twitter:card" content="summary_large_image" />',
+    `<meta name="twitter:title" content="${escape(page.title)}" />`,
+    `<meta name="twitter:description" content="${escape(page.description)}" />`,
+    `<meta name="twitter:image" content="${absoluteUrl(page.image ?? SHARE_IMAGE)}" />`,
+    `<meta name="twitter:image:alt" content="${escape(SHARE_ALT)}" />`,
   )
   if (page.path === '/') tags.push(`<script type="application/ld+json">${JSON.stringify(PERSON_SCHEMA)}</script>`)
   return tags.join('\n    ')
 }
 
-// Writes one HTML file per route with its own head, plus the sitemap and robots.txt.
-// Crawlers and link previews then see the right title without running the app.
+// One HTML file per page with its own head, plus the sitemap and robots.txt.
 const seoPages = () => ({
   name: 'seo-pages',
   apply: 'build',

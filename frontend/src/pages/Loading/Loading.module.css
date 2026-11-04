@@ -2,9 +2,36 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.9rem;
+    gap: 1.5rem;
     min-height: 70svh;
     max-width: var(--max);
     margin: 0 auto;
-    padding: calc(64px + 3rem) var(--gutter) 0;
+    padding: calc(80px + 3rem) var(--gutter) 0;
+    animation: appear 400ms 150ms var(--ease) both;
 }
+
+.beads { display: flex; gap: 0.6rem; height: 2.4rem; align-items: flex-end; }
+
+.bead {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 45%, white), var(--c) 70%);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 8px 14px -6px var(--c);
+    animation: hop 900ms calc(var(--i) * 120ms) var(--ease) infinite;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    width: min(100%, 44rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+@keyframes hop {
+    0%, 100% { transform: translateY(0) scale(1.1, 0.9); }
+    45% { transform: translateY(-1.3rem) scale(0.95, 1.05); }
+}
+
+@keyframes appear { from { opacity: 0; } }

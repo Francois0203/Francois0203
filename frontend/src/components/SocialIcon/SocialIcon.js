@@ -7,6 +7,7 @@ import {
   SiHackthebox, SiNpm, SiDocker,
 } from 'react-icons/si';
 import { FaLinkedinIn, FaGlobe, FaEnvelope } from 'react-icons/fa6';
+import styles from './SocialIcon.module.css';
 
 export const PLATFORMS = [
   { key: 'github', label: 'GitHub', icon: SiGithub, host: 'github.com' },
@@ -68,9 +69,10 @@ export const platformFor = (key = '', url = '') => {
   return PLATFORMS.find(p => p.host && u.includes(p.host)) ?? BY_KEY.website;
 };
 
-const SocialIcon = ({ platform, url, className, ...rest }) => {
+// The brand mark for a profile link, picked by key or by the link's host.
+const SocialIcon = ({ platform, url, className = '', ...rest }) => {
   const Icon = platformFor(platform, url).icon;
-  return <Icon className={className} aria-hidden="true" focusable="false" {...rest} />;
+  return <Icon className={[styles.icon, className].filter(Boolean).join(' ')} aria-hidden="true" focusable="false" {...rest} />;
 };
 
 export default SocialIcon;

@@ -1,0 +1,100 @@
+/* Everything in here is still on purpose: glass re-blurs whenever what is behind it moves. */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(120% 80% at 50% -10%, var(--ground-2), transparent 60%), var(--ground);
+}
+
+.orb {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--c) calc(var(--orb-alpha) * 100%), transparent), transparent 68%);
+}
+
+.dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--dot) 1.2px, transparent 1.6px);
+    background-size: 26px 26px;
+    -webkit-mask: radial-gradient(80% 70% at 50% 30%, #000, transparent 80%);
+    mask: radial-gradient(80% 70% at 50% 30%, #000, transparent 80%);
+}
+
+.shard {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--s);
+    height: var(--s);
+    border-radius: 30%;
+    rotate: var(--r);
+    background:
+        linear-gradient(145deg, rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.9)), transparent 55%),
+        color-mix(in srgb, var(--c) 30%, transparent);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--c) 55%, rgba(255, 255, 255, 0.5)),
+        0 18px 30px -16px color-mix(in srgb, var(--c) 60%, transparent);
+    opacity: 0.85;
+}
+
+.shard[data-shape='circle'] { border-radius: 50%; }
+
+.grain {
+    position: absolute;
+    inset: 0;
+    opacity: var(--grain);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The light layer sits above the page and only moves with transforms. */
+.light {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.glow {
+    position: absolute;
+    left: -260px;
+    top: -260px;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--page-tone, var(--c-blue)) 14%, transparent), transparent 65%);
+    opacity: 0;
+    transition: opacity 400ms var(--ease);
+    will-change: transform;
+}
+
+.glow[data-on] { opacity: 1; }
+
+/* The ring left where the visitor taps, in the colour of the current page. */
+.ring {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border-radius: 50%;
+    border: 2px solid var(--page-tone, var(--c-blue));
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--page-tone, var(--c-blue)) 22%, transparent);
+    animation: wave 800ms var(--ease-out) forwards;
+}
+
+@keyframes wave {
+    from { transform: scale(0.4); opacity: 0.9; }
+    to { transform: scale(7); opacity: 0; }
+}
+
+@media (max-width: 700px) {
+    .shard:nth-child(n + 9) { display: none; }
+}

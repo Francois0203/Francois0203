@@ -1,0 +1,20 @@
+.handle {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 1.75rem;
+    height: 2.2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    color: var(--ink-3);
+    cursor: grab;
+    touch-action: none;
+    transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease), transform var(--t) var(--spring);
+}
+
+.handle:hover { color: var(--tone-ink, var(--ink)); background: color-mix(in srgb, var(--tone, var(--c-blue)) 14%, transparent); }
+.handle:active { cursor: grabbing; transform: scale(0.9); }
+.handle:focus-visible { outline: 2px solid var(--tone, var(--c-blue)); outline-offset: 1px; }
+.handle svg { width: 10px; height: 16px; fill: currentColor; }

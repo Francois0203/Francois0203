@@ -1,0 +1,11 @@
+.drag {
+    touch-action: pan-y;
+    cursor: grab;
+    will-change: transform;
+}
+
+.drag[data-grabbed] {
+    cursor: grabbing;
+    z-index: 5;
+    filter: drop-shadow(0 26px 30px rgba(20, 24, 70, 0.28));
+}

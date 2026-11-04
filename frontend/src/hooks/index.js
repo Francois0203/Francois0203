@@ -3,3 +3,5 @@ export * from './useAnimations';
 export { default as useGitHubProjects }  from './useGitHubProjects';
 export { default as useStudioSites }     from './useStudioSites';
 export { scrollPageTo } from './useMomentumScroll';
+export { default as useAsyncAction } from './useAsyncAction';
+export { default as useTilt } from './useTilt';

@@ -48,7 +48,7 @@ const Gallery = ({ photos = [], labels = {} }) => {
                 <span className={styles.label}>
                   <span className={styles.caption}>{p.caption || p.where}</span>
                   {p.caption && (p.where || p.when) && (
-                    <span className={styles.meta}>{[p.where, p.when].filter(Boolean).join(' · ')}</span>
+                    <span className={styles.meta}>{[p.where, p.when].filter(Boolean).join(', ')}</span>
                   )}
                 </span>
               )}

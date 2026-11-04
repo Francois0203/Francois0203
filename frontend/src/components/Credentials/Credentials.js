@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import useReveal from '../../hooks/useReveal';
 import Chip from '../Chip';
-import Shape from '../Shape';
+import Draggable from '../Draggable';
+import useTilt from '../../hooks/useTilt';
+import { useCopy } from '../../content/copy/store';
 import styles from './Credentials.module.css';
 
 
@@ -36,22 +38,47 @@ const shortName = (name) => name.replace(/^AWS Certified\s+/i, '');
 
 const COLOURS = ['yellow', 'blue', 'pink', 'green', 'orange'];
 
-const Outline = ({ code, i }) => (
+// A glass hexagon with the exam code on it, for badges not earned yet.
+const Outline = ({ code }) => (
   <span className={styles.outline} aria-hidden="true">
-    <Shape kind="hexagon" colour={COLOURS[i % COLOURS.length]} className={styles.outlineShape} />
+    <span className={styles.hex} />
     {code && <span className={styles.code}>{code.split('-')[0]}</span>}
   </span>
 );
 
 const Badge = ({ c, i }) => {
+  const { dragHint } = useCopy('site');
   const [failed, setFailed] = useState(false);
   const image = c.badgeUrl && !failed;
   return (
-    <div className={styles.badge} data-image={image ? '' : undefined}>
+    <Draggable className={styles.badge} data-image={image ? '' : undefined} title={dragHint}>
       {image
-        ? <img src={c.badgeUrl} alt={`${c.name} badge`} width="160" height="160" loading="lazy" onError={() => setFailed(true)} />
-        : <Outline code={c.code} i={i} />}
-    </div>
+        ? <img src={c.badgeUrl} alt={`${c.name} badge`} width="160" height="160" loading="lazy" draggable="false" onError={() => setFailed(true)} />
+        : <Outline code={c.code} />}
+    </Draggable>
+  );
+};
+
+const Stop = ({ c, i, statusLabel, labels, detailed }) => {
+  const ref = useRef(null);
+  useTilt(ref, { max: 6 });
+  const date = when(c);
+  return (
+    <li className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
+      <div ref={ref} className={`glass ${styles.tile}`} data-tone={COLOURS[i % COLOURS.length]}>
+      <span className={styles.sheen} aria-hidden="true" />
+      <Badge c={c} i={i} />
+      <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>
+      <h3 className={styles.name}>{shortName(c.name)}</h3>
+      {(c.code || date) && <p className={styles.meta}>{[c.code, date].filter(Boolean).join(' / ')}</p>}
+      {detailed && c.note && <p className={styles.note}>{c.note}</p>}
+      {c.verifyUrl && (
+        <a className={styles.verify} href={c.verifyUrl} target="_blank" rel="noreferrer">
+          {labels.verifyLabel}
+        </a>
+      )}
+      </div>
+    </li>
   );
 };
 
@@ -82,23 +109,9 @@ const Credentials = ({ items = [], labels = {}, detailed = false }) => {
     >
       {list.length > 1 && <span className={styles.track} aria-hidden="true"><span className={styles.trackFill} /></span>}
 
-      {list.map((c, i) => {
-        const date = when(c);
-        return (
-          <li key={c.id ?? c.name} className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
-            <Badge c={c} i={i} />
-            <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>
-            <h3 className={styles.name}>{shortName(c.name)}</h3>
-            {(c.code || date) && <p className={styles.meta}>{[c.code, date].filter(Boolean).join(' / ')}</p>}
-            {detailed && c.note && <p className={styles.note}>{c.note}</p>}
-            {c.verifyUrl && (
-              <a className={styles.verify} href={c.verifyUrl} target="_blank" rel="noreferrer">
-                {labels.verifyLabel}
-              </a>
-            )}
-          </li>
-        );
-      })}
+      {list.map((c, i) => (
+        <Stop key={c.id ?? c.name} c={c} i={i} statusLabel={statusLabel} labels={labels} detailed={detailed} />
+      ))}
     </ol>
   );
 };

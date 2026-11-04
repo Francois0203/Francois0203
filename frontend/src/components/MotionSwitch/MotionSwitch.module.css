@@ -1,0 +1,19 @@
+.switch {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
+}
+
+.switch:hover { background: var(--glass-strong); color: var(--ink); box-shadow: inset 0 0 0 1px var(--glass-line); }
+.switch:active { transform: scale(0.88); }
+.switch svg { width: 1.2rem; height: 1.2rem; overflow: visible; }
+
+.switch[data-on] { color: var(--c-orange-ink); }

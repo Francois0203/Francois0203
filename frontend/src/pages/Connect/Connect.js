@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
@@ -9,7 +9,10 @@ import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { isCurrent } from '../../content/records';
 import { submitContactForm } from '../../firebase/firestore';
 import { useToast } from '../../components';
+import useAsyncAction from '../../hooks/useAsyncAction';
+import Draggable from '../../components/Draggable';
 import Button from '../../components/Button';
+import Glass from '../../components/Glass';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
 import Shape from '../../components/Shape';
@@ -17,6 +20,7 @@ import Skeleton, { Bone } from '../../components/Skeleton';
 import SupportButton from '../../components/SupportButton';
 import SocialIcon, { platformFor } from '../../components/SocialIcon';
 import { toCredential } from '../../components/Credentials';
+import { useCopy } from '../../content/copy/store';
 import styles from './Connect.module.css';
 
 const EMPTY = { name: '', email: '', message: '' };
@@ -57,6 +61,7 @@ const postmarkDate = () =>
   new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()).toUpperCase();
 
 const Connect = () => {
+  const a11y = useCopy('a11y');
   const { toast } = useToast();
   const { data, loading } = usePortfolioData();
   const { overrides } = useSiteCopy();
@@ -66,8 +71,22 @@ const Connect = () => {
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState(EMPTY);
   const [touched, setTouched] = useState({});
-  const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [trap, setTrap] = useState('');
+  const openedAt = useRef(Date.now());
+  useEffect(() => { if (!sent) openedAt.current = Date.now(); }, [sent]);
+
+  const send = useAsyncAction(async () => {
+    try {
+      await submitContactForm({ ...form, company: trap, elapsed: Date.now() - openedAt.current });
+    } catch (err) {
+      if (err.limit) toast.warning(err.limit === 'everyone' ? t.limitEveryone : t.limitSender, { title: t.limitTitle });
+      else toast.error(t.sendFailed, { title: t.sendFailedTitle });
+      throw err;
+    }
+    toast.success(t.sentTitle);
+    setTimeout(() => { setSent(true); setForm(EMPTY); setTouched({}); }, 1100);
+  });
 
   const contact = data?.contact ?? {};
   const social = data?.social ?? [];
@@ -109,28 +128,18 @@ const Connect = () => {
     setErrors(validate(form, t));
   };
 
-  const submit = async (e) => {
+  const submit = (e) => {
     e.preventDefault();
     const found = validate(form, t);
     setErrors(found);
     setTouched({ name: true, email: true, message: true });
 
     if (Object.values(found).some(Boolean)) {
+      send.fail();
       document.getElementById(Object.keys(found).find(k => found[k]))?.focus();
       return;
     }
-
-    setSending(true);
-    try {
-      await submitContactForm(form);
-      setSent(true);
-      setForm(EMPTY);
-      setTouched({});
-    } catch {
-      toast.error(t.sendFailed);
-    } finally {
-      setSending(false);
-    }
+    send.run();
   };
 
   const copyEmail = async () => {
@@ -156,11 +165,11 @@ const Connect = () => {
           <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
           <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
 
-          <div className={styles.ways} data-rise style={{ '--i': 5 }}>
+          <Glass className={styles.ways} tone="blue" data-rise style={{ '--i': 5 }}>
             <h2 className={styles.waysTitle}>{t.waysTitle}</h2>
 
             {loading && (
-              <Skeleton label="Loading contact details">
+              <Skeleton label={a11y.loadingContact}>
                 {['70%', '45%'].map(w => (
                   <div key={w} className={styles.way}><Bone w="3rem" h="0.8rem" /><Bone w={w} h="1.1rem" /></div>
                 ))}
@@ -169,7 +178,7 @@ const Connect = () => {
 
             {contact.email && (
               <div className={styles.way}>
-                <span className={styles.wayKey}>email</span>
+                <span className={styles.wayKey}>{t.emailKey}</span>
                 <a className={styles.wayValue} href={`mailto:${contact.email}`}>{contact.email}</a>
                 <button type="button" className={styles.copy} onClick={copyEmail}>{t.copyLabel}</button>
               </div>
@@ -177,7 +186,7 @@ const Connect = () => {
 
             {contact.phone && (
               <div className={styles.way}>
-                <span className={styles.wayKey}>phone</span>
+                <span className={styles.wayKey}>{t.phoneKey}</span>
                 <a className={styles.wayValue} href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a>
               </div>
             )}
@@ -193,7 +202,7 @@ const Connect = () => {
             )}
 
             {loading && (
-              <Skeleton label="Loading profiles">
+              <Skeleton label={a11y.loadingProfiles}>
                 <h3 className={styles.waysSub}>{t.socialCardTitle}</h3>
                 <ul className={styles.tiles}>
                   {[0, 1, 2, 3].map(i => <li key={i}><Bone h="3.6rem" r="var(--r-node)" /></li>)}
@@ -223,14 +232,14 @@ const Connect = () => {
                 </ul>
               </>
             )}
-          </div>
+          </Glass>
         </div>
 
         <div className={styles.letterWrap} data-rise style={{ '--i': 3, '--rise': '24px' }}>
-          <div className={styles.letter}>
-            <span className={styles.stamp} aria-hidden="true">
+          <Glass className={styles.letter} tone="orange" tilt={2} strong pad="lg">
+            <Draggable className={styles.stamp} aria-hidden="true">
               <Shape kind="star" colour="orange" className={styles.stampShape} />
-            </span>
+            </Draggable>
             <span className={styles.postmark} aria-hidden="true">{postmarkDate()}</span>
 
             {sent ? (
@@ -242,10 +251,14 @@ const Connect = () => {
                 </span>
                 <h2>{t.sentTitle}</h2>
                 <p>{t.sentText}</p>
-                <Button variant="line" onClick={() => setSent(false)}>{t.sentAgain}</Button>
+                <Button variant="glass" tone="orange" onClick={() => setSent(false)}>{t.sentAgain}</Button>
               </div>
             ) : (
               <form onSubmit={submit} noValidate className={styles.form}>
+                <div className={styles.trap} aria-hidden="true">
+                  <label htmlFor="company">{a11y.trapLabel}</label>
+                  <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" value={trap} onChange={e => setTrap(e.target.value)} />
+                </div>
                 <p className={styles.greeting}>{t.letterGreeting}</p>
 
                 <p className={styles.sentence}>
@@ -256,7 +269,7 @@ const Connect = () => {
                     type="text"
                     autoComplete="name"
                     maxLength={100}
-                    aria-label="Your name"
+                    aria-label={a11y.yourName}
                     className={styles.blank}
                     style={{ '--w': `${Math.max(8, form.name.length + 1)}ch` }}
                     value={form.name}
@@ -272,7 +285,7 @@ const Connect = () => {
                     type="email"
                     autoComplete="email"
                     maxLength={254}
-                    aria-label="Your email"
+                    aria-label={a11y.yourEmail}
                     className={styles.blank}
                     style={{ '--w': `${Math.max(14, form.email.length + 1)}ch` }}
                     value={form.email}
@@ -290,7 +303,7 @@ const Connect = () => {
                   name="message"
                   rows={6}
                   maxLength={5000}
-                  aria-label="Your message"
+                  aria-label={a11y.yourMessage}
                   placeholder={t.letterPlaceholder}
                   className={styles.ruled}
                   value={form.message}
@@ -302,7 +315,7 @@ const Connect = () => {
                 {shownError('message') && <p className={styles.error} id="message-error">{shownError('message')}</p>}
 
                 <p className={styles.privacy}>
-                  {t.privacyNote} <Link to="/privacy">Privacy policy</Link>
+                  {t.privacyNote} <Link to="/privacy">{t.privacyLink}</Link>
                 </p>
 
                 <div className={styles.letterFoot}>
@@ -312,18 +325,18 @@ const Connect = () => {
                       {form.name.trim() || '...'}
                     </span>
                   </p>
-                  <Button type="submit" variant="fill" size="lg" disabled={sending} arrow>
-                    {sending ? t.sendingLabel : t.sendLabel}
+                  <Button type="submit" variant="primary" tone="orange" size="lg" status={send.status} arrow>
+                    {t.sendLabel}
                   </Button>
                 </div>
               </form>
             )}
-          </div>
+          </Glass>
         </div>
       </section>
 
       {support && (
-        <section ref={supportRef} className={styles.support} data-shown={supportShown ? '' : undefined}>
+        <section ref={supportRef} className={`glass ${styles.support}`} data-tone="yellow" data-shown={supportShown ? '' : undefined}>
           <div className={styles.supportCopy}>
             <Headline as="h2" text={t.supportTitle} tone="orange" className={styles.supportTitle} />
             {donation.message && <p className={styles.supportText} data-rise style={{ '--i': 3 }}>{donation.message}</p>}

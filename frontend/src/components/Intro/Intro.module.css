@@ -1,93 +1,160 @@
+@property --hole {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+
+@property --spin {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
 .intro {
-    --u: min(7vw, 8vh, 64px);
+    --lens: clamp(150px, 22vmin, 220px);
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: var(--ink);
+    background: radial-gradient(90% 70% at 50% 40%, var(--ground-2), var(--ground));
+    -webkit-mask: radial-gradient(circle at var(--cx, 50%) var(--cy, 40%), transparent var(--hole), #000 calc(var(--hole) + 1px));
+    mask: radial-gradient(circle at var(--cx, 50%) var(--cy, 40%), transparent var(--hole), #000 calc(var(--hole) + 1px));
+}
+
+/* Soft colour opening up in the dark. */
+.bloom {
+    position: absolute;
+    width: 62vmax;
+    height: 62vmax;
+    border-radius: 50%;
+    translate: -50% -50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--c) 45%, transparent), transparent 65%);
+    animation: bloom 2.4s var(--ease-out) var(--d) both;
+}
+
+@keyframes bloom {
+    from { transform: scale(0.3); opacity: 0; }
+    to { transform: scale(1); opacity: 0.9; }
+}
+
+.stage {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: calc(var(--u) * 1.1);
-    overflow: hidden;
-    color: var(--ink);
+    margin-top: -6vh;
 }
 
-.intro::before {
-    content: '';
+/* The glass lens around the logo. */
+.lens {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--lens);
+    height: var(--lens);
+    margin-bottom: clamp(1.75rem, 4vh, 2.75rem);
+    border-radius: 50%;
+    animation: form 1.3s 150ms var(--spring) both;
+}
+
+@keyframes form {
+    from { transform: scale(0.55) rotate(-20deg); opacity: 0; filter: blur(14px); }
+    to { transform: none; opacity: 1; filter: none; }
+}
+
+.rim {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    padding: 3px;
+    background: conic-gradient(from var(--spin), var(--c-blue), var(--c-pink), var(--c-orange), var(--c-yellow), var(--c-green), var(--c-blue));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: turn 3s linear infinite;
+}
+
+@keyframes turn { to { --spin: 360deg; } }
+
+.glass {
     position: absolute;
     inset: 0;
-    z-index: -1;
-    background-color: var(--ground);
-    background-image:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 28px 28px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 22%, rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.9)), transparent 45%),
+        var(--glass);
+    -webkit-backdrop-filter: blur(18px) saturate(170%);
+    backdrop-filter: blur(18px) saturate(170%);
+    box-shadow: var(--glass-hi), 0 30px 80px -30px rgba(20, 24, 80, 0.55), 0 0 0 10px color-mix(in srgb, var(--glass) 40%, transparent);
 }
 
-.lifting { pointer-events: none; }
-
-.lifting::before { animation: fade 420ms var(--ease) forwards; }
-
-@keyframes fade {
-    to { opacity: 0; }
-}
-
-.board {
+.logo {
     position: relative;
-    width: calc(var(--cols) * var(--u));
-    height: calc(var(--rows) * var(--u));
+    width: 56%;
+    height: auto;
+    animation: focus 1.3s 550ms var(--ease-out) both;
 }
 
-.block {
+@keyframes focus {
+    from { opacity: 0; transform: scale(0.8) translateY(8%); filter: blur(12px); }
+    to { opacity: 1; transform: none; filter: none; }
+}
+
+.glint {
     position: absolute;
-    left: calc(var(--c) * var(--u));
-    top: calc(var(--r) * var(--u));
-    width: calc(var(--u) * 0.92);
-    height: calc(var(--u) * 0.92);
-    animation: drop 700ms var(--spring) both;
-    animation-delay: var(--d);
-    transition:
-        translate 680ms cubic-bezier(0.6, -0.2, 0.75, 0.15) var(--out, 0ms),
-        rotate 680ms cubic-bezier(0.6, -0.2, 0.75, 0.15) var(--out, 0ms);
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.7) 50%, transparent 65%) 160% 0 / 300% 100% no-repeat;
+    mix-blend-mode: soft-light;
+    animation: glint 1s 1.5s var(--ease-out) both;
 }
 
-.shape { display: block; width: 100%; height: 100%; }
-
-@keyframes drop {
-    from { translate: 0 -70vh; rotate: -25deg; }
-    70% { rotate: 4deg; }
-}
-
-.lifting .block {
-    translate: var(--fx) var(--fy);
-    rotate: var(--spin);
-}
+@keyframes glint { to { background-position: -160% 0; } }
 
 .name {
     display: flex;
-    gap: 0.25em;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.28em;
     margin: 0;
-    overflow: hidden;
     font-family: var(--font-display);
-    font-size: clamp(2rem, 6vw, 4.25rem);
+    font-size: clamp(2.1rem, 6vw, 4.4rem);
     font-weight: 700;
     font-stretch: 92%;
-    letter-spacing: -0.035em;
-    line-height: 1.1;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--ink);
 }
 
-.word {
+.word { display: inline-flex; }
+
+.char {
     display: inline-block;
-    animation: rise 800ms var(--ease) both;
-    animation-delay: calc(1500ms + var(--i) * 120ms);
+    animation: write 900ms calc(950ms + var(--n) * 38ms) var(--ease-out) both;
 }
 
-@keyframes rise {
-    from { transform: translateY(110%); }
+@keyframes write {
+    from { opacity: 0; transform: translateY(0.45em) rotate(8deg); filter: blur(10px); }
+    to { opacity: 1; transform: none; filter: none; }
 }
 
-.lifting .name,
-.lifting .skip { opacity: 0; transition: opacity 250ms ease; }
+.role {
+    margin: 0.9rem 0 0;
+    font-family: var(--font-mono);
+    font-size: clamp(0.72rem, 1.4vw, 0.85rem);
+    text-transform: uppercase;
+    color: var(--ink-2);
+    animation: spread 1.2s 1.6s var(--ease-out) both;
+}
+
+@keyframes spread {
+    from { opacity: 0; letter-spacing: 0.6em; }
+    to { opacity: 1; letter-spacing: 0.22em; }
+}
 
 .skip {
     position: absolute;
@@ -99,7 +166,28 @@
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     color: var(--ink-3);
-    animation: skipIn 600ms ease 900ms both;
+    animation: fadeIn 600ms ease 1s both;
 }
 
-@keyframes skipIn { from { opacity: 0; } }
+@keyframes fadeIn { from { opacity: 0; } }
+
+/* The exit: the lens rushes forward and the site opens through it. */
+.lifting { pointer-events: none; animation: iris 1s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+
+@keyframes iris {
+    from { --hole: 0px; }
+    to { --hole: 150vmax; }
+}
+
+.lifting .lens { animation: rush 1s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+
+@keyframes rush { to { transform: scale(9); opacity: 0; } }
+
+.lifting .name,
+.lifting .role,
+.lifting .skip {
+    opacity: 0;
+    transform: translateY(-14px);
+    filter: blur(6px);
+    transition: opacity 320ms ease, transform 500ms var(--ease-out), filter 320ms ease;
+}

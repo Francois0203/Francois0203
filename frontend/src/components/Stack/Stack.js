@@ -1,12 +1,18 @@
 import { useMemo, useState } from 'react';
 import useReveal from '../../hooks/useReveal';
+import Draggable from '../Draggable';
 import { markFor } from './marks';
+import { useCopy } from '../../content/copy/store';
 import styles from './Stack.module.css';
 
+const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
+
+// Skills grouped on glass cards. Each one can be grabbed and tossed, then springs home.
 const Stack = ({ entries = [] }) => {
   const [ref, shown] = useReveal({ threshold: 0.06 });
   const [focus, setFocus] = useState(null);
 
+  const other = useCopy('bio').skillsOther;
   const groups = useMemo(() => {
     const map = new Map();
     const seen = new Set();
@@ -16,13 +22,13 @@ const Stack = ({ entries = [] }) => {
       if (!label || seen.has(label)) continue;
       seen.add(label);
 
-      const group = (typeof entry === 'object' && entry?.group) || 'Also';
+      const group = (typeof entry === 'object' && entry?.group) || other;
       if (!map.has(group)) map.set(group, []);
       map.get(group).push(label);
     }
 
     return [...map.entries()].map(([name, items]) => ({ name, items }));
-  }, [entries]);
+  }, [entries, other]);
 
   if (!groups.length) return null;
 
@@ -41,7 +47,8 @@ const Stack = ({ entries = [] }) => {
       {groups.map(({ name, items }, g) => (
         <section
           key={name}
-          className={styles.group}
+          className={`glass ${styles.group}`}
+          data-tone={TONES[g % TONES.length]}
           data-dim={focus !== null && focus !== name ? '' : undefined}
           onMouseEnter={() => setFocus(name)}
           onFocus={() => setFocus(name)}
@@ -58,10 +65,10 @@ const Stack = ({ entries = [] }) => {
               const Mark = markFor(item);
               return (
                 <li key={item} data-rise style={{ '--i': n, '--rise': '12px' }}>
-                  <span className={styles.entry}>
+                  <Draggable as="span" className={styles.entry}>
                     <Mark className={styles.mark} aria-hidden="true" />
                     {item}
-                  </span>
+                  </Draggable>
                 </li>
               );
             })}

@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useCopy } from '../../content/copy/store';
 import styles from './Modal.module.css';
 
-const Modal = ({ open, onClose, title, size = 'md', children, className = '' }) => {
+// A glass dialog. Escape, the scrim and the close button all close it.
+const Modal = ({ open, onClose, title, size = 'md', tone = 'blue', children, className = '' }) => {
+  const words = useCopy('a11y');
   const panelRef = useRef(null);
   const returnTo = useRef(null);
 
@@ -47,7 +50,8 @@ const Modal = ({ open, onClose, title, size = 'md', children, className = '' }) 
     <div className={styles.scrim} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div
         ref={panelRef}
-        className={`${styles.panel} ${styles[size]} ${className}`}
+        className={`glass ${styles.panel} ${styles[size]} ${className}`}
+        data-tone={tone}
         role="dialog"
         aria-modal="true"
         aria-label={title}
@@ -55,7 +59,7 @@ const Modal = ({ open, onClose, title, size = 'md', children, className = '' }) 
       >
         <header className={styles.head}>
           {title && <h2 className={styles.title}>{title}</h2>}
-          <button type="button" className={styles.close} onClick={close} aria-label="Close">
+          <button type="button" className={styles.close} onClick={close} aria-label={words.close}>
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="m5 5 10 10M15 5 5 15" strokeLinecap="round" />
             </svg>

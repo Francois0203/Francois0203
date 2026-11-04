@@ -1,13 +1,15 @@
+/* Every colour, size and timing on the site lives here. Components never hold raw hexes. */
+
 :root {
     --font-display: 'Bricolage Grotesque Variable', system-ui, -apple-system, sans-serif;
     --font-text: 'Onest Variable', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Consolas, monospace;
 
-    --display-xxl: clamp(3.5rem, 10vw, 9.5rem);
-    --display-xl: clamp(2.75rem, 7vw, 6.25rem);
-    --display-lg: clamp(2.25rem, 5vw, 4.5rem);
-    --display-md: clamp(1.75rem, 3.4vw, 3rem);
-    --display-sm: clamp(1.375rem, 2.2vw, 1.75rem);
+    --display-xxl: clamp(3.5rem, 10vw, 9rem);
+    --display-xl: clamp(2.75rem, 7vw, 6rem);
+    --display-lg: clamp(2.1rem, 4.6vw, 4.1rem);
+    --display-md: clamp(1.7rem, 3.2vw, 2.75rem);
+    --display-sm: clamp(1.3rem, 2vw, 1.65rem);
 
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;
@@ -19,138 +21,180 @@
     --track-label: 0.01em;
     --track-display: -0.035em;
 
-    --gutter: clamp(1.25rem, 4vw, 4rem);
-    --block: clamp(5rem, 12vh, 9rem);
-    --measure: 58ch;
-    --max: 1320px;
+    --gutter: clamp(1rem, 4vw, 4rem);
+    --block: clamp(4rem, 9vh, 7rem);
+    --measure: 60ch;
+    --max: 1280px;
 
-    --r-control: 9999px;
-    --r-slab: 26px;
-    --r-card: 26px;
-    --r-node: 16px;
+    --r-control: 999px;
+    --r-card: 28px;
+    --r-slab: 28px;
+    --r-node: 18px;
+    --r-field: 14px;
 
     --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --t-fast: 160ms;
     --t: 280ms;
     --t-slow: 760ms;
 
+    --z-bg: 0;
     --z-page: 1;
     --z-overlay: 90;
     --z-nav: 95;
     --z-modal: 100;
+    --z-toast: 150;
     --z-intro: 200;
 
-    /* The five colours, each with a darker shade for text. */
-    --c-blue: #5a63ff;
-    --c-blue-soft: #8f95ff;
-    --c-green: #35d6a3;
-    --c-pink: #bda8ff;
-    --c-orange: #ff7d5e;
-    --c-yellow: #ffde4d;
-    --c-blue-ink: #2b33c4;
-    --c-green-ink: #08664b;
-    --c-pink-ink: #5a3cc9;
-    --c-orange-ink: #b03a1e;
-    --c-yellow-ink: #6a5400;
+    /* Five jewel tones. -soft is lighter, -ink and -deep are for text and edges. */
+    --c-blue: #5b6cff;
+    --c-blue-soft: #94a0ff;
+    --c-green: #20c58b;
+    --c-green-soft: #79e3bd;
+    --c-pink: #a87bff;
+    --c-pink-soft: #cdb6ff;
+    --c-orange: #ff7a4d;
+    --c-orange-soft: #ffb196;
+    --c-yellow: #ffc63a;
+    --c-yellow-soft: #ffe08f;
+    --c-red: #ef4452;
 
-    --c-blue-deep: #2b33c4;
-    --c-green-deep: #08664b;
-    --c-pink-deep: #5a3cc9;
-    --c-orange-deep: #b03a1e;
-    --c-yellow-deep: #6a5400;
+    --c-blue-ink: #2f3bd1;
+    --c-green-ink: #067a52;
+    --c-pink-ink: #6236d8;
+    --c-orange-ink: #b9401b;
+    --c-yellow-ink: #7a5600;
+
+    --c-blue-deep: #2f3bd1;
+    --c-green-deep: #067a52;
+    --c-pink-deep: #6236d8;
+    --c-orange-deep: #b9401b;
+    --c-yellow-deep: #7a5600;
+
+    /* What actions mean. Confirm is always green, cancel and delete always red. */
+    --ok: #16a35a;
+    --ok-2: #22c06e;
+    --danger: #e5394a;
+    --danger-2: #ff5a68;
+    --warn: #e89a0c;
+    --info: var(--c-blue);
+
+    /* Text on bright tone fills, and on deep ones. */
+    --on-bright: #12131c;
+    --on-deep: #ffffff;
+
+    --blur: blur(16px) saturate(165%);
+    --blur-soft: blur(8px) saturate(150%);
 }
 
 :root,
 [data-theme='light'] {
     color-scheme: light;
 
-    --ink: #1f1f1f;
-    --ink-2: #57534e;
-    --ink-3: #8a847c;
+    --ink: #12131c;
+    --ink-2: #474b5e;
+    --ink-3: #7a7f94;
 
-    --ground: #f7f3ea;
-    --ground-2: #ffffff;
-
-    --live: #1f1f1f;
-    --live-2: #3a3936;
-    --live-rgb: 31, 31, 31;
-    --accent-text: var(--c-blue-ink);
-
-
-    --on-live: #ffffff;
+    --ground: #eceef6;
+    --ground-2: #f6f7fb;
 
     --surface: #ffffff;
-    --surface-2: #efe8da;
-    --rule: rgba(31, 31, 31, 0.1);
-    --rule-strong: rgba(31, 31, 31, 0.22);
-    --grid: rgba(43, 51, 196, 0.06);
+    --surface-2: #f1f2f8;
+    --rule: rgba(18, 19, 28, 0.08);
+    --rule-strong: rgba(18, 19, 28, 0.16);
+    --accent-text: var(--c-blue-ink);
+    --on-live: #ffffff;
+    --live: #12131c;
 
-    --glass: var(--surface);
-    --glass-edge: var(--rule);
-    --glass-top: 0 0 0 transparent;
-    --glass-bottom: 0 0 0 transparent;
-    --glass-cast: 0 1px 2px rgba(31, 31, 31, 0.06);
-    --blur: blur(14px) saturate(140%);
+    /* Glass: a milky fill, a bright top edge, a soft coloured shadow under it. */
+    --glass: rgba(255, 255, 255, 0.64);
+    --glass-strong: rgba(255, 255, 255, 0.8);
+    --glass-weak: rgba(255, 255, 255, 0.42);
+    --glass-line: rgba(255, 255, 255, 0.75);
+    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(18, 19, 28, 0.04);
+    --glass-cast: 0 1px 2px rgba(24, 28, 64, 0.06), 0 12px 32px -12px rgba(36, 42, 110, 0.22), 0 40px 80px -40px rgba(36, 42, 110, 0.28);
+    --glass-cast-hover: 0 2px 4px rgba(24, 28, 64, 0.06), 0 18px 40px -14px rgba(36, 42, 110, 0.3), 0 56px 100px -44px rgba(36, 42, 110, 0.36);
+    --sheen-alpha: 0.75;
 
-    --card-shadow: 0 0 0 1px var(--rule-strong), 0 1px 2px rgba(31, 31, 31, 0.06), 0 18px 36px -22px rgba(31, 31, 31, 0.4);
-    --card-shadow-hover: 0 0 0 1px var(--rule-strong), 0 2px 4px rgba(31, 31, 31, 0.06), 0 26px 48px -24px rgba(31, 31, 31, 0.5);
-    --lift: 0 0 0 1px var(--rule-strong), 0 1px 2px rgba(31, 31, 31, 0.08), 0 6px 14px -8px rgba(31, 31, 31, 0.35);
-    --lift-hover: 0 0 0 1px var(--rule-strong), 0 2px 4px rgba(31, 31, 31, 0.08), 0 12px 22px -10px rgba(31, 31, 31, 0.42);
-    --lift-press: 0 0 0 1px var(--rule-strong), 0 1px 1px rgba(31, 31, 31, 0.1);
-    --dot: rgba(31, 31, 31, 0.08);
+    --card-shadow: var(--glass-hi), var(--glass-cast);
+    --card-shadow-hover: var(--glass-hi), var(--glass-cast-hover);
+    --lift: var(--glass-hi), 0 1px 2px rgba(24, 28, 64, 0.08), 0 8px 18px -8px rgba(36, 42, 110, 0.3);
+    --lift-hover: var(--glass-hi), 0 2px 4px rgba(24, 28, 64, 0.08), 0 14px 28px -10px rgba(36, 42, 110, 0.38);
+    --lift-press: var(--glass-hi), 0 1px 2px rgba(24, 28, 64, 0.1);
 
-    --tone-info: #0b47b8;
-    --tone-success: #0b5a2e;
-    --tone-warning: #6b4a00;
-    --tone-error: #b3261e;
+    --orb-alpha: 0.55;
+    --dot: rgba(18, 19, 28, 0.07);
+    --grain: 0.05;
+
+    --tone-info: #2f3bd1;
+    --tone-success: #0d7a43;
+    --tone-warning: #8a5a00;
+    --tone-error: #c4222f;
 }
 
 [data-theme='dark'] {
     color-scheme: dark;
 
-    --ink: #f3efea;
-    --ink-2: #b8b1a8;
-    --ink-3: #847d74;
+    --ink: #f3f4fa;
+    --ink-2: #b0b4c6;
+    --ink-3: #767b90;
 
-    --ground: #171615;
-    --ground-2: #232220;
+    --ground: #06070b;
+    --ground-2: #0c0d14;
 
-    --live: #f3efea;
-    --live-2: #ffffff;
-    --live-rgb: 243, 239, 234;
-    --accent-text: var(--c-blue);
+    --surface: #12131c;
+    --surface-2: #1a1c27;
+    --rule: rgba(243, 244, 250, 0.08);
+    --rule-strong: rgba(243, 244, 250, 0.16);
+    --accent-text: var(--c-blue-soft);
+    --on-live: #12131c;
+    --live: #f3f4fa;
 
+    --glass: rgba(20, 22, 33, 0.62);
+    --glass-strong: rgba(20, 22, 33, 0.78);
+    --glass-weak: rgba(20, 22, 33, 0.3);
+    --glass-line: rgba(255, 255, 255, 0.1);
+    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    --glass-cast: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 36px -14px rgba(0, 0, 0, 0.7), 0 44px 90px -44px rgba(0, 0, 0, 0.9);
+    --glass-cast-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 22px 46px -16px rgba(0, 0, 0, 0.75), 0 60px 110px -48px rgba(0, 0, 0, 0.95);
+    --sheen-alpha: 0.16;
 
-    --on-live: #1f1f1f;
+    --lift: var(--glass-hi), 0 8px 18px -8px rgba(0, 0, 0, 0.7);
+    --lift-hover: var(--glass-hi), 0 14px 28px -10px rgba(0, 0, 0, 0.8);
+    --lift-press: var(--glass-hi), 0 1px 2px rgba(0, 0, 0, 0.6);
 
-    --surface: #232220;
-    --surface-2: #2f2d2a;
-    --rule: rgba(243, 239, 234, 0.1);
-    --rule-strong: rgba(243, 239, 234, 0.22);
-    --grid: rgba(189, 168, 255, 0.06);
+    --orb-alpha: 0.32;
+    --dot: rgba(243, 244, 250, 0.05);
+    --grain: 0.06;
 
-    --glass: var(--surface);
-    --glass-edge: var(--rule);
-    --glass-top: 0 0 0 transparent;
-    --glass-bottom: 0 0 0 transparent;
-    --glass-cast: 0 0 0 transparent;
+    --c-blue-ink: #a9b2ff;
+    --c-green-ink: #6ff0c0;
+    --c-pink-ink: #d2bdff;
+    --c-orange-ink: #ffab8d;
+    --c-yellow-ink: #ffdb7a;
 
-    --card-shadow: 0 0 0 1px var(--rule-strong), 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 22px 44px -24px rgba(0, 0, 0, 0.85);
-    --card-shadow-hover: 0 0 0 1px rgba(243, 239, 234, 0.32), 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 30px 60px -26px rgba(0, 0, 0, 0.9);
-    --lift: 0 0 0 1px var(--rule-strong), 0 6px 14px -8px rgba(0, 0, 0, 0.7);
-    --lift-hover: 0 0 0 1px rgba(243, 239, 234, 0.32), 0 12px 24px -10px rgba(0, 0, 0, 0.8);
-    --lift-press: 0 0 0 1px var(--rule-strong), 0 1px 2px rgba(0, 0, 0, 0.6);
-    --dot: rgba(243, 239, 234, 0.07);
+    --ok: #1fb866;
+    --danger: #f04556;
 
-    --c-blue-ink: #a3a8ff;
-    --c-green-ink: #6fe8c2;
-    --c-pink-ink: #d3c5ff;
-    --c-orange-ink: #ffa48c;
-    --c-yellow-ink: #ffe680;
-
-    --tone-info: #8db8ff;
+    --tone-info: #a9b2ff;
     --tone-success: #6ff3a2;
     --tone-warning: #ffd76e;
-    --tone-error: #ff8a80;
+    --tone-error: #ff8a92;
+}
+
+/* Weak devices and phones get a lighter blur so scrolling stays smooth. */
+[data-tier='low'] {
+    --blur: blur(8px) saturate(150%);
+    --blur-soft: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --blur: none;
+        --blur-soft: none;
+        --glass: var(--surface);
+        --glass-strong: var(--surface);
+        --glass-weak: var(--surface-2);
+    }
 }

@@ -1,0 +1,4 @@
+.cv { flex: none; }
+
+.cv svg { transition: transform var(--t) var(--spring); }
+.cv:hover svg { transform: translateY(2px); }

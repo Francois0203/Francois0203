@@ -1,47 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import Shape from '../Shape';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCopy } from '../../content/copy/store';
 import styles from './Intro.module.css';
 
 let playedThisLoad = false;
 
-const GLYPHS = [
-  ['###', '#..', '##.', '#..', '#..'],
-  ['#...#', '##.##', '#.#.#', '#...#', '#...#'],
+const BLOOMS = [
+  { tone: 'blue', x: '22%', y: '26%', d: '0ms' },
+  { tone: 'pink', x: '78%', y: '24%', d: '150ms' },
+  { tone: 'green', x: '84%', y: '78%', d: '300ms' },
+  { tone: 'orange', x: '16%', y: '80%', d: '450ms' },
 ];
-const TONES = ['blue', 'yellow', 'green', 'orange', 'pink'];
 
-const BLOCKS = (() => {
-  const out = [];
-  let col0 = 0;
-  GLYPHS.forEach((rows) => {
-    rows.forEach((row, r) => {
-      [...row].forEach((ch, c) => {
-        if (ch === '#') out.push({ c: col0 + c, r });
-      });
-    });
-    col0 += rows[0].length + 1;
-  });
-  return out.map((b, i) => {
-    const dx = b.c - 4;
-    const dy = b.r - 2;
-    const angle = (dx || dy ? Math.atan2(dy, dx) : i) + (((i * 37) % 21) - 10) / 40;
-    const reach = 80 + ((i * 29) % 30);
-    return {
-      ...b,
-      tone: TONES[(b.c * 3 + b.r) % TONES.length],
-      delay: b.c * 70 + (4 - b.r) * 45 + (i % 3) * 20,
-      fx: Math.cos(angle) * reach,
-      fy: Math.sin(angle) * reach,
-      out: (Math.abs(dx) + Math.abs(dy)) * 25,
-      spin: ((i * 71) % 300) - 150,
-    };
-  });
-})();
-
-const COLS = 9;
-const ROWS = 5;
-const LIFT_AT = 2700;
-const LIFT_MS = 850;
+const LIFT_AT = 3100;
+const LIFT_MS = 1000;
 
 const shouldPlay = () => {
   if (typeof window === 'undefined') return false;
@@ -51,7 +22,9 @@ const shouldPlay = () => {
   return true;
 };
 
-const Intro = ({ name = 'Francois Meiring' }) => {
+// The opening: a glass lens forms, the name writes in, then the lens opens onto the site.
+const Intro = () => {
+  const { name, role, introSkip } = useCopy('site');
   const [play] = useState(() => {
     const yes = shouldPlay();
     if (yes) document.documentElement.dataset.intro = 'playing';
@@ -59,10 +32,17 @@ const Intro = ({ name = 'Francois Meiring' }) => {
   });
   const [lifting, setLifting] = useState(false);
   const [gone, setGone] = useState(false);
+  const rootRef = useRef(null);
+  const lensRef = useRef(null);
 
   const lift = useCallback(() => {
     setLifting((already) => {
       if (already) return already;
+      const r = lensRef.current?.getBoundingClientRect();
+      if (r && rootRef.current) {
+        rootRef.current.style.setProperty('--cx', `${r.left + r.width / 2}px`);
+        rootRef.current.style.setProperty('--cy', `${r.top + r.height / 2}px`);
+      }
       delete document.documentElement.dataset.intro;
       window.dispatchEvent(new Event('intro:done'));
       setTimeout(() => setGone(true), LIFT_MS);
@@ -78,7 +58,6 @@ const Intro = ({ name = 'Francois Meiring' }) => {
     const timer = setTimeout(lift, LIFT_AT);
     const events = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
     events.forEach(e => window.addEventListener(e, lift, { passive: true }));
-
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -99,38 +78,37 @@ const Intro = ({ name = 'Francois Meiring' }) => {
 
   if (!play || gone) return null;
 
+  let n = 0;
+
   return (
-    <div
-      className={[styles.intro, lifting && styles.lifting].filter(Boolean).join(' ')}
-      aria-hidden="true"
-    >
-      <div className={styles.board} style={{ '--cols': COLS, '--rows': ROWS }}>
-        {BLOCKS.map((b, i) => (
-          <span
-            key={i}
-            className={styles.block}
-            style={{
-              '--c': b.c,
-              '--r': b.r,
-              '--d': `${b.delay}ms`,
-              '--fx': `${b.fx}vmax`,
-              '--fy': `${b.fy}vmax`,
-              '--out': `${b.out}ms`,
-              '--spin': `${b.spin}deg`,
-            }}
-          >
-            <Shape kind="squircle" colour={b.tone} className={styles.shape} />
-          </span>
-        ))}
+    <div ref={rootRef} className={[styles.intro, lifting && styles.lifting].filter(Boolean).join(' ')} aria-hidden="true">
+      {BLOOMS.map(b => (
+        <span key={b.tone} className={styles.bloom} style={{ left: b.x, top: b.y, '--c': `var(--c-${b.tone})`, '--d': b.d }} />
+      ))}
+
+      <div className={styles.stage}>
+        <div ref={lensRef} className={styles.lens}>
+          <span className={styles.rim} />
+          <span className={styles.glass} />
+          <img className={styles.logo} src="/logo-mark.png" alt="" width="412" height="343" />
+          <span className={styles.glint} />
+        </div>
+
+        <p className={styles.name}>
+          {name.split(' ').map((word, w) => (
+            <span key={w} className={styles.word}>
+              {[...word].map((ch) => {
+                n += 1;
+                return <span key={n} className={styles.char} style={{ '--n': n }}>{ch}</span>;
+              })}
+            </span>
+          ))}
+        </p>
+
+        <p className={styles.role}>{role}</p>
       </div>
 
-      <p className={styles.name}>
-        {name.split(' ').map((w, i) => (
-          <span key={w} className={styles.word} style={{ '--i': i }}>{w}</span>
-        ))}
-      </p>
-
-      <p className={styles.skip}>Press any key to skip</p>
+      <p className={styles.skip}>{introSkip}</p>
     </div>
   );
 };

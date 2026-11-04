@@ -14,20 +14,4 @@ export const afterIntro = (fn) => {
   return () => window.removeEventListener('intro:done', fn);
 };
 
-// Pinned sections sit below content that loads late, so re-measure when the page grows.
-let watching = false;
-export const watchLayout = () => {
-  if (watching || typeof ResizeObserver === 'undefined') return;
-  watching = true;
-  let t = 0;
-  let last = document.body.scrollHeight;
-  new ResizeObserver(() => {
-    const h = document.body.scrollHeight;
-    if (Math.abs(h - last) < 2) return;
-    last = h;
-    clearTimeout(t);
-    t = setTimeout(() => ScrollTrigger.refresh(), 150);
-  }).observe(document.body);
-};
-
 export { gsap, ScrollTrigger, useGSAP };

@@ -1,71 +1,71 @@
 .dock {
     position: fixed;
-    right: var(--gutter);
-    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-    z-index: var(--z-modal);
+    top: calc(5.25rem + env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
+    z-index: var(--z-toast);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: min(380px, calc(100vw - 2rem));
+    align-items: flex-end;
+    gap: 0.6rem;
+    width: min(400px, calc(100vw - 2rem));
     pointer-events: none;
 }
 
 .toast {
-    --tone: var(--tone-info);
-
+    --c: var(--c-blue);
     position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto 1fr auto;
     align-items: start;
-    gap: 0.75rem;
-    padding: 0.85rem 0.75rem 0.85rem 1rem;
-    pointer-events: auto;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0.9rem 0.9rem 1rem 0.95rem;
     overflow: hidden;
-    border: 1px solid var(--glass-edge);
-    border-radius: var(--r-slab);
-    background: var(--glass);
-    box-shadow: var(--glass-top), var(--glass-cast);
+    border-radius: 20px;
+    background: var(--glass-strong);
     -webkit-backdrop-filter: var(--blur);
     backdrop-filter: var(--blur);
-    animation: toastIn 340ms var(--ease) both;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 55%, var(--glass-line)), var(--glass-hi), var(--glass-cast-hover), 0 12px 40px -18px var(--c);
+    pointer-events: auto;
+    touch-action: pan-y;
+    cursor: grab;
+    transform: translateX(var(--drag, 0px)) rotate(calc(var(--drag, 0px) / 40));
+    opacity: var(--fade, 1);
+    animation: enter 520ms var(--spring) both;
+    transition: transform 320ms var(--spring), opacity 260ms var(--ease);
 }
 
-.toast[data-type='success'] { --tone: var(--tone-success); }
-.toast[data-type='warning'] { --tone: var(--tone-warning); }
-.toast[data-type='error'] { --tone: var(--tone-error); }
+.toast[data-dragging] { transition: none; cursor: grabbing; }
 
-/* The side line and icon show the type. */
-.toast::before {
-    content: '';
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 3px;
-    background: var(--tone);
+.toast[data-leaving] { animation: leave 260ms var(--ease) forwards; }
+
+.toast[data-type='success'] { --c: var(--ok); }
+.toast[data-type='error'] { --c: var(--danger); }
+.toast[data-type='warning'] { --c: var(--warn); }
+.toast[data-type='info'] { --c: var(--c-blue); }
+.toast[data-type='loading'] { --c: var(--c-pink); }
+
+.orb {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 55%, white), var(--c) 70%);
+    color: var(--on-deep);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 14px -6px var(--c);
+    animation: pop 520ms 120ms var(--spring) both;
 }
 
-.toast[data-leaving] { animation: toastOut 200ms var(--ease) both; }
+.orb svg { width: 1.2rem; height: 1.2rem; }
+.orb :global(.spinner) { width: 1rem; height: 1rem; border-width: 2px; }
 
-@keyframes toastIn {
-    from { opacity: 0; transform: translateY(12px); }
-}
-
-@keyframes toastOut {
-    to { opacity: 0; transform: translateX(16px); }
-}
-
-.icon {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-top: 0.05rem;
-    color: var(--tone);
-}
-
-.body { min-width: 0; }
+.body { min-width: 0; padding-top: 0.15rem; }
 
 .title {
     margin: 0 0 0.15rem;
+    font-weight: 650;
     font-size: var(--text-sm);
-    font-weight: 600;
     color: var(--ink);
 }
 
@@ -77,38 +77,65 @@
     overflow-wrap: anywhere;
 }
 
-.title + .message { color: var(--ink-2); }
-.message:only-child { color: var(--ink); }
+.action {
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c) 16%, transparent);
+    color: var(--ink);
+    font-size: var(--text-xs);
+    font-weight: 650;
+    cursor: pointer;
+}
 
 .close {
-    display: inline-flex;
-    padding: 0.25rem;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
     border: 0;
-    border-radius: var(--r-control);
-    background: none;
+    border-radius: 50%;
+    background: transparent;
     color: var(--ink-3);
     cursor: pointer;
-    transition: color var(--t) var(--ease);
+    transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
 }
 
-.close:hover { color: var(--ink); }
-.close:focus-visible { outline: 2px solid var(--live); outline-offset: 1px; }
-.close svg { width: 15px; height: 15px; }
+.close:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); transform: rotate(90deg); }
+.close svg { width: 0.9rem; height: 0.9rem; }
 
-/* No blur on touch screens, it is slow there. */
-@media (pointer: coarse) {
-    .toast {
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-        background-color: var(--ground-2);
+.timer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 40%, transparent), var(--c));
+    transform-origin: left;
+    animation: drain var(--life) linear forwards;
+}
+
+.timer[data-paused] { animation-play-state: paused; }
+
+@keyframes enter {
+    from { opacity: 0; transform: translate3d(0, -24px, 0) scale(0.9); filter: blur(6px); }
+    to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes leave {
+    to { opacity: 0; transform: translate3d(calc(var(--drag, 0px) + 40px), 0, 0) scale(0.92); filter: blur(4px); }
+}
+
+@keyframes pop { from { transform: scale(0.3) rotate(-30deg); } to { transform: none; } }
+@keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+@media (max-width: 640px) {
+    .dock {
+        right: 50%;
+        top: calc(4.75rem + env(safe-area-inset-top));
+        transform: translateX(50%);
+        align-items: stretch;
     }
-}
-
-@media (max-width: 520px) {
-    .dock { left: 1rem; right: 1rem; width: auto; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .toast,
-    .toast[data-leaving] { animation: none; }
 }
