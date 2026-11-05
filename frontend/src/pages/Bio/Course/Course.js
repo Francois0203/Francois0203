@@ -16,7 +16,6 @@ const Course = ({ title, org, when, note, current, nowLabel, tone, i }) => {
         <h3 className={styles.title}>{title}</h3>
         {org && <p className={styles.org}>{org}</p>}
         {note && <p className={styles.note}>{note}</p>}
-        <span className={styles.sheen} aria-hidden="true" />
       </article>
     </div>
   );

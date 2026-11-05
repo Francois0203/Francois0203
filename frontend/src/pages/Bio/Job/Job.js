@@ -8,7 +8,7 @@ const Job = ({ title, org, when, note, tags, current, nowLabel, tone, i }) => {
   useTilt(ref, { max: 3 });
   return (
     <article className={styles.job} data-tone={tone} style={{ '--i': i }} data-rise>
-      <span className={styles.node} aria-hidden="true" />
+      <span className={styles.node} data-stop aria-hidden="true" />
       <div ref={ref} className={`glass ${styles.card}`}>
         <header className={styles.head}>
           <div>
@@ -28,7 +28,6 @@ const Job = ({ title, org, when, note, tags, current, nowLabel, tone, i }) => {
             {tags.map((tag, k) => <li key={k}>{tag}</li>)}
           </ul>
         )}
-        <span className={styles.sheen} aria-hidden="true" />
       </div>
     </article>
   );

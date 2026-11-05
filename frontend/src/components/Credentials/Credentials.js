@@ -66,7 +66,6 @@ const Stop = ({ c, i, statusLabel, labels, detailed }) => {
   return (
     <li className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
       <div ref={ref} className={`glass ${styles.tile}`} data-tone={COLOURS[i % COLOURS.length]}>
-      <span className={styles.sheen} aria-hidden="true" />
       <Badge c={c} i={i} />
       <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>
       <h3 className={styles.name}>{shortName(c.name)}</h3>

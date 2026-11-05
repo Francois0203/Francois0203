@@ -137,41 +137,13 @@ a.pill:active { transform: scale(0.96); }
     white-space: pre-line;
 }
 
-/* A track down the side that fills with colour as you scroll the roles. */
+/* Roles hang off a rail that fills to the middle of the screen. */
 .timeline {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
-
-.timeline::before,
-.timeline::after {
-    content: '';
-    position: absolute;
-    left: 0.85rem;
-    top: 1rem;
-    bottom: 1rem;
-    width: 3px;
-    border-radius: 3px;
-    background: var(--rule-strong);
-}
-
-.timeline::after {
-    background: linear-gradient(var(--c-green), var(--c-blue), var(--c-pink), var(--c-orange));
-    transform-origin: top;
-    transform: scaleY(1);
-}
-
-@supports (animation-timeline: view()) {
-    .timeline::after {
-        animation: fill linear both;
-        animation-timeline: view();
-        animation-range: cover 5% cover 75%;
-    }
-}
-
-@keyframes fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
 .courses {
     display: grid;

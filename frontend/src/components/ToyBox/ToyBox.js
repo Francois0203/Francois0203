@@ -3,6 +3,7 @@ import { gsap, afterIntro } from '../../hooks/gsap';
 import styles from './ToyBox.module.css';
 
 const STEP = 1000 / 60;
+const MAX_SPEED = 28;
 
 let matterPromise = null;
 const loadMatter = () => (matterPromise ??= import('matter-js').then(m => m.default));
@@ -43,8 +44,6 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       const ny = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height / 2) / window.innerHeight * 2));
       tiltX(nx * 14);
       tiltY(ny * -12);
-      face.style.setProperty('--mx', `${(50 + nx * 40).toFixed(1)}%`);
-      face.style.setProperty('--my', `${(40 + ny * 40).toFixed(1)}%`);
     };
 
     let lastBump = 0;
@@ -72,8 +71,8 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       const head = Bodies.circle(cx, cy, R, { isStatic: true, restitution: 0.7 });
       Composite.add(engine.world, [
         Bodies.rectangle(W / 2, H + 50, W * 3, 100, wall),
-        Bodies.rectangle(-50, -H, 100, H * 6, wall),
-        Bodies.rectangle(W + 50, -H, 100, H * 6, wall),
+        Bodies.rectangle(-100, -2000 + H / 2, 200, 4000 + H, wall),
+        Bodies.rectangle(W + 100, -2000 + H / 2, 200, 4000 + H, wall),
         head,
       ]);
 
@@ -101,6 +100,20 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       bodies.forEach(place);
       box.dataset.live = '';
 
+      // Toys rain in from above, then a roof closes over the box so nothing can be thrown out.
+      const below = (i) => ({ x: sizes[i].w / 2 + Math.random() * Math.max(1, W - sizes[i].w), y: Math.min(H - sizes[i].h, cy + R + sizes[i].h) });
+      let roofed = false;
+      const closeRoof = () => {
+        if (roofed) return;
+        roofed = true;
+        Composite.add(engine.world, Bodies.rectangle(W / 2, -50, W * 3, 100, wall));
+        bodies.forEach((b, i) => {
+          if (b.position.y - sizes[i].h / 2 < 0) { Body.setPosition(b, below(i)); Body.setVelocity(b, { x: 0, y: 0 }); }
+        });
+        box.dataset.roof = '';
+      };
+      const roofTimer = setTimeout(closeRoof, 3500);
+
       Events.on(engine, 'collisionStart', (e) => {
         for (const p of e.pairs) {
           const other = p.bodyA === head ? p.bodyB : p.bodyB === head ? p.bodyA : null;
@@ -109,6 +122,7 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       });
 
       const indexOf = (body) => bodies.indexOf(body);
+      let grabbed = null;
       let onTap = null;
       let unbind = () => {};
       if (!coarse) {
@@ -119,11 +133,12 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
         Events.on(drag, 'startdrag', (e) => {
           const i = indexOf(e.body);
           if (i < 0) return;
+          grabbed = e.body;
           box.dataset.grabbing = '';
           setHeld(i);
           setPlayed(true);
         });
-        Events.on(drag, 'enddrag', () => { delete box.dataset.grabbing; setHeld(null); });
+        Events.on(drag, 'enddrag', () => { grabbed = null; delete box.dataset.grabbing; setHeld(null); });
 
         const follow = (e) => { if (mouse.button === 0) mouse.mousemove(e); };
         const release = (e) => { if (mouse.button !== -1) mouse.mouseup(e); };
@@ -140,14 +155,20 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
           document.removeEventListener('visibilitychange', onHidden);
         };
       } else {
+        // Toys at rest, or low and not already rising, get kicked, so taps cannot launch them away.
         onTap = (e) => {
           const r = box.getBoundingClientRect();
           const tx = e.clientX - r.left;
           setPlayed(true);
           bodies.forEach((b) => {
+            const resting = b.calm > 10;
+            if (!resting && (b.velocity.y < -2 || b.position.y < H * 0.2)) return;
             Sleeping.set(b, false);
             const dir = Math.sign(b.position.x - tx) || 1;
-            Body.setVelocity(b, { x: dir * (2 + Math.random() * 5), y: -8 - Math.random() * 8 });
+            Body.setVelocity(b, {
+              x: Math.max(-12, Math.min(12, b.velocity.x + dir * (2 + Math.random() * 5))),
+              y: Math.max(-14, Math.min(0, b.velocity.y) - 7 - Math.random() * 7),
+            });
             Body.setAngularVelocity(b, (Math.random() - 0.5) * 0.3);
           });
         };
@@ -164,11 +185,29 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
           Engine.update(engine, STEP);
           carry -= STEP;
         }
+        if (!roofed && bodies.every((b, i) => b.position.y - sizes[i].h / 2 > 2)) closeRoof();
         bodies.forEach((b, i) => {
-          if (b.position.y > H + 200 || b.position.x < -200 || b.position.x > W + 200) {
-            Body.setPosition(b, spawn(i, sizes[i]));
+          const { x, y } = b.position;
+          if (!Number.isFinite(x) || !Number.isFinite(y) || y > H + 120 || x < -40 || x > W + 40 || (roofed && y < -sizes[i].h)) {
+            Body.setPosition(b, roofed ? below(i) : spawn(i, sizes[i]));
             Body.setVelocity(b, { x: 0, y: 0 });
+            Sleeping.set(b, false);
           }
+          const speed = Math.hypot(b.velocity.x, b.velocity.y);
+          b.calm = b === grabbed ? 0 : speed < 0.5 ? (b.calm ?? 0) + 1 : b.calm > 30 && y < cy ? b.calm + 1 : 0;
+          // Nothing settles above the photo's middle: nudge and spin it loose, then move it below if it stays stuck.
+          if (y < cy && b.calm > 30) {
+            Sleeping.set(b, false);
+            if (b.calm > 200) {
+              Body.setPosition(b, below(i));
+              Body.setVelocity(b, { x: 0, y: 0 });
+              b.calm = 0;
+            } else if (b.calm % 30 === 0) {
+              Body.setVelocity(b, { x: (Math.sign(x - cx) || 1) * 2.5, y: 1 });
+              Body.setAngularVelocity(b, (Math.sign(x - cx) || 1) * 0.12);
+            }
+          }
+          if (speed > MAX_SPEED) Body.setVelocity(b, { x: b.velocity.x / speed * MAX_SPEED, y: b.velocity.y / speed * MAX_SPEED });
           if (!b.isSleeping) place(b, i);
         });
         raf = requestAnimationFrame(tick);
@@ -182,6 +221,7 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       io.observe(box);
 
       teardown = () => {
+        clearTimeout(roofTimer);
         cancelAnimationFrame(raf);
         io.disconnect();
         if (onTap) box.removeEventListener('pointerdown', onTap);
@@ -218,6 +258,7 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
 
   return (
     <div ref={boxRef} className={styles.box}>
+      <span className={styles.roof} aria-hidden="true" />
       <span className={styles.floor} aria-hidden="true" />
       <span className={styles.shadow} aria-hidden="true" />
       <div ref={faceRef} className={styles.face}>
@@ -225,7 +266,6 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
           {photo && !failed
             ? <img className={styles.photo} src={photo} alt={name} width="640" height="640" fetchPriority="high" onError={() => setFailed(true)} />
             : <span className={styles.initials} role="img" aria-label={name}>{initials}</span>}
-          <span className={styles.gloss} aria-hidden="true" />
         </span>
       </div>
 

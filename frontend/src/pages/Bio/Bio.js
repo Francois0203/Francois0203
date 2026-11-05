@@ -20,6 +20,7 @@ import Credentials from '../../components/Credentials';
 import Stack from '../../components/Stack';
 import Gallery from '../../components/Gallery';
 import Chapter from './Chapter';
+import Rail from '../../components/Rail';
 import Contents from './Contents';
 import Job from './Job';
 import Course from './Course';
@@ -216,6 +217,7 @@ const Bio = () => {
           {experience.length > 0 && (
             <Chapter id="experience" n={number('experience')} title={t.experienceHeading} tone="green">
               <div className={styles.timeline}>
+                <Rail />
                 {experience.map((e, i) => (
                   <Job
                     key={e.id ?? i}

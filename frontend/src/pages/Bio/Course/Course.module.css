@@ -31,18 +31,6 @@
 
 .card:hover::after { transform: scale(1.3) translate(-0.5rem, 0.5rem); opacity: 0.55; }
 
-.sheen {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, var(--sheen-alpha)), transparent 55%);
-    mix-blend-mode: soft-light;
-    opacity: 0;
-    transition: opacity var(--t) var(--ease);
-    pointer-events: none;
-}
-
-.card[data-tilting] .sheen { opacity: 1; }
-
 .when {
     display: inline-flex;
     align-items: center;

@@ -1,8 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import styles from './LangFilter.module.css';
+import styles from './Filter.module.css';
 
-// Glass pills to filter by language. A bright marker slides to the chosen one.
-const LangFilter = ({ options = [], value, onChange, allLabel, total, toneOf }) => {
+// Glass pills to filter the projects. A bright marker slides to the chosen one.
+const Filter = ({ options = [], value, onChange, allLabel, total, toneOf }) => {
   const rowRef = useRef(null);
   const [mark, setMark] = useState(null);
 
@@ -50,4 +50,4 @@ const LangFilter = ({ options = [], value, onChange, allLabel, total, toneOf }) 
   );
 };
 
-export default LangFilter;
+export default Filter;

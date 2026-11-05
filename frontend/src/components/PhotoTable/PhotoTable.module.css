@@ -67,9 +67,7 @@
     display: block;
     padding: 10px 10px 0;
     border-radius: 22px;
-    background:
-        linear-gradient(160deg, rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.6)), transparent 45%),
-        var(--glass-strong);
+    background: var(--glass-strong);
     box-shadow:
         inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 60%, var(--glass-line)),
         var(--glass-hi),

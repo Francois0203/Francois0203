@@ -26,6 +26,26 @@
     transform-origin: top;
 }
 
+/* The glass lid that closes once the toys are in. */
+.roof {
+    position: absolute;
+    left: -2%;
+    right: -2%;
+    bottom: 100%;
+    height: 14px;
+    border-radius: 22px 22px 0 0;
+    background: linear-gradient(0deg, var(--glass-strong), var(--glass-weak));
+    box-shadow:
+        inset 0 -1.5px 0 color-mix(in srgb, var(--c-blue) 45%, var(--glass-line)),
+        0 -16px 30px -18px color-mix(in srgb, var(--c-blue) 45%, transparent);
+    transform: perspective(600px) rotateX(-28deg) scaleX(0.6);
+    transform-origin: bottom;
+    opacity: 0;
+    transition: opacity 500ms var(--ease), transform 700ms var(--spring);
+}
+
+.box[data-roof] .roof { opacity: 1; transform: perspective(600px) rotateX(-28deg); }
+
 /* The soft pool of shade under the floating portrait. */
 .shadow {
     position: absolute;
@@ -41,8 +61,6 @@
 }
 
 .face {
-    --mx: 35%;
-    --my: 25%;
     position: absolute;
     top: 2%;
     left: calc(50% - var(--face) / 2);
@@ -99,18 +117,6 @@
     color: var(--ink);
 }
 
-/* A highlight on the glass that slides with the pointer. */
-.gloss {
-    position: absolute;
-    inset: 12px;
-    border-radius: 50%;
-    background:
-        radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.55)), transparent 42%),
-        linear-gradient(160deg, rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.3)), transparent 40%);
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-}
-
 .toys {
     position: absolute;
     inset: 0;
@@ -137,7 +143,7 @@
 .box[data-grabbing] .ball,
 .box[data-grabbing] .pill { cursor: grabbing; }
 
-/* Glass marbles: tinted body, bright cap, coloured rim and shadow. */
+/* Glass marbles: tinted body, coloured rim and shadow. */
 .ball {
     display: grid;
     place-items: center;
@@ -145,7 +151,6 @@
     height: var(--ball);
     border-radius: 50%;
     background:
-        radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 30%),
         radial-gradient(circle at 70% 82%, color-mix(in srgb, var(--tone) 70%, transparent), transparent 60%),
         color-mix(in srgb, var(--tone) 34%, var(--glass-strong));
     box-shadow:
@@ -175,9 +180,7 @@
     height: calc(var(--ball) * 0.66);
     padding: 0 1.15rem 0 0.8rem;
     border-radius: 999px;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.7)), transparent 55%),
-        color-mix(in srgb, var(--tone) 14%, var(--glass-strong));
+    background: color-mix(in srgb, var(--tone) 14%, var(--glass-strong));
     box-shadow:
         inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, var(--glass-line)),
         var(--glass-hi),
@@ -243,6 +246,7 @@
 }
 
 /* Motion off: the toys rest in a row under the photo. */
+.box[data-still] .roof { display: none; }
 .box[data-still] .toys {
     inset: auto 0 0 0;
     display: flex;

@@ -1,6 +1,8 @@
 import { useRef } from 'react';
 import useTilt from '../../../hooks/useTilt';
 import { parseReadme } from '../parseReadme';
+import { platformOf } from '../platform';
+import { markFor } from '../../../components/Stack/marks';
 import styles from './Repo.module.css';
 
 const GitHubIcon = () => (
@@ -15,11 +17,13 @@ const StarIcon = () => (
   </svg>
 );
 
-// One repository as a glass card. It leans toward the pointer.
+// One repository as a glass card, led by where it runs and how it ships.
 const Repo = ({ project, tone, labels, onReadme }) => {
   const ref = useRef(null);
   useTilt(ref, { max: 5, lift: 10 });
-  const { name, description, url, language, stars, readme, isPrivate } = project;
+  const { name, description, url, language, stars, readme, isPrivate, topics } = project;
+  const { groups, extras } = platformOf(topics);
+  const rowLabel = { runs: labels.platformRuns, ships: labels.platformShips, built: labels.platformBuilt, stores: labels.platformStores };
   const hasReadme = readme?.trim().length > 0;
   const summary = hasReadme ? parseReadme(readme, { fallback: description ?? '' }).description : description;
 
@@ -32,8 +36,25 @@ const Repo = ({ project, tone, labels, onReadme }) => {
 
       {summary && <p className={styles.text}>{summary}</p>}
 
+      {groups.length > 0 && (
+        <dl className={styles.platform}>
+          {groups.map(g => (
+            <div key={g.key} className={styles.row}>
+              <dt>{rowLabel[g.key]}</dt>
+              <dd>
+                {g.items.map((item) => {
+                  const Mark = markFor(item);
+                  return <span key={item} className={styles.tool}><Mark aria-hidden="true" />{item}</span>;
+                })}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
       <div className={styles.meta}>
-        {language && <span className={styles.lang}><span className={styles.dot} aria-hidden="true" />{language}</span>}
+        {language && <span className={styles.lang}>{labels.writtenIn} {[language, ...extras].join(', ')}</span>}
+        {!language && extras.length > 0 && <span className={styles.lang}>{extras.join(', ')}</span>}
         {stars > 0 && <span className={styles.stars}><StarIcon />{stars}</span>}
         {isPrivate && <span className={styles.private}>{labels.privateLabel}</span>}
       </div>
@@ -50,7 +71,6 @@ const Repo = ({ project, tone, labels, onReadme }) => {
           </a>
         )}
       </div>
-      <span className={styles.sheen} aria-hidden="true" />
     </article>
   );
 };

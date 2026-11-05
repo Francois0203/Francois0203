@@ -6,5 +6,5 @@ export const FOOTER_FIELDS = [
   { key: 'ctaButton', label: 'Call to action - button', type: 'text', default: 'Get in touch' },
 
   { key: 'topLabel', label: 'Back to top - label', type: 'text', default: 'Back to top' },
-  { key: 'stackCaption', label: 'Tool pile - caption', type: 'text', default: 'My everyday stack. Go on, give it a shove.' },
+  { key: 'stackCaption', label: 'Tool constellation - caption', type: 'text', default: 'What I work with, grouped. Push them around, they always float home.' },
 ];

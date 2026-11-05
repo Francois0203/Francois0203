@@ -31,7 +31,6 @@ const Glass = forwardRef(({
       {...rest}
     >
       {children}
-      <span className={styles.sheen} aria-hidden="true" />
     </Tag>
   );
 });

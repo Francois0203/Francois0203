@@ -21,16 +21,3 @@
 
 .tilt[data-tilting] { transition: transform 120ms linear, box-shadow var(--t) var(--ease); box-shadow: var(--glass-hi), var(--glass-cast-hover); }
 
-/* The light spot that follows the pointer. */
-.sheen {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, var(--sheen-alpha)), transparent 55%);
-    opacity: 0;
-    mix-blend-mode: soft-light;
-    transition: opacity var(--t) var(--ease);
-    pointer-events: none;
-}
-
-.tilt[data-tilting] .sheen { opacity: 1; }

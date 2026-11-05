@@ -83,9 +83,48 @@ const LiveView = ({ url, title }) => {
   );
 };
 
+const ARROW = <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>;
+
+// The card's call to action: pulls toward the pointer and floods with colour from where it enters.
+const useVisit = (cardRef, visitRef) => {
+  useEffect(() => {
+    const card = cardRef.current;
+    const btn = visitRef.current;
+    if (!card || !btn || motionOff() || window.matchMedia('(pointer: coarse)').matches) return undefined;
+    const pullX = gsap.quickTo(btn, 'x', { duration: 0.5, ease: 'power3.out' });
+    const pullY = gsap.quickTo(btn, 'y', { duration: 0.5, ease: 'power3.out' });
+    const aim = (e) => {
+      const r = btn.getBoundingClientRect();
+      btn.style.setProperty('--fx', `${Math.max(0, Math.min(r.width, e.clientX - r.left)).toFixed(0)}px`);
+      btn.style.setProperty('--fy', `${Math.max(0, Math.min(r.height, e.clientY - r.top)).toFixed(0)}px`);
+    };
+    const move = (e) => {
+      const r = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      const near = Math.hypot(dx, dy) < 160;
+      pullX(near ? Math.max(-12, Math.min(12, dx * 0.22)) : 0);
+      pullY(near ? Math.max(-8, Math.min(8, dy * 0.3)) : 0);
+    };
+    const leave = (e) => { aim(e); pullX(0); pullY(0); };
+    card.addEventListener('pointerenter', aim);
+    card.addEventListener('pointermove', move, { passive: true });
+    card.addEventListener('pointerleave', leave);
+    return () => {
+      card.removeEventListener('pointerenter', aim);
+      card.removeEventListener('pointermove', move);
+      card.removeEventListener('pointerleave', leave);
+      gsap.killTweensOf(btn);
+    };
+  }, [cardRef, visitRef]);
+};
+
 const Card = ({ site, tone, visitLabel, index }) => {
   const ref = useRef(null);
+  const visitRef = useRef(null);
+  const [pressed, setPressed] = useState(0);
   useTilt(ref, { max: 4 });
+  useVisit(ref, visitRef);
   const [live, setLive] = useState(false);
   useEffect(() => { setLive(liveAllowed()); }, []);
   const [main, ...more] = linksOf(site);
@@ -94,8 +133,7 @@ const Card = ({ site, tone, visitLabel, index }) => {
   const about = site.tagline || site.client;
 
   return (
-    <li ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }}>
-      <span className={styles.sheen} aria-hidden="true" />
+    <li ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
       <div className={styles.cover} aria-hidden="true">
         <div className={styles.window}>
           <span className={styles.bar}>
@@ -127,9 +165,13 @@ const Card = ({ site, tone, visitLabel, index }) => {
       </div>
 
       <div className={styles.foot}>
-        <span className={styles.visit} aria-hidden="true">
-          {visitLabel}
-          <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>
+        <span ref={visitRef} className={styles.cta} aria-hidden="true">
+          {pressed > 0 && <span key={pressed} className={styles.ripple} />}
+          <span className={styles.visit}>
+            <span className={styles.flood} />
+            <span className={styles.roll} data-text={visitLabel}><span>{visitLabel}</span></span>
+            <span className={styles.orb}>{ARROW}{ARROW}</span>
+          </span>
         </span>
         <span className={styles.host}>{host(main.url)}</span>
         {more.map(m => (

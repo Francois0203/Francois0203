@@ -11,14 +11,15 @@ import Showcase, { ShowcaseSkeleton } from '../../components/Showcase';
 import Skeleton, { Bone } from '../../components/Skeleton';
 import ReadmeRenderer from './ReadmeRenderer';
 import Repo from './Repo';
-import LangFilter from './LangFilter';
+import Filter from './Filter';
+import { platformLabels } from './platform';
 import Tally from './Tally';
 import { useCopy } from '../../content/copy/store';
 import styles from './Projects.module.css';
 
 const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
 
-// The same language always gets the same colour.
+// The same name always gets the same colour.
 const toneOf = (name = '') => TONES[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % TONES.length];
 
 const RepoSkeleton = ({ label }) => (
@@ -46,17 +47,18 @@ const Projects = () => {
   const t = resolveGroup(PROJECTS_FIELDS, overrides.projects);
 
   const [open, setOpen] = useState(null);
-  const [lang, setLang] = useState(null);
+  const [pick, setPick] = useState(null);
 
   const repos = useMemo(() => projects ?? [], [projects]);
 
-  const languages = useMemo(() => {
+  // Filter by what a project runs on and how it ships, not by language.
+  const platforms = useMemo(() => {
     const counts = new Map();
-    repos.forEach((p) => { if (p.language) counts.set(p.language, (counts.get(p.language) ?? 0) + 1); });
+    repos.forEach(p => platformLabels(p.topics).forEach(l => counts.set(l, (counts.get(l) ?? 0) + 1)));
     return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [repos]);
 
-  const shown = useMemo(() => (lang ? repos.filter(p => p.language === lang) : repos), [repos, lang]);
+  const shown = useMemo(() => (pick ? repos.filter(p => platformLabels(p.topics).includes(pick)) : repos), [repos, pick]);
 
   const [headRef, headShown] = useReveal({ threshold: 0 });
   const [reposRef, reposShown] = useReveal({ threshold: 0.03 });
@@ -64,7 +66,7 @@ const Projects = () => {
   const tally = [
     { value: sites.length, label: t.statSites, tone: 'green' },
     { value: repos.length, label: t.statRepos, tone: 'blue' },
-    { value: languages.length, label: t.statLanguages, tone: 'pink' },
+    { value: platforms.length, label: t.statPlatforms, tone: 'pink' },
   ];
 
   return (
@@ -100,12 +102,12 @@ const Projects = () => {
       >
         <Head n={2} tone="blue" title={t.codeTitle} lede={t.codeLede} />
 
-        {languages.length > 1 && (
+        {platforms.length > 1 && (
           <div className={styles.filter} data-rise style={{ '--i': 1 }}>
-            <LangFilter
-              options={languages}
-              value={lang}
-              onChange={setLang}
+            <Filter
+              options={platforms}
+              value={pick}
+              onChange={setPick}
               allLabel={t.filterAll}
               total={repos.length}
               toneOf={toneOf}
@@ -113,7 +115,7 @@ const Projects = () => {
           </div>
         )}
 
-        <p className="sr-only" role="status">{lang ? t.filterStatus.replace('{shown}', shown.length).replace('{total}', repos.length).replace('{language}', lang) : ''}</p>
+        <p className="sr-only" role="status">{pick ? t.filterStatus.replace('{shown}', shown.length).replace('{total}', repos.length).replace('{platform}', pick) : ''}</p>
 
         {error
           ? <p className={styles.note}>{t.codeError}</p>
@@ -122,10 +124,10 @@ const Projects = () => {
             : shown.length === 0
               ? <p className={styles.note}>{t.codeEmpty}</p>
               : (
-                <div key={lang ?? 'all'} className={styles.grid}>
+                <div key={pick ?? 'all'} className={styles.grid}>
                   {shown.map((p, i) => (
                     <div key={p.id} className={styles.cell} data-rise style={{ '--i': Math.min(i, 10) + 2 }}>
-                      <Repo project={p} tone={toneOf(p.language ?? p.name)} labels={t} onReadme={setOpen} />
+                      <Repo project={p} tone={toneOf(p.name)} labels={t} onReadme={setOpen} />
                     </div>
                   ))}
                 </div>

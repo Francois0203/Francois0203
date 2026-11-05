@@ -1,78 +1,148 @@
 .wrap { position: relative; }
 
 .caption {
-    position: absolute;
-    top: 0.5rem;
-    left: 0;
-    z-index: 1;
-    margin: 0;
+    margin: 0 0 0.75rem;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     color: var(--ink-2);
 }
 
-.pile {
+/* Motion off: each group is a labelled row of chips. */
+.field {
     position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1.25rem;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.group {
     display: flex;
     flex-wrap: wrap;
-    align-content: flex-end;
-    gap: 0.5rem;
-    height: clamp(260px, 28vw, 380px);
-    padding-bottom: 6px;
+    align-content: flex-start;
+    gap: 0.4rem;
+}
+
+.lines,
+.wave { display: none; }
+
+/* Live: one weightless field, everything placed by the physics. */
+.field[data-live] {
+    display: block;
+    height: clamp(500px, 42vw, 580px);
     overflow: hidden;
-    border-radius: 0 0 var(--r-card) var(--r-card);
-    background: linear-gradient(180deg, transparent 55%, var(--glass-weak));
-    box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--c-blue) 40%, var(--glass-line));
-    touch-action: pan-y;
-}
-
-.pile[data-live] { display: block; cursor: grab; }
-.pile[data-grabbing] { cursor: grabbing; }
-
-.piece {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    height: clamp(2.75rem, 4vw, 3.5rem);
-    padding: 0 1.3rem 0 0.55rem;
-    border-radius: 9999px;
+    border-radius: var(--r-card);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, calc(var(--sheen-alpha) * 0.7)), transparent 55%),
-        color-mix(in srgb, var(--tone) 18%, var(--glass-strong));
-    box-shadow:
-        inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, var(--glass-line)),
-        var(--glass-hi),
-        0 12px 24px -12px color-mix(in srgb, var(--tone) 80%, transparent);
-    font-family: var(--font-display);
-    font-size: clamp(1rem, 1.5vw, 1.35rem);
-    font-weight: 650;
-    white-space: nowrap;
-    color: var(--ink);
-    user-select: none;
+        radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 0) 0 0 / 22px 22px;
+    box-shadow: inset 0 0 0 1px var(--rule);
+    cursor: grab;
 }
 
-[data-tier='low'] .piece { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.field[data-grabbing] { cursor: grabbing; }
+.field[data-live] .group { display: contents; }
 
-.pile[data-live] .piece {
+.field[data-live] .lines {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.lines line {
+    stroke: color-mix(in srgb, var(--tone) 55%, transparent);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 5;
+    stroke-linecap: round;
+}
+
+.field[data-live] .hub,
+.field[data-live] .piece {
     position: absolute;
     left: 0;
     top: 0;
     will-change: transform;
 }
 
+/* The group's name, fixed in place at the centre of its tools. */
+.hub {
+    display: inline-flex;
+    align-items: center;
+    height: 2.6rem;
+    padding: 0 1.1rem;
+    border-radius: 999px;
+    background: var(--tone);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--tone) 22%, transparent), 0 14px 28px -12px var(--tone);
+    font-family: var(--font-display);
+    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    color: var(--on-bright);
+    z-index: 2;
+}
+
+.field:not([data-live]) .hub { flex-basis: 100%; justify-content: center; max-width: max-content; margin-bottom: 0.3rem; }
+
+.piece {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 2.3rem;
+    padding: 0 0.85rem 0 0.4rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--tone) 14%, var(--glass-strong));
+    box-shadow:
+        inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, var(--glass-line)),
+        0 10px 20px -12px color-mix(in srgb, var(--tone) 80%, transparent);
+    font-family: var(--font-display);
+    font-size: clamp(0.85rem, 1vw, 0.95rem);
+    font-weight: 650;
+    white-space: nowrap;
+    color: var(--ink);
+    z-index: 1;
+}
+
 .mark {
     box-sizing: content-box;
-    width: 1.1em;
-    height: 1.1em;
-    padding: 0.4em;
+    width: 0.95em;
+    height: 0.95em;
+    padding: 0.3em;
     border-radius: 50%;
     background: var(--surface);
     color: var(--ink);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, transparent), 0 4px 10px -4px var(--tone);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, transparent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .pile { height: auto; padding-top: 2.75rem; }
+/* A ring that spreads from a tap on touch screens. */
+.field[data-live] .wave {
+    display: block;
+    position: absolute;
+    left: var(--wx, 50%);
+    top: var(--wy, 50%);
+    width: 520px;
+    height: 520px;
+    margin: -260px 0 0 -260px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c-blue) 60%, transparent);
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
 }
 
-:global([data-no-animations='true']) .pile { height: auto; padding-top: 2.75rem; }
+.field[data-wave] .wave { animation: wave 650ms var(--ease-out); }
+
+@keyframes wave {
+    from { opacity: 1; transform: scale(0); }
+    to { opacity: 0; transform: scale(1); }
+}
+
+@media (max-width: 639px) {
+    .field[data-live] { height: clamp(560px, 150vw, 640px); }
+    .hub { height: 2.2rem; padding: 0 0.8rem; font-size: 0.8rem; }
+    .piece { height: 2rem; font-size: 0.78rem; padding: 0 0.65rem 0 0.3rem; }
+}

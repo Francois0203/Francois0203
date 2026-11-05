@@ -5,7 +5,7 @@ const calm = () =>
   || window.matchMedia('(prefers-reduced-motion: reduce)').matches
   || document.documentElement.dataset.noAnimations === 'true';
 
-// Tilts an element toward the pointer and moves its light spot (--mx, --my).
+// Tilts an element toward the pointer and exposes the pointer as --mx, --my.
 const useTilt = (ref, { max = 6, lift = 0, enabled = true } = {}) => {
   useEffect(() => {
     const el = ref.current;

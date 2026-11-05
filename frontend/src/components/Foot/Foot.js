@@ -30,8 +30,10 @@ const Foot = () => {
   const pages = useNavPages();
   const name = personal.name || site.name;
 
-  const tools = (data?.skills?.categories ?? []).flatMap(c => c.items ?? [])
-    .map(i => (typeof i === 'string' ? i : i?.name)).filter(Boolean);
+  const toolGroups = (data?.skills?.categories ?? []).map(c => ({
+    name: c.name,
+    items: [...new Set((c.items ?? []).map(i => (typeof i === 'string' ? i : i?.name)).filter(Boolean))],
+  })).filter(g => g.name && g.items.length);
 
   const nextBase = nextPage(pathname);
   const next = nextBase && pages.find(pg => pg.to === nextBase.to);
@@ -71,7 +73,7 @@ const Foot = () => {
           </div>
         )}
 
-        {pathname === '/' && <Playground items={[...new Set(tools)]} caption={t.stackCaption} />}
+        {pathname === '/' && <Playground groups={toolGroups} caption={t.stackCaption} />}
 
         <div className={`glass ${styles.base}`} data-tone="blue">
           <nav className={styles.pages} aria-label={words.pagesNav}>

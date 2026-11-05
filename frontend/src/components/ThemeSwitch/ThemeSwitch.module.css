@@ -16,9 +16,10 @@
 .switch:active { transform: scale(0.88); }
 .switch svg { width: 1.2rem; height: 1.2rem; overflow: visible; }
 
-.core { transform-origin: center; transition: transform 500ms var(--spring); }
-.bite { transition: cx 500ms var(--ease-out), cy 500ms var(--ease-out); }
-.rays { transform-origin: center; transition: transform 500ms var(--spring), opacity 300ms var(--ease); }
-.icon[data-dark] .core { transform: scale(1.5); }
-.icon[data-dark] .bite { cx: 16; cy: 8; }
+.core { transform-origin: 12px 12px; transform: scale(0.82); transition: transform 500ms var(--spring); }
+/* Safari ignores CSS cx and cy, so the bite slides in with a transform. */
+.bite { transform: translate(9px, -9px); transition: transform 500ms var(--ease-out); }
+.rays { transform-origin: 12px 12px; transition: transform 500ms var(--spring), opacity 300ms var(--ease); }
+.icon[data-dark] .core { transform: scale(1.35); }
+.icon[data-dark] .bite { transform: none; }
 .icon[data-dark] .rays { transform: rotate(-90deg) scale(0.4); opacity: 0; }
