@@ -161,7 +161,16 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // A one-way scramble, so no address or IP is ever stored as it is.
 const scramble = (value) => crypto.createHash('sha256').update(`fm-portfolio:${value}`).digest('hex').slice(0, 40);
 
-const clientIp = (req) => String(req?.headers?.['x-forwarded-for'] ?? req?.ip ?? 'unknown').split(',')[0].trim();
+/*
+ * The caller's address. Google's front end APPENDS the real address to X-Forwarded-For,
+ * after anything the caller sent in that header themselves, so only the LAST entry can be
+ * trusted. Taking the first let a spammer invent a new "address" per request and walk
+ * straight past the per-sender limits.
+ */
+const clientIp = (req) => {
+  const hops = String(req?.headers?.['x-forwarded-for'] ?? '').split(',').map(h => h.trim()).filter(Boolean);
+  return hops[hops.length - 1] || req?.ip || 'unknown';
+};
 
 const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
@@ -180,6 +189,8 @@ exports.sendMessage = onCall(
     region: 'europe-west1',
     maxInstances: 5,
     cors: [/francois-portfolio\.(web\.app|firebaseapp\.com)$/, /^https?:\/\/localhost(:\d+)?$/],
+    // Refuse any call without a valid App Check (reCAPTCHA Enterprise) token from this site.
+    enforceAppCheck: true,
   },
   async (request) => {
     const d = request.data ?? {};
