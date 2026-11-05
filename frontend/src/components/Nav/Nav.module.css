@@ -96,11 +96,11 @@
     transition: color var(--t-fast) var(--ease), background-color var(--t) var(--ease), box-shadow var(--t) var(--ease), transform var(--t) var(--spring);
 }
 
-.route:hover,
-.route[aria-current='page'] { color: var(--on-bright); }
+/* The link the pill sits under, marked by the script that moves the pill. */
+.route[data-pill] { color: var(--on-bright); }
 
 /* While the pill sits under another link, the current page keeps a soft tint and readable text. */
-.routes:is(:hover, :focus-within) .route[aria-current='page']:not(:hover):not(:focus-visible) {
+.route[aria-current='page']:not([data-pill]) {
     color: var(--tab-ink);
     background: color-mix(in srgb, var(--tab) 16%, transparent);
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tab) 45%, transparent);

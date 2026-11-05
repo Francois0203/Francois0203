@@ -168,26 +168,10 @@ pre {
 /* Theme switch: the new theme is revealed by a growing circle, so the snapshots must not cross-fade. */
 ::view-transition-old(root),
 ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-group(theme-ring) { animation: none; }
-::view-transition-new(theme-ring) { animation: none; }
+::view-transition-new(root) { z-index: 1; }
 
-/* While the theme spreads, the page swaps colours at once instead of easing, so only the reveal moves. */
-[data-theme-switching] :not(svg, svg *) { transition: none !important; }
-[data-theme-switching] * { animation-play-state: paused !important; }
-
-/* A ring of the five tones on the edge of the spreading theme. */
-.theme-ring {
-    position: fixed;
-    z-index: var(--z-intro);
-    border-radius: 50%;
-    background: conic-gradient(var(--c-blue), var(--c-green), var(--c-orange), var(--c-pink), var(--c-yellow), var(--c-blue));
-    -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 34px), #000 calc(100% - 10px), transparent 100%);
-    mask: radial-gradient(closest-side, transparent calc(100% - 34px), #000 calc(100% - 10px), transparent 100%);
-    pointer-events: none;
-    transform: scale(0);
-    will-change: transform, opacity;
-    view-transition-name: theme-ring;
-}
+/* Only for the instant of the swap, so colours jump instead of easing inside the reveal. The switch's icon keeps its morph. */
+[data-theme-swap] :not(svg, svg *) { transition: none !important; }
 
 /* Loading placeholder with a light sweep. */
 .skeleton {

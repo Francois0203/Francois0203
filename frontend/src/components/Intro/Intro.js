@@ -2,7 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCopy } from '../../content/copy/store';
 import styles from './Intro.module.css';
 
+// Once per visit, like a splash screen: a reload or a new page in the same tab goes straight to the site.
+const SEEN = 'fm-intro-seen';
 let playedThisLoad = false;
+
+const seen = () => { try { return sessionStorage.getItem(SEEN) === '1'; } catch { return false; } };
+const markSeen = () => { try { sessionStorage.setItem(SEEN, '1'); } catch { /* storage off: it plays once per load */ } };
 
 const BLOOMS = [
   { tone: 'blue', x: '22%', y: '26%', d: '0ms' },
@@ -16,7 +21,7 @@ const LIFT_MS = 1000;
 
 const shouldPlay = () => {
   if (typeof window === 'undefined') return false;
-  if (playedThisLoad) return false;
+  if (playedThisLoad || seen()) return false;
   if (document.documentElement.dataset.noAnimations === 'true') return false;
   if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
   return true;
@@ -43,6 +48,7 @@ const Intro = () => {
         rootRef.current.style.setProperty('--cx', `${r.left + r.width / 2}px`);
         rootRef.current.style.setProperty('--cy', `${r.top + r.height / 2}px`);
       }
+      markSeen();
       delete document.documentElement.dataset.intro;
       window.dispatchEvent(new Event('intro:done'));
       setTimeout(() => setGone(true), LIFT_MS);

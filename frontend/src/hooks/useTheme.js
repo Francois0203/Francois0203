@@ -37,53 +37,37 @@ const apply = (next) => {
   listeners.forEach(fn => fn());
 };
 
-const SPREAD_MS = 950;
+const SPREAD_MS = 750;
+const EASE = 'cubic-bezier(0.76, 0, 0.24, 1)';
 let switching = false;
-const EASE = 'cubic-bezier(0.5, 1, 0.89, 1)';
 
-// The new theme grows out of the origin as a circle, with a ring of the five tones riding its edge.
-// Only clip-path, transform and opacity move, so it stays smooth.
+// The new theme grows out of the origin as one circle. Nothing else is added to the transition:
+// a second snapshot or a page-wide style rule is what made earlier versions stutter.
 const spread = (swap, origin) => {
   const root = document.documentElement;
   const w = window.innerWidth;
   const h = window.innerHeight;
   const x = origin?.x ?? w - 40;
   const y = origin?.y ?? 40;
-  // The circle grows past the far corner, so its edge leaves the screen still moving instead of crawling in.
-  const r = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) * 1.25;
-
-  const ring = document.createElement('div');
-  ring.className = 'theme-ring';
-  ring.setAttribute('aria-hidden', 'true');
-  Object.assign(ring.style, { left: `${x - r}px`, top: `${y - r}px`, width: `${r * 2}px`, height: `${r * 2}px` });
+  const r = Math.hypot(Math.max(x, w - x), Math.max(y, h - y));
 
   switching = true;
-  root.dataset.themeSwitching = '';
   const transition = document.startViewTransition(() => {
+    // Colours swap at once instead of easing. The flag stays until the new state is captured.
+    root.dataset.themeSwap = '';
     swap();
-    document.body.appendChild(ring);
   });
+  const unflag = () => { delete root.dataset.themeSwap; };
 
   transition.ready.then(() => {
-    // The edge clears the screen at about 55%, so the teardown hitch lands on a still frame.
+    unflag();
     root.animate(
       { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
       { duration: SPREAD_MS, easing: EASE, pseudoElement: '::view-transition-new(root)' },
     );
-    ring.animate(
-      { transform: ['scale(0)', 'scale(1)'] },
-      { duration: SPREAD_MS, easing: EASE, fill: 'forwards' },
-    );
   }).catch(() => {});
 
-  transition.finished.finally(() => {
-    ring.remove();
-    switching = false;
-    // Lifting the pause restyles the whole page, so it waits until the browser is idle.
-    const lift = () => { if (!switching) delete root.dataset.themeSwitching; };
-    if (window.requestIdleCallback) window.requestIdleCallback(lift, { timeout: 400 });
-    else setTimeout(lift, 120);
-  });
+  transition.finished.finally(() => { unflag(); switching = false; });
 };
 
 const setTheme = (next) => {

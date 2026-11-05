@@ -57,7 +57,7 @@ export const privacyPolicy = ({ email }) => ({
     {
       heading: 'Cookies and local storage',
       blocks: [
-        "This site sets no cookies of its own, though Google reCAPTCHA, described above, may set its own. It saves two preferences in your browser's local storage, light or dark theme and whether you asked for reduced motion, plus a copy of the site's wording so pages show the latest text straight away. None of it is about you, it never leaves your device, and clearing your browser data removes it.",
+        "This site sets no cookies of its own, though Google reCAPTCHA, described above, may set its own. It saves two preferences in your browser's local storage, light or dark theme and whether you asked for reduced motion, plus a copy of the site's wording so pages show the latest text straight away. For the length of your visit it also notes that you have seen the opening animation, so it does not replay on every page. None of it is about you, it never leaves your device, and clearing your browser data removes it.",
         'The Projects page can show live, scaled-down previews of websites I built for clients. On larger screens those sites load inside the page, and they are run by their owners, so they may set their own cookies under their own policies. Visiting a site through a link likewise takes you to that site\'s own terms and policies.',
       ],
     },

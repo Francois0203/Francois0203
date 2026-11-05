@@ -37,6 +37,9 @@ const Nav = ({ links = [] }) => {
   const place = useCallback((el) => {
     const rail = railRef.current;
     if (!rail) return;
+    // The text colour follows the pill, so it never matches the pill underneath it.
+    rail.querySelectorAll('[data-pill]').forEach(n => { if (n !== el) n.removeAttribute('data-pill'); });
+    el?.setAttribute('data-pill', '');
     if (!el) { rail.style.setProperty('--io', '0'); return; }
     rail.style.setProperty('--io', '1');
     rail.style.setProperty('--ix', `${el.offsetLeft}px`);
