@@ -132,7 +132,7 @@ exports.onContactMessage = onDocumentCreated(
         from: `"Portfolio Contact" <${SMTP_USER.value()}>`,
         to: NOTIFY_TO.value(),
         replyTo: payload.email || undefined,
-        subject: `New message from ${payload.name}`,
+        subject: `${data.flagged ? '[Likely spam] ' : ''}New message from ${payload.name}`,
         text: buildText(payload),
         html: buildHtml(payload),
       });
@@ -174,6 +174,35 @@ const clientIp = (req) => {
 
 const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
+// ── Spam screening ──────────────────────────────────────────────────────────
+// Two outcomes. Link spam (more than two links, any HTML or BBCode, a link in a name) is
+// dropped with a quiet success - no person writes like that. Everything else that only LOOKS
+// like spam is still saved, but marked flagged with the reasons, so a real enquiry is never
+// lost: flagged messages arrive with "[Likely spam]" in the email subject.
+// Only real tags count as HTML, so "<R500 per night>" or "<3" from a person still gets through.
+const LINK = /(https?:\/\/|www\.|\[url|<a\s|\b[a-z0-9-]+\.(ru|cn|xyz|top|click|link|shop|online|site|info|biz)\b)/gi;
+const HTML = /<\/?(a|p|div|span|img|script|iframe|b|i|u|strong|em|br|font|center)\b[^>]*>|\[\/?url/i;
+const SPAM_WORDS = /\b(crypto|bitcoin|btc|forex|casino|betting|viagra|cialis|porn|escort|seo|backlinks?|guest post|lead generation|first page of google|rank(?:ing)? your (?:site|website)|increase your (?:website )?traffic|web ?design (?:services?|agency)|digital marketing (?:services?|agency)|investment opportunity|make money|click here|telegram|unsubscribe|dear (?:sir|madam))\b/gi;
+const NON_LATIN = /[\u0400-\u04FF\u0600-\u06FF\u0E00-\u0E7F\u3040-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]/g;
+
+const screen = ({ name = '', body = '', extra = [] }) => {
+  const all = [body, ...extra].filter(Boolean).join(' ');
+  const links = (all.match(LINK) || []).length;
+  if (links > 2 || HTML.test(all) || /(https?:\/\/|www\.)/i.test(name)) return { drop: true, flags: [] };
+
+  const flags = [];
+  const words = [...new Set((all.match(SPAM_WORDS) || []).map((w) => w.toLowerCase()))];
+  if (words.length) flags.push(`spam words: ${words.slice(0, 4).join(', ')}`);
+  if (links === 2) flags.push('two links');
+  if (/[^\s@]+@[^\s@]+\.[^\s@]+|\d{6,}/.test(name)) flags.push('contact details in the name');
+  const letters = all.replace(/[^\p{L}]/gu, '');
+  if (letters.length >= 20 && letters.replace(/[^\p{Lu}]/gu, '').length / letters.length > 0.6) flags.push('mostly capitals');
+  if (/(.)\1{5,}/u.test(all)) flags.push('repeated characters');
+  if (letters.length >= 10 && (all.match(NON_LATIN) || []).length / letters.length > 0.3) flags.push('unexpected alphabet');
+  return { drop: false, flags };
+};
+const flagFields = (flags) => (flags.length ? { flagged: true, flags } : { flagged: false });
+
 // Deletes a few spent rate records each time, so the collection never grows.
 const sweepLimits = async () => {
   const old = await db.collection('rateLimits').where('expireAt', '<', Timestamp.now()).limit(25).get();
@@ -206,6 +235,11 @@ exports.sendMessage = onCall(
     if (!name || !message || !EMAIL.test(email)) {
       throw new HttpsError('invalid-argument', 'The name, email or message is missing or not valid.');
     }
+    const check = screen({ name, body: message });
+    if (check.drop) {
+      logger.info('Contact form: dropped link spam');
+      return { ok: true };
+    }
 
     const now = Date.now();
     const sender = scramble(clientIp(request.rawRequest));
@@ -235,6 +269,7 @@ exports.sendMessage = onCall(
       tx.set(refs.everyone, { count: FieldValue.increment(1), expireAt: Timestamp.fromMillis(now + 2 * DAY) }, { merge: true });
       tx.create(db.collection('contacts').doc(), {
         name, email, message,
+        ...flagFields(check.flags),
         createdAt: FieldValue.serverTimestamp(),
         expireAt: Timestamp.fromMillis(now + KEEP_DAYS * DAY),
       });
