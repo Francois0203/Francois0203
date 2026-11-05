@@ -217,13 +217,14 @@ const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
   useGSAP(() => {
     if (motionOff()) return;
     const cards = gsap.utils.toArray(grid.current.children);
-    gsap.set(cards, { autoAlpha: 0, y: 90, rotationX: 18, transformPerspective: 1200, transformOrigin: '50% 100%' });
+    // The card's CSS transform transition would restart on every GSAP frame, so it is off until the entrance ends.
+    gsap.set(cards, { autoAlpha: 0, y: 90, rotationX: 18, transformPerspective: 1200, transformOrigin: '50% 100%', transition: 'none' });
     ScrollTrigger.batch(cards, {
       start: 'top 88%',
       once: true,
       onEnter: (batch) => gsap.to(batch, {
         autoAlpha: 1, y: 0, rotationX: 0, duration: 1.1, stagger: 0.12, ease: 'expo.out',
-        clearProps: 'transform,opacity,visibility',
+        clearProps: 'transform,opacity,visibility,transition',
       }),
     });
   }, { scope: grid, dependencies: [sites.length] });

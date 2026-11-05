@@ -142,7 +142,7 @@
 }
 
 @media (max-width: 639px) {
-    .field[data-live] { height: clamp(560px, 150vw, 640px); }
+    /* The height is set by the layout, which stacks the groups to fit. */
     .hub { height: 2.2rem; padding: 0 0.8rem; font-size: 0.8rem; }
     .piece { height: 2rem; font-size: 0.78rem; padding: 0 0.65rem 0 0.3rem; }
 }

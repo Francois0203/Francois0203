@@ -14,20 +14,54 @@ const still = () =>
 let matterPromise = null;
 const loadMatter = () => (matterPromise ??= import('matter-js').then(m => m.default));
 
-// Where each group's hub sits: a row on wide screens, a two by two grid on narrow ones.
-const anchorsFor = (n, W, H) => {
-  if (W < 640) {
-    const cols = 2;
-    const rows = Math.ceil(n / cols);
-    return Array.from({ length: n }, (_, i) => ({
-      x: W * ((i % cols) + 0.5) / cols,
-      y: H * (Math.floor(i / cols) + 0.5) / rows,
-    }));
-  }
-  return Array.from({ length: n }, (_, i) => ({
-    x: W * (i + 0.5) / n,
-    y: H * (0.5 + (i % 2 ? 0.08 : -0.08)),
-  }));
+const NARROW = 640;
+
+// Wide screens: the hubs sit in a gentle zigzag row and tools hang on tethers around them.
+const anchorsFor = (n, W, H) => Array.from({ length: n }, (_, i) => ({
+  x: W * (i + 0.5) / n,
+  y: H * (0.5 + (i % 2 ? 0.08 : -0.08)),
+}));
+
+// Narrow screens: one group per band, its tools in centred rows above and below the hub.
+// Every tool gets its own measured slot, so nothing clips or overlaps at rest. Returns the height it needs.
+const stackFor = (groups, sizes, hubSizes, W) => {
+  const PAD = 16;
+  const GAP = 8;
+  const ROW = 10;
+  const BAND = 30;
+  const anchors = [];
+  const slots = [];
+  let y = PAD;
+  let first = 0;
+  groups.forEach((g, gi) => {
+    const idx = g.items.map((_, k) => first + k);
+    first += g.items.length;
+    const rows = [];
+    let row = [];
+    let width = 0;
+    idx.forEach((i) => {
+      const w = sizes[i].w;
+      if (row.length && width + GAP + w > W - PAD * 2) { rows.push(row); row = []; width = 0; }
+      width += (row.length ? GAP : 0) + w;
+      row.push(i);
+    });
+    if (row.length) rows.push(row);
+    const ch = Math.max(...idx.map(i => sizes[i].h), 1);
+    const lay = (r, cy) => {
+      const total = r.reduce((sum, i) => sum + sizes[i].w, 0) + GAP * (r.length - 1);
+      let x = (W - total) / 2;
+      r.forEach((i) => { slots[i] = { x: x + sizes[i].w / 2, y: cy }; x += sizes[i].w + GAP; });
+    };
+    const above = Math.floor(rows.length / 2);
+    rows.slice(0, above).forEach((r) => { lay(r, y + ch / 2); y += ch + ROW; });
+    const hh = hubSizes[gi].h;
+    y += 4;
+    anchors[gi] = { x: W / 2, y: y + hh / 2 };
+    y += hh + 4 + ROW;
+    rows.slice(above).forEach((r) => { lay(r, y + ch / 2); y += ch + ROW; });
+    y += BAND - ROW;
+  });
+  return { anchors, slots, H: Math.ceil(y - BAND + PAD) };
 };
 
 // Weightless tool groups. Each tool floats on an elastic tether to its group; push, fling or tap to scatter.
@@ -62,9 +96,19 @@ const Playground = ({ groups = [], caption }) => {
 
       box.dataset.live = '';
       const W = box.clientWidth;
-      const H = box.clientHeight;
       const scale = Math.min(1, W / 1100);
-      const anchors = anchorsFor(list.length, W, H);
+      const sizes = pieces.current.map(n => (n ? { w: n.offsetWidth, h: n.offsetHeight } : { w: 0, h: 0 }));
+      let H = box.clientHeight;
+      let anchors;
+      let slots = null;
+      if (W < NARROW) {
+        const hubSizes = list.map((_, gi) => ({ h: hubs.current[gi]?.offsetHeight ?? 0 }));
+        ({ anchors, slots, H } = stackFor(list, sizes, hubSizes, W));
+        box.style.height = `${H}px`;
+      } else {
+        box.style.height = '';
+        anchors = anchorsFor(list.length, W, H);
+      }
       const engine = Engine.create({ gravity: { x: 0, y: 0 }, enableSleeping: true });
       const wall = { isStatic: true, restitution: 0.6 };
 
@@ -82,12 +126,14 @@ const Playground = ({ groups = [], caption }) => {
         Composite.add(engine.world, Bodies.rectangle(a.x, a.y, n.offsetWidth, n.offsetHeight, { isStatic: true, chamfer: { radius: n.offsetHeight / 2 - 1 } }));
       });
 
-      const sizes = pieces.current.map(n => (n ? { w: n.offsetWidth, h: n.offsetHeight } : { w: 0, h: 0 }));
       const bodies = flat.map((f, i) => {
         const a = anchors[f.gi];
         const k = list[f.gi].items.indexOf(f.name);
         const turn = (k / list[f.gi].items.length) * Math.PI * 2 + f.gi;
-        const b = Bodies.rectangle(a.x + Math.cos(turn) * 4, a.y + Math.sin(turn) * 4, sizes[i].w, sizes[i].h, {
+        // On narrow screens each tool starts in its own slot and its spring holds it there; on wide ones it is a tether to the hub.
+        const slot = slots?.[i];
+        const from = slot ?? { x: a.x + Math.cos(turn) * 4, y: a.y + Math.sin(turn) * 4 };
+        const b = Bodies.rectangle(from.x, from.y, sizes[i].w, sizes[i].h, {
           chamfer: { radius: sizes[i].h / 2 - 1 },
           inertia: Infinity,
           frictionAir: 0.06,
@@ -96,12 +142,13 @@ const Playground = ({ groups = [], caption }) => {
           density: 0.001,
         });
         b.home = a;
+        b.rest = slot ?? a;
         b.turn = turn;
         Composite.add(engine.world, Constraint.create({
-          pointA: { x: a.x, y: a.y },
+          pointA: slot ? { x: slot.x, y: slot.y } : { x: a.x, y: a.y },
           bodyB: b,
-          length: (95 + (k % 3) * 30) * Math.max(0.6, scale),
-          stiffness: 0.004,
+          length: slot ? 0 : (95 + (k % 3) * 30) * Math.max(0.6, scale),
+          stiffness: slot ? 0.008 : 0.004,
           damping: 0.03,
           render: { visible: false },
         }));
@@ -110,7 +157,8 @@ const Playground = ({ groups = [], caption }) => {
       Composite.add(engine.world, bodies);
 
       // A burst outward on arrival, so the groups bloom open.
-      bodies.forEach(b => Body.setVelocity(b, { x: Math.cos(b.turn) * 9, y: Math.sin(b.turn) * 9 }));
+      const puff = slots ? 3 : 9;
+      bodies.forEach(b => Body.setVelocity(b, { x: Math.cos(b.turn) * puff, y: Math.sin(b.turn) * puff }));
 
       const place = (b, i) => {
         const n = pieces.current[i];
@@ -194,7 +242,7 @@ const Playground = ({ groups = [], caption }) => {
         bodies.forEach((b, i) => {
           const { x, y } = b.position;
           if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > W || y < 0 || y > H) {
-            Body.setPosition(b, { x: b.home.x, y: b.home.y });
+            Body.setPosition(b, { x: b.rest.x, y: b.rest.y });
             Body.setVelocity(b, { x: 0, y: 0 });
           }
           const speed = Math.hypot(b.velocity.x, b.velocity.y);
@@ -220,6 +268,7 @@ const Playground = ({ groups = [], caption }) => {
         unbindDrag();
         Engine.clear(engine);
         delete box.dataset.live;
+        box.style.height = '';
       };
     };
 

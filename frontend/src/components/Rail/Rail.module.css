@@ -13,14 +13,31 @@
     z-index: 1;
 }
 
-/* The coloured part, clipped at the tip so the gradient stays fixed to the whole line. */
+/* A window that slides down with the fill while the line inside slides back, so the gradient stays put.
+   Both are transforms, so scrolling moves layers instead of repainting the glow. */
+.window {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -40px;
+    right: -40px;
+    overflow: hidden;
+    transform: translateY(calc(var(--fill) - 100%));
+    will-change: transform;
+    pointer-events: none;
+}
+
 .fill {
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
+    top: 0;
+    bottom: 0;
+    left: 40px;
+    right: 40px;
+    border-radius: 3px;
     background: linear-gradient(var(--c-green), var(--c-blue), var(--c-pink), var(--c-orange), var(--c-yellow));
     box-shadow: 0 0 12px 2px color-mix(in srgb, var(--spark) 70%, transparent), 0 0 28px 4px color-mix(in srgb, var(--spark) 30%, transparent);
-    clip-path: inset(-20px -20px calc(100% - var(--fill)) -20px);
+    transform: translateY(calc(100% - var(--fill)));
+    will-change: transform;
 }
 
 /* The glowing tip that sits on the middle of the screen. */
@@ -37,6 +54,7 @@
         0 0 18px 4px var(--spark),
         0 0 46px 14px color-mix(in srgb, var(--spark) 45%, transparent);
     transform: translate(-50%, calc(var(--fill) - 50%));
+    will-change: transform;
     opacity: 0;
     transition: opacity var(--t) var(--ease), background var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }

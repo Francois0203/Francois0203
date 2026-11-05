@@ -76,7 +76,7 @@ const Rail = ({ as: Tag = 'div', onProgress, className = '' }) => {
 
   return (
     <Tag ref={ref} className={[styles.rail, className].filter(Boolean).join(' ')} aria-hidden="true">
-      <span className={styles.fill} />
+      <span className={styles.window}><span className={styles.fill} /></span>
       <span className={styles.spark} />
     </Tag>
   );

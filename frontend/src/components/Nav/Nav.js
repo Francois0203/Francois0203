@@ -22,7 +22,12 @@ const Nav = ({ links = [] }) => {
   const pages = links.filter(l => l.to !== '/');
 
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 24);
+    // Re-render only when the bar crosses the line, not on every scroll event.
+    let was = null;
+    const onScroll = () => {
+      const now = window.scrollY > 24;
+      if (now !== was) { was = now; setStuck(now); }
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);

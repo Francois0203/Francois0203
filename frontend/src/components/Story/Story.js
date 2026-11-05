@@ -62,15 +62,19 @@ const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 
   const originOf = useCallback((i) => thumbs.current[`${viewer?.chapter}-${i}`]?.querySelector('img'), [viewer?.chapter]);
   const sectionRef = useRef(null);
   const ringRef = useRef(null);
+  const photoRef = useRef(null);
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
 
   // The ring reaches each tick exactly when the rail reaches that chapter.
   const n = chapters.length;
   const track = useCallback((p, last) => {
-    sectionRef.current?.style.setProperty('--p', p.toFixed(4));
+    // Runs every scroll frame: write to the two elements that move, and re-render only when the chapter changes.
+    photoRef.current?.style.setProperty('--p', p.toFixed(4));
     const arc = last < 0 ? 0 : (0.5 + p * (n - 1)) / n;
     if (ringRef.current) ringRef.current.style.strokeDashoffset = String(RING * (1 - arc));
-    setActive(Math.max(0, last));
+    const next = Math.max(0, last);
+    if (next !== activeRef.current) { activeRef.current = next; setActive(next); }
   }, [n]);
 
   if (!chapters.length) return null;
@@ -121,7 +125,7 @@ const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 
               })}
             </svg>
 
-            <div className={styles.photo}>
+            <div className={styles.photo} ref={photoRef}>
               {photo
                 ? <img src={photo} alt="" width="320" height="320" loading="lazy" />
                 : <span className={styles.initials}>{initials}</span>}

@@ -37,8 +37,9 @@ const apply = (next) => {
   listeners.forEach(fn => fn());
 };
 
-const SPREAD_MS = 700;
-const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+const SPREAD_MS = 950;
+let switching = false;
+const EASE = 'cubic-bezier(0.5, 1, 0.89, 1)';
 
 // The new theme grows out of the origin as a circle, with a ring of the five tones riding its edge.
 // Only clip-path, transform and opacity move, so it stays smooth.
@@ -48,13 +49,15 @@ const spread = (swap, origin) => {
   const h = window.innerHeight;
   const x = origin?.x ?? w - 40;
   const y = origin?.y ?? 40;
-  const r = Math.hypot(Math.max(x, w - x), Math.max(y, h - y));
+  // The circle grows past the far corner, so its edge leaves the screen still moving instead of crawling in.
+  const r = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) * 1.25;
 
   const ring = document.createElement('div');
   ring.className = 'theme-ring';
   ring.setAttribute('aria-hidden', 'true');
   Object.assign(ring.style, { left: `${x - r}px`, top: `${y - r}px`, width: `${r * 2}px`, height: `${r * 2}px` });
 
+  switching = true;
   root.dataset.themeSwitching = '';
   const transition = document.startViewTransition(() => {
     swap();
@@ -62,19 +65,24 @@ const spread = (swap, origin) => {
   });
 
   transition.ready.then(() => {
+    // The edge clears the screen at about 55%, so the teardown hitch lands on a still frame.
     root.animate(
       { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
       { duration: SPREAD_MS, easing: EASE, pseudoElement: '::view-transition-new(root)' },
     );
     ring.animate(
-      [{ transform: 'scale(0)', opacity: 1 }, { opacity: 1, offset: 0.6 }, { transform: 'scale(1)', opacity: 0 }],
+      { transform: ['scale(0)', 'scale(1)'] },
       { duration: SPREAD_MS, easing: EASE, fill: 'forwards' },
     );
   }).catch(() => {});
 
   transition.finished.finally(() => {
     ring.remove();
-    delete root.dataset.themeSwitching;
+    switching = false;
+    // Lifting the pause restyles the whole page, so it waits until the browser is idle.
+    const lift = () => { if (!switching) delete root.dataset.themeSwitching; };
+    if (window.requestIdleCallback) window.requestIdleCallback(lift, { timeout: 400 });
+    else setTimeout(lift, 120);
   });
 };
 
@@ -93,7 +101,7 @@ const toggleTheme = (origin) => {
   const root = document.documentElement;
   const swap = () => flushSync(() => apply(next));
   const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || root.dataset.noAnimations === 'true';
-  if (!document.startViewTransition || calm || 'themeSwitching' in root.dataset) { swap(); return; }
+  if (!document.startViewTransition || calm || switching) { swap(); return; }
   spread(swap, origin);
 };
 
