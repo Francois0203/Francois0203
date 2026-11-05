@@ -9,7 +9,7 @@ import usePortfolioData from '../../hooks/usePortfolioData';
 import { useCopy } from '../../content/copy/store';
 import styles from './Nav.module.css';
 
-const Nav = ({ links = [], theme, toggleTheme }) => {
+const Nav = ({ links = [] }) => {
   const [stuck, setStuck] = useState(false);
   const [open, setOpen] = useState(false);
   const [spot, setSpot] = useState(null);
@@ -92,7 +92,7 @@ const Nav = ({ links = [], theme, toggleTheme }) => {
 
           <div className={styles.controls}>
             <CvButton className={styles.cv} />
-            <ThemeSwitch theme={theme} onToggle={toggleTheme} />
+            <ThemeSwitch />
             <MotionSwitch />
 
             <button

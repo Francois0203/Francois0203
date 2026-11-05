@@ -1,9 +1,11 @@
 import { useId } from 'react';
 import { useCopy } from '../../content/copy/store';
+import { useTheme } from '../../hooks/useTheme';
 import styles from './ThemeSwitch.module.css';
 
 // Light and dark toggle. The sun folds its rays and a bite turns it into a moon.
-const ThemeSwitch = ({ theme, onToggle, className = '' }) => {
+const ThemeSwitch = ({ className = '' }) => {
+  const { theme, toggleTheme } = useTheme();
   const words = useCopy('a11y');
   const dark = theme !== 'light';
   const mask = `moon${useId().replace(/:/g, '')}`;
@@ -11,7 +13,10 @@ const ThemeSwitch = ({ theme, onToggle, className = '' }) => {
     <button
       type="button"
       className={[styles.switch, className].filter(Boolean).join(' ')}
-      onClick={onToggle}
+      onClick={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        toggleTheme({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+      }}
       aria-label={dark ? words.toLight : words.toDark}
       title={dark ? words.toLight : words.toDark}
     >

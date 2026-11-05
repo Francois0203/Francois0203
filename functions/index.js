@@ -3,6 +3,7 @@ const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { defineString, defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 const nodemailer = require('nodemailer');
+const { buildHtml, buildText } = require('./email');
 const crypto = require('node:crypto');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
@@ -16,10 +17,6 @@ const SMTP_USER = defineString('SMTP_USER');
 const NOTIFY_TO = defineString('NOTIFY_TO', { default: 'francoismeiring0203@gmail.com' });
 const SMTP_PASSWORD = defineSecret('SMTP_PASSWORD');
 
-const esc = (s = '') =>
-  String(s).replace(/[&<>"']/g, (c) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
 const formatWhen = (createdAt) => {
   const d = createdAt && typeof createdAt.toDate === 'function' ? createdAt.toDate() : new Date();
   try {
@@ -32,70 +29,6 @@ const formatWhen = (createdAt) => {
     return d.toISOString();
   }
 };
-
-// The email, built with tables and inline styles so mail apps show it right.
-const buildHtml = ({ name, email, message, when }) => {
-  const safeName = esc(name);
-  const safeEmail = esc(email);
-  const safeMessage = esc(message).replace(/\r?\n/g, '<br>');
-  const emailCell = email
-    ? `<a href="mailto:${safeEmail}" style="color:#c05621;text-decoration:none;font-weight:600;">${safeEmail}</a>`
-    : '<span style="color:#94a3b8;">not provided</span>';
-
-  return `<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f4f4f5;">
-  <span style="display:none;max-height:0;overflow:hidden;opacity:0;">New message from ${safeName} via your portfolio.</span>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:24px 12px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #e4e4e7;border-radius:14px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-        <tr><td style="background:#c05621;padding:22px 28px;">
-          <div style="color:#ffffff;font-size:18px;font-weight:700;">New message from your portfolio</div>
-          <div style="color:#ffe8d6;font-size:13px;margin-top:2px;">Someone reached out through your Connect page</div>
-        </td></tr>
-        <tr><td style="padding:26px 28px 8px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;color:#3f3f46;">
-            <tr>
-              <td style="padding:6px 0;width:110px;color:#71717a;">From</td>
-              <td style="padding:6px 0;font-weight:600;color:#18181b;">${safeName}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:#71717a;">Email</td>
-              <td style="padding:6px 0;">${emailCell}</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 0;color:#71717a;vertical-align:top;">Received</td>
-              <td style="padding:6px 0;color:#3f3f46;">${esc(when)}</td>
-            </tr>
-          </table>
-        </td></tr>
-        <tr><td style="padding:8px 28px 26px;">
-          <div style="color:#71717a;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Message</div>
-          <div style="background:#fafafa;border:1px solid #ececed;border-left:3px solid #c05621;border-radius:8px;padding:16px 18px;color:#27272a;font-size:15px;line-height:1.7;white-space:normal;">${safeMessage}</div>
-        </td></tr>
-        <tr><td style="padding:0 28px 26px;">
-          <div style="color:#71717a;font-size:13px;line-height:1.6;">
-            Just hit <strong>Reply</strong> to respond to ${safeName} directly${email ? ` at ${safeEmail}` : ''}.
-          </div>
-        </td></tr>
-        <tr><td style="background:#fafafa;border-top:1px solid #ececed;padding:14px 28px;color:#a1a1aa;font-size:12px;">
-          Automated notification from your portfolio contact form.
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
-};
-
-const buildText = ({ name, email, message, when }) =>
-  `New message from your portfolio\n\n` +
-  `From:     ${name}\n` +
-  `Email:    ${email || 'not provided'}\n` +
-  `Received: ${when}\n\n` +
-  `Message:\n${message}\n\n` +
-  `Reply to this email to respond${email ? ` to ${email}` : ''}.`;
 
 exports.onContactMessage = onDocumentCreated(
   {
@@ -117,6 +50,7 @@ exports.onContactMessage = onDocumentCreated(
       email: (data.email || '').trim(),
       message: (data.message || '').trim() || '(empty message)',
       when: formatWhen(data.createdAt),
+      flags: data.flagged ? (Array.isArray(data.flags) && data.flags.length ? data.flags : ['marked by the spam screen']) : [],
     };
 
     const port = Number(SMTP_PORT.value()) || 465;

@@ -19,7 +19,6 @@ import Spinner from '../../components/Spinner';
 import Monogram from '../../components/Monogram';
 import ThemeSwitch from '../../components/ThemeSwitch';
 import MotionSwitch from '../../components/MotionSwitch';
-import { useTheme } from '../../hooks/useTheme';
 import ProfileSection from './sections/ProfileSection';
 import PersonalDetailsSection from './sections/PersonalDetailsSection';
 import SkillsSection from './sections/SkillsSection';
@@ -54,7 +53,6 @@ let swept = false;
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const [find, setFind] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -217,7 +215,7 @@ const Admin = () => {
         </div>
         <div className={styles.topbarRight}>
           <span className={styles.userEmail}>{user.email}</span>
-          <ThemeSwitch theme={theme} onToggle={toggleTheme} />
+          <ThemeSwitch />
           <MotionSwitch />
           <Button variant="primary" tone="blue" size="sm" icon={<MdHome />} onClick={() => navigate('/')}>
             <span className={styles.hideNarrow}>View site</span>

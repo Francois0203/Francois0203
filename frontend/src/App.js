@@ -5,7 +5,7 @@ import { ToastProvider, Backdrop } from './components';
 import Nav from './components/Nav';
 import Foot from './components/Foot';
 import Intro from './components/Intro';
-import { useTheme, useAnimations, scrollPageTo } from './hooks';
+import { useThemeSetup, useAnimations, scrollPageTo } from './hooks';
 import { markSeen } from './hooks/useReveal';
 import { ContentProvider } from './context/ContentContext';
 import { NAVIGATION_PAGES, fillOf, useNavPages } from './content/navigation';
@@ -114,7 +114,6 @@ const usePageMeta = () => {
 };
 
 const AppLayout = () => {
-  const { theme, toggleTheme } = useTheme();
   const links = useNavPages();
   const { pathname } = useLocation();
   useSelectionTone();
@@ -125,7 +124,7 @@ const AppLayout = () => {
       <Intro />
 
       <div className={styles.app}>
-        <Nav links={links} theme={theme} toggleTheme={toggleTheme} />
+        <Nav links={links} />
 
         <main className={styles.main}>
           <Suspense fallback={<Loading />}>
@@ -142,7 +141,7 @@ const AppLayout = () => {
 };
 
 const App = () => {
-  useTheme();
+  useThemeSetup();
   useAnimations();
   usePageMeta();
 
