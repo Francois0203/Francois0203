@@ -46,7 +46,7 @@ const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone 
   });
 
   const style = step ? { '--step': step, ...rest.style } : rest.style;
-  return createElement(as, { ...rest, className, style }, children);
+  return createElement(as, { 'data-reveal': '', ...rest, className, style }, children);
 };
 
 export default Headline;

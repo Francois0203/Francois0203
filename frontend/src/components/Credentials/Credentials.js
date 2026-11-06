@@ -64,7 +64,7 @@ const Stop = ({ c, i, statusLabel, labels, detailed }) => {
   useTilt(ref, { max: 6 });
   const date = when(c);
   return (
-    <li className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
+    <li className={styles.stop} data-status={c.status} data-rise="flip" style={{ '--i': i }}>
       <div ref={ref} className={`glass ${styles.tile}`} data-tone={COLOURS[i % COLOURS.length]}>
       <Badge c={c} i={i} />
       <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>
@@ -82,7 +82,7 @@ const Stop = ({ c, i, statusLabel, labels, detailed }) => {
 };
 
 const Credentials = ({ items = [], labels = {}, detailed = false }) => {
-  const [ref, shown] = useReveal({ threshold: 0.15 });
+  const [ref, shown] = useReveal();
   const list = items.map(toCredential).filter(c => c.name).sort((a, b) => a.order - b.order);
   if (!list.length) return null;
 

@@ -8,10 +8,16 @@
     list-style: none;
 }
 
+.slot {
+    grid-column: span 6;
+    display: flex;
+    min-width: 0;
+}
+
 .card {
     --rx: 0deg;
     --ry: 0deg;
-    grid-column: span 6;
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
@@ -27,11 +33,11 @@
 
 .card:hover { box-shadow: var(--glass-hi), var(--glass-cast-hover), 0 30px 60px -30px var(--tone); }
 
-.grid > .card:nth-child(4n + 1) { grid-column: span 7; }
-.grid > .card:nth-child(4n + 2) { grid-column: span 5; }
-.grid > .card:nth-child(4n + 3) { grid-column: span 5; }
-.grid > .card:nth-child(4n + 4) { grid-column: span 7; }
-.grid > .card:only-child { grid-column: 1 / -1; }
+.grid > .slot:nth-child(4n + 1) { grid-column: span 7; }
+.grid > .slot:nth-child(4n + 2) { grid-column: span 5; }
+.grid > .slot:nth-child(4n + 3) { grid-column: span 5; }
+.grid > .slot:nth-child(4n + 4) { grid-column: span 7; }
+.grid > .slot:only-child { grid-column: 1 / -1; }
 
 .cover { position: relative; transform-style: preserve-3d; }
 
@@ -169,10 +175,12 @@
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 600ms var(--ease);
+    /* Hidden, it stops drawing altogether; it stays loaded so the next hover is instant. */
+    content-visibility: hidden;
+    transition: opacity 450ms var(--ease), content-visibility 450ms allow-discrete;
 }
 
-.live[data-ready] { opacity: 1; }
+.live[data-ready][data-on] { opacity: 1; content-visibility: visible; }
 
 /* Drawn at desktop size, then scaled down to fit. Never clickable. */
 .live iframe {
@@ -183,6 +191,8 @@
     transform-origin: 0 0;
     pointer-events: none;
     background: var(--surface);
+    /* The screenshot under it is captured in light mode, so the live site matches it in either theme. */
+    color-scheme: light;
 }
 
 .text { padding: 0 0.35rem; }
@@ -376,7 +386,7 @@
 .ghost { --tone: var(--rule-strong); --tone-ink: var(--ink-3); pointer-events: none; }
 
 @media (max-width: 860px) {
-    .grid > .card:nth-child(n) { grid-column: 1 / -1; }
+    .grid > .slot:nth-child(n) { grid-column: 1 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

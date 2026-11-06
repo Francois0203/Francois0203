@@ -160,21 +160,33 @@ const Playground = ({ groups = [], caption }) => {
       const puff = slots ? 3 : 9;
       bodies.forEach(b => Body.setVelocity(b, { x: Math.cos(b.turn) * puff, y: Math.sin(b.turn) * puff }));
 
-      const place = (b, i) => {
+      // Drawn between the last two physics steps, so fast screens glide instead of judder.
+      const prev = bodies.map(b => ({ x: b.position.x, y: b.position.y }));
+      const remember = () => bodies.forEach((b, i) => { prev[i].x = b.position.x; prev[i].y = b.position.y; });
+      const drawn = bodies.map(() => '');
+      const place = (b, i, k = 1) => {
+        const x = prev[i].x + (b.position.x - prev[i].x) * k;
+        const y = prev[i].y + (b.position.y - prev[i].y) * k;
+        const key = `${x.toFixed(1)},${y.toFixed(1)}`;
+        // Unchanged pieces are left alone: rewriting a line, even with the same value, relays the SVG.
+        if (key === drawn[i]) return;
+        drawn[i] = key;
         const n = pieces.current[i];
         const l = lines.current[i];
-        const { x, y } = b.position;
         if (n) n.style.transform = `translate3d(${(x - sizes[i].w / 2).toFixed(1)}px, ${(y - sizes[i].h / 2).toFixed(1)}px, 0)`;
         if (l) {
-          l.setAttribute('x1', b.home.x.toFixed(1));
-          l.setAttribute('y1', b.home.y.toFixed(1));
+          if (!l.hasAttribute('x1')) {
+            l.setAttribute('x1', b.home.x.toFixed(1));
+            l.setAttribute('y1', b.home.y.toFixed(1));
+          }
           l.setAttribute('x2', x.toFixed(1));
           l.setAttribute('y2', y.toFixed(1));
         }
       };
-      bodies.forEach(place);
+      bodies.forEach((b, i) => place(b, i));
 
-      const wake = () => bodies.forEach(b => Sleeping.set(b, false));
+      let resume = () => {};
+      const wake = () => { bodies.forEach(b => Sleeping.set(b, false)); resume(); };
       let pointer = null;
       const coarse = window.matchMedia('(pointer: coarse)').matches;
       const at = (e) => { const r = box.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
@@ -222,10 +234,14 @@ const Playground = ({ groups = [], caption }) => {
       }
 
       let raf = 0;
+      let visible = true;
       let last = performance.now();
       let carry = 0;
+      let grace = 30;
       const tick = (now) => {
-        carry = Math.min(carry + now - last, STEP * 4);
+        raf = 0;
+        // A rAF stamp can be a touch older than the moment we woke, so never step backwards.
+        carry = Math.max(0, Math.min(carry + now - last, STEP * 4));
         last = now;
         if (pointer && !('grabbing' in box.dataset)) {
           bodies.forEach((b) => {
@@ -236,6 +252,7 @@ const Playground = ({ groups = [], caption }) => {
           });
         }
         while (carry >= STEP) {
+          remember();
           Engine.update(engine, STEP);
           carry -= STEP;
         }
@@ -244,18 +261,32 @@ const Playground = ({ groups = [], caption }) => {
           if (!Number.isFinite(x) || !Number.isFinite(y) || x < 0 || x > W || y < 0 || y > H) {
             Body.setPosition(b, { x: b.rest.x, y: b.rest.y });
             Body.setVelocity(b, { x: 0, y: 0 });
+            prev[i].x = b.rest.x; prev[i].y = b.rest.y;
           }
           const speed = Math.hypot(b.velocity.x, b.velocity.y);
           if (speed > MAX_SPEED) Body.setVelocity(b, { x: b.velocity.x / speed * MAX_SPEED, y: b.velocity.y / speed * MAX_SPEED });
-          if (!b.isSleeping) place(b, i);
+          place(b, i, carry / STEP);
         });
+        // Everything asleep and no pointer about: stop the loop until something stirs.
+        if (!pointer && !('grabbing' in box.dataset) && bodies.every(b => b.isSleeping) && grace <= 0) return;
+        if (grace > 0) grace -= 1;
+        if (visible) raf = requestAnimationFrame(tick);
+      };
+      resume = () => {
+        // Run a short while after any touch, so a grab or tap always reaches the physics before it can pause.
+        grace = 30;
+        if (raf || !visible) return;
+        last = performance.now();
+        carry = 0;
         raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);
+      box.addEventListener('pointerdown', resume);
 
       const io = new IntersectionObserver(([e]) => {
-        if (e.isIntersecting && !raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
-        if (!e.isIntersecting) { cancelAnimationFrame(raf); raf = 0; }
+        visible = e.isIntersecting;
+        if (visible) resume();
+        else { cancelAnimationFrame(raf); raf = 0; }
       });
       io.observe(box);
 
@@ -264,6 +295,7 @@ const Playground = ({ groups = [], caption }) => {
         io.disconnect();
         box.removeEventListener('pointermove', onMove);
         box.removeEventListener('pointerleave', onLeave);
+        box.removeEventListener('pointerdown', resume);
         if (onTap) box.removeEventListener('pointerdown', onTap);
         unbindDrag();
         Engine.clear(engine);

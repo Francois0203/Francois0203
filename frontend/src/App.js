@@ -6,7 +6,7 @@ import Nav from './components/Nav';
 import Foot from './components/Foot';
 import Intro from './components/Intro';
 import { useThemeSetup, useAnimations, scrollPageTo } from './hooks';
-import { markSeen } from './hooks/useReveal';
+import { useScrollReveal } from './hooks/useReveal';
 import { ContentProvider } from './context/ContentContext';
 import { NAVIGATION_PAGES, fillOf, useNavPages } from './content/navigation';
 import { metaFor, absoluteUrl } from './content/seo';
@@ -70,16 +70,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-// A page you leave counts as seen, so its titles show at once when you return.
-const useSeenPages = () => {
-  const { pathname } = useLocation();
-  const last = useRef(pathname);
-  useEffect(() => {
-    if (last.current !== pathname) markSeen(last.current);
-    last.current = pathname;
-  }, [pathname]);
-};
-
 // Highlighted text takes the current page's tab colour.
 const useSelectionTone = () => {
   const { pathname } = useLocation();
@@ -117,7 +107,7 @@ const AppLayout = () => {
   const links = useNavPages();
   const { pathname } = useLocation();
   useSelectionTone();
-  useSeenPages();
+  useScrollReveal();
 
   return (
     <ContentProvider>

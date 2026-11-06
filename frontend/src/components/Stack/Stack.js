@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import useReveal from '../../hooks/useReveal';
 import Draggable from '../Draggable';
 import { markFor } from './marks';
 import { useCopy } from '../../content/copy/store';
@@ -9,7 +8,6 @@ const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
 
 // Skills grouped on glass cards. Each one can be grabbed and tossed, then springs home.
 const Stack = ({ entries = [] }) => {
-  const [ref, shown] = useReveal({ threshold: 0.06 });
   const [focus, setFocus] = useState(null);
 
   const other = useCopy('bio').skillsOther;
@@ -37,9 +35,7 @@ const Stack = ({ entries = [] }) => {
 
   return (
     <div
-      ref={ref}
       className={styles.stack}
-      data-shown={shown ? '' : undefined}
       data-focused={focus !== null ? '' : undefined}
       style={{ '--step': '26ms' }}
       onMouseLeave={() => setFocus(null)}

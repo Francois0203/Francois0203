@@ -30,7 +30,7 @@ const Stat = ({ value, label, tone, on, i }) => {
   useTilt(ref, { max: 8, lift: 14 });
   const n = useCount(value, on);
   return (
-    <li className={styles.cell} data-rise style={{ '--i': i }}>
+    <li className={styles.cell} data-rise="flip" style={{ '--i': i }}>
       <div ref={ref} className={`glass ${styles.stat}`} data-tone={tone}>
         <span className={styles.value}>{n}</span>
         <span className={styles.label}>{label}</span>

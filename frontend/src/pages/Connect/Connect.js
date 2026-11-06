@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
-import useReveal from '../../hooks/useReveal';
 import { resolveGroup } from '../../content/copy/resolve';
 import { CONNECT_FIELDS } from '../../content/copy/connect';
 import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
@@ -152,12 +151,10 @@ const Connect = () => {
   };
 
   const shownError = (k) => (touched[k] && errors[k]) || '';
-  const [headRef, headShown] = useReveal({ threshold: 0 });
-  const [supportRef, supportShown] = useReveal({ threshold: 0.2 });
 
   return (
     <div className={styles.page}>
-      <section ref={headRef} className={styles.top} data-shown={headShown ? '' : undefined}>
+      <section className={styles.top}>
         <div className={styles.side}>
           <div data-rise style={{ '--i': 0 }}>
             <Chip dot="live">{t.eyebrow}</Chip>
@@ -165,7 +162,7 @@ const Connect = () => {
           <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
           <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
 
-          <Glass className={styles.ways} tone="blue" data-rise style={{ '--i': 5 }}>
+          <Glass className={styles.ways} tone="blue" data-rise="flip" style={{ '--i': 5 }}>
             <h2 className={styles.waysTitle}>{t.waysTitle}</h2>
 
             {loading && (
@@ -336,7 +333,7 @@ const Connect = () => {
       </section>
 
       {support && (
-        <section ref={supportRef} className={`glass ${styles.support}`} data-tone="yellow" data-shown={supportShown ? '' : undefined}>
+        <section className={`glass ${styles.support}`} data-tone="yellow">
           <div className={styles.supportCopy}>
             <Headline as="h2" text={t.supportTitle} tone="orange" className={styles.supportTitle} />
             {donation.message && <p className={styles.supportText} data-rise style={{ '--i': 3 }}>{donation.message}</p>}

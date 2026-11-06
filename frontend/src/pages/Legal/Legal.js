@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import usePortfolioData from '../../hooks/usePortfolioData';
-import useReveal from '../../hooks/useReveal';
 import Chip from '../../components/Chip';
 import { LEGAL_FALLBACK_EMAIL } from '../../content/legal';
 import { parseLegal } from '../../content/copy/legal';
@@ -39,10 +38,9 @@ const Legal = ({ kind, otherTo }) => {
     sections: parseLegal(t[`${kind}Body`], email),
   };
   const other = { to: otherTo, label: t[`${kind}Other`] };
-  const [ref, shown] = useReveal({ threshold: 0 });
 
   return (
-    <div ref={ref} className={styles.page} data-shown={shown ? '' : undefined}>
+    <div className={styles.page}>
       <span className={styles.progress} aria-hidden="true" />
 
       <header className={styles.head}>

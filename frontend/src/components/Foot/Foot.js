@@ -4,7 +4,6 @@ import { nextPage, tabStyle, useNavPages } from '../../content/navigation';
 import { useCopy } from '../../content/copy/store';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
-import useReveal from '../../hooks/useReveal';
 import { scrollPageTo } from '../../hooks';
 import { resolveGroup } from '../../content/copy/resolve';
 import { FOOTER_FIELDS } from '../../content/copy/footer';
@@ -20,7 +19,6 @@ const Foot = () => {
   const { data } = usePortfolioData();
   const { overrides } = useSiteCopy();
   const t = resolveGroup(FOOTER_FIELDS, overrides.footer);
-  const [ref, shown] = useReveal({ threshold: 0.2 });
 
   const personal = data?.personal ?? {};
   const contact = data?.contact ?? {};
@@ -43,7 +41,7 @@ const Foot = () => {
     <footer id="site-footer" className={styles.foot} data-print-hide>
       <div className={styles.inner}>
         {pathname !== '/connect' && (
-          <div ref={ref} className={`glass ${styles.call}`} data-tone="pink" data-shown={shown ? '' : undefined}>
+          <div className={`glass ${styles.call}`} data-tone="pink">
             <span className={styles.halo} aria-hidden="true" />
             <div className={styles.callCopy}>
               <Headline as="h2" text={t.ctaTitle} tone="yellow" className={styles.callTitle} />

@@ -52,8 +52,12 @@ const Backdrop = () => {
     };
     const leave = () => { delete glow.dataset.on; };
 
+    // Mouse presses ring at once; touches ring only on a real tap, so starting a scroll leaves no ripple.
+    let kind = 'mouse';
     const tap = (e) => {
-      if (quiet() || e.button > 0) return;
+      if (e.type === 'pointerdown') kind = e.pointerType;
+      if (quiet() || e.button > 0 || (e.type === 'click' && e.detail === 0)) return;
+      if ((e.type === 'pointerdown') !== (kind === 'mouse')) return;
       if (e.target.closest('input, textarea, select, [data-no-ripple]')) return;
       const ring = document.createElement('span');
       ring.className = styles.ring;
@@ -68,6 +72,7 @@ const Backdrop = () => {
       document.documentElement.addEventListener('pointerleave', leave);
     }
     window.addEventListener('pointerdown', tap, { passive: true });
+    window.addEventListener('click', tap, { passive: true });
     paint();
 
     return () => {
@@ -75,6 +80,7 @@ const Backdrop = () => {
       window.removeEventListener('pointermove', move);
       document.documentElement.removeEventListener('pointerleave', leave);
       window.removeEventListener('pointerdown', tap);
+      window.removeEventListener('click', tap);
     };
   }, []);
 

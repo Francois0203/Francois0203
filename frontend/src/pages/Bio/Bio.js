@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
-import useReveal from '../../hooks/useReveal';
 import useActiveSection from '../../hooks/useActiveSection';
 import useCvDownload from '../../hooks/useCvDownload';
 import { resolveGroup } from '../../content/copy/resolve';
@@ -99,11 +98,10 @@ const Bio = () => {
   const idKey = contents.map(c => c.id).join('|');
   const ids = useMemo(() => idKey.split('|'), [idKey]);
   const active = useActiveSection(ids);
-  const [headRef, headShown] = useReveal({ threshold: 0 });
 
   return (
     <div className={styles.page}>
-      <header ref={headRef} className={styles.hero} data-shown={headShown ? '' : undefined} style={{ '--step': '70ms' }}>
+      <header className={styles.hero} style={{ '--step': '70ms' }}>
         <div className={styles.intro}>
           <div data-rise style={{ '--i': 0 }}>
             <Chip dot="live">{t.eyebrow}</Chip>
@@ -208,7 +206,7 @@ const Bio = () => {
         <div className={styles.record}>
           {loading ? <RecordSkeleton label={a11y.loadingCv} /> : (
             <Chapter id="profile" n={number('profile')} title={t.profileHeading} tone="blue">
-              <Glass tone="blue" pad="lg" className={styles.summary} data-rise style={{ '--i': 2 }}>
+              <Glass tone="blue" pad="lg" className={styles.summary} data-rise="flip" style={{ '--i': 2 }}>
                 <p>{summary}</p>
               </Glass>
             </Chapter>

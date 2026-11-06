@@ -92,27 +92,31 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       });
       Composite.add(engine.world, bodies);
 
-      const place = (b, i) => {
+      // Drawn between the last two physics steps, so 90 and 120 Hz screens glide instead of judder.
+      const prev = bodies.map(b => ({ x: b.position.x, y: b.position.y, a: b.angle }));
+      const drawn = bodies.map(() => '');
+      const remember = () => bodies.forEach((b, i) => { prev[i].x = b.position.x; prev[i].y = b.position.y; prev[i].a = b.angle; });
+      const place = (b, i, k = 1) => {
         const n = nodes.current[i];
         if (!n) return;
-        n.style.transform = `translate3d(${(b.position.x - sizes[i].w / 2).toFixed(1)}px, ${(b.position.y - sizes[i].h / 2).toFixed(1)}px, 0) rotate(${b.angle.toFixed(3)}rad)`;
+        const p = prev[i];
+        const x = p.x + (b.position.x - p.x) * k - sizes[i].w / 2;
+        const y = p.y + (b.position.y - p.y) * k - sizes[i].h / 2;
+        const a = p.a + (b.angle - p.a) * k;
+        const t = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${a.toFixed(4)}rad)`;
+        if (t !== drawn[i]) { n.style.transform = t; drawn[i] = t; }
       };
-      bodies.forEach(place);
+      const jump = (b, i, to) => {
+        Body.setPosition(b, to);
+        Body.setVelocity(b, { x: 0, y: 0 });
+        prev[i].x = to.x; prev[i].y = to.y; prev[i].a = b.angle;
+      };
+      bodies.forEach((b, i) => place(b, i));
       box.dataset.live = '';
 
-      // Toys rain in from above, then a roof closes over the box so nothing can be thrown out.
+      // No lid: the side walls run far above the box, so anything thrown up can only fall back in.
       const below = (i) => ({ x: sizes[i].w / 2 + Math.random() * Math.max(1, W - sizes[i].w), y: Math.min(H - sizes[i].h, cy + R + sizes[i].h) });
-      let roofed = false;
-      const closeRoof = () => {
-        if (roofed) return;
-        roofed = true;
-        Composite.add(engine.world, Bodies.rectangle(W / 2, -50, W * 3, 100, wall));
-        bodies.forEach((b, i) => {
-          if (b.position.y - sizes[i].h / 2 < 0) { Body.setPosition(b, below(i)); Body.setVelocity(b, { x: 0, y: 0 }); }
-        });
-        box.dataset.roof = '';
-      };
-      const roofTimer = setTimeout(closeRoof, 3500);
+      let landed = false;
 
       Events.on(engine, 'collisionStart', (e) => {
         for (const p of e.pairs) {
@@ -128,7 +132,28 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
       if (!coarse) {
         const mouse = Mouse.create(box);
         ['mousewheel', 'DOMMouseScroll', 'wheel'].forEach(ev => mouse.element.removeEventListener(ev, mouse.mousewheel));
-        const drag = MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.18, render: { visible: false } } });
+        // The drag target stays where a toy can actually be: inside the walls, above the floor and off the photo.
+        // Otherwise the pull and a solid surface fight every frame and the toy shudders or tunnels through.
+        Events.on(engine, 'beforeUpdate', () => {
+          if (!grabbed) return;
+          const i = indexOf(grabbed);
+          // A little clearance, so the toy rests just short of the surface instead of pressing into it.
+          const hw = sizes[i].w / 2 + 4;
+          const hh = sizes[i].h / 2 + 4;
+          const p = mouse.position;
+          p.x = Math.max(hw, Math.min(W - hw, p.x));
+          p.y = Math.min(H - hh, p.y);
+          const dx = p.x - cx;
+          const dy = p.y - cy;
+          const d = Math.hypot(dx, dy);
+          const clear = R + Math.max(hw, hh);
+          if (d < clear) {
+            const k = clear / (d || 1);
+            p.x = cx + (d ? dx : 0) * k;
+            p.y = cy + (d ? dy : -clear) * (d ? k : 1);
+          }
+        });
+        const drag = MouseConstraint.create(engine, { mouse, constraint: { stiffness: 0.32, damping: 0.08, render: { visible: false } } });
         Composite.add(engine.world, drag);
         Events.on(drag, 'startdrag', (e) => {
           const i = indexOf(e.body);
@@ -155,76 +180,96 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
           document.removeEventListener('visibilitychange', onHidden);
         };
       } else {
-        // Toys at rest, or low and not already rising, get kicked, so taps cannot launch them away.
+        // A tap pushes out from where it lands: near toys jump, far ones barely stir.
         onTap = (e) => {
           const r = box.getBoundingClientRect();
           const tx = e.clientX - r.left;
+          const ty = e.clientY - r.top;
+          const reach = Math.max(W, H) * 0.75;
           setPlayed(true);
+          wake();
           bodies.forEach((b) => {
-            const resting = b.calm > 10;
-            if (!resting && (b.velocity.y < -2 || b.position.y < H * 0.2)) return;
+            if (b.velocity.y < -3) return;
+            const dx = b.position.x - tx;
+            const dy = b.position.y - ty;
+            const d = Math.hypot(dx, dy) || 1;
+            const s = Math.max(0, 1 - d / reach);
+            if (s < 0.08) return;
             Sleeping.set(b, false);
-            const dir = Math.sign(b.position.x - tx) || 1;
             Body.setVelocity(b, {
-              x: Math.max(-12, Math.min(12, b.velocity.x + dir * (2 + Math.random() * 5))),
-              y: Math.max(-14, Math.min(0, b.velocity.y) - 7 - Math.random() * 7),
+              x: Math.max(-12, Math.min(12, b.velocity.x + (dx / d) * 8 * s)),
+              y: Math.max(-15, Math.min(0, b.velocity.y) - (5 + 9 * s)),
             });
-            Body.setAngularVelocity(b, (Math.random() - 0.5) * 0.3);
+            Body.setAngularVelocity(b, (dx / d) * 0.18 * s);
           });
         };
-        box.addEventListener('pointerdown', onTap);
+        box.addEventListener('click', onTap);
       }
 
       let raf = 0;
+      let visible = true;
       let last = performance.now();
       let carry = 0;
+      let grace = 30;
       const tick = (now) => {
-        carry = Math.min(carry + now - last, STEP * 4);
+        raf = 0;
+        // A rAF stamp can be a touch older than the moment we woke, so never step backwards.
+        carry = Math.max(0, Math.min(carry + now - last, STEP * 4));
         last = now;
         while (carry >= STEP) {
+          remember();
           Engine.update(engine, STEP);
           carry -= STEP;
         }
-        if (!roofed && bodies.every((b, i) => b.position.y - sizes[i].h / 2 > 2)) closeRoof();
+        if (!landed && bodies.every((b, i) => b.position.y - sizes[i].h / 2 > 2)) landed = true;
         bodies.forEach((b, i) => {
           const { x, y } = b.position;
-          if (!Number.isFinite(x) || !Number.isFinite(y) || y > H + 120 || x < -40 || x > W + 40 || (roofed && y < -sizes[i].h)) {
-            Body.setPosition(b, roofed ? below(i) : spawn(i, sizes[i]));
-            Body.setVelocity(b, { x: 0, y: 0 });
+          if (!Number.isFinite(x) || !Number.isFinite(y) || y > H + 120 || x < -40 || x > W + 40) {
+            jump(b, i, landed ? below(i) : spawn(i, sizes[i]));
             Sleeping.set(b, false);
           }
           const speed = Math.hypot(b.velocity.x, b.velocity.y);
-          b.calm = b === grabbed ? 0 : speed < 0.5 ? (b.calm ?? 0) + 1 : b.calm > 30 && y < cy ? b.calm + 1 : 0;
-          // Nothing settles above the photo's middle: nudge and spin it loose, then move it below if it stays stuck.
-          if (y < cy && b.calm > 30) {
+          // Nothing rests on the crown of the photo: it slides gently off, then is left to settle wherever it lands.
+          const onCrown = y + sizes[i].h / 2 < cy - R * 0.45 && Math.abs(x - cx) < R * 0.8;
+          if (onCrown && b !== grabbed && speed < 1.2 && y > 0 && (b.slid ?? 0) < 150) {
+            b.slid = (b.slid ?? 0) + 1;
             Sleeping.set(b, false);
-            if (b.calm > 200) {
-              Body.setPosition(b, below(i));
-              Body.setVelocity(b, { x: 0, y: 0 });
-              b.calm = 0;
-            } else if (b.calm % 30 === 0) {
-              Body.setVelocity(b, { x: (Math.sign(x - cx) || 1) * 2.5, y: 1 });
-              Body.setAngularVelocity(b, (Math.sign(x - cx) || 1) * 0.12);
-            }
-          }
+            const side = Math.sign(x - cx) || (i % 2 ? 1 : -1);
+            Body.applyForce(b, b.position, { x: side * b.mass * 0.0004, y: 0 });
+          } else if (!onCrown) b.slid = 0;
           if (speed > MAX_SPEED) Body.setVelocity(b, { x: b.velocity.x / speed * MAX_SPEED, y: b.velocity.y / speed * MAX_SPEED });
-          if (!b.isSleeping) place(b, i);
+          place(b, i, carry / STEP);
         });
+        // Everything asleep: stop the loop entirely until someone touches the box.
+        if (landed && !grabbed && bodies.every(b => b.isSleeping) && grace <= 0) return;
+        if (grace > 0) grace -= 1;
+        if (visible) raf = requestAnimationFrame(tick);
+      };
+      const wake = () => {
+        // Run a short while after any touch, so a grab or tap always reaches the physics before it can pause.
+        grace = 30;
+        if (raf || !visible) return;
+        last = performance.now();
+        carry = 0;
         raf = requestAnimationFrame(tick);
       };
       raf = requestAnimationFrame(tick);
+      box.addEventListener('pointerdown', wake);
+      box.addEventListener('pointermove', wake, { passive: true });
 
       const io = new IntersectionObserver(([e]) => {
-        if (e.isIntersecting && !raf) { last = performance.now(); raf = requestAnimationFrame(tick); }
-        if (!e.isIntersecting) { cancelAnimationFrame(raf); raf = 0; }
+        visible = e.isIntersecting;
+        if (visible) wake();
+        else { cancelAnimationFrame(raf); raf = 0; }
       });
       io.observe(box);
 
       teardown = () => {
-        clearTimeout(roofTimer);
         cancelAnimationFrame(raf);
         io.disconnect();
-        if (onTap) box.removeEventListener('pointerdown', onTap);
+        if (onTap) box.removeEventListener('click', onTap);
+        box.removeEventListener('pointerdown', wake);
+        box.removeEventListener('pointermove', wake);
         unbind();
         Engine.clear(engine);
       };
@@ -258,7 +303,6 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
 
   return (
     <div ref={boxRef} className={styles.box}>
-      <span className={styles.roof} aria-hidden="true" />
       <span className={styles.floor} aria-hidden="true" />
       <span className={styles.shadow} aria-hidden="true" />
       <div ref={faceRef} className={styles.face}>

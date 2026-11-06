@@ -1,6 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import Lightbox from '../Lightbox';
-import Rail from '../Rail';
+import Rail, { railTimelines } from '../Rail/Rail';
 import { useCopy } from '../../content/copy/store';
 import styles from './Story.module.css';
 
@@ -55,26 +55,111 @@ const spanOf = (c, w) => {
   };
 };
 
+// The chapter cards. Memoised and told nothing about scroll, so moving between chapters never re-renders them.
+const Run = memo(({ runRef, chapters, head, words, kinds, photosFor, photosLabel, thumbs, onOpen, onStop }) => (
+    <div ref={runRef} className={styles.chapters}>
+      {head && <div className={styles.head}>{head}</div>}
+      <ol className={styles.run}>
+        <Rail as="li" onProgress={onStop} />
+        {chapters.map((c, i) => {
+          const sp = spanOf(c, words);
+          return (
+            <li
+              key={c.id ?? i}
+              className={styles.chapter}
+              data-chapter={i}
+              data-tone={PALETTE[i % PALETTE.length]}
+              data-active={i === 0 ? '' : undefined}
+              style={{ '--chapter': `var(--c-${PALETTE[i % PALETTE.length]})`, '--chapter-ink': `var(--c-${PALETTE[i % PALETTE.length]}-ink)` }}
+            >
+              <span className={styles.node} data-stop aria-hidden="true" />
+              <div className={`glass ${styles.chapterInner}`}>
+                <p className={styles.kind}>
+                  <span className={styles.kindDot} data-kind={c.kind} aria-hidden="true" />
+                  {kinds[c.kind] ?? c.kind}
+                </p>
+                <h3 className={styles.place}>{c.place}</h3>
+                {c.what && <p className={styles.what}>{c.what}</p>}
+                {(sp.fromLabel || sp.toLabel) && (
+                  <div className={styles.span} data-open={sp.current || sp.next ? '' : undefined}>
+                    {sp.fromLabel && (
+                      <span className={styles.stop}><small>{words.storyFrom}</small>{sp.fromLabel}</span>
+                    )}
+                    <span className={styles.bar} aria-hidden={sp.length ? undefined : 'true'}>
+                      {sp.length && <span className={styles.length}>{sp.length}</span>}
+                    </span>
+                    {sp.toLabel && (
+                      <span className={styles.stop} data-end><small>{sp.next ? 'by' : 'to'}</small>{sp.toLabel}</span>
+                    )}
+                  </div>
+                )}
+                {c.note && <p className={styles.note}>{c.note}</p>}
+                {(photosFor[c.id] ?? []).length > 0 && (
+                  <div className={styles.shots}>
+                    <span className={styles.shotsLabel}>{photosFor[c.id].length} {photosLabel}</span>
+                    <ul>
+                      {photosFor[c.id].slice(0, 4).map((p, k) => (
+                        <li key={p.id ?? k}>
+                          <button
+                            type="button"
+                            ref={(el) => { thumbs.current[`${c.id}-${k}`] = el; }}
+                            className={styles.shot}
+                            style={{ '--tint': p.tint ?? 'var(--surface-2)', '--k': k }}
+                            onClick={() => onOpen({ chapter: c.id, index: k })}
+                            aria-label={p.caption || `${c.place}, ${words.storyPhoto} ${k + 1}`}
+                          >
+                            <img src={p.thumb || p.src} alt="" loading="lazy" decoding="async" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {c.tags?.length > 0 && (
+                  <ul className={styles.chapterTags}>
+                    {c.tags.map(t => <li key={t}>{t}</li>)}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+));
+
+Run.displayName = 'Run';
+
 const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 'photos', viewerLabels, head = null, kinds = {} }) => {
   const words = useCopy('home');
   const [viewer, setViewer] = useState(null);
   const thumbs = useRef({});
   const originOf = useCallback((i) => thumbs.current[`${viewer?.chapter}-${i}`]?.querySelector('img'), [viewer?.chapter]);
   const sectionRef = useRef(null);
+  const runRef = useRef(null);
   const ringRef = useRef(null);
   const photoRef = useRef(null);
   const [active, setActive] = useState(0);
+  const [css, setCss] = useState(false);
+  useEffect(() => { setCss(railTimelines()); }, []);
   const activeRef = useRef(0);
 
   // The ring reaches each tick exactly when the rail reaches that chapter.
   const n = chapters.length;
   const track = useCallback((p, last) => {
     // Runs every scroll frame: write to the two elements that move, and re-render only when the chapter changes.
-    photoRef.current?.style.setProperty('--p', p.toFixed(4));
-    const arc = last < 0 ? 0 : (0.5 + p * (n - 1)) / n;
-    if (ringRef.current) ringRef.current.style.strokeDashoffset = String(RING * (1 - arc));
+    // p is null when the rail's scroll timeline moves the ring and photo itself.
+    if (p !== null) {
+      photoRef.current?.style.setProperty('--p', p.toFixed(4));
+      const arc = last < 0 ? 0 : (0.5 + p * (n - 1)) / n;
+      if (ringRef.current) ringRef.current.style.strokeDashoffset = String(RING * (1 - arc));
+    }
     const next = Math.max(0, last);
-    if (next !== activeRef.current) { activeRef.current = next; setActive(next); }
+    if (next !== activeRef.current) {
+      activeRef.current = next;
+      runRef.current?.querySelectorAll('[data-chapter]').forEach((el, i) => el.toggleAttribute('data-active', i === next));
+      setActive(next);
+    }
   }, [n]);
 
   if (!chapters.length) return null;
@@ -94,9 +179,10 @@ const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 
     <div
       ref={sectionRef}
       className={styles.story}
-      style={{ '--n': chapters.length, '--cc': `var(--c-${colour})`, '--cc-ink': `var(--c-${colour}-ink)` }}
+      data-css={css ? '' : undefined}
+      style={{ '--n': chapters.length, '--ring-from': `${(RING * (1 - 0.5 / chapters.length)).toFixed(2)}px`, '--ring-to': `${(RING * 0.5 / chapters.length).toFixed(2)}px` }}
     >
-      <div className={styles.pin}>
+      <div className={styles.pin} style={{ '--cc': `var(--c-${colour})`, '--cc-ink': `var(--c-${colour}-ink)` }}>
         <div className={styles.stage}>
           <div className={styles.figure}>
             <span className={styles.glow} key={`s${active}`} aria-hidden="true" />
@@ -167,75 +253,18 @@ const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 
         </div>
       </div>
 
-      <div className={styles.chapters}>
-        {head && <div className={styles.head}>{head}</div>}
-        <ol className={styles.run}>
-          <Rail as="li" onProgress={track} />
-          {chapters.map((c, i) => {
-            const sp = spanOf(c, words);
-            return (
-              <li
-                key={c.id ?? i}
-                className={styles.chapter}
-                data-chapter={i}
-                data-tone={PALETTE[i % PALETTE.length]}
-                data-active={i === active ? '' : undefined}
-                style={{ '--chapter': `var(--c-${PALETTE[i % PALETTE.length]})`, '--chapter-ink': `var(--c-${PALETTE[i % PALETTE.length]}-ink)` }}
-              >
-                <span className={styles.node} data-stop aria-hidden="true" />
-                <div className={`glass ${styles.chapterInner}`}>
-                  <p className={styles.kind}>
-                    <span className={styles.kindDot} data-kind={c.kind} aria-hidden="true" />
-                    {kinds[c.kind] ?? c.kind}
-                  </p>
-                  <h3 className={styles.place}>{c.place}</h3>
-                  {c.what && <p className={styles.what}>{c.what}</p>}
-                  {(sp.fromLabel || sp.toLabel) && (
-                    <div className={styles.span} data-open={sp.current || sp.next ? '' : undefined}>
-                      {sp.fromLabel && (
-                        <span className={styles.stop}><small>{words.storyFrom}</small>{sp.fromLabel}</span>
-                      )}
-                      <span className={styles.bar} aria-hidden={sp.length ? undefined : 'true'}>
-                        {sp.length && <span className={styles.length}>{sp.length}</span>}
-                      </span>
-                      {sp.toLabel && (
-                        <span className={styles.stop} data-end><small>{sp.next ? 'by' : 'to'}</small>{sp.toLabel}</span>
-                      )}
-                    </div>
-                  )}
-                  {c.note && <p className={styles.note}>{c.note}</p>}
-                  {(photosFor[c.id] ?? []).length > 0 && (
-                    <div className={styles.shots}>
-                      <span className={styles.shotsLabel}>{photosFor[c.id].length} {photosLabel}</span>
-                      <ul>
-                        {photosFor[c.id].slice(0, 4).map((p, k) => (
-                          <li key={p.id ?? k}>
-                            <button
-                              type="button"
-                              ref={(el) => { thumbs.current[`${c.id}-${k}`] = el; }}
-                              className={styles.shot}
-                              style={{ '--tint': p.tint ?? 'var(--surface-2)', '--k': k }}
-                              onClick={() => setViewer({ chapter: c.id, index: k })}
-                              aria-label={p.caption || `${c.place}, ${words.storyPhoto} ${k + 1}`}
-                            >
-                              <img src={p.thumb || p.src} alt="" loading="lazy" decoding="async" />
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {c.tags?.length > 0 && (
-                    <ul className={styles.chapterTags}>
-                      {c.tags.map(t => <li key={t}>{t}</li>)}
-                    </ul>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      </div>
+      <Run
+        runRef={runRef}
+        chapters={chapters}
+        head={head}
+        words={words}
+        kinds={kinds}
+        photosFor={photosFor}
+        photosLabel={photosLabel}
+        thumbs={thumbs}
+        onOpen={setViewer}
+        onStop={track}
+      />
 
       <Lightbox
         photos={viewer ? photosFor[viewer.chapter] ?? [] : []}

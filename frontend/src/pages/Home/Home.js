@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
-import useReveal from '../../hooks/useReveal';
 import useStudioSites from '../../hooks/useStudioSites';
 import { resolveGroup } from '../../content/copy/resolve';
 import { githubAvatar } from '../../content/avatar';
@@ -137,18 +136,13 @@ const Home = () => {
 
   const chip = contact.availability?.status === 'open' ? t.availabilityLabel : (role ? String(role.role).toLowerCase() : 'devops and software engineering');
 
-  const [heroRef, heroShown] = useReveal({ threshold: 0 });
-  const [storyRef, storyShown] = useReveal({ threshold: 0.3 });
-  const [photosRef, photosShown] = useReveal({ threshold: 0.3 });
-  const [workRef, workShown] = useReveal({ threshold: 0.3 });
-  const [pathRef, pathShown] = useReveal({ threshold: 0.3 });
 
   return (
     <div className={styles.page}>
 
       {/* Hello */}
-      <section ref={heroRef} className={styles.hero} data-shown={heroShown ? '' : undefined}>
-        <div className={styles.heroCopy} data-parallax style={{ '--depth': '-36px' }}>
+      <section className={styles.hero}>
+        <div className={styles.heroCopy}>
           <div data-rise style={{ '--i': 0 }}>
             <Chip dot="live">{chip}</Chip>
           </div>
@@ -172,7 +166,7 @@ const Home = () => {
 
       {/* What he has built */}
       <section id="work" className={styles.block}>
-        <header ref={workRef} className={styles.headRow} data-shown={workShown ? '' : undefined}>
+        <header className={styles.headRow}>
           <div className={styles.head}>
             <Headline text={t.curtainLabel} tone="green" className={styles.headTitle} />
             <p className={styles.lede} data-rise style={{ '--i': 3 }}>{t.workLede}</p>
@@ -215,7 +209,7 @@ const Home = () => {
             photosLabel={tph.storyPhotos}
             viewerLabels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
             head={(
-              <header ref={storyRef} className={styles.head} data-shown={storyShown ? '' : undefined}>
+              <header className={styles.head}>
                 <Headline text={t.storyTitle} tone="blue" className={styles.headTitle} />
                 <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.storyLede}</p>
               </header>
@@ -227,8 +221,8 @@ const Home = () => {
       {/* What is next */}
       {certifications.length > 0 && (
         <section id="certifications" className={styles.block}>
-          <Glass tone="pink" pad="lg" className={styles.path} data-scale-in>
-            <header ref={pathRef} className={styles.pathHead} data-shown={pathShown ? '' : undefined}>
+          <Glass tone="pink" pad="lg" className={styles.path} data-rise="flip">
+            <header className={styles.pathHead}>
               <Headline text={badges.title} tone="pink" className={styles.headTitle} />
               <p className={styles.lede} data-rise style={{ '--i': 4 }}>{badges.lede}</p>
             </header>
@@ -240,7 +234,7 @@ const Home = () => {
       {/* Off the clock */}
       {homePhotos.length > 0 && (
         <section id="photos" className={`${styles.block} ${styles.photos}`}>
-          <header ref={photosRef} className={styles.headRow} data-shown={photosShown ? '' : undefined}>
+          <header className={styles.headRow}>
             <div className={styles.head}>
               <Headline text={tph.homeTitle} tone="orange" className={styles.headTitle} />
               <p className={styles.lede} data-rise style={{ '--i': 4 }}>

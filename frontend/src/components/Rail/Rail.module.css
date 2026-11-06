@@ -40,11 +40,19 @@
     will-change: transform;
 }
 
-/* The glowing tip that sits on the middle of the screen. */
+/* The glowing tip rides the bottom of a run as tall as the rail, so it moves by transform alone. */
+.sparkRun {
+    position: absolute;
+    inset: 0;
+    transform: translateY(calc(var(--fill) - 100%));
+    will-change: transform;
+    pointer-events: none;
+}
+
 .spark {
     position: absolute;
     left: 50%;
-    top: 0;
+    top: 100%;
     width: 15px;
     height: 15px;
     border-radius: 50%;
@@ -53,10 +61,43 @@
         0 0 0 4px color-mix(in srgb, var(--spark) 30%, transparent),
         0 0 18px 4px var(--spark),
         0 0 46px 14px color-mix(in srgb, var(--spark) 45%, transparent);
-    transform: translate(-50%, calc(var(--fill) - 50%));
-    will-change: transform;
+    transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity var(--t) var(--ease), background var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 
 .rail[data-live] .spark { opacity: 1; }
+
+/* Where supported, the rail is its own scroll timeline, measured against the middle of the screen. */
+.rail[data-css] {
+    view-timeline: --rail block;
+    view-timeline-inset: 50% 50%;
+}
+
+.rail[data-css] .window,
+.rail[data-css] .sparkRun,
+.rail[data-css] .fill,
+.rail[data-css] .spark {
+    animation: rail-run linear both;
+    animation-timeline: --rail;
+    animation-range: cover 0% cover 100%;
+}
+
+.rail[data-css] .fill { animation-name: rail-fill; }
+.rail[data-css] .spark { animation-name: rail-spark; }
+
+@keyframes rail-run {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes rail-fill {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes rail-spark {
+    from { opacity: 0; transform: translate(-50%, -50%); }
+    1% { opacity: 1; }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}

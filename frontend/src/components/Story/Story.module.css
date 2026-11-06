@@ -213,7 +213,11 @@
 
 .run {
     --rail-x: 0.6rem;
+    --beat: clamp(2.5rem, 9vh, 5rem);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--beat);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -223,7 +227,6 @@
     position: relative;
     display: flex;
     align-items: flex-start;
-    min-height: calc(var(--screen) * 0.62);
     padding-left: 2.4rem;
 }
 
@@ -431,6 +434,31 @@
 .shot:active { transform: scale(0.94); }
 .shot img { width: 100%; height: 100%; object-fit: cover; }
 
+/* With scroll timelines the dial follows the rail on its own, with no script per frame. */
+.story[data-css] { timeline-scope: --rail; }
+
+.story[data-css] .fill {
+    animation: ring-arc linear forwards;
+    animation-timeline: --rail;
+    animation-range: cover 0% cover 100%;
+}
+
+.story[data-css] .photo {
+    animation: photo-turn linear both;
+    animation-timeline: --rail;
+    animation-range: cover 0% cover 100%;
+}
+
+@keyframes ring-arc {
+    from { stroke-dashoffset: var(--ring-from); }
+    to { stroke-dashoffset: var(--ring-to); }
+}
+
+@keyframes photo-turn {
+    from { transform: rotate(-4deg) scale(0.96); }
+    to { transform: rotate(4deg) scale(1); }
+}
+
 @media (max-width: 900px) {
     .story { grid-template-columns: minmax(0, 1fr); gap: 0; }
 
@@ -440,9 +468,8 @@
         height: auto;
         margin: 0 calc(var(--gutter) * -1);
         padding: 0.65rem var(--gutter);
-        background: var(--glass-strong);
-        -webkit-backdrop-filter: var(--blur);
-        backdrop-filter: var(--blur);
+        /* Solid, not blurred: a blur here would redraw everything scrolling under it on every frame. */
+        background: color-mix(in srgb, var(--surface) 95%, transparent);
         box-shadow: inset 0 -1px 0 var(--glass-line), 0 10px 24px -18px rgba(0, 0, 0, 0.4);
     }
 
@@ -459,8 +486,8 @@
 
     .chapters { padding: 0 0 2rem; perspective: none; }
     .head { padding: 2rem 0 0.5rem; }
-    .chapter { min-height: calc(var(--screen) * 0.62); padding-left: 1.9rem; }
-    .run { --rail-x: 0.45rem; }
+    .chapter { padding-left: 1.9rem; }
+    .run { --rail-x: 0.45rem; --beat: 2rem; }
     .chapterInner { transform: none; }
     .chapter:not([data-active]) .chapterInner > * { opacity: 0.6; }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Skeleton, { Bone } from '../Skeleton';
-import { gsap, ScrollTrigger, useGSAP, motionOff } from '../../hooks/gsap';
+import { gsap, motionOff } from '../../hooks/gsap';
 import useTilt from '../../hooks/useTilt';
 import { useCopy } from '../../content/copy/store';
 import styles from './Showcase.module.css';
@@ -46,41 +46,66 @@ const liveAllowed = () => typeof window !== 'undefined'
   && !window.matchMedia('(pointer: coarse)').matches
   && !navigator.connection?.saveData;
 
-// The real site, scaled down and click-proof, loaded when its card comes near.
-const LiveView = ({ url, title }) => {
+// The real site, scaled down and click-proof. Loaded the first time its card is hovered, shown only while it is.
+const LiveView = ({ url, title, on }) => {
   const ref = useRef(null);
-  const [near, setNear] = useState(false);
   const [ready, setReady] = useState(false);
   const [scale, setScale] = useState(0.4);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setNear(true); io.disconnect(); }
-    }, { rootMargin: '200px' });
     const ro = new ResizeObserver(([e]) => setScale(e.contentRect.width / FRAME_WIDTH));
-    io.observe(el);
     ro.observe(el);
-    return () => { io.disconnect(); ro.disconnect(); };
+    return () => ro.disconnect();
   }, []);
 
   return (
-    <div ref={ref} className={styles.live} style={{ '--s': scale }} data-ready={ready ? '' : undefined}>
-      {near && (
-        <iframe
-          src={url}
-          title={`${title}, live preview`}
-          tabIndex={-1}
-          aria-hidden="true"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          sandbox="allow-scripts allow-same-origin"
-          onLoad={() => setTimeout(() => setReady(true), 1500)}
-        />
-      )}
+    <div ref={ref} className={styles.live} style={{ '--s': scale }} data-ready={ready ? '' : undefined} data-on={on ? '' : undefined}>
+      <iframe
+        src={url}
+        title={`${title}, live preview`}
+        tabIndex={-1}
+        aria-hidden="true"
+        referrerPolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin"
+        onLoad={() => setTimeout(() => setReady(true), 700)}
+      />
     </div>
   );
+};
+
+// Hovering wakes the live site, but only a real mouse move does: cards sliding under a still cursor while
+// the page scrolls never count, and scrolling puts the screenshot back.
+const useLiveHover = (cardRef, allowed) => {
+  const [on, setOn] = useState(false);
+  const [wanted, setWanted] = useState(false);
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || !allowed) return undefined;
+    let scrolling = false;
+    let timer = 0;
+    let lit = false;
+    const set = (v) => { if (v !== lit) { lit = v; setOn(v); if (v) setWanted(true); } };
+    const move = () => { if (!scrolling) set(true); };
+    const leave = () => set(false);
+    const scroll = () => {
+      scrolling = true;
+      set(false);
+      clearTimeout(timer);
+      timer = setTimeout(() => { scrolling = false; }, 250);
+    };
+    card.addEventListener('pointermove', move, { passive: true });
+    card.addEventListener('pointerleave', leave);
+    window.addEventListener('scroll', scroll, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      card.removeEventListener('pointermove', move);
+      card.removeEventListener('pointerleave', leave);
+      window.removeEventListener('scroll', scroll);
+    };
+  }, [cardRef, allowed]);
+  return [on, wanted];
 };
 
 const ARROW = <svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" /></svg>;
@@ -127,56 +152,59 @@ const Card = ({ site, tone, visitLabel, index }) => {
   useVisit(ref, visitRef);
   const [live, setLive] = useState(false);
   useEffect(() => { setLive(liveAllowed()); }, []);
+  const [liveOn, liveWanted] = useLiveHover(ref, live);
   const [main, ...more] = linksOf(site);
   if (!main) return null;
   const name = site.name || host(main.url);
   const about = site.tagline || site.client;
 
   return (
-    <li ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
-      <div className={styles.cover} aria-hidden="true">
-        <div className={styles.window}>
-          <span className={styles.bar}>
-            <i /><i /><i />
-            <span className={styles.address}>{host(main.url)}</span>
-          </span>
-          <div className={styles.screen}>
-            {site.preview ? (
-              <img className={styles.shot} src={site.preview} alt="" loading="lazy" width="1280" height="800" />
-            ) : (
-              <span className={styles.page}>
-                <span className={styles.sketchNav}><i /><i /><i /></span>
-                <SiteIcon url={main.url} name={name} />
-                <span className={styles.sketchText}><i /><i /></span>
-                <span className={styles.sketchButton} />
-              </span>
-            )}
-            {live && main.embeddable !== false && <LiveView url={main.url} title={name} />}
+    <li className={styles.slot} data-rise="flip">
+      <div ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
+        <div className={styles.cover} aria-hidden="true">
+          <div className={styles.window}>
+            <span className={styles.bar}>
+              <i /><i /><i />
+              <span className={styles.address}>{host(main.url)}</span>
+            </span>
+            <div className={styles.screen}>
+              {site.preview ? (
+                <img className={styles.shot} src={site.preview} alt="" loading="lazy" decoding="async" width="1280" height="800" />
+              ) : (
+                <span className={styles.page}>
+                  <span className={styles.sketchNav}><i /><i /><i /></span>
+                  <SiteIcon url={main.url} name={name} />
+                  <span className={styles.sketchText}><i /><i /></span>
+                  <span className={styles.sketchButton} />
+                </span>
+              )}
+              {live && liveWanted && main.embeddable !== false && <LiveView url={main.url} title={name} on={liveOn} />}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={styles.text}>
-        <h3 className={styles.name}>
-          <a className={styles.stretch} href={main.url} target="_blank" rel="noopener noreferrer">{name}</a>
-        </h3>
-        {about && <p className={styles.about}>{about}</p>}
-        {site.description && <p className={styles.description}>{site.description}</p>}
-      </div>
+        <div className={styles.text}>
+          <h3 className={styles.name}>
+            <a className={styles.stretch} href={main.url} target="_blank" rel="noopener noreferrer">{name}</a>
+          </h3>
+          {about && <p className={styles.about}>{about}</p>}
+          {site.description && <p className={styles.description}>{site.description}</p>}
+        </div>
 
-      <div className={styles.foot}>
-        <span ref={visitRef} className={styles.cta} aria-hidden="true">
-          {pressed > 0 && <span key={pressed} className={styles.ripple} />}
-          <span className={styles.visit}>
-            <span className={styles.flood} />
-            <span className={styles.roll} data-text={visitLabel}><span>{visitLabel}</span></span>
-            <span className={styles.orb}>{ARROW}{ARROW}</span>
+        <div className={styles.foot}>
+          <span ref={visitRef} className={styles.cta} aria-hidden="true">
+            {pressed > 0 && <span key={pressed} className={styles.ripple} />}
+            <span className={styles.visit}>
+              <span className={styles.flood} />
+              <span className={styles.roll} data-text={visitLabel}><span>{visitLabel}</span></span>
+              <span className={styles.orb}>{ARROW}{ARROW}</span>
+            </span>
           </span>
-        </span>
-        <span className={styles.host}>{host(main.url)}</span>
-        {more.map(m => (
-          <a key={m.url} className={styles.more} href={m.url} target="_blank" rel="noopener noreferrer">{m.label || host(m.url)}</a>
-        ))}
+          <span className={styles.host}>{host(main.url)}</span>
+          {more.map(m => (
+            <a key={m.url} className={styles.more} href={m.url} target="_blank" rel="noopener noreferrer">{m.label || host(m.url)}</a>
+          ))}
+        </div>
       </div>
     </li>
   );
@@ -189,7 +217,7 @@ export const ShowcaseSkeleton = ({ count = 2 }) => {
     <Skeleton label={loadingSites}>
       <ul className={styles.grid}>
         {Array.from({ length: count }, (_, i) => (
-          <li key={i} className={`glass ${styles.card} ${styles.ghost}`}>
+          <li key={i} className={styles.slot}><div className={`glass ${styles.card} ${styles.ghost}`}>
             <div className={styles.cover}>
               <div className={styles.window}>
                 <span className={styles.bar}><i /><i /><i /><Bone w="45%" h="0.9rem" r="999px" /></span>
@@ -203,7 +231,7 @@ export const ShowcaseSkeleton = ({ count = 2 }) => {
               <Bone w="70%" h="0.75rem" style={{ marginTop: '0.4rem' }} />
             </div>
             <div className={styles.foot}><Bone w="9rem" h="2.3rem" r="999px" /></div>
-          </li>
+          </div></li>
         ))}
       </ul>
     </Skeleton>
@@ -212,25 +240,8 @@ export const ShowcaseSkeleton = ({ count = 2 }) => {
 
 // Client websites as simple cards: what it is, who it is for, and one button to open it.
 const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
-  const grid = useRef(null);
-
-  useGSAP(() => {
-    if (motionOff()) return;
-    const cards = gsap.utils.toArray(grid.current.children);
-    // The card's CSS transform transition would restart on every GSAP frame, so it is off until the entrance ends.
-    gsap.set(cards, { autoAlpha: 0, y: 90, rotationX: 18, transformPerspective: 1200, transformOrigin: '50% 100%', transition: 'none' });
-    ScrollTrigger.batch(cards, {
-      start: 'top 88%',
-      once: true,
-      onEnter: (batch) => gsap.to(batch, {
-        autoAlpha: 1, y: 0, rotationX: 0, duration: 1.1, stagger: 0.12, ease: 'expo.out',
-        clearProps: 'transform,opacity,visibility,transition',
-      }),
-    });
-  }, { scope: grid, dependencies: [sites.length] });
-
   return (
-    <ul ref={grid} className={styles.grid}>
+    <ul className={styles.grid}>
       {sites.map((site, i) => (
         <Card key={site.id ?? i} index={i} site={site} tone={TONES[i % TONES.length]} visitLabel={visitLabel} />
       ))}

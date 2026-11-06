@@ -29,9 +29,8 @@ const RepoSkeleton = ({ label }) => (
 );
 
 const Head = ({ title, lede, tone, n }) => {
-  const [ref, shown] = useReveal({ threshold: 0.3 });
   return (
-    <header ref={ref} className={styles.sectionHead} data-shown={shown ? '' : undefined} data-tone={tone}>
+    <header className={styles.sectionHead} data-tone={tone}>
       <span className={styles.num} data-rise aria-hidden="true">{String(n).padStart(2, '0')}</span>
       <Headline as="h2" text={title} tone={tone} start={1} />
       {lede && <p data-rise style={{ '--i': 3 }}>{lede}</p>}
@@ -60,8 +59,7 @@ const Projects = () => {
 
   const shown = useMemo(() => (pick ? repos.filter(p => platformLabels(p.topics).includes(pick)) : repos), [repos, pick]);
 
-  const [headRef, headShown] = useReveal({ threshold: 0 });
-  const [reposRef, reposShown] = useReveal({ threshold: 0.03 });
+  const [headRef, headShown] = useReveal();
 
   const tally = [
     { value: sites.length, label: t.statSites, tone: 'green' },
@@ -94,10 +92,8 @@ const Projects = () => {
       </section>
 
       <section
-        ref={reposRef}
         className={styles.block}
         id="bench"
-        data-shown={reposShown ? '' : undefined}
         style={{ '--step': '45ms' }}
       >
         <Head n={2} tone="blue" title={t.codeTitle} lede={t.codeLede} />
@@ -126,7 +122,7 @@ const Projects = () => {
               : (
                 <div key={pick ?? 'all'} className={styles.grid}>
                   {shown.map((p, i) => (
-                    <div key={p.id} className={styles.cell} data-rise style={{ '--i': Math.min(i, 10) + 2 }}>
+                    <div key={p.id} className={styles.cell} data-rise="flip" style={{ '--i': Math.min(i, 10) + 2 }}>
                       <Repo project={p} tone={toneOf(p.name)} labels={t} onReadme={setOpen} />
                     </div>
                   ))}
