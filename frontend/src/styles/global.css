@@ -220,8 +220,10 @@ pre {
     white-space: nowrap;
 }
 
-/* Scroll reveal. useScrollReveal flips items in with the Web Animations API; this only keeps them hidden until then. */
-[data-rise] { transform-origin: 50% 0%; }
+/* Scroll reveal. useScrollReveal plays items in with the Web Animations API (hooks/motions.js); this keeps them hidden until then. */
+[data-rise] { transform-origin: 50% 50%; }
+[data-rise='turn'][data-side='l'] { transform-origin: 0% 50%; }
+[data-rise='turn'][data-side='r'] { transform-origin: 100% 50%; }
 [data-rise]:not([data-in]) { opacity: 0; }
 /* Keyboard users never land on something invisible. */
 [data-rise]:not([data-in]):has(:focus-visible) { opacity: 1; }

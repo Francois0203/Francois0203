@@ -31,7 +31,7 @@ const RepoSkeleton = ({ label }) => (
 const Head = ({ title, lede, tone, n }) => {
   return (
     <header className={styles.sectionHead} data-tone={tone}>
-      <span className={styles.num} data-rise aria-hidden="true">{String(n).padStart(2, '0')}</span>
+      <span className={styles.num} data-rise="spin" aria-hidden="true">{String(n).padStart(2, '0')}</span>
       <Headline as="h2" text={title} tone={tone} start={1} />
       {lede && <p data-rise style={{ '--i': 3 }}>{lede}</p>}
     </header>
@@ -122,7 +122,7 @@ const Projects = () => {
               : (
                 <div key={pick ?? 'all'} className={styles.grid}>
                   {shown.map((p, i) => (
-                    <div key={p.id} className={styles.cell} data-rise="flip" style={{ '--i': Math.min(i, 10) + 2 }}>
+                    <div key={p.id} className={styles.cell} data-rise="roll" style={{ '--i': Math.min(i, 10) + 2 }}>
                       <Repo project={p} tone={toneOf(p.name)} labels={t} onReadme={setOpen} />
                     </div>
                   ))}

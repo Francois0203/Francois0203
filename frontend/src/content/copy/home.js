@@ -12,7 +12,6 @@ export const HOME_FIELDS = [
   { key: 'toyHint',      label: 'Toy box - hint (mouse)', type: 'text', default: 'Go on, grab one and throw it' },
   { key: 'toyHintTouch', label: 'Toy box - hint (touch)', type: 'text', default: 'Tap to shake things up' },
 
-
   // The story
   { key: 'storyTitle', label: 'Story - headline (italic in *asterisks*)', type: 'text', default: 'The story *so far*.' },
   { key: 'storyLede',  label: 'Story - lede', type: 'textarea', default: 'Every stop is a real role or qualification, oldest first. Keep scrolling.' },

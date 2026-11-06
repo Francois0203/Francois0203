@@ -2,15 +2,11 @@ import { ghPaginate, ghReadJson } from './lib/gh.mjs';
 import { initFirestore, closeFirestore, projectId, admin } from './lib/firebase.mjs';
 import { screenshot } from './lib/screenshot.mjs';
 
-// Config
-
 const ORG         = process.env.STUDIO_ORG  || 'FM-Web-Studio';
 const COLLECTION  = 'studioSites';
 const PROBE_MS    = 10_000;
 // The portfolio's own address, so a site that only allows named frames can still be shown.
 const PORTFOLIO   = projectId() ? `${projectId()}.web.app` : '';
-
-// URL discovery
 
 const isHttpUrl = (v) => typeof v === 'string' && /^https?:\/\//i.test(v.trim());
 
@@ -164,8 +160,6 @@ async function buildDoc(r, previous) {
     },
   };
 }
-
-// Main
 
 async function main() {
   if (!process.env.GH_PAT) {

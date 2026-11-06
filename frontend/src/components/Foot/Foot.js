@@ -47,7 +47,7 @@ const Foot = () => {
               <Headline as="h2" text={t.ctaTitle} tone="yellow" className={styles.callTitle} />
               <p className={styles.callText} data-rise style={{ '--i': 5 }}>{t.ctaText}</p>
             </div>
-            <div className={styles.callSide} data-rise style={{ '--i': 6 }}>
+            <div className={styles.callSide} data-rise="pop" style={{ '--i': 6 }}>
               <div className={styles.callActions}>
                 <Button as={Link} to="/connect" variant="primary" tone="pink" size="lg" arrow>{t.ctaButton}</Button>
                 {contact.email && <Button as="a" href={`mailto:${contact.email}`} variant="glass">{contact.email}</Button>}

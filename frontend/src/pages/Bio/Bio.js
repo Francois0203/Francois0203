@@ -114,7 +114,7 @@ const Bio = () => {
             </>
           ) : (
             <>
-              <h1 className={styles.name}>
+              <h1 className={styles.name} data-reveal>
                 {name.split(' ').map((w, i) => (
                   <span key={i} className="mask"><span style={{ '--i': i + 1 }}>{w}</span></span>
                 )).reduce((a, b, i) => (i ? [...a, ' ', b] : [b]), [])}
@@ -164,7 +164,7 @@ const Bio = () => {
           </ul>
         </div>
 
-        <div className={styles.cardWrap} data-rise style={{ '--i': 2, '--rise': '40px' }}>
+        <div className={styles.cardWrap} data-rise="roll" style={{ '--i': 2, '--rise': '40px' }}>
           <Glass tone="pink" tilt={9} lift={18} pad="none" className={styles.card}>
             <div className={styles.portrait}>
               {loading ? <Bone w="100%" h="100%" r="0" /> : photo && (
@@ -277,7 +277,7 @@ const Bio = () => {
               {interests.length > 0 && (
                 <ul className={styles.interests} data-tones>
                   {interests.map((n, i) => (
-                    <li key={n} data-rise style={{ '--i': i + 3 }}>
+                    <li key={n} data-rise="pop" style={{ '--i': i + 3 }}>
                       <Draggable className={styles.interest}>{n}</Draggable>
                     </li>
                   ))}

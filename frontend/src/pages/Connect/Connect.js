@@ -162,7 +162,7 @@ const Connect = () => {
           <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
           <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
 
-          <Glass className={styles.ways} tone="blue" data-rise="flip" style={{ '--i': 5 }}>
+          <Glass className={styles.ways} tone="blue" data-rise="turn" style={{ '--i': 5 }}>
             <h2 className={styles.waysTitle}>{t.waysTitle}</h2>
 
             {loading && (
@@ -336,14 +336,14 @@ const Connect = () => {
         <section className={`glass ${styles.support}`} data-tone="yellow">
           <div className={styles.supportCopy}>
             <Headline as="h2" text={t.supportTitle} tone="orange" className={styles.supportTitle} />
-            {donation.message && <p className={styles.supportText} data-rise style={{ '--i': 3 }}>{donation.message}</p>}
+            {donation.message && <p className={styles.supportText} data-rise="pop" style={{ '--i': 3 }}>{donation.message}</p>}
             <div data-rise style={{ '--i': 4 }}>
               <SupportButton href={donation.link}>{donation.buttonText || t.supportButton}</SupportButton>
             </div>
           </div>
 
           {studying.length > 0 && (
-            <div className={styles.studying} data-rise style={{ '--i': 3 }}>
+            <div className={styles.studying} data-rise="pop" style={{ '--i': 3 }}>
               <span className={styles.studyingLabel}>{t.supportStudyingLabel}</span>
               <ul>
                 {studying.map(s => (

@@ -36,16 +36,24 @@ const useCvDownload = () => {
   const badges = resolveGroup(CREDENTIALS_FIELDS, overrides.credentials);
   const skills = useMemo(() => flattenSkills(data?.skills), [data]);
 
-  // Fetch the PDF engine in idle time so the button answers at once.
+  // Warm the 1.3 MB PDF engine after the intro (it froze the opening), and not at all on weak machines.
   useEffect(() => {
-    if (!data) return undefined;
+    if (!data || document.documentElement.dataset.tier === 'low') return undefined;
+    let handle = 0;
+    let timer = 0;
     const warm = () => { import('../cv'); };
-    if ('requestIdleCallback' in window) {
-      const handle = requestIdleCallback(warm, { timeout: 5000 });
-      return () => cancelIdleCallback(handle);
-    }
-    const timer = setTimeout(warm, 2500);
-    return () => clearTimeout(timer);
+    const schedule = () => {
+      if ('requestIdleCallback' in window) handle = requestIdleCallback(warm, { timeout: 8000 });
+      else timer = setTimeout(warm, 4000);
+    };
+    const playing = document.documentElement.dataset.intro === 'playing';
+    if (playing) window.addEventListener('intro:done', schedule, { once: true });
+    else schedule();
+    return () => {
+      window.removeEventListener('intro:done', schedule);
+      if (handle) cancelIdleCallback(handle);
+      clearTimeout(timer);
+    };
   }, [data]);
 
   const action = useAsyncAction(async () => {

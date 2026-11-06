@@ -13,8 +13,6 @@ const getSkills    = ()  => portfolioDoc('skills');
 const getSocial    = ()  => portfolioDoc('social').then(d => d?.platforms ?? []);
 const getInterests = ()  => portfolioDoc('interests').then(d => d?.items ?? []);
 
-// Ordered collection reads
-
 const orderedCollection = async (col) => {
   try {
     const snap = await getDocs(query(collection(db, col), orderBy('order')));
@@ -45,7 +43,5 @@ export const getPortfolio = () =>
     data.failed = keys.filter((_, i) => results[i].status === 'rejected');
     return data;
   });
-
-// Contact form write
 
 export { submitContactForm } from './contact';

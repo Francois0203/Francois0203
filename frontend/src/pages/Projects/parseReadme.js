@@ -6,8 +6,6 @@ function isBadgeUrl(url) {
   return BADGE_HOSTS.test(url);
 }
 
-// HTML helpers
-
 // Returns true if a line is purely an HTML block with no readable text
 function isDecorativeLine(line) {
   const noTags = line.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/gi, '').trim();
@@ -31,8 +29,6 @@ function htmlImageSrcs(line) {
   while ((m = re.exec(line)) !== null) srcs.push(m[1]);
   return srcs;
 }
-
-// Markdown helpers
 
 function stripMarkdown(text) {
   return text
@@ -96,8 +92,6 @@ function findSection(sections, pattern) {
   return sections.find(s => pattern.test(s.heading.trim()));
 }
 
-// Main export
-
 export function parseReadme(markdown, { fallback = '' } = {}) {
   if (!markdown?.trim()) {
     return { description: fallback, features: [], techStack: [] };
@@ -154,7 +148,6 @@ export function parseReadme(markdown, { fallback = '' } = {}) {
     ? descParts.join(' ')
     : fallback;
 
-  // Sections
   const sections = parseSections(source);
 
   // If no description found at the top level, try the first "About" section

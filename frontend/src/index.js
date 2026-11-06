@@ -9,6 +9,10 @@ import '@fontsource-variable/onest';
 import '@fontsource-variable/jetbrains-mono';
 
 import './styles/index.css';
+import { markTier } from './tier';
+
+// Before the first paint, so the intro already knows how much this machine can draw.
+markTier();
 
 function Boundary({ children }) {
   const location = useLocation();

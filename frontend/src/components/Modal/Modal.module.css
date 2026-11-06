@@ -30,7 +30,6 @@
 
 .panel:focus { outline: none; }
 
-.sm { max-width: 26rem; }
 .md { max-width: 40rem; }
 .lg { max-width: 60rem; }
 

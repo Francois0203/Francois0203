@@ -95,12 +95,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // A one-way scramble, so no address or IP is ever stored as it is.
 const scramble = (value) => crypto.createHash('sha256').update(`fm-portfolio:${value}`).digest('hex').slice(0, 40);
 
-/*
- * The caller's address. Google's front end APPENDS the real address to X-Forwarded-For,
- * after anything the caller sent in that header themselves, so only the LAST entry can be
- * trusted. Taking the first let a spammer invent a new "address" per request and walk
- * straight past the per-sender limits.
- */
+// Google's front end appends the real address to X-Forwarded-For, so only the last entry is trustworthy.
 const clientIp = (req) => {
   const hops = String(req?.headers?.['x-forwarded-for'] ?? '').split(',').map(h => h.trim()).filter(Boolean);
   return hops[hops.length - 1] || req?.ip || 'unknown';
@@ -108,12 +103,7 @@ const clientIp = (req) => {
 
 const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
-// ── Spam screening ──────────────────────────────────────────────────────────
-// Two outcomes. Link spam (more than two links, any HTML or BBCode, a link in a name) is
-// dropped with a quiet success - no person writes like that. Everything else that only LOOKS
-// like spam is still saved, but marked flagged with the reasons, so a real enquiry is never
-// lost: flagged messages arrive with "[Likely spam]" in the email subject.
-// Only real tags count as HTML, so "<R500 per night>" or "<3" from a person still gets through.
+// Link spam is dropped with a quiet success; anything that only looks like spam is saved but flagged, so no real enquiry is lost.
 const LINK = /(https?:\/\/|www\.|\[url|<a\s|\b[a-z0-9-]+\.(ru|cn|xyz|top|click|link|shop|online|site|info|biz)\b)/gi;
 const HTML = /<\/?(a|p|div|span|img|script|iframe|b|i|u|strong|em|br|font|center)\b[^>]*>|\[\/?url/i;
 const SPAM_WORDS = /\b(crypto|bitcoin|btc|forex|casino|betting|viagra|cialis|porn|escort|seo|backlinks?|guest post|lead generation|first page of google|rank(?:ing)? your (?:site|website)|increase your (?:website )?traffic|web ?design (?:services?|agency)|digital marketing (?:services?|agency)|investment opportunity|make money|click here|telegram|unsubscribe|dear (?:sir|madam))\b/gi;

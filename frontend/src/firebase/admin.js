@@ -6,8 +6,6 @@ import {
 import { db } from './index';
 import { releaseChapter } from './photos';
 
-// Helpers
-
 const blank = (v) => v === '' || v === null || v === undefined || (Array.isArray(v) && v.length === 0);
 
 // Cleared fields are removed from the document instead of being stored empty.
@@ -41,23 +39,17 @@ export const reorderCollection = (col, ids) => {
 const portfolioSnap = (id, cb, onErr) =>
   onSnapshot(portfolioRef(id), snap => cb(snap.data() ?? {}), onErr);
 
-// Personal
-
 export const subscribePersonal = (cb, onErr) =>
   portfolioSnap('personal', cb, onErr);
 
 export const updatePersonal = (data) =>
   setDoc(portfolioRef('personal'), { ...pruneEmpty(data), updatedAt: serverTimestamp() }, { merge: true });
 
-// Contact
-
 export const subscribeContact = (cb, onErr) =>
   portfolioSnap('contact', cb, onErr);
 
 export const updateContact = (data) =>
   setDoc(portfolioRef('contact'), { ...pruneEmpty(data), updatedAt: serverTimestamp() }, { merge: true });
-
-// Donation
 
 export const subscribeDonation = (cb, onErr) =>
   portfolioSnap('donation', cb, onErr);
@@ -71,8 +63,6 @@ export const subscribeCopy = (cb, onErr) =>
 
 export const updateCopy = (data) =>
   setDoc(portfolioRef('copy'), { ...data, updatedAt: serverTimestamp() });
-
-// Skills
 
 const normalizeSkills = (data) => {
   if (!data) return { categories: [] };
@@ -92,23 +82,17 @@ export const subscribeSkills = (cb, onErr) =>
 export const updateSkills = (categories) =>
   setDoc(portfolioRef('skills'), { categories, updatedAt: serverTimestamp() });
 
-// Interests
-
 export const subscribeInterests = (cb, onErr) =>
   onSnapshot(portfolioRef('interests'), snap => cb(snap.data()?.items ?? []), onErr);
 
 export const updateInterests = (items) =>
   setDoc(portfolioRef('interests'), { items: items.map(i => i.trim()).filter(Boolean), updatedAt: serverTimestamp() });
 
-// Social
-
 export const subscribeSocial = (cb, onErr) =>
   onSnapshot(portfolioRef('social'), snap => cb(snap.data()?.platforms ?? []), onErr);
 
 export const updateSocial = (platforms) =>
   setDoc(portfolioRef('social'), { platforms, updatedAt: serverTimestamp() });
-
-// Experience
 
 export const subscribeExperience = (cb, onErr) =>
   onSnapshot(
@@ -131,8 +115,6 @@ export const deleteExperience = async (id) => {
   await releaseChapter(`exp-${id}`).catch(() => {});
 };
 
-// Education
-
 export const subscribeEducation = (cb, onErr) =>
   onSnapshot(
     collection(db, 'education'),
@@ -154,8 +136,6 @@ export const deleteEducation = async (id) => {
   await releaseChapter(`edu-${id}`).catch(() => {});
 };
 
-// Certifications
-
 export const subscribeCertifications = (cb, onErr) =>
   onSnapshot(
     collection(db, 'certifications'),
@@ -174,8 +154,6 @@ export const updateCertification = (id, data) => saveRecord('certifications', id
 
 export const deleteCertification = (id) =>
   deleteDoc(doc(db, 'certifications', id));
-
-// GitHub Projects
 
 export const subscribeGitHubProjects = (cb, onErr) =>
   onSnapshot(
@@ -208,8 +186,6 @@ export const deleteGitHubProject = async (id) => {
     tx.delete(doc(db, 'githubProjects', id));
   });
 };
-
-// Contact Messages
 
 export const subscribeMessages = (cb, onErr) =>
   onSnapshot(

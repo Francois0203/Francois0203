@@ -20,21 +20,12 @@ const quiet = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
   || document.documentElement.dataset.noAnimations === 'true';
 
-// Marks weak devices so the CSS can lighten the blur.
-const markTier = () => {
-  const cores = navigator.hardwareConcurrency ?? 8;
-  const mem = navigator.deviceMemory ?? 8;
-  const low = cores <= 4 || mem <= 4 || navigator.connection?.saveData;
-  document.documentElement.dataset.tier = low ? 'low' : 'high';
-};
-
 // Still colour behind the glass, with the glow and tap rings on a layer above.
 const Backdrop = () => {
   const lightRef = useRef(null);
   const glowRef = useRef(null);
 
   useEffect(() => {
-    markTier();
     const light = lightRef.current;
     const glow = glowRef.current;
     if (!light || !glow) return undefined;

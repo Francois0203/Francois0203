@@ -31,13 +31,9 @@ async function fetchRepoData(owner, repo) {
   };
 }
 
-// Firestore doc ID
-
 function docId(owner, repo) {
   return `${owner}_${repo}`.toLowerCase().replace(/[^a-z0-9]/g, '_');
 }
-
-// Main
 
 async function main() {
   if (!process.env.GH_PAT) {

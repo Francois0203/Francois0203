@@ -3,9 +3,6 @@
 export const LEGAL_UPDATED = '5 November 2026';
 export const LEGAL_FALLBACK_EMAIL = 'francoismeiring0203@gmail.com';
 
-// How long a contact message is kept. The form writes the matching expiry date.
-export const CONTACT_RETENTION_DAYS = 365;
-
 export const privacyPolicy = ({ email }) => ({
   title: 'Privacy policy',
   intro: 'What this site collects about you, why, and what you can do about it. The short version: no tracking, no advertising, no cookies of my own. If you write to me, I keep your letter so I can reply.',

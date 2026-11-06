@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// Constants
 const STORAGE_KEY      = 'userSessionInfo';
 const ANIMATIONS_FIELD = 'reduceAnimations';
 
@@ -23,7 +22,6 @@ const getInitialAnimations = () => {
 export const useAnimations = () => {
   const [reduceAnimations, setReduceAnimations] = useState(getInitialAnimations);
 
-  // Dom sync
   useEffect(() => {
     const root = document.documentElement;
 

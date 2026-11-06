@@ -40,11 +40,12 @@ const SiteIcon = ({ url, name }) => {
 
 const FRAME_WIDTH = 1280;
 
-// Live views only on computers with data to spare. Phones keep the screenshot.
+// Live views only on capable computers with data to spare. Phones and weak machines keep the screenshot.
 const liveAllowed = () => typeof window !== 'undefined'
   && window.innerWidth >= 700
   && !window.matchMedia('(pointer: coarse)').matches
-  && !navigator.connection?.saveData;
+  && !navigator.connection?.saveData
+  && document.documentElement.dataset.tier !== 'low';
 
 // The real site, scaled down and click-proof. Loaded the first time its card is hovered, shown only while it is.
 const LiveView = ({ url, title, on }) => {
@@ -159,7 +160,7 @@ const Card = ({ site, tone, visitLabel, index }) => {
   const about = site.tagline || site.client;
 
   return (
-    <li className={styles.slot} data-rise="flip">
+    <li className={styles.slot} data-rise="turn">
       <div ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
         <div className={styles.cover} aria-hidden="true">
           <div className={styles.window}>

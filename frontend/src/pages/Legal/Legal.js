@@ -47,7 +47,7 @@ const Legal = ({ kind, otherTo }) => {
         <div data-rise style={{ '--i': 0 }}>
           <Chip dot="ink">{t.updatedLabel} {t.updated}</Chip>
         </div>
-        <h1 className={styles.title}>
+        <h1 className={styles.title} data-reveal>
           <span className="mask"><span style={{ '--i': 1 }}>{doc.title}</span></span>
         </h1>
         <p className={styles.intro} data-rise style={{ '--i': 2 }}>{doc.intro}</p>
