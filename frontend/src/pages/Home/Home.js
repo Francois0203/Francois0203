@@ -197,6 +197,27 @@ const Home = () => {
           </Skeleton>
         </section>
       )}
+      {loading && (
+        <section className={styles.block}>
+          <Skeleton label={copy('a11y').loadingStory} className={`glass ${styles.path} ${styles.pathWait}`}>
+            <Bone w="min(60%, 22rem)" h="2.6rem" />
+            <Bone w="min(85%, 34rem)" h="1rem" />
+            <div className={styles.pathWaitRow}>
+              {[0, 1, 2, 3].map(i => <Bone key={i} h="auto" r="22px" style={{ aspectRatio: '1' }} />)}
+            </div>
+          </Skeleton>
+        </section>
+      )}
+      {loading && (
+        <section className={`${styles.block} ${styles.photos}`}>
+          <Skeleton label={copy('a11y').loadingStory} className={styles.photosWait}>
+            <Bone w="min(50%, 20rem)" h="2.6rem" />
+            <div className={styles.photosWaitRow}>
+              {[-4, 3, -2, 5].map(r => <Bone key={r} h="auto" r="14px" style={{ aspectRatio: '4 / 5', rotate: `${r}deg` }} />)}
+            </div>
+          </Skeleton>
+        </section>
+      )}
 
       {chapters.length > 0 && (
         <section id="story" className={`${styles.block} ${styles.story}`}>
@@ -221,7 +242,7 @@ const Home = () => {
       {/* What is next */}
       {certifications.length > 0 && (
         <section id="certifications" className={styles.block}>
-          <Glass tone="pink" pad="lg" className={styles.path} data-rise="flip">
+          <Glass tone="pink" pad="lg" className={styles.path} data-rise>
             <header className={styles.pathHead}>
               <Headline text={badges.title} tone="pink" className={styles.headTitle} />
               <p className={styles.lede} data-rise style={{ '--i': 4 }}>{badges.lede}</p>

@@ -7,7 +7,7 @@ const Job = ({ title, org, when, note, tags, current, nowLabel, tone, i }) => {
   const ref = useRef(null);
   useTilt(ref, { max: 3 });
   return (
-    <article className={styles.job} data-tone={tone} style={{ '--i': i }} data-rise="turn">
+    <article className={styles.job} data-tone={tone} style={{ '--i': i }} data-rise="side">
       <span className={styles.node} data-stop aria-hidden="true" />
       <div ref={ref} className={`glass ${styles.card}`}>
         <header className={styles.head}>

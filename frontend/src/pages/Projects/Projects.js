@@ -13,7 +13,7 @@ import ReadmeRenderer from './ReadmeRenderer';
 import Repo from './Repo';
 import Filter from './Filter';
 import { platformLabels } from './platform';
-import Tally from './Tally';
+import Tally, { TallySkeleton } from './Tally';
 import { useCopy } from '../../content/copy/store';
 import styles from './Projects.module.css';
 
@@ -31,7 +31,7 @@ const RepoSkeleton = ({ label }) => (
 const Head = ({ title, lede, tone, n }) => {
   return (
     <header className={styles.sectionHead} data-tone={tone}>
-      <span className={styles.num} data-rise="spin" aria-hidden="true">{String(n).padStart(2, '0')}</span>
+      <span className={styles.num} data-rise aria-hidden="true">{String(n).padStart(2, '0')}</span>
       <Headline as="h2" text={title} tone={tone} start={1} />
       {lede && <p data-rise style={{ '--i': 3 }}>{lede}</p>}
     </header>
@@ -77,7 +77,7 @@ const Projects = () => {
           <Headline as="h1" text={t.heading} tone="green" className={styles.title} start={1} />
           <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.lede}</p>
         </div>
-        {!loading && !sitesLoading && <Tally items={tally} shown={headShown} />}
+        {loading || sitesLoading ? <TallySkeleton label={a11y.loadingRepos} /> : <Tally items={tally} shown={headShown} />}
       </header>
 
       <section className={styles.block} id="sites">
@@ -122,7 +122,7 @@ const Projects = () => {
               : (
                 <div key={pick ?? 'all'} className={styles.grid}>
                   {shown.map((p, i) => (
-                    <div key={p.id} className={styles.cell} data-rise="roll" style={{ '--i': Math.min(i, 10) + 2 }}>
+                    <div key={p.id} className={styles.cell} data-rise style={{ '--i': Math.min(i, 10) + 2 }}>
                       <Repo project={p} tone={toneOf(p.name)} labels={t} onReadme={setOpen} />
                     </div>
                   ))}

@@ -164,7 +164,7 @@ const Bio = () => {
           </ul>
         </div>
 
-        <div className={styles.cardWrap} data-rise="roll" style={{ '--i': 2, '--rise': '40px' }}>
+        <div className={styles.cardWrap} data-rise style={{ '--i': 2, '--rise': '40px' }}>
           <Glass tone="pink" tilt={9} lift={18} pad="none" className={styles.card}>
             <div className={styles.portrait}>
               {loading ? <Bone w="100%" h="100%" r="0" /> : photo && (
@@ -206,7 +206,7 @@ const Bio = () => {
         <div className={styles.record}>
           {loading ? <RecordSkeleton label={a11y.loadingCv} /> : (
             <Chapter id="profile" n={number('profile')} title={t.profileHeading} tone="blue">
-              <Glass tone="blue" pad="lg" className={styles.summary} data-rise="flip" style={{ '--i': 2 }}>
+              <Glass tone="blue" pad="lg" className={styles.summary} data-rise style={{ '--i': 2 }}>
                 <p>{summary}</p>
               </Glass>
             </Chapter>
@@ -277,7 +277,7 @@ const Bio = () => {
               {interests.length > 0 && (
                 <ul className={styles.interests} data-tones>
                   {interests.map((n, i) => (
-                    <li key={n} data-rise="pop" style={{ '--i': i + 3 }}>
+                    <li key={n} data-rise style={{ '--i': i + 3 }}>
                       <Draggable className={styles.interest}>{n}</Draggable>
                     </li>
                   ))}

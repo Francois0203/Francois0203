@@ -60,7 +60,7 @@ const Stack = ({ entries = [] }) => {
               n += 1;
               const Mark = markFor(item);
               return (
-                <li key={item} data-rise="pop" style={{ '--i': n, '--rise': '12px' }}>
+                <li key={item} data-rise style={{ '--i': n, '--rise': '12px' }}>
                   <Draggable as="span" className={styles.entry}>
                     <Mark className={styles.mark} aria-hidden="true" />
                     {item}

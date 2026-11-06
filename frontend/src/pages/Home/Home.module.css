@@ -124,8 +124,15 @@
 .pathHead .headTitle { font-size: var(--display-md); }
 .pathHead .lede { font-size: var(--text-md); }
 
+/* The path while it loads: heading bones above a row of badge tiles. */
+.pathWait { grid-template-columns: minmax(0, 1fr); gap: 1rem; padding: clamp(1.5rem, 3.6vw, 2.75rem); }
+.pathWaitRow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.75rem, 2vw, 1.5rem); margin-top: 0.75rem; max-width: 40rem; }
+
 /* Off the clock */
 .photos { padding-bottom: clamp(1rem, 4vh, 3rem); }
+.photosWait { display: flex; flex-direction: column; gap: 1.5rem; }
+.photosWaitRow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.75rem, 2.5vw, 2rem); padding: 1rem 0.5rem; }
+@media (max-width: 700px) { .photosWaitRow > :nth-child(n + 3) { display: none; } .photosWaitRow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .hintFine,
 .hintTouch {

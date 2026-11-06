@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useTilt from '../../../hooks/useTilt';
+import Skeleton, { Bone } from '../../../components/Skeleton';
 import styles from './Tally.module.css';
 
 const still = () =>
@@ -30,7 +31,7 @@ const Stat = ({ value, label, tone, on, i }) => {
   useTilt(ref, { max: 8, lift: 14 });
   const n = useCount(value, on);
   return (
-    <li className={styles.cell} data-rise="flip" style={{ '--i': i }}>
+    <li className={styles.cell} data-rise style={{ '--i': i }}>
       <div ref={ref} className={`glass ${styles.stat}`} data-tone={tone}>
         <span className={styles.value}>{n}</span>
         <span className={styles.label}>{label}</span>
@@ -38,6 +39,18 @@ const Stat = ({ value, label, tone, on, i }) => {
     </li>
   );
 };
+
+// The same row of glass cells while the counts load.
+export const TallySkeleton = ({ count = 4, label }) => (
+  <Skeleton label={label} className={styles.tally}>
+    {Array.from({ length: count }, (_, i) => (
+      <div key={i} className={`glass ${styles.stat}`}>
+        <Bone w="3.2rem" h="clamp(2.4rem, 4.5vw, 3.4rem)" />
+        <Bone w="70%" h="0.8rem" style={{ marginTop: '0.35rem' }} />
+      </div>
+    ))}
+  </Skeleton>
+);
 
 // A row of real counts taken from the data, never typed in by hand.
 const Tally = ({ items = [], shown }) => {

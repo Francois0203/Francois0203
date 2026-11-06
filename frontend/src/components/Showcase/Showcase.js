@@ -160,7 +160,7 @@ const Card = ({ site, tone, visitLabel, index }) => {
   const about = site.tagline || site.client;
 
   return (
-    <li className={styles.slot} data-rise="turn">
+    <li className={styles.slot} data-rise>
       <div ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
         <div className={styles.cover} aria-hidden="true">
           <div className={styles.window}>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { REST, entrance, exitPose, markSide } from './motions';
+import { REST, entrance, exit } from './motions';
 
 const SELECTOR = '[data-rise], [data-reveal]';
 const STEP = 80;
@@ -12,9 +12,6 @@ const HIDE_LINE = 0.5;
 const HIDE_EDGE = `100000px 0px -${Math.round((1 - HIDE_LINE) * 100)}% 0px`;
 // Scroll this far the other way before it counts as turning round, so trackpad wobble and iOS bounce do nothing.
 const TURN = 16;
-// Hiding moves at once and holds its opacity for the first part, so the exit itself is what shows.
-const HIDE_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
-const HIDE_MS = 520;
 
 const whenIntroDone = (fn) => {
   if (document.documentElement.dataset.intro !== 'playing') { fn(); return () => {}; }
@@ -29,8 +26,6 @@ const calm = () => document.documentElement.dataset.noAnimations === 'true'
 const firstScreen = (entry) => entry.boundingClientRect.top + window.scrollY < window.innerHeight;
 
 const below = (entry, edge) => entry.boundingClientRect.top >= (entry.rootBounds?.bottom ?? window.innerHeight * edge);
-
-const low = () => document.documentElement.dataset.tier === 'low';
 
 // Observers see the moving box, so an entrance that starts lower or smaller would read as leaving and restart itself.
 // While an item is animating its reports are ignored; the settle sweep puts right anything missed.
@@ -56,21 +51,8 @@ const play = (el, show, delay = 0, instant = false) => {
   el.__reveal = null;
   if (instant) return;
 
-  let frames;
-  let ms;
-  if (show && !from) ({ frames, ms } = entrance(el, low()));
-  else if (show) { frames = [from, { opacity: 1, transform: REST }]; ms = 600; }
-  else {
-    const start = from ?? { opacity: 1, transform: REST };
-    frames = [{ ...start, offset: 0 }, { opacity: start.opacity, offset: 0.45 }, { ...exitPose(el, low()), offset: 1 }];
-    ms = HIDE_MS;
-  }
-  const anim = el.animate(frames, {
-    duration: ms,
-    delay: live ? 0 : delay,
-    easing: show ? 'linear' : HIDE_EASE,
-    fill: 'both',
-  });
+  const { frames, ms } = show ? entrance(el, from) : exit(el, from);
+  const anim = el.animate(frames, { duration: ms, delay: live ? 0 : delay, fill: 'both' });
   anim.__show = show;
   anim.onfinish = () => { if (el.__reveal === anim) { anim.cancel(); el.__reveal = null; } };
   el.__reveal = anim;
@@ -194,7 +176,6 @@ export const useScrollReveal = () => {
       root.querySelectorAll(SELECTOR).forEach(fn);
     };
     const watch = (el) => {
-      if (el.hasAttribute('data-rise')) markSide(el);
       early.observe(el);
       late.observe(el);
     };

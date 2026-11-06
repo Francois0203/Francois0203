@@ -68,6 +68,7 @@ const Run = memo(({ runRef, chapters, head, words, kinds, photosFor, photosLabel
               key={c.id ?? i}
               className={styles.chapter}
               data-chapter={i}
+              data-rise="side"
               data-tone={PALETTE[i % PALETTE.length]}
               data-active={i === 0 ? '' : undefined}
               style={{ '--chapter': `var(--c-${PALETTE[i % PALETTE.length]})`, '--chapter-ink': `var(--c-${PALETTE[i % PALETTE.length]}-ink)` }}

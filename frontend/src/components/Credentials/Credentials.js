@@ -64,7 +64,7 @@ const Stop = ({ c, i, statusLabel, labels, detailed }) => {
   useTilt(ref, { max: 6 });
   const date = when(c);
   return (
-    <li className={styles.stop} data-status={c.status} data-rise="pop" style={{ '--i': i }}>
+    <li className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
       <div ref={ref} className={`glass ${styles.tile}`} data-tone={COLOURS[i % COLOURS.length]}>
       <Badge c={c} i={i} />
       <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>

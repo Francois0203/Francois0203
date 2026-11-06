@@ -173,21 +173,45 @@ pre {
 /* Only for the instant of the swap, so colours jump instead of easing inside the reveal. The switch's icon keeps its morph. */
 [data-theme-swap] :not(svg, svg *) { transition: none !important; }
 
-/* Loading placeholder with a light sweep. */
+/* Loading placeholder: a glass-tinted bone with a hairline rim and a soft light sweep. */
+/* The sweep is a layer that slides (moved, not repainted), so dozens of bones cost next to nothing. */
 .skeleton {
+    position: relative;
     display: block;
-    border-radius: 8px;
-    background: linear-gradient(100deg,
-        color-mix(in srgb, var(--ink) 8%, transparent) 30%,
-        color-mix(in srgb, var(--ink) 3%, transparent) 50%,
-        color-mix(in srgb, var(--ink) 8%, transparent) 70%) 0 0 / 300% 100%;
-    animation: sheen 1.5s linear infinite;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--ink) 7%, transparent),
+        inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
 }
 
-@keyframes sheen {
-    from { background-position: 150% 0; }
-    to { background-position: -150% 0; }
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+        transparent 25%,
+        color-mix(in srgb, var(--ink) 10%, transparent) 45%,
+        color-mix(in srgb, white 14%, transparent) 50%,
+        color-mix(in srgb, var(--ink) 10%, transparent) 55%,
+        transparent 75%);
+    transform: translateX(-100%);
+    animation: sweep 1.7s cubic-bezier(0.45, 0, 0.25, 1) infinite;
 }
+
+@keyframes sweep { to { transform: translateX(100%); } }
+
+/* A placeholder group fades in a beat late, so a fast load never flashes it. */
+[role='status']:has(> .skeleton, > * .skeleton) { animation: wait-in 360ms 140ms var(--ease) both; }
+@keyframes wait-in { from { opacity: 0; } }
+
+/* Images sit on a tinted ground until they arrive, then fade in (index.js marks them loaded). */
+/* Opacity is never forced while waiting, so an image a component keeps hidden stays hidden; :where() lets its own animation win. */
+:where(img:not([data-loaded])) { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+:where(img[data-loaded]) { animation: img-in 420ms var(--ease) both; }
+@keyframes img-in { from { opacity: 0; } }
 
 /* A small spinning ring. Size it with font-size or width. */
 .spinner {
@@ -222,8 +246,6 @@ pre {
 
 /* Scroll reveal. useScrollReveal plays items in with the Web Animations API (hooks/motions.js); this keeps them hidden until then. */
 [data-rise] { transform-origin: 50% 50%; }
-[data-rise='turn'][data-side='l'] { transform-origin: 0% 50%; }
-[data-rise='turn'][data-side='r'] { transform-origin: 100% 50%; }
 [data-rise]:not([data-in]) { opacity: 0; }
 /* Keyboard users never land on something invisible. */
 [data-rise]:not([data-in]):has(:focus-visible) { opacity: 1; }

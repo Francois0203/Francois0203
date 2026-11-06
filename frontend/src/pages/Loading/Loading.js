@@ -1,24 +1,31 @@
-import Skeleton, { Bone } from '../../components/Skeleton';
 import { useCopy } from '../../content/copy/store';
 import styles from './Loading.module.css';
 
-const TONES = ['blue', 'pink', 'green'];
+const WORD = 'Loading';
 
-// Shown while a page's code downloads: three bouncing glass beads over the outline of a page.
+// Shown while a page's code downloads: a glossy jelly hops, squashes and changes colour over a bouncing word.
 const Loading = () => {
   const { loading } = useCopy('site');
   return (
-    <Skeleton label={loading} className={styles.wrap}>
-      <div className={styles.beads} aria-hidden="true">
-        {TONES.map((t, i) => <span key={t} className={styles.bead} style={{ '--c': `var(--c-${t})`, '--i': i }} />)}
+    <div className={styles.wrap} role="status">
+      <span className="sr-only">{loading}</span>
+      <div className={styles.stage} aria-hidden="true">
+        <span className={styles.shadow} />
+        <span className={styles.hop}>
+          <span className={styles.jelly}>
+            <span className={`${styles.tint} ${styles.blue}`} />
+            <span className={`${styles.tint} ${styles.pink}`} />
+            <span className={`${styles.tint} ${styles.green}`} />
+            <span className={styles.gloss} />
+            <span className={styles.eyes}><i /><i /></span>
+          </span>
+        </span>
       </div>
-      <div className={`glass ${styles.card}`} data-tone="blue">
-        <Bone w="8rem" h="1.8rem" r="999px" />
-        <Bone w="min(70%, 28rem)" h="clamp(2.4rem, 6vw, 4rem)" />
-        <Bone w="min(90%, 34rem)" h="0.95rem" />
-        <Bone w="min(60%, 22rem)" h="0.95rem" />
-      </div>
-    </Skeleton>
+      <p className={styles.word} aria-hidden="true">
+        {[...WORD].map((ch, i) => <span key={i} style={{ '--i': i }}>{ch}</span>)}
+        <span className={styles.dots}><i /><i /><i /></span>
+      </p>
+    </div>
   );
 };
 

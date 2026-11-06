@@ -1,1 +1,1 @@
-export { default } from './Tally';
+export { default, TallySkeleton } from './Tally';
