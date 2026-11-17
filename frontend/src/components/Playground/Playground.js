@@ -70,6 +70,7 @@ const Playground = ({ groups = [], caption }) => {
   const hubs = useRef([]);
   const pieces = useRef([]);
   const lines = useRef([]);
+  const rings = useRef([]);
 
   const list = groups.filter(g => g.items?.length).map((g, gi) => ({
     ...g,
@@ -123,6 +124,13 @@ const Playground = ({ groups = [], caption }) => {
         if (!n) return;
         const a = anchors[gi];
         n.style.transform = `translate3d(${(a.x - n.offsetWidth / 2).toFixed(1)}px, ${(a.y - n.offsetHeight / 2).toFixed(1)}px, 0)`;
+        // Two orbit rings mark how far each group's tools drift. Wide screens only.
+        (rings.current[gi] ?? []).forEach((ring, k) => {
+          if (!ring || slots) return;
+          ring.setAttribute('cx', a.x.toFixed(1));
+          ring.setAttribute('cy', a.y.toFixed(1));
+          ring.setAttribute('r', ((k ? 172 : 104) * Math.max(0.6, scale)).toFixed(1));
+        });
         Composite.add(engine.world, Bodies.rectangle(a.x, a.y, n.offsetWidth, n.offsetHeight, { isStatic: true, chamfer: { radius: n.offsetHeight / 2 - 1 } }));
       });
 
@@ -323,6 +331,14 @@ const Playground = ({ groups = [], caption }) => {
       {caption && <p className={styles.caption}>{caption}</p>}
       <div ref={boxRef} className={styles.field} aria-hidden="true">
         <svg className={styles.lines}>
+          {list.map((g, gi) => [0, 1].map(k => (
+            <circle
+              key={`${g.name}-${k}`}
+              ref={(el) => { (rings.current[gi] ??= [])[k] = el; }}
+              className={styles.ring}
+              style={{ '--tone': `var(--c-${g.tone})` }}
+            />
+          )))}
           {flat.map((f, k) => (
             <line key={f.name} ref={(el) => { lines.current[k] = el; }} style={{ '--tone': `var(--c-${list[f.gi].tone})` }} />
           ))}

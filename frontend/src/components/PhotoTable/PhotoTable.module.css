@@ -59,51 +59,40 @@
 .root:not([data-wide]) .card { transform: rotate(var(--r, 0deg)); }
 
 .card:focus-visible { outline: none; }
-.card:focus-visible .print { outline: 3px solid var(--c-blue); outline-offset: 4px; }
+.card:focus-visible .print { outline: 3px solid var(--accent); outline-offset: 4px; }
 
-/* A glass frame with a coloured rim around each photo. */
+/* A thick card frame around each photo. */
 .print {
     position: relative;
     display: block;
     padding: 10px 10px 0;
-    border-radius: 22px;
-    background: var(--glass-strong);
-    box-shadow:
-        inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 60%, var(--glass-line)),
-        var(--glass-hi),
-        var(--glass-cast),
-        0 26px 50px -30px var(--tone);
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 3px 0 var(--side), var(--cast);
     transition: box-shadow var(--t) var(--ease);
 }
 
 .card:hover .print,
-.card[data-lifted] .print {
-    box-shadow:
-        inset 0 0 0 2px var(--tone),
-        var(--glass-hi),
-        var(--glass-cast-hover),
-        0 40px 70px -30px var(--tone);
-}
+.card[data-lifted] .print { box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 3px 0 var(--side), var(--cast-hover); }
 
-/* A small glass tab where tape would be. */
+/* A pin where tape would be. */
 .tab {
     position: absolute;
-    top: -9px;
+    top: -5px;
     left: 50%;
-    width: 64px;
-    height: 18px;
-    margin-left: -32px;
-    border-radius: 6px;
-    background: color-mix(in srgb, var(--tone) 40%, var(--glass));
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 60%, rgba(255, 255, 255, 0.4));
-    rotate: -3deg;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-radius: 50%;
+    background: var(--tone, var(--ink-3));
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
 }
 
 .image {
     display: block;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    border-radius: 14px;
+    border-radius: 8px;
     background: var(--tint);
 }
 
@@ -143,10 +132,4 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-[data-tier='low'] .print,
-[data-tier='low'] .tab {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
 }

@@ -38,7 +38,7 @@ const shortName = (name) => name.replace(/^AWS Certified\s+/i, '');
 
 const COLOURS = ['yellow', 'blue', 'pink', 'green', 'orange'];
 
-// A glass hexagon with the exam code on it, for badges not earned yet.
+// A blank hexagon with the exam code on it, for badges not earned yet.
 const Outline = ({ code }) => (
   <span className={styles.outline} aria-hidden="true">
     <span className={styles.hex} />
@@ -65,7 +65,7 @@ const Stop = ({ c, i, statusLabel, labels, detailed }) => {
   const date = when(c);
   return (
     <li className={styles.stop} data-status={c.status} data-rise style={{ '--i': i }}>
-      <div ref={ref} className={`glass ${styles.tile}`} data-tone={COLOURS[i % COLOURS.length]}>
+      <div ref={ref} className={`panel ${styles.tile}`} data-tone={COLOURS[i % COLOURS.length]}>
       <Badge c={c} i={i} />
       <Chip dot={DOT[c.status]} className={styles.status}>{statusLabel[c.status]}</Chip>
       <h3 className={styles.name}>{shortName(c.name)}</h3>

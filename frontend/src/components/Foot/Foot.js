@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { MdArrowUpward, MdArrowForward } from 'react-icons/md';
-import { nextPage, tabStyle, useNavPages } from '../../content/navigation';
+import { nextPage, useNavPages } from '../../content/navigation';
 import { useCopy } from '../../content/copy/store';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
@@ -39,49 +39,56 @@ const Foot = () => {
 
   return (
     <footer id="site-footer" className={styles.foot} data-print-hide>
-      <div className={styles.inner}>
-        {pathname !== '/connect' && (
-          <div className={`glass ${styles.call}`} data-tone="pink">
-            <span className={styles.halo} aria-hidden="true" />
-            <div className={styles.callCopy}>
-              <Headline as="h2" text={t.ctaTitle} tone="yellow" className={styles.callTitle} />
-              <p className={styles.callText} data-rise style={{ '--i': 5 }}>{t.ctaText}</p>
-            </div>
-            <div className={styles.callSide} data-rise style={{ '--i': 6 }}>
-              <div className={styles.callActions}>
-                <Button as={Link} to="/connect" variant="primary" tone="pink" size="lg" arrow>{t.ctaButton}</Button>
-                {contact.email && <Button as="a" href={`mailto:${contact.email}`} variant="glass">{contact.email}</Button>}
+      {pathname === '/' && (
+        <div className={styles.play}><Playground groups={toolGroups} caption={t.stackCaption} /></div>
+      )}
+
+      {/* The page ends on one raised floor, with the stripe as its horizon */}
+      <div className={styles.night}>
+        <div className={styles.inner}>
+          <div className={styles.top}>
+            {pathname !== '/connect' ? (
+              <div className={styles.call}>
+                <Headline as="h2" text={t.ctaTitle} tone="yellow" className={styles.callTitle} />
+                <p className={styles.callText} data-rise style={{ '--i': 5 }}>{t.ctaText}</p>
+                <div className={styles.callActions} data-rise style={{ '--i': 6 }}>
+                  <Button as={Link} to="/connect" variant="primary" tone="pink" size="lg" arrow>{t.ctaButton}</Button>
+                  {contact.email && <Button as="a" href={`mailto:${contact.email}`} variant="soft" size="lg">{contact.email}</Button>}
+                </div>
               </div>
-              {social.length > 0 && (
-                <ul className={styles.social} data-tones>
+            ) : (
+              <p className={styles.mark}><Monogram size={44} /> {name}</p>
+            )}
+
+            <nav className={styles.col} aria-label={words.pagesNav}>
+              <p className={styles.colTitle}>{t.pagesTitle}</p>
+              {pages.map((page) => (
+                <Link key={page.to} to={page.to} className={styles.page} aria-current={page.to === pathname ? 'page' : undefined}>
+                  {page.label}
+                </Link>
+              ))}
+            </nav>
+
+            {social.length > 0 && (
+              <div className={styles.col}>
+                <p className={styles.colTitle}>{t.socialTitle}</p>
+                <ul className={styles.social} aria-label={t.socialTitle} data-tones>
                   {social.map((s, i) => {
                     const p = platformFor(s.key, s.url);
                     const label = p.key === 'website' ? (s.platform || s.key) : p.label;
                     return (
-                      <li key={s.key ?? i} style={{ '--i': i }}>
-                        <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}>
+                      <li key={s.key ?? i}>
+                        <a href={s.url} target="_blank" rel="noopener noreferrer">
                           <SocialIcon platform={s.key} url={s.url} />
+                          {label}
                         </a>
                       </li>
                     );
                   })}
                 </ul>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        )}
-
-        {pathname === '/' && <Playground groups={toolGroups} caption={t.stackCaption} />}
-
-        <div className={`glass ${styles.base}`} data-tone="blue">
-          <nav className={styles.pages} aria-label={words.pagesNav}>
-            {pages.map((page) => (
-              <Link key={page.to} to={page.to} className={styles.page} style={tabStyle(page.tone)} aria-current={page.to === pathname ? 'page' : undefined}>
-                <span className={styles.pageDot} aria-hidden="true" />
-                {page.label}
-              </Link>
-            ))}
-          </nav>
 
           <div className={styles.fine}>
             <p className={styles.sign}><Monogram size={24} /> &copy; {year} {name}</p>

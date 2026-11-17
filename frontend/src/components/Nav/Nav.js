@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { tabStyle } from '../../content/navigation';
 import Monogram from '../Monogram';
 import ThemeSwitch from '../ThemeSwitch';
 import MotionSwitch from '../MotionSwitch';
@@ -33,7 +32,7 @@ const Nav = ({ links = [] }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // The glass pill slides under whichever link is hovered, else the current page.
+  // The raised key slides under whichever link is hovered, else the current page.
   const place = useCallback((el) => {
     const rail = railRef.current;
     if (!rail) return;
@@ -44,7 +43,6 @@ const Nav = ({ links = [] }) => {
     rail.style.setProperty('--io', '1');
     rail.style.setProperty('--ix', `${el.offsetLeft}px`);
     rail.style.setProperty('--iw', `${el.offsetWidth}px`);
-    rail.style.setProperty('--itone', getComputedStyle(el).getPropertyValue('--tab'));
   }, []);
 
   const current = () => railRef.current?.querySelector('[aria-current="page"]') ?? null;
@@ -75,7 +73,7 @@ const Nav = ({ links = [] }) => {
   return (
     <>
       <header className={styles.wrap} data-stuck={stuck ? '' : undefined} data-print-hide>
-        <div className={`glass ${styles.bar}`} data-tone="blue">
+        <div className={`panel stripe ${styles.bar}`}>
           <NavLink to="/" end className={styles.mark} onClick={close} aria-label={words.homeLink}>
             <Monogram size={30} />
             <span className={styles.markName}>{name}</span>
@@ -83,11 +81,10 @@ const Nav = ({ links = [] }) => {
 
           <nav className={styles.routes} aria-label={words.siteNav} ref={railRef} onPointerLeave={() => setSpot(null)}>
             <span className={styles.indicator} aria-hidden="true" />
-            {pages.map(({ label, to, tone }) => (
+            {pages.map(({ label, to }) => (
               <NavLink
                 key={to}
                 to={to}
-                style={tabStyle(tone)}
                 className={styles.route}
                 onPointerEnter={(e) => setSpot(e.currentTarget)}
                 onFocus={(e) => setSpot(e.currentTarget)}
@@ -124,9 +121,9 @@ const Nav = ({ links = [] }) => {
               to={to}
               end={to === '/'}
               onClick={close}
-              className={`glass ${styles.big}`}
+              className={`panel ${styles.big}`}
               data-tone={tone}
-              style={{ '--i': i, ...tabStyle(tone) }}
+              style={{ '--i': i }}
             >
               <span className={styles.bigDot} aria-hidden="true" />
               <span className={styles.bigText}>

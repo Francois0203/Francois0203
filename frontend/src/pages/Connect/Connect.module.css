@@ -6,44 +6,58 @@
     padding: calc(80px + clamp(2rem, 6vh, 4rem)) var(--gutter) 0;
 }
 
-.top {
+/* A short title row, then the letter with a tray of other ways beside it. */
+.head,
+.desk {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: start;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: clamp(1.5rem, 4vw, 3.5rem);
 }
 
-.side {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.25rem;
-    min-width: 0;
-}
+.head { align-items: end; row-gap: 1rem; margin-bottom: clamp(2.25rem, 6vh, 3.75rem); }
+.desk { align-items: start; row-gap: 2rem; padding-bottom: clamp(1rem, 4vh, 3rem); }
 
-.title {
+.title { margin: 0; font-size: var(--display-xl); line-height: 0.95; }
+
+.lede { margin: 0 0 0.5rem; max-width: 40ch; font-size: var(--text-lg); line-height: 1.5; }
+
+.tray { display: grid; gap: 1rem; min-width: 0; }
+
+.label {
     margin: 0;
-    max-width: 10ch;
-    font-size: var(--display-xxl);
-    line-height: 0.95;
-}
-
-.lede { margin: 0; max-width: 38ch; font-size: var(--text-lg); line-height: 1.5; }
-
-/* Other ways in */
-
-.ways { width: 100%; margin-top: 0.75rem; }
-
-.waysTitle,
-.waysSub {
-    margin: 0 0 0.6rem;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     font-weight: 450;
     color: var(--ink-3);
 }
 
-.waysSub { margin-top: 1.5rem; margin-bottom: 0.8rem; }
+.loose { margin: 0.5rem 0 0.7rem 0.2rem; }
+
+/* His own time, large enough to read as the thing it is. */
+.clock {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: end;
+    gap: 0.35rem 1rem;
+    padding: 1.15rem 1.4rem 1.2rem;
+}
+
+.clock .label { grid-column: 1 / -1; }
+
+.time {
+    font-family: var(--font-display);
+    font-size: var(--display-lg);
+    font-weight: 650;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+}
+
+.place { padding-bottom: 0.2rem; font-size: var(--text-sm); color: var(--ink-2); text-align: right; }
+
+.reach { padding: 1.15rem 1.4rem 0.5rem; }
+.reach .way { grid-template-columns: auto minmax(0, 1fr) auto; }
 
 .way {
     display: grid;
@@ -69,24 +83,21 @@
 
 a.wayValue:hover { color: var(--accent-text); }
 
-.time { font-variant-numeric: tabular-nums; }
-.place { margin-left: 0.6rem; font-weight: 450; color: var(--ink-2); }
-
 .copy {
     padding: 0.35rem 0.85rem;
     border: 0;
-    border-radius: var(--r-control);
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-blue) 30%, var(--glass-line)), var(--lift);
+    border-radius: calc(var(--r-control) - 4px);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
     color: var(--ink);
     font-size: var(--text-xs);
     font-weight: 650;
     cursor: pointer;
-    transition: transform var(--t) var(--spring), background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+    transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 
-.copy:hover { background: var(--c-blue); color: var(--on-deep); transform: translateY(-2px); }
-.copy:active { transform: scale(0.9); }
+.copy:hover { color: var(--accent-text); transform: translateY(-1px); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-hover); }
+.copy:active { transform: translateY(1px); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-press); }
 
 .tiles {
     display: grid;
@@ -103,21 +114,20 @@ a.wayValue:hover { color: var(--accent-text); }
     gap: 0.75rem;
     padding: 0.65rem 0.75rem;
     border-radius: var(--r-node);
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--hc) 30%, var(--glass-line)), var(--lift);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
     color: var(--ink);
     text-decoration: none;
-    transition: transform 380ms var(--spring), box-shadow var(--t) var(--ease), background var(--t) var(--ease);
+    transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 
 .tile:hover {
     color: var(--ink);
-    transform: translateY(-4px) rotate(-1deg);
-    background: color-mix(in srgb, var(--hc) 14%, var(--glass-strong));
-    box-shadow: inset 0 0 0 1.5px var(--hc), var(--lift-hover), 0 14px 26px -14px var(--hc);
+    transform: translateY(-2px);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift-hover);
 }
 
-.tile:active { transform: scale(0.96); transition-duration: 90ms; }
+.tile:active { transform: translateY(1px); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-press); transition-duration: 90ms; }
 
 .tileIcon {
     display: grid;
@@ -125,14 +135,13 @@ a.wayValue:hover { color: var(--accent-text); }
     flex: none;
     width: 2.3rem;
     height: 2.3rem;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--hc) 45%, white), var(--hc));
-    color: var(--hc-on);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), 0 6px 12px -6px var(--hc);
-    transition: transform 500ms var(--spring);
+    border-radius: calc(var(--r-node) - 4px);
+    background: var(--hc);
+    color: var(--on-bright);
+    transition: transform var(--t) var(--spring);
 }
 
-.tile:hover .tileIcon { transform: rotate(-14deg) scale(1.1); }
+.tile:hover .tileIcon { transform: rotate(-8deg) scale(1.08); }
 
 .tileText { display: flex; flex-direction: column; min-width: 0; }
 .tileName { font-weight: 650; font-size: var(--text-sm); }
@@ -163,11 +172,11 @@ a.wayValue:hover { color: var(--accent-text); }
     top: 1.4rem;
     right: 7rem;
     padding: 0.25rem 0.6rem;
-    border: 1.5px dashed color-mix(in srgb, var(--c-orange) 60%, transparent);
+    border: 1.5px dashed var(--rule-strong);
     border-radius: 6px;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
-    color: var(--c-orange-ink);
+    color: var(--ink-3);
     rotate: -6deg;
 }
 
@@ -197,11 +206,16 @@ a.wayValue:hover { color: var(--accent-text); }
     display: inline-block;
     width: var(--w, 10ch);
     max-width: 100%;
-    padding: 0.2rem 0.5rem;
+    height: 2.1rem;
+    min-height: 0;
+    padding: 0 0.5rem;
     border: 0;
-    border-bottom: 2px solid color-mix(in srgb, var(--c-orange) 55%, transparent);
+    border-bottom: 2px solid var(--rule-strong);
+    font: inherit;
+    line-height: 1.2;
+    vertical-align: baseline;
     border-radius: 8px 8px 0 0;
-    background: color-mix(in srgb, var(--c-orange) 8%, transparent);
+    background: color-mix(in srgb, var(--ink) 5%, transparent);
     box-shadow: none;
     color: var(--ink);
     font-weight: 600;
@@ -209,8 +223,8 @@ a.wayValue:hover { color: var(--accent-text); }
 }
 
 .blank:focus {
-    border-color: var(--c-orange);
-    background: color-mix(in srgb, var(--c-orange) 16%, transparent);
+    border-color: var(--accent);
+    background: var(--accent-wash);
     box-shadow: none;
 }
 
@@ -221,8 +235,8 @@ a.wayValue:hover { color: var(--accent-text); }
     padding: 0.4rem 0.9rem;
     border-radius: var(--r-field);
     background:
-        repeating-linear-gradient(transparent 0 calc(2rem - 1px), color-mix(in srgb, var(--c-orange) 22%, transparent) calc(2rem - 1px) 2rem) 0 0.4rem / 100% 2rem local,
-        var(--glass);
+        repeating-linear-gradient(transparent 0 calc(2rem - 1px), var(--rule) calc(2rem - 1px) 2rem) 0 0.4rem / 100% 2rem local,
+        var(--surface-2);
     line-height: 2rem;
     font-size: var(--text-md);
 }
@@ -261,7 +275,7 @@ a.wayValue:hover { color: var(--accent-text); }
     font-size: var(--display-sm);
     font-weight: 650;
     font-style: italic;
-    color: var(--c-orange-ink);
+    color: var(--ink);
     transition: opacity var(--t) var(--ease);
 }
 
@@ -284,9 +298,9 @@ a.wayValue:hover { color: var(--accent-text); }
     width: 4.5rem;
     height: 4.5rem;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, var(--ok-2), var(--ok));
+    background: linear-gradient(180deg, var(--ok-2), var(--ok));
     color: var(--on-deep);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), 0 16px 30px -12px var(--ok);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 0 var(--ok-lo), var(--lift);
     animation: pop 700ms var(--spring) both;
 }
 
@@ -299,22 +313,11 @@ a.wayValue:hover { color: var(--accent-text); }
 
 /* Support */
 
-.support {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: center;
-    margin-top: var(--block);
-    padding: clamp(1.75rem, 4vw, 3rem);
-}
-
-.supportCopy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.1rem; }
-.supportTitle { font-size: var(--display-lg); }
-.supportText { margin: 0; max-width: 46ch; }
+.support { display: grid; gap: 1rem; padding: 1.4rem; }
+.supportTitle { font-size: var(--display-sm); }
+.supportText { margin: 0; font-size: var(--text-sm); }
 
 .studying { display: flex; flex-direction: column; gap: 0.8rem; }
-
-.studyingLabel { font-family: var(--font-mono); font-size: var(--mono-label); color: var(--ink-3); }
 
 .studying ul { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
 
@@ -324,21 +327,17 @@ a.wayValue:hover { color: var(--accent-text); }
     gap: 0.9rem;
     padding: 0.8rem 1rem;
     border-radius: var(--r-node);
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--lift);
-    transition: transform 380ms var(--spring);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
 }
-
-.studying li:hover { transform: translateX(6px); }
 
 .studying strong { display: block; font-size: var(--text-sm); }
 .studying small { display: block; font-size: var(--text-xs); color: var(--ink-3); }
 
-.studyShape { flex: none; width: 2.2rem; height: 2.2rem; }
+.studyShape { flex: none; width: 1.9rem; height: 1.9rem; }
 
 @media (max-width: 900px) {
-    .top, .support { grid-template-columns: 1fr; }
-    .title { max-width: none; }
+    .head, .desk { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 520px) {

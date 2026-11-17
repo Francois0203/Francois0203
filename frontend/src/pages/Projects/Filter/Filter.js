@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import styles from './Filter.module.css';
 
-// Glass pills to filter the projects. A bright marker slides to the chosen one.
+// Pills to filter the projects. A raised marker slides to the chosen one.
 const Filter = ({ options = [], value, onChange, allLabel, total, toneOf }) => {
   const rowRef = useRef(null);
   const [mark, setMark] = useState(null);
@@ -24,7 +24,7 @@ const Filter = ({ options = [], value, onChange, allLabel, total, toneOf }) => {
   return (
     <div
       ref={rowRef}
-      className={`glass ${styles.row}`}
+      className={`panel ${styles.row}`}
       role="group"
       data-tone={tone}
       style={mark ? { '--x': `${mark.x}px`, '--y': `${mark.y}px`, '--w': `${mark.w}px`, '--h': `${mark.h}px` } : undefined}

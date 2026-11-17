@@ -5,6 +5,8 @@ export const FOOTER_FIELDS = [
   { key: 'ctaText',  label: 'Call to action - text', type: 'textarea', default: 'In a full-time role, and open to part-time work with the hours by arrangement.' },
   { key: 'ctaButton', label: 'Call to action - button', type: 'text', default: 'Get in touch' },
 
+  { key: 'pagesTitle', label: 'Column title above the page links', type: 'text', default: 'Pages' },
+  { key: 'socialTitle', label: 'Column title above the profile links', type: 'text', default: 'Elsewhere' },
   { key: 'topLabel', label: 'Back to top - label', type: 'text', default: 'Back to top' },
   { key: 'stackCaption', label: 'Tool constellation - caption', type: 'text', default: 'What I work with, grouped. Push them around, they always float home.' },
 ];

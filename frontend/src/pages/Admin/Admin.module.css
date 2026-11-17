@@ -31,23 +31,23 @@
     width: 4.5rem;
     height: 4.5rem;
     margin-bottom: 0.4rem;
-    border-radius: 24px;
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--lift);
+    border-radius: var(--r-card);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 4px 0 var(--side), var(--lift);
     animation: float 5s ease-in-out infinite alternate;
 }
 
 .gateMark[data-denied] {
     color: var(--danger);
     font-size: 2rem;
-    box-shadow: inset 0 0 0 1.5px var(--danger), var(--glass-hi), var(--lift);
+    box-shadow: inset 0 0 0 1.5px var(--danger), var(--bevel), 0 4px 0 var(--side), var(--lift);
     animation: denied 0.5s var(--ease) both;
 }
 
 .gateTitle { font-size: var(--display-md); }
 .gateText { margin: 0 0 0.6rem; color: var(--ink-2); }
 
-@keyframes arrive { from { opacity: 0; transform: translateY(24px) scale(0.94); filter: blur(8px); } }
+@keyframes arrive { from { opacity: 0; transform: translateY(24px) scale(0.94); } }
 @keyframes float { to { transform: translateY(-6px) rotate(-4deg); } }
 
 @keyframes denied {
@@ -66,11 +66,10 @@
     gap: 1rem;
     margin: 0.75rem 0.75rem 0;
     padding: 0.55rem 0.6rem 0.55rem 0.9rem;
-    border-radius: 999px;
-    background: var(--glass);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--glass-cast);
+    border-bottom: 4px solid transparent;
+    border-radius: var(--r-card);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface)) padding-box, var(--stripe) border-box;
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
 }
 
 .topbarLeft,
@@ -99,16 +98,16 @@
     height: 2.4rem;
     padding: 0;
     border: 0;
-    border-radius: 50%;
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px var(--glass-line);
+    border-radius: var(--r-field);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
     color: var(--ink);
     font-size: 1.3rem;
     cursor: pointer;
     transition: transform var(--t) var(--spring);
 }
 
-.menuBtn:active { transform: scale(0.9); }
+.menuBtn:active { transform: translateY(1px); }
 
 /* Sidebar and content */
 .shell {
@@ -128,21 +127,19 @@
     padding: 1rem 0.6rem;
     overflow-y: auto;
     border-radius: var(--r-card);
-    background: var(--glass);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--glass-cast);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast);
 }
 
 .navGroup { display: grid; gap: 0.15rem; }
 
 .find { position: relative; display: flex; align-items: center; margin: 0 0 0.25rem; }
 .find > svg { position: absolute; left: 0.8rem; width: 1.05rem; height: 1.05rem; color: var(--ink-3); pointer-events: none; }
-.find input { height: 2.4rem; padding: 0 0.9rem 0 2.3rem; border-radius: 999px; font-size: var(--text-sm); }
+.find input { height: 2.4rem; padding: 0 0.9rem 0 2.3rem; font-size: var(--text-sm); }
 .findEmpty { margin: 0.25rem 0.75rem; font-size: var(--text-sm); color: var(--ink-3); }
 
 .navGroupLabel {
-    margin: 0 0 0.3rem 0.75rem;
+    margin: 0 0 0.35rem 0.75rem;
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     color: var(--ink-3);
@@ -156,7 +153,7 @@
     width: 100%;
     padding: 0.45rem 0.65rem 0.45rem 0.45rem;
     border: 0;
-    border-radius: 14px;
+    border-radius: var(--r-field);
     background: none;
     text-align: left;
     font-size: var(--text-sm);
@@ -166,13 +163,15 @@
     transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
 }
 
-.navItem:hover { color: var(--ink); background: color-mix(in srgb, var(--tone) 12%, transparent); transform: translateX(3px); }
-.navItem:active { transform: scale(0.97); }
+.navItem:hover { color: var(--ink); background: var(--surface-2); }
+.navItem:active { transform: translateY(1px); }
 
+/* The open section is a raised key on an edge of its own colour. */
 .navItem[aria-current] {
     color: var(--ink);
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 60%, transparent), var(--lift);
+    font-weight: 650;
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 3px 0 var(--tone), var(--lift);
 }
 
 .navIcon {
@@ -181,20 +180,17 @@
     flex: none;
     width: 2rem;
     height: 2rem;
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--tone) 20%, transparent);
-    color: var(--tone-ink);
+    position: relative;
+    border-radius: 9px;
+    background: var(--tone);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 0 color-mix(in srgb, var(--tone) 58%, black);
+    color: var(--on-bright);
     font-size: 1.05rem;
-    transition: background var(--t) var(--ease), transform var(--t) var(--spring), color var(--t-fast) var(--ease);
+    transition: transform var(--t) var(--spring);
 }
 
 .navItem:hover .navIcon { transform: rotate(-8deg) scale(1.08); }
-
-.navItem[aria-current] .navIcon {
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 55%, white), var(--tone) 70%);
-    color: var(--ink);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 14px -6px var(--tone);
-}
+.navItem[aria-current] .navIcon { transform: none; }
 
 .navLabel { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
@@ -227,18 +223,21 @@
     flex: none;
     width: 3.4rem;
     height: 3.4rem;
-    border-radius: 18px;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 55%, white), var(--tone) 70%);
-    color: var(--ink);
+    position: relative;
+    border-radius: var(--r-node);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tone) 86%, white), var(--tone));
+    color: var(--on-bright);
     font-size: 1.6rem;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 12px 24px -10px var(--tone);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 0 color-mix(in srgb, var(--tone) 55%, black), var(--lift);
     animation: pop 600ms var(--spring) both;
 }
 
 .sectionTitle { font-size: var(--display-md); }
+.sectionTitle::after { content: ''; display: block; width: 3.5rem; height: 5px; margin-top: 0.35rem; border-radius: 3px; background: var(--tone); }
 .sectionDesc { margin: 0.35rem 0 0; color: var(--ink-2); }
 
 .sectionBody {
+    --wall-h: 6px;
     padding: clamp(1.1rem, 3vw, 1.75rem);
     animation: rise 520ms var(--ease-out) both;
 }
@@ -258,7 +257,6 @@
         bottom: 0.75rem;
         left: 0.75rem;
         z-index: var(--z-modal);
-        background: var(--glass-strong);
         transform: translateX(calc(-100% - 1.5rem));
         transition: transform 420ms var(--spring);
     }
@@ -270,9 +268,9 @@
         inset: 0;
         z-index: calc(var(--z-modal) - 1);
         display: block;
-        background: color-mix(in srgb, var(--ground) 55%, transparent);
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
+        background: color-mix(in srgb, var(--ground) 70%, transparent);
+        -webkit-backdrop-filter: var(--blur-soft);
+        backdrop-filter: var(--blur-soft);
         animation: fade 240ms var(--ease) both;
     }
 

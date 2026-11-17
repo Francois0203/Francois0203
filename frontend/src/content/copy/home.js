@@ -14,9 +14,10 @@ export const HOME_FIELDS = [
 
   // The story
   { key: 'storyTitle', label: 'Story - headline (italic in *asterisks*)', type: 'text', default: 'The story *so far*.' },
-  { key: 'storyLede',  label: 'Story - lede', type: 'textarea', default: 'Every stop is a real role or qualification, oldest first. Keep scrolling.' },
+  { key: 'storyLede',  label: 'Story - lede', type: 'textarea', default: 'Every stop is a real job, qualification or exam, oldest first. Keep scrolling.' },
   { key: 'storyKindWork', label: 'Story - label on a job', type: 'text', default: 'work' },
   { key: 'storyKindStudy', label: 'Story - label on a qualification', type: 'text', default: 'study' },
+  { key: 'storyKindCert', label: 'Story - label on a certificate', type: 'text', default: 'certificate' },
   { key: 'storyNextKind', label: 'Story - label on the last chapter', type: 'text', default: 'next' },
   { key: 'storyNextNote', label: 'Story - text on the last chapter', type: 'textarea', default: 'Working through the AWS certifications, from Cloud Practitioner to DevOps Engineer Professional, alongside an MSc in Computer Science.' },
 
@@ -25,6 +26,7 @@ export const HOME_FIELDS = [
   // Work
   { key: 'workLede',  label: 'Work - lede',  type: 'textarea', default: 'Websites I built for small businesses. Click one to visit it.' },
   { key: 'workCta',   label: 'Work - button', type: 'text', default: 'All projects' },
+  { key: 'workListLabel', label: 'Work - name of the list of sites (read aloud)', type: 'text', default: 'Client websites' },
   { key: 'workEmpty', label: 'Work - empty state', type: 'textarea', default: 'The next one is still being built.' },
   { key: 'storyFrom', label: 'Story - word above the start date', type: 'text', default: 'from' },
   { key: 'storyYear', label: 'Story - one year, short', type: 'text', default: 'yr' },

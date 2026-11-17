@@ -12,7 +12,7 @@ const DIGITS = [
   { d: '4', tone: 'orange' },
 ];
 
-// A wrong turn. The 404 is made of glass blocks the visitor can toss around.
+// A wrong turn. The 404 is made of solid blocks the visitor can toss around.
 const NotFound = () => {
   const t = useCopy('notFound');
   return (
@@ -20,7 +20,7 @@ const NotFound = () => {
       <div className={styles.digits} aria-hidden="true">
         {DIGITS.map(({ d, tone }, i) => (
           <Draggable key={i} className={styles.slot}>
-            <span className={`glass ${styles.digit}`} data-tone={tone} style={{ '--i': i }}>{d}</span>
+            <span className={`panel ${styles.digit}`} data-tone={tone} style={{ '--i': i }}>{d}</span>
           </Draggable>
         ))}
       </div>
@@ -31,7 +31,7 @@ const NotFound = () => {
         <p className={styles.text}>{t.text}</p>
         <div className={styles.actions}>
           <Button as={Link} to="/" variant="primary" arrow>{t.primary}</Button>
-          <Button as={Link} to="/projects" variant="glass">{t.secondary}</Button>
+          <Button as={Link} to="/projects" variant="soft">{t.secondary}</Button>
         </div>
       </div>
     </section>

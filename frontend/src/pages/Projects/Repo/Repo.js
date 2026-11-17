@@ -1,5 +1,3 @@
-import { useRef } from 'react';
-import useTilt from '../../../hooks/useTilt';
 import { parseReadme } from '../parseReadme';
 import { platformOf } from '../platform';
 import { markFor } from '../../../components/Stack/marks';
@@ -17,10 +15,8 @@ const StarIcon = () => (
   </svg>
 );
 
-// One repository as a glass card, led by where it runs and how it ships.
+// One repository as a row in the list, led by where it runs and how it ships.
 const Repo = ({ project, tone, labels, onReadme }) => {
-  const ref = useRef(null);
-  useTilt(ref, { max: 5, lift: 10 });
   const { name, description, url, language, stars, readme, isPrivate, topics } = project;
   const { groups, extras } = platformOf(topics);
   const rowLabel = { runs: labels.platformRuns, ships: labels.platformShips, built: labels.platformBuilt, stores: labels.platformStores };
@@ -28,7 +24,7 @@ const Repo = ({ project, tone, labels, onReadme }) => {
   const summary = hasReadme ? parseReadme(readme, { fallback: description ?? '' }).description : description;
 
   return (
-    <article ref={ref} className={`glass ${styles.repo}`} data-tone={tone}>
+    <article className={`panel ${styles.repo}`} data-tone={tone}>
       <header className={styles.head}>
         <span className={styles.badge} aria-hidden="true">{name.charAt(0)}</span>
         <h3 className={styles.name}>{name}</h3>

@@ -29,7 +29,13 @@ const FEEL = {
   allowNestedScroll: true,
 };
 
-const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
+// The page glides only where a wheel or trackpad drives it. Touch screens keep their own momentum, which is
+// already smooth and which a script can only make worse. Weak machines and open dialogs keep plain scrolling.
+const wheelDevice = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const weakMachine = () => document.documentElement.dataset.tier === 'low';
+const pageLocked = () => document.body.style.overflow === 'hidden';
+
+const useMomentumScroll = ({ wrapperRef, contentRef, feel } = {}) => {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
 
@@ -47,7 +53,7 @@ const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
       // May not be mounted yet. The observers below run sync() again.
       if (scoped && !wrapper) return;
 
-      lenis = new Lenis({ ...FEEL, wrapper, ...(content ? { content } : {}) });
+      lenis = new Lenis({ ...FEEL, ...feel, wrapper, ...(content ? { content } : {}) });
       if (!scoped) lenisInstance = lenis;
 
       const raf = (time) => { lenis.raf(time); rafId = requestAnimationFrame(raf); };
@@ -79,6 +85,7 @@ const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
 
     const sync = () => {
       if (prefersReduced() || motionDisabled()) stop();
+      else if (!scoped && (!wheelDevice() || weakMachine() || pageLocked())) stop();
       else start();
     };
 
@@ -88,17 +95,27 @@ const useMomentumScroll = ({ wrapperRef, contentRef } = {}) => {
     const attrObserver = new MutationObserver(sync);
     attrObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-no-animations'],
+      attributeFilter: ['data-no-animations', 'data-tier'],
     });
+
+    // A dialog locks the page by hiding the overflow of the body. Scrolling goes back to the browser while it is open.
+    const lockObserver = scoped ? null : new MutationObserver(sync);
+    lockObserver?.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+
+    const pointer = scoped ? null : window.matchMedia('(hover: hover) and (pointer: fine)');
+    pointer?.addEventListener('change', sync);
 
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     mq?.addEventListener('change', sync);
 
     return () => {
       attrObserver.disconnect();
+      lockObserver?.disconnect();
+      pointer?.removeEventListener('change', sync);
       mq?.removeEventListener('change', sync);
       stop();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wrapperRef, contentRef]);
 };
 

@@ -24,6 +24,7 @@ export const PROJECTS_FIELDS = [
   { key: 'statSites', label: 'Hero - label under the number of live sites', type: 'text', default: 'live client sites' },
   { key: 'statRepos', label: 'Hero - label under the number of repositories', type: 'text', default: 'repositories' },
   { key: 'statPlatforms', label: 'Hero - label under the number of platforms and tools', type: 'text', default: 'platforms and tools' },
+  { key: 'jumpLabel', label: 'Hero - name of the two jump links (read aloud)', type: 'text', default: 'On this page' },
   { key: 'codeEmpty', label: 'Code section - empty state', type: 'text', default: 'No projects configured yet.' },
   { key: 'filterStatus', label: 'Platform filter - result read aloud ({shown}, {total}, {platform})', type: 'text', default: '{shown} of {total}, {platform}' },
 ];

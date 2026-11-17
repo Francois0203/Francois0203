@@ -34,17 +34,16 @@ import SiteCopySection from './sections/SiteCopySection';
 import { SectionTone } from './hooks/useSectionTone';
 import { EXPERIENCE_FIELDS, EDUCATION_FIELDS, CERTIFICATION_FIELDS, GROUPS, SECTIONS } from './config';
 import { periodOf } from '../../content/records';
-import { fillOf } from '../../content/navigation';
 import styles from './Admin.module.css';
 import formStyles from './AdminForms.module.css';
 
 const meta = (...parts) => parts.filter(Boolean).join(', ');
 
-// The sign-in and access screens share this glass card.
+// The sign-in and access screens share this card.
 const Gate = ({ children }) => (
   <div className={styles.page}>
     <div className={styles.gate}>
-      <div className={`glass ${styles.gateCard}`} data-tone="blue">{children}</div>
+      <div className={`panel ${styles.gateCard}`} data-tone="blue">{children}</div>
     </div>
   </div>
 );
@@ -67,13 +66,6 @@ const Admin = () => {
     setView({ id, add });
     setNavOpen(false);
   };
-
-  // Highlighted text takes the colour of the open section.
-  useEffect(() => {
-    const tone = (SECTIONS.find(s => s.id === view.id) ?? SECTIONS[0]).tone;
-    document.documentElement.style.setProperty('--sel', fillOf(tone));
-    document.documentElement.style.setProperty('--page-tone', `var(--c-${tone})`);
-  }, [view.id]);
 
   // Once per visit, quietly remove files and links that nothing uses any more.
   useEffect(() => {
@@ -274,7 +266,7 @@ const Admin = () => {
               </div>
             </div>
             <SectionTone.Provider value={active.tone}>
-              <section key={view.id} className={`glass ${styles.sectionBody}`} data-tone={active.tone}>
+              <section key={view.id} className={`panel ${styles.sectionBody}`} data-tone={active.tone}>
                 {renderSection()}
               </section>
             </SectionTone.Provider>

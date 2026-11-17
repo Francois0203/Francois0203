@@ -5,31 +5,64 @@
     padding-block: clamp(6.5rem, 14vh, 9rem) var(--block);
 }
 
-/* Hero: the introduction on the left, a tilting ID card on the right. */
-.hero {
+/* The masthead is the CV's header: one wide slab over the five-tone stripe. */
+.mast {
+    --wall-h: 8px;
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: clamp(2rem, 5vw, 5rem);
-    margin-bottom: clamp(3rem, 8vh, 5rem);
+    gap: 1.5rem clamp(1.25rem, 3vw, 2.5rem);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    overflow: hidden;
+    border-radius: calc(var(--r-card) + 6px);
 }
 
-.intro { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+.portrait {
+    width: clamp(6.5rem, 12vw, 10.5rem);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: calc(var(--r-card) - 6px);
+    background: var(--well);
+    box-shadow: 0 0 0 1px var(--edge), 0 4px 0 var(--side);
+}
+
+.portrait img { width: 100%; height: 100%; object-fit: cover; }
+
+.who { display: flex; flex-direction: column; align-items: flex-start; gap: 0.55rem; min-width: 0; }
+
+.eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--mono-label);
+    color: var(--ink-3);
+}
 
 .name {
     font-size: var(--display-xl);
     line-height: 0.95;
+    color: var(--ink);
 }
 
 .role { margin: 0; font-size: var(--text-xl); font-weight: 500; color: var(--ink-2); }
 
-.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.4rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+.facts {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-top: clamp(1rem, 2vw, 1.5rem);
+    border-top: 1px solid var(--edge);
+}
 
 .contact {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin: 0.5rem 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
 }
@@ -40,61 +73,28 @@
     gap: 0.6rem;
     min-height: 2.6rem;
     padding: 0.35rem 1rem 0.35rem 0.4rem;
-    border-radius: 999px;
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 40%, var(--glass-line)), var(--lift);
+    border-radius: var(--r-control);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
     color: var(--ink);
     text-decoration: none;
-    transition: transform var(--t) var(--spring), box-shadow var(--t) var(--ease);
+    transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 
-a.pill:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1.5px var(--tone), var(--lift-hover); color: var(--ink); }
-a.pill:active { transform: scale(0.96); }
+a.pill:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-hover); color: var(--ink); }
+a.pill:active { transform: translateY(1px); box-shadow: inset 0 0 0 1px var(--edge), var(--lift-press); }
 
 .pillKey {
     padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--tone, var(--c-blue)) 20%, transparent);
+    border-radius: calc(var(--r-control) - 5px);
+    background: var(--well);
+    box-shadow: var(--inset);
     font-family: var(--font-mono);
     font-size: var(--mono-label);
     color: var(--ink-2);
 }
 
 .pillVal { font-size: var(--text-sm); font-weight: 550; overflow-wrap: anywhere; }
-
-.cardWrap { perspective: 1200px; }
-
-.card { overflow: hidden; border-radius: 32px; }
-
-.portrait {
-    aspect-ratio: 1;
-    margin: 0.75rem 0.75rem 0;
-    overflow: hidden;
-    border-radius: 24px;
-    background: var(--surface-2);
-    box-shadow: inset 0 0 0 1px var(--rule);
-}
-
-.portrait img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.04) translate(calc((var(--mx, 50%) - 50%) * -0.04), calc((var(--my, 50%) - 50%) * -0.04));
-    transition: transform 600ms var(--ease-out);
-}
-
-.cardFoot {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem 1.2rem;
-}
-
-.cardName { display: flex; flex-direction: column; min-width: 0; }
-.cardName strong { font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: -0.01em; }
-.cardName span { font-size: var(--text-xs); color: var(--ink-3); }
 
 .social { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
@@ -103,38 +103,56 @@ a.pill:active { transform: scale(0.96); }
     place-items: center;
     width: 2.3rem;
     height: 2.3rem;
-    border-radius: 50%;
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--lift);
-    color: var(--ink);
-    transition: transform var(--t) var(--spring), background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+    border-radius: calc(var(--r-control) - 3px);
+    background: var(--hc);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 0 color-mix(in srgb, var(--hc) 58%, black);
+    color: var(--on-bright);
+    transition: transform var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 
 .socialLink svg { width: 1.05rem; height: 1.05rem; }
-.socialLink:hover { transform: translateY(-3px) rotate(-6deg); background: var(--hc); color: var(--hc-on); }
-.socialLink:active { transform: scale(0.9); }
+.socialLink:hover { transform: translateY(-2px) rotate(-6deg); color: var(--on-bright); }
+.socialLink:active { transform: translateY(3px); box-shadow: 0 0 0 color-mix(in srgb, var(--hc) 58%, black); }
 
-/* Body: a sticky side menu beside the record. */
-.body {
+/* Two columns like the printed CV: a sidebar and the roles. */
+.columns {
     display: grid;
-    grid-template-columns: 14rem minmax(0, 1fr);
-    gap: clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
     align-items: start;
 }
 
-.rail { position: sticky; top: 6.5rem; }
+.aside,
+.main { min-width: 0; }
 
-.record { min-width: 0; }
+.wait { display: flex; flex-direction: column; gap: 0.75rem; padding-top: 2.5rem; }
 
-.wait { display: flex; flex-direction: column; gap: 0.75rem; padding-top: 2rem; }
+.profile {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 1rem clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+    padding-block: clamp(2.5rem, 6vh, 4rem);
+    border-bottom: 1px solid var(--rule);
+    scroll-margin-top: 6rem;
+}
 
-.summary p {
+.profileTitle { font-size: var(--display-md); }
+
+.summary {
     margin: 0;
-    max-width: 62ch;
-    font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem);
     line-height: 1.6;
     color: var(--ink);
     white-space: pre-line;
+}
+
+/* Qualifications as one ledger: a row each, newest first. */
+.ledger {
+    display: grid;
+    margin: 0;
+    padding: 0.4rem clamp(1rem, 2vw, 1.4rem);
+    list-style: none;
 }
 
 /* Roles hang off a rail that fills to the middle of the screen. */
@@ -143,12 +161,6 @@ a.pill:active { transform: scale(0.96); }
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-}
-
-.courses {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-    gap: 1rem;
 }
 
 .galleryLede { max-width: var(--measure); margin-bottom: 1.25rem; }
@@ -167,9 +179,9 @@ a.pill:active { transform: scale(0.96); }
     align-items: center;
     height: 2.6rem;
     padding: 0 1.15rem;
-    border-radius: 999px;
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--hc) 60%, var(--glass-line)), var(--lift);
+    border-radius: var(--r-control);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
     font-weight: 600;
     color: var(--ink);
     user-select: none;
@@ -177,9 +189,9 @@ a.pill:active { transform: scale(0.96); }
 
 .interest::before {
     content: '';
-    width: 0.55rem;
-    height: 0.55rem;
-    margin-right: 0.55rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    margin-right: 0.6rem;
     border-radius: 50%;
     background: var(--hc);
 }
@@ -194,15 +206,17 @@ a.pill:active { transform: scale(0.96); }
 }
 
 @media (max-width: 960px) {
-    .hero { grid-template-columns: 1fr; }
-    .cardWrap { order: -1; width: min(100%, 17rem); }
-    .body { grid-template-columns: 1fr; }
-    .rail { display: none; }
+    .columns { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .profile { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 700px) {
+    .mast { grid-template-columns: auto minmax(0, 1fr); }
+    .actions { grid-column: 1 / -1; }
+    .name { font-size: var(--display-lg); }
 }
 
 @media print {
     .page { padding-top: 0; }
-    .hero { grid-template-columns: 1fr; }
-    .cardWrap, .rail { display: none; }
-    .body { grid-template-columns: 1fr; }
+    .columns { grid-template-columns: 1fr; }
 }

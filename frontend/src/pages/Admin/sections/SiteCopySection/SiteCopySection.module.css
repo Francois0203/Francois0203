@@ -31,7 +31,6 @@
 .search input {
     padding-left: 2.5rem;
     padding-right: 2.4rem;
-    border-radius: 999px;
 }
 
 .clear {
@@ -43,13 +42,13 @@
     height: 1.9rem;
     padding: 0;
     border: 0;
-    border-radius: 50%;
+    border-radius: 8px;
     background: transparent;
     color: var(--ink-3);
     cursor: pointer;
 }
 
-.clear:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+.clear:hover { background: var(--surface-hi); color: var(--danger); }
 
 .picker { display: none; }
 
@@ -71,7 +70,7 @@
     width: 100%;
     padding: 0.55rem 0.7rem;
     border: 0;
-    border-radius: 14px;
+    border-radius: var(--r-field);
     background: transparent;
     text-align: left;
     color: var(--ink-2);
@@ -79,22 +78,21 @@
     transition: background-color var(--t-fast) var(--ease), transform var(--t) var(--spring), box-shadow var(--t) var(--ease);
 }
 
-.item:hover { background: color-mix(in srgb, var(--tone) 12%, transparent); color: var(--ink); transform: translateX(3px); }
-.item:active { transform: scale(0.97); }
+.item:hover { background: var(--surface-2); color: var(--ink); }
+.item:active { transform: translateY(1px); }
 
 .item[aria-current] {
-    background: var(--glass-strong);
+    background: var(--surface-2);
     color: var(--ink);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 60%, transparent), var(--lift);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
 }
 
 .dot {
     flex: none;
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 45%, white), var(--tone));
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone) 18%, transparent);
+    background: var(--tone);
 }
 
 .itemText { display: grid; min-width: 0; flex: 1; }
@@ -105,12 +103,13 @@
     flex: none;
     min-width: 1.5rem;
     padding: 0.1rem 0.45rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--tone) 22%, transparent);
+    border-radius: 7px;
+    background: var(--well);
+    box-shadow: var(--inset);
     font-size: var(--text-xs);
     font-weight: 700;
     text-align: center;
-    color: var(--ink);
+    color: var(--ink-2);
 }
 
 /* The fields of the chosen area, in labelled parts. */
@@ -126,8 +125,8 @@
 .part {
     padding: 1.1rem 1.25rem 1.25rem;
     border-radius: var(--r-node);
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 28%, var(--glass-line)), var(--glass-hi);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
 }
 
 .partTitle {
@@ -144,8 +143,8 @@
 
 .partTitle::before {
     content: '';
-    width: 0.55rem;
-    height: 0.55rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     background: var(--tone);
 }
@@ -158,7 +157,7 @@
 .fieldHead { display: flex; align-items: center; gap: 0.5rem; min-height: 1.6rem; }
 .fieldHead label { margin: 0; font-size: var(--text-xs); font-weight: 600; color: var(--ink-2); }
 
-.field[data-modified] :is(input, textarea) { border-color: color-mix(in srgb, var(--tone, var(--c-blue)) 60%, var(--rule-strong)); }
+.field[data-modified] :is(input, textarea) { border-color: var(--accent); }
 
 .reset {
     display: inline-flex;
@@ -167,7 +166,7 @@
     margin-left: auto;
     padding: 0.15rem 0.55rem;
     border: 0;
-    border-radius: 999px;
+    border-radius: 8px;
     background: color-mix(in srgb, var(--danger) 12%, transparent);
     font-size: var(--text-xs);
     font-weight: 600;
@@ -206,7 +205,7 @@
         top: 0;
         z-index: 2;
         padding-bottom: 0.6rem;
-        background: linear-gradient(var(--glass-strong) 70%, transparent);
+        background: var(--surface);
     }
 
     .head {
@@ -214,8 +213,6 @@
         top: 0;
         z-index: 2;
         padding: 0.25rem 0 0.75rem;
-        background: linear-gradient(var(--glass-strong) 75%, transparent);
-        -webkit-backdrop-filter: var(--blur-soft);
-        backdrop-filter: var(--blur-soft);
+        background: var(--surface);
     }
 }

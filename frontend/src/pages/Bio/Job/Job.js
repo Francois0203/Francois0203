@@ -2,14 +2,14 @@ import { useRef } from 'react';
 import useTilt from '../../../hooks/useTilt';
 import styles from './Job.module.css';
 
-// One role on the timeline: a glass card hanging off a glowing node.
+// One role on the timeline: a solid card hanging off a rail node.
 const Job = ({ title, org, when, note, tags, current, nowLabel, tone, i }) => {
   const ref = useRef(null);
   useTilt(ref, { max: 3 });
   return (
     <article className={styles.job} data-tone={tone} style={{ '--i': i }} data-rise="side">
       <span className={styles.node} data-stop aria-hidden="true" />
-      <div ref={ref} className={`glass ${styles.card}`}>
+      <div ref={ref} className={`panel ${styles.card}`}>
         <header className={styles.head}>
           <div>
             <h3 className={styles.title}>{title}</h3>

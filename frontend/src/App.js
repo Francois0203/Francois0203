@@ -7,8 +7,9 @@ import Foot from './components/Foot';
 import Intro from './components/Intro';
 import { useThemeSetup, useAnimations, scrollPageTo } from './hooks';
 import { useScrollReveal } from './hooks/useReveal';
+import useMomentumScroll from './hooks/useMomentumScroll';
 import { ContentProvider } from './context/ContentContext';
-import { NAVIGATION_PAGES, fillOf, useNavPages } from './content/navigation';
+import { useNavPages } from './content/navigation';
 import { metaFor, absoluteUrl } from './content/seo';
 import styles from './App.module.css';
 
@@ -70,18 +71,6 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Highlighted text takes the current page's tab colour.
-const useSelectionTone = () => {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    const tone = NAVIGATION_PAGES.find(p => p.to === pathname)?.tone ?? 'yellow';
-    const root = document.documentElement.style;
-    root.setProperty('--sel', fillOf(tone));
-    root.setProperty('--sel-on', 'var(--on-bright)');
-    root.setProperty('--page-tone', `var(--c-${tone})`);
-  }, [pathname]);
-};
-
 // The build gives each route its own head; this keeps it right after in-app navigation.
 const setHeadTag = (selector, create, attr, value) => {
   let tag = document.head.querySelector(selector);
@@ -103,11 +92,14 @@ const usePageMeta = () => {
   }, [pathname]);
 };
 
+// A lighter glide than the one in admin: quick enough that reveals fire where the eye already is.
+const PAGE_FEEL = { lerp: 0.1, wheelMultiplier: 1.05 };
+
 const AppLayout = () => {
   const links = useNavPages();
   const { pathname } = useLocation();
-  useSelectionTone();
   useScrollReveal();
+  useMomentumScroll({ feel: PAGE_FEEL });
 
   return (
     <ContentProvider>

@@ -12,6 +12,11 @@ html {
     scroll-padding-top: 6rem;
 }
 
+/* While the momentum scroller runs it sets every position itself, so the browser must not ease on top of it. */
+html.lenis { scroll-behavior: auto !important; }
+html.lenis,
+html.lenis body { height: auto; }
+
 body {
     margin: 0;
     min-height: 100dvh;
@@ -78,10 +83,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 input, select, textarea {
     width: 100%;
     padding: 0.85rem 1rem;
-    background: var(--glass-strong);
+    background: var(--surface-2);
     border: 1px solid var(--rule-strong);
     border-radius: var(--r-field);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--inset);
     transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
 
@@ -89,8 +94,8 @@ input::placeholder, textarea::placeholder { color: var(--ink-3); }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--c-blue);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-blue) 22%, transparent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 textarea { min-height: 8rem; resize: vertical; }
@@ -112,58 +117,57 @@ code, pre { font-family: var(--font-mono); font-size: 0.86em; }
 pre {
     padding: 1rem;
     overflow-x: auto;
-    background: var(--glass-strong);
+    background: var(--surface);
     border: 1px solid var(--rule);
     border-radius: var(--r-node);
 }
 
-::selection { background: var(--sel, var(--c-yellow)); color: var(--sel-on, var(--on-bright)); }
+::selection { background: var(--accent); color: var(--on-deep); }
 
-:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 3px; border-radius: 6px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
 * { scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent; }
 *::-webkit-scrollbar { width: 10px; height: 10px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb { background: var(--rule-strong); border: 3px solid transparent; background-clip: content-box; border-radius: 999px; }
 
-/* Glass panel. data-tone colours its rim, .blur adds real blur. */
-.glass {
-    --rim-a: color-mix(in srgb, var(--rim, var(--c-blue)) 85%, white);
-    --rim-b: var(--rim-2, var(--c-pink));
+/* A solid raised panel with a painted bottom edge, like the edge of a thick card. */
+.panel {
+    --wall: var(--side);
+    --wall-fill: linear-gradient(var(--wall), var(--wall));
     position: relative;
-    background: var(--glass);
+    border-bottom: var(--wall-h) solid transparent;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface)) padding-box, var(--wall-fill) border-box;
     border-radius: var(--r-card);
-    box-shadow: var(--glass-hi), var(--glass-cast);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast);
 }
 
-.glass::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 1.5px;
-    border-radius: inherit;
-    background: linear-gradient(var(--rim-angle, 135deg), var(--rim-a), var(--glass-line) 38%, var(--glass-line) 62%, var(--rim-b));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-}
+/* The page's five-tone stripe, as it runs under the CV header. */
+.stripe { --wall-fill: var(--stripe); }
 
-.glass.blur { -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+/* A tone paints edges, markers and dots. Faces stay neutral. */
+[data-tone='blue'] { --tone: var(--c-blue); }
+[data-tone='green'] { --tone: var(--c-green); }
+[data-tone='pink'] { --tone: var(--c-pink); }
+[data-tone='orange'] { --tone: var(--c-orange); }
+[data-tone='yellow'] { --tone: var(--c-yellow); }
+[data-tone='red'] { --tone: var(--danger); }
+[data-tone='blue'] { --tone-ink: var(--c-blue-ink); }
+[data-tone='green'] { --tone-ink: var(--c-green-ink); }
+[data-tone='pink'] { --tone-ink: var(--c-pink-ink); }
+[data-tone='orange'] { --tone-ink: var(--c-orange-ink); }
+[data-tone='yellow'] { --tone-ink: var(--c-yellow-ink); }
+[data-tone='red'] { --tone-ink: var(--tone-error); }
 
-[data-tone='blue'] { --rim: var(--c-blue); --rim-2: var(--c-pink); --tone: var(--c-blue); --tone-ink: var(--c-blue-ink); }
-[data-tone='green'] { --rim: var(--c-green); --rim-2: var(--c-blue); --tone: var(--c-green); --tone-ink: var(--c-green-ink); }
-[data-tone='pink'] { --rim: var(--c-pink); --rim-2: var(--c-orange); --tone: var(--c-pink); --tone-ink: var(--c-pink-ink); }
-[data-tone='orange'] { --rim: var(--c-orange); --rim-2: var(--c-yellow); --tone: var(--c-orange); --tone-ink: var(--c-orange-ink); }
-[data-tone='yellow'] { --rim: var(--c-yellow); --rim-2: var(--c-green); --tone: var(--c-yellow); --tone-ink: var(--c-yellow-ink); }
-[data-tone='red'] { --rim: var(--danger); --rim-2: var(--c-orange); --tone: var(--danger); --tone-ink: var(--tone-error); }
+.panel[data-tone],
+[data-tone] > .panel { --wall: var(--tone); }
 
-/* Each child of a [data-tones] row gets its own colour. */
-[data-tones] > :nth-child(5n + 1) { --hc: var(--c-blue); --hc-on: var(--on-deep); }
-[data-tones] > :nth-child(5n + 2) { --hc: var(--c-green); --hc-on: var(--on-bright); }
-[data-tones] > :nth-child(5n + 3) { --hc: var(--c-orange); --hc-on: var(--on-bright); }
-[data-tones] > :nth-child(5n + 4) { --hc: var(--c-pink); --hc-on: var(--on-bright); }
-[data-tones] > :nth-child(5n + 5) { --hc: var(--c-yellow); --hc-on: var(--on-bright); }
+[data-tones] > :nth-child(6n + 1) { --hc: var(--c-blue); }
+[data-tones] > :nth-child(6n + 2) { --hc: var(--c-green); }
+[data-tones] > :nth-child(6n + 3) { --hc: var(--c-orange); }
+[data-tones] > :nth-child(6n + 4) { --hc: var(--c-pink); }
+[data-tones] > :nth-child(6n + 5) { --hc: var(--c-yellow); }
+[data-tones] > :nth-child(6n + 6) { --hc: var(--c-teal); }
 
 /* Theme switch: the new theme is revealed by a growing circle, so the snapshots must not cross-fade. */
 ::view-transition-old(root),
@@ -173,7 +177,7 @@ pre {
 /* Only for the instant of the swap, so colours jump instead of easing inside the reveal. The switch's icon keeps its morph. */
 [data-theme-swap] :not(svg, svg *) { transition: none !important; }
 
-/* Loading placeholder: a glass-tinted bone with a hairline rim and a soft light sweep. */
+/* Loading placeholder: a tinted bone with a hairline rim and a soft light sweep. */
 /* The sweep is a layer that slides (moved, not repainted), so dozens of bones cost next to nothing. */
 .skeleton {
     position: relative;

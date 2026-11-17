@@ -54,7 +54,7 @@ const Legal = ({ kind, otherTo }) => {
       </header>
 
       <div className={styles.layout}>
-        <nav className={`glass ${styles.toc}`} aria-label={doc.title} data-rise style={{ '--i': 3 }}>
+        <nav className={`panel ${styles.toc}`} aria-label={doc.title} data-rise style={{ '--i': 3 }}>
           {doc.sections.map((s, i) => (
             <a key={i} href={`#${slug(s.heading)}`} className={styles.tocLink}>
               <span className={styles.tocNum}>{String(i + 1).padStart(2, '0')}</span>
@@ -63,7 +63,7 @@ const Legal = ({ kind, otherTo }) => {
           ))}
         </nav>
 
-        <article className={`glass ${styles.sheet}`} data-tone="blue" data-rise style={{ '--i': 3, '--rise': '30px' }}>
+        <article className={`panel ${styles.sheet}`} data-tone="blue" data-rise style={{ '--i': 3, '--rise': '30px' }}>
           {doc.sections.map((s, i) => (
             <section key={i} id={slug(s.heading)} className={styles.section}>
               <h2 className={styles.heading}>

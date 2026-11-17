@@ -1,58 +1,65 @@
+/* A pill inside a ring of the five colours that never stops turning. */
 .support {
+    --thick: 4px;
+    position: relative;
+    display: inline-flex;
+    padding: var(--thick);
+    border-radius: var(--r-pill);
+    box-shadow: 0 5px 0 var(--side), 0 16px 24px -12px rgba(0, 0, 0, 0.5);
+    color: var(--ground);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    animation: nudge 6s 2s var(--ease) infinite;
+    transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+
+.support:hover { color: var(--ground); transform: translateY(-2px) rotate(-1.5deg); box-shadow: 0 7px 0 var(--side), 0 20px 28px -12px rgba(0, 0, 0, 0.55); animation-play-state: paused; }
+.support:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--side); transition-duration: 70ms; }
+
+/* Every few seconds it gives a small shake, so the eye lands on it. */
+@keyframes nudge {
+    0%, 88%, 100% { rotate: 0deg; }
+    91% { rotate: -3deg; }
+    94% { rotate: 2.5deg; }
+    97% { rotate: -1.5deg; }
+}
+
+.ring {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.ring::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 150%;
+    aspect-ratio: 1;
+    margin: -75% 0 0 -75%;
+    background: conic-gradient(var(--c-blue), var(--c-green), var(--c-yellow), var(--c-orange), var(--c-pink), var(--c-blue));
+    animation: turn 5s linear infinite;
+}
+
+.support:hover .ring::before { animation-duration: 1.6s; }
+
+@keyframes turn { to { transform: rotate(1turn); } }
+
+.face {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    height: 3.5rem;
-    padding: 0 1.4rem 0 0.5rem;
-    border-radius: 999px;
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c-pink) 55%, var(--glass-line)), var(--lift), 0 14px 34px -16px var(--c-pink);
-    color: var(--ink);
-    font-weight: 650;
-    text-decoration: none;
-    transition: transform var(--t) var(--spring), box-shadow var(--t) var(--ease);
-}
-
-/* A bright sheen that keeps running around the border. */
-@property --sweep {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
-}
-
-.support::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 2.5px;
+    gap: 0.8rem;
+    height: 3.4rem;
+    padding: 0 1.4rem 0 0.45rem;
     border-radius: inherit;
-    background: conic-gradient(from var(--sweep),
-        transparent 0deg,
-        var(--c-pink) 40deg,
-        var(--c-orange) 85deg,
-        var(--c-yellow) 120deg,
-        transparent 165deg,
-        transparent 360deg);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--c-orange) 60%, transparent));
-    animation: orbit 2.8s linear infinite;
-    pointer-events: none;
+    background: var(--ink);
 }
-
-.support:hover::before { animation-duration: 1.4s; }
-
-@keyframes orbit { to { --sweep: 360deg; } }
-
-.support:hover {
-    color: var(--ink);
-    transform: translateY(-3px);
-    box-shadow: inset 0 0 0 1.5px var(--c-pink), var(--lift-hover), 0 20px 44px -16px var(--c-pink);
-}
-
-.support:active { transform: scale(0.95); transition-duration: 90ms; }
 
 .heart {
     display: grid;
@@ -60,18 +67,16 @@
     width: 2.6rem;
     height: 2.6rem;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c-pink) 45%, white), var(--c-pink) 70%);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 14px -6px var(--c-pink);
+    background: linear-gradient(180deg, #ff7ab0, #f0437f);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 0 #b82259;
 }
 
 .heart svg {
     width: 1.25rem;
     height: 1.25rem;
-    fill: var(--surface);
+    fill: var(--on-deep);
     animation: beat 1.4s var(--ease) infinite;
 }
-
-[data-theme='light'] .heart svg { fill: var(--ground-2); }
 
 .support:hover .heart svg { animation-duration: 0.7s; }
 
@@ -97,7 +102,7 @@
 
 .support:hover .arrow { transform: translate(3px, -3px); }
 
-.burst { position: absolute; left: 1.8rem; top: 50%; pointer-events: none; }
+.burst { position: absolute; left: 1.9rem; top: 50%; pointer-events: none; }
 
 .bit {
     position: absolute;

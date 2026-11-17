@@ -7,7 +7,7 @@
     height: 2.2rem;
     padding: 0;
     border: 0;
-    border-radius: 50%;
+    border-radius: var(--r-field);
     background: none;
     color: var(--ink-3);
     cursor: pointer;
@@ -15,10 +15,9 @@
 }
 
 .trigger:hover,
-.trigger[aria-expanded='true'] { color: var(--ink); background: var(--glass-strong); box-shadow: inset 0 0 0 1px var(--glass-line); }
-.trigger:active { transform: scale(0.9); }
-.trigger[aria-expanded='true'] { transform: rotate(90deg); }
-.trigger:focus-visible { outline: 2px solid var(--tone, var(--c-blue)); outline-offset: 1px; }
+.trigger[aria-expanded='true'] { color: var(--ink); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--edge), var(--bevel); }
+.trigger:active { transform: translateY(1px); }
+.trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .trigger svg { width: 18px; height: 18px; }
 
 .menu {
@@ -26,15 +25,12 @@
     z-index: var(--z-modal);
     min-width: 11rem;
     padding: 0.3rem;
-    border-radius: 16px;
-    background: var(--glass-strong);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--glass-cast-hover);
+    border-radius: var(--r-node);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast-hover);
     transform-origin: top right;
     animation: menuIn 200ms var(--spring) both;
 }
-
 
 .menu[data-up] { transform-origin: bottom right; }
 
@@ -59,7 +55,7 @@
 }
 
 .item:hover,
-.item:focus-visible { background: color-mix(in srgb, var(--tone, var(--c-blue)) 14%, transparent); outline: none; }
+.item:focus-visible { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--edge); outline: none; }
 .item:active { transform: scale(0.97); }
 
 .icon { display: inline-flex; color: var(--ink-3); }
@@ -68,4 +64,4 @@
 .danger,
 .danger .icon { color: var(--danger); }
 .danger:hover,
-.danger:focus-visible { background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.danger:focus-visible { background: color-mix(in srgb, var(--danger) 12%, var(--surface)); }

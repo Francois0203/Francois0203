@@ -7,8 +7,10 @@
     gap: clamp(2rem, 5vw, 5rem);
 }
 
-/* The pinned side: portrait in a glass dial that fills as you read. */
+/* The pinned side: portrait in a machined dial that fills as you read. */
 .pin {
+    --cc: var(--accent);
+    --cc-ink: var(--accent-text);
     position: sticky;
     top: 0;
     height: var(--screen);
@@ -30,22 +32,13 @@
     aspect-ratio: 1;
 }
 
-.glow {
-    position: absolute;
-    inset: -18%;
-    border-radius: 50%;
-    background: radial-gradient(circle, color-mix(in srgb, var(--cc) 55%, transparent), transparent 65%);
-    animation: glowIn 900ms var(--ease-out) both;
-}
-
-@keyframes glowIn { from { opacity: 0; transform: scale(0.6); } }
-
 .disc {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--cc) 55%, var(--glass-line)), var(--glass-hi), var(--glass-cast-hover);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 5px 0 var(--cc), var(--cast-hover);
+    transition: box-shadow 500ms var(--ease);
 }
 
 .ring {
@@ -59,18 +52,16 @@
     will-change: transform;
 }
 
-.track { fill: none; stroke: var(--rule-strong); stroke-width: 1; }
+.track { fill: none; stroke: var(--rule-strong); stroke-width: 2.6; }
 
 .fill {
     fill: none;
     stroke: var(--cc);
-    stroke-width: 2.4;
+    stroke-width: 2.6;
     stroke-linecap: round;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
     /* No dashoffset transition: the arc is set every scroll frame, and a transition would restart each time. */
-    transition: stroke 600ms var(--ease);
-    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--cc) 60%, transparent));
 }
 
 .tick { fill: var(--surface); stroke: var(--ink-3); stroke-width: 0.6; transition: fill 300ms var(--ease); }
@@ -82,8 +73,8 @@
     inset: 13%;
     border-radius: 50%;
     overflow: hidden;
-    background: var(--surface-2);
-    box-shadow: 0 0 0 4px var(--glass-strong), 0 20px 40px -18px color-mix(in srgb, var(--cc) 70%, transparent);
+    background: var(--well);
+    box-shadow: 0 0 0 1px var(--edge), 0 1px 0 1px var(--surface-hi);
     --p: 0;
     will-change: transform;
     transform: rotate(calc((var(--p) - 0.5) * 8deg)) scale(calc(0.96 + var(--p) * 0.04));
@@ -110,7 +101,7 @@
     color: var(--ink);
 }
 
-/* The current chapter's tools, settling around the portrait as glass chips. */
+/* The current chapter's tools, settling around the portrait as small plates. */
 .tags {
     position: absolute;
     inset: 0;
@@ -124,9 +115,9 @@
 .tags li {
     position: absolute;
     padding: 0.4rem 0.85rem;
-    border-radius: var(--r-control);
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cc) 50%, var(--glass-line)), var(--lift);
+    border-radius: 8px;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
     font-size: var(--text-xs);
     font-weight: 600;
     white-space: nowrap;
@@ -154,12 +145,12 @@
 
 .count {
     padding: 0.2rem 0.7rem;
-    border-radius: var(--r-control);
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px var(--glass-line);
+    border-radius: 6px;
+    background: var(--well);
+    box-shadow: var(--inset);
     font-family: var(--font-mono);
     font-size: var(--mono-label);
-    color: var(--cc-ink);
+    color: var(--ink);
     font-variant-numeric: tabular-nums;
 }
 
@@ -202,7 +193,7 @@
     animation: rollIn 600ms 80ms var(--ease-out) both;
 }
 
-/* The chapters: glass cards that come forward as they reach the middle of the screen. */
+/* The chapters: slabs that come forward as they reach the middle of the screen. */
 .chapters {
     margin: 0;
     padding: 0 0 25vh;
@@ -230,7 +221,7 @@
     padding-left: 2.4rem;
 }
 
-/* Each chapter's stop on the rail, level with the top of its card, lit once the glowing tip reaches it. */
+/* Each chapter's stop on the rail, level with the top of its card, filled once the tip reaches it. */
 .node {
     position: absolute;
     left: var(--rail-x);
@@ -240,14 +231,14 @@
     height: 1.15rem;
     translate: -50% -50%;
     border-radius: 50%;
-    background: var(--surface);
-    box-shadow: inset 0 0 0 2px var(--rule-strong);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 2px var(--rule-strong), 0 0 0 4px var(--ground);
     transition: background var(--t) var(--ease), box-shadow var(--t) var(--ease), scale var(--t) var(--spring);
 }
 
 .node[data-passed] {
     background: var(--tone);
-    box-shadow: 0 0 0 5px color-mix(in srgb, var(--tone) 25%, transparent), 0 0 18px 2px color-mix(in srgb, var(--tone) 70%, transparent);
+    box-shadow: 0 0 0 4px var(--ground);
 }
 
 .chapter[data-active] .node { scale: 1.25; }
@@ -261,13 +252,43 @@
     transition: transform 800ms var(--ease-out);
 }
 
-/* The active glow fades in on its own layer: a box-shadow transition would repaint the whole card every frame. */
+.chapterInner:has(.badge) { min-height: 10rem; padding-right: calc(clamp(1.4rem, 2.6vw, 2rem) + 6.5rem); }
+
+.badge {
+    position: absolute;
+    top: clamp(1.4rem, 2.6vw, 2rem);
+    right: clamp(1.4rem, 2.6vw, 2rem);
+    width: 5.5rem;
+    height: 5.5rem;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.3));
+}
+
+.day { margin: 0.9rem 0 0; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--ink-2); }
+
+.verify {
+    display: inline-block;
+    margin-top: 1.1rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
+    color: var(--tone-success);
+    font-size: var(--text-sm);
+    font-weight: 650;
+    text-decoration: none;
+    transition: transform var(--t) var(--spring);
+}
+
+.verify:hover { color: var(--tone-success); transform: translateY(-2px); }
+
+/* The deeper shadow fades in on its own layer: a box-shadow transition would repaint the whole card every frame. */
 .chapterInner::after {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: var(--glass-cast-hover), 0 30px 70px -40px var(--tone);
+    box-shadow: var(--cast-hover);
     opacity: 0;
     transition: opacity 600ms var(--ease);
     pointer-events: none;
@@ -275,7 +296,7 @@
 
 .chapter[data-active] .chapterInner::after { opacity: 1; }
 
-/* Dim the words, not the glass, so its blur keeps working. */
+/* Dim the words, not the slab, so it stays solid. */
 .chapterInner > * { transition: opacity 600ms var(--ease); }
 .chapter:not([data-active]) .chapterInner > * { opacity: 0.42; }
 
@@ -287,11 +308,12 @@
     gap: 0.5rem;
     margin: 0 0 0.85rem;
     padding: 0.25rem 0.7rem 0.25rem 0.5rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--tone) 16%, transparent);
+    border-radius: 6px;
+    background: var(--well);
+    box-shadow: var(--inset);
     font-family: var(--font-mono);
     font-size: var(--mono-label);
-    color: var(--tone-ink);
+    color: var(--ink-2);
 }
 
 .kindDot {
@@ -339,7 +361,8 @@
     min-width: 2rem;
     height: 6px;
     border-radius: 6px;
-    background: var(--rule);
+    background: var(--well);
+    box-shadow: var(--inset);
 }
 
 .bar::before {
@@ -347,7 +370,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 60%, transparent), var(--tone));
+    background: var(--tone);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 1s 200ms var(--ease-out);
@@ -366,7 +389,7 @@
     translate: -50% 0;
     font-family: var(--font-mono);
     font-size: 0.7rem;
-    color: var(--tone-ink);
+    color: var(--ink-2);
     white-space: nowrap;
 }
 
@@ -383,9 +406,9 @@
 
 .chapterTags li {
     padding: 0.25rem 0.65rem;
-    border-radius: 999px;
-    background: var(--glass-strong);
-    box-shadow: inset 0 0 0 1px var(--rule-strong);
+    border-radius: 6px;
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
     font-size: var(--text-xs);
     font-weight: 550;
     color: var(--ink-2);
@@ -422,15 +445,15 @@
     padding: 0;
     overflow: hidden;
     border: 0;
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--tint);
-    box-shadow: 0 0 0 3px var(--glass-strong), 0 0 0 4.5px color-mix(in srgb, var(--tone) 60%, transparent), var(--lift);
+    box-shadow: 0 0 0 3px var(--surface-hi), 0 0 0 4px var(--edge), var(--lift);
     transform: rotate(calc((var(--k) - 1.5) * 5deg));
     cursor: zoom-in;
     transition: transform var(--t) var(--spring);
 }
 
-.shot:hover { transform: translateY(-6px) rotate(0deg) scale(1.12); z-index: 2; position: relative; }
+.shot:hover { transform: translateY(-6px) rotate(0deg) scale(1.08); z-index: 2; position: relative; }
 .shot:active { transform: scale(0.94); }
 .shot img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -469,13 +492,13 @@
         margin: 0 calc(var(--gutter) * -1);
         padding: 0.65rem var(--gutter);
         /* Solid, not blurred: a blur here would redraw everything scrolling under it on every frame. */
-        background: color-mix(in srgb, var(--surface) 95%, transparent);
-        box-shadow: inset 0 -1px 0 var(--glass-line), 0 10px 24px -18px rgba(0, 0, 0, 0.4);
+        background: var(--surface);
+        box-shadow: inset 0 -1px 0 var(--edge), 0 10px 24px -18px rgba(0, 0, 0, 0.4);
     }
 
     .stage { flex-direction: row; justify-content: flex-start; gap: 0.9rem; }
     .figure { width: 58px; flex: none; }
-    .tags, .glow { display: none; }
+    .tags { display: none; }
     .photo { inset: 9%; box-shadow: none; }
     .meta { flex-direction: row; align-items: baseline; gap: 0.6rem; text-align: left; min-width: 0; flex: 1; }
     .range { gap: 0.4rem; flex: none; }
@@ -489,13 +512,15 @@
     .chapter { padding-left: 1.9rem; }
     .run { --rail-x: 0.45rem; --beat: 2rem; }
     .chapterInner { transform: none; }
+    .chapterInner:has(.badge) { padding-right: 6.4rem; }
+    .badge { top: 1.1rem; right: 1.1rem; width: 4.5rem; height: 4.5rem; }
     .chapter:not([data-active]) .chapterInner > * { opacity: 0.6; }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .chapterInner { transform: none; }
     .chapter:not([data-active]) .chapterInner > * { opacity: 1; }
-    .tags li, .range, .where, .glow { animation: none; }
+    .tags li, .range, .where { animation: none; }
     .bar::before { transition: none; transform: none; }
     .photo { transform: none; }
 }

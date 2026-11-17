@@ -3,7 +3,7 @@
     place-items: center;
     width: var(--size);
     height: var(--size);
-    color: var(--tone, var(--c-blue));
+    color: var(--accent);
 }
 
 .ring {

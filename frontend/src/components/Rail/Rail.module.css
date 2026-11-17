@@ -1,6 +1,5 @@
 .rail {
     --fill: 0px;
-    --spark: var(--c-blue);
     position: absolute;
     left: var(--rail-x, 0.85rem);
     top: 0;
@@ -8,13 +7,13 @@
     height: 0;
     translate: -50% 0;
     border-radius: 3px;
-    background: var(--rule-strong);
+    background: var(--well);
+    box-shadow: inset 0 0 0 1px var(--rule);
     pointer-events: none;
     z-index: 1;
 }
 
-/* A window that slides down with the fill while the line inside slides back, so the gradient stays put.
-   Both are transforms, so scrolling moves layers instead of repainting the glow. */
+/* A window slides down with the fill while the line inside slides back. Both are transforms. */
 .window {
     position: absolute;
     top: 0;
@@ -34,13 +33,12 @@
     left: 40px;
     right: 40px;
     border-radius: 3px;
-    background: linear-gradient(var(--c-green), var(--c-blue), var(--c-pink), var(--c-orange), var(--c-yellow));
-    box-shadow: 0 0 12px 2px color-mix(in srgb, var(--spark) 70%, transparent), 0 0 28px 4px color-mix(in srgb, var(--spark) 30%, transparent);
+    background: linear-gradient(var(--c-blue), var(--c-green), var(--c-orange), var(--c-pink), var(--c-yellow));
     transform: translateY(calc(100% - var(--fill)));
     will-change: transform;
 }
 
-/* The glowing tip rides the bottom of a run as tall as the rail, so it moves by transform alone. */
+/* The tip rides the bottom of a run as tall as the rail, so it moves by transform alone. */
 .sparkRun {
     position: absolute;
     inset: 0;
@@ -53,17 +51,14 @@
     position: absolute;
     left: 50%;
     top: 100%;
-    width: 15px;
-    height: 15px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
-    background: radial-gradient(circle, #fff 0 32%, var(--spark) 62%);
-    box-shadow:
-        0 0 0 4px color-mix(in srgb, var(--spark) 30%, transparent),
-        0 0 18px 4px var(--spark),
-        0 0 46px 14px color-mix(in srgb, var(--spark) 45%, transparent);
+    background: var(--ink);
+    box-shadow: 0 0 0 3px var(--ground), 0 4px 8px rgba(0, 0, 0, 0.4);
     transform: translate(-50%, -50%);
     opacity: 0;
-    transition: opacity var(--t) var(--ease), background var(--t) var(--ease), box-shadow var(--t) var(--ease);
+    transition: opacity var(--t) var(--ease);
 }
 
 .rail[data-live] .spark { opacity: 1; }

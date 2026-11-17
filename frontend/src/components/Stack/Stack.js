@@ -6,7 +6,7 @@ import styles from './Stack.module.css';
 
 const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
 
-// Skills grouped on glass cards. Each one can be grabbed and tossed, then springs home.
+// Skills grouped on cards. Each one can be grabbed and tossed, then springs home.
 const Stack = ({ entries = [] }) => {
   const [focus, setFocus] = useState(null);
 
@@ -43,7 +43,7 @@ const Stack = ({ entries = [] }) => {
       {groups.map(({ name, items }, g) => (
         <section
           key={name}
-          className={`glass ${styles.group}`}
+          className={`panel ${styles.group}`}
           data-tone={TONES[g % TONES.length]}
           data-dim={focus !== null && focus !== name ? '' : undefined}
           onMouseEnter={() => setFocus(name)}

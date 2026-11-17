@@ -11,15 +11,14 @@ import { CREDENTIALS_FIELDS } from '../../content/copy/credentials';
 import { PHOTOS_FIELDS } from '../../content/copy/photos';
 import PhotoTable from '../../components/PhotoTable';
 import { periodOf, isCurrent, startKey } from '../../content/records';
-import Credentials, { toCredential } from '../../components/Credentials';
+import { toCredential } from '../../components/Credentials';
 import Button from '../../components/Button';
 import Chip from '../../components/Chip';
 import Headline from '../../components/Headline';
 import ToyBox from '../../components/ToyBox';
 import { iconFor } from '../../content/toys';
 import Story from '../../components/Story';
-import Glass from '../../components/Glass';
-import Showcase, { ShowcaseSkeleton } from '../../components/Showcase';
+import SiteDeck, { SiteDeckSkeleton } from '../../components/SiteDeck';
 import Skeleton, { Bone } from '../../components/Skeleton';
 import styles from './Home.module.css';
 
@@ -27,7 +26,24 @@ const itemLabel = (s) => (typeof s === 'string' ? s : s?.name ?? s?.title ?? Str
 
 const onHome = (r) => r?.showOnHome !== false;
 
-const toChapters = ({ experience = [], education = [] }) => {
+const shortCert = (name) => name.replace(/^AWS Certified\s+/i, '');
+
+const toChapters = ({ experience = [], education = [], certifications = [] }, labels = {}) => {
+  // An earned certificate is a stop of its own, on the day it was passed.
+  const earned = certifications.map(toCredential).filter(c => c.status === 'earned' && c.name).map(c => ({
+    id: `cert-${c.id ?? c.code}`,
+    place: shortCert(c.name),
+    what: [c.issuer, labels.statusEarned].filter(Boolean).join(', '),
+    start: c.date,
+    end: c.date,
+    note: c.note,
+    tags: [c.code].filter(Boolean),
+    kind: 'certificate',
+    badge: { src: c.badgeUrl, verify: c.verifyUrl, verifyLabel: labels.verifyLabel },
+    order: c.order,
+    key: startKey({ start: c.date }),
+  }));
+
   const ex = experience.filter(onHome).map(e => ({
     id: `exp-${e.id}`,
     place: e.company,
@@ -56,7 +72,7 @@ const toChapters = ({ experience = [], education = [] }) => {
     key: startKey(e),
   }));
 
-  return [...ex, ...ed]
+  return [...ex, ...ed, ...earned]
     .sort((a, b) => {
       if (a.key !== null && b.key !== null) return a.key - b.key;
       if (a.key === null && b.key === null) {
@@ -68,8 +84,6 @@ const toChapters = ({ experience = [], education = [] }) => {
 };
 
 const TOY_TONES = ['yellow', 'green', 'pink', 'orange', 'blue'];
-
-const shortCert = (name) => name.replace(/^AWS Certified\s+/i, '');
 
 const markName = (name) => {
   const parts = name.split(' ');
@@ -108,7 +122,7 @@ const Home = () => {
   }, [allPhotos]);
 
   const chapters = useMemo(() => {
-    const list = toChapters(data ?? {});
+    const list = toChapters(data ?? {}, { statusEarned: badges.statusEarned, verifyLabel: badges.verifyLabel });
     if (nextCert) {
       list.push({
         id: 'next',
@@ -124,7 +138,7 @@ const Home = () => {
       });
     }
     return list;
-  }, [data, nextCert, certifications, t.storyNextKind, t.storyNextNote, badges.statusBooked, badges.statusStudying]);
+  }, [data, nextCert, certifications, t.storyNextKind, t.storyNextNote, badges.statusBooked, badges.statusStudying, badges.statusEarned, badges.verifyLabel]);
 
   const toys = useMemo(() => {
     const raw = data?.interests;
@@ -136,74 +150,65 @@ const Home = () => {
 
   const chip = contact.availability?.status === 'open' ? t.availabilityLabel : (role ? String(role.role).toLowerCase() : 'devops and software engineering');
 
+  const workHead = (
+    <header className={styles.head}>
+      <Headline text={t.curtainLabel} tone="green" className={styles.headTitle} />
+      <p className={styles.lede} data-rise style={{ '--i': 3 }}>{t.workLede}</p>
+    </header>
+  );
 
   return (
     <div className={styles.page}>
 
-      {/* Hello */}
+      {/* Hello: the name over a shelf of toys that runs the whole width */}
       <section className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <div data-rise style={{ '--i': 0 }}>
-            <Chip dot="live">{chip}</Chip>
-          </div>
-
-          <Headline as="h1" text={markName(name)} tone="yellow" className={styles.name} start={1} />
-
-          <p className={styles.intro} data-rise style={{ '--i': 4 }}>{t.heroIntro}</p>
-
-          <div className={styles.actions} data-rise style={{ '--i': 5 }}>
-            <Button as={Link} to="/projects" variant="primary" size="lg" arrow>{t.heroCtaPrimary}</Button>
-            <Button as={Link} to="/connect" variant="glass" size="lg">{t.heroCtaSecondary}</Button>
-          </div>
-        </div>
-
         <div className={styles.heroToys} data-rise style={{ '--i': 2, '--rise': '30px' }}>
           {loading
-            ? <div className={styles.heroWait}><Bone w="min(58%, 350px)" h="auto" r="50%" style={{ aspectRatio: '1' }} /></div>
-            : <ToyBox photo={photo} name={name} toys={toys} hint={t.toyHint} hintTouch={t.toyHintTouch} />}
+            ? <div className={styles.heroWait}><Bone w="min(36%, 430px)" h="auto" r="50%" style={{ aspectRatio: '1' }} /></div>
+            : <ToyBox wide photo={photo} name={name} toys={toys} hint={t.toyHint} hintTouch={t.toyHintTouch} />}
+        </div>
+
+        <div className={styles.heroCopy}>
+          <Headline as="h1" text={markName(name)} tone="yellow" className={styles.name} start={0} />
+
+          <p className={styles.intro} data-rise style={{ '--i': 3 }}>{t.heroIntro}</p>
+
+          <div className={styles.actions} data-rise style={{ '--i': 4 }}>
+            <Button as={Link} to="/projects" variant="primary" size="lg" arrow>{t.heroCtaPrimary}</Button>
+            <Button as={Link} to="/connect" variant="soft" size="lg">{t.heroCtaSecondary}</Button>
+            <Chip dot="live">{chip}</Chip>
+          </div>
         </div>
       </section>
 
       {/* What he has built */}
       <section id="work" className={styles.block}>
-        <header className={styles.headRow}>
-          <div className={styles.head}>
-            <Headline text={t.curtainLabel} tone="green" className={styles.headTitle} />
-            <p className={styles.lede} data-rise style={{ '--i': 3 }}>{t.workLede}</p>
-          </div>
-          <div data-rise style={{ '--i': 5 }}>
-            <Button as={Link} to="/projects" variant="text" arrow>{t.workCta}</Button>
-          </div>
-        </header>
         {sitesLoading
-          ? <ShowcaseSkeleton />
+          ? <SiteDeckSkeleton head={workHead} />
           : sites.length === 0
-            ? <p className={styles.empty}>{t.workEmpty}</p>
-            : <Showcase sites={sites} visitLabel={tp.visitLabel} />}
+            ? <>{workHead}<p className={styles.empty}>{t.workEmpty}</p></>
+            : (
+              <SiteDeck
+                sites={sites}
+                visitLabel={tp.visitLabel}
+                listLabel={t.workListLabel}
+                head={workHead}
+                more={<Button as={Link} to="/projects" variant="text" arrow>{t.workCta}</Button>}
+              />
+            )}
       </section>
 
       {/* How he got here */}
       {loading && (
         <section className={`${styles.block} ${styles.story}`}>
           <Skeleton label={copy('a11y').loadingStory} className={styles.storyWait}>
-            <Bone w="min(100%, 340px)" h="auto" r="50%" className={styles.storyWaitRing} style={{ aspectRatio: '1' }} />
-            <div className={`glass ${styles.storyWaitCard}`}>
+            <Bone w="min(100%, 330px)" h="auto" r="50%" className={styles.storyWaitRing} style={{ aspectRatio: '1' }} />
+            <div className={`panel ${styles.storyWaitCard}`}>
               <Bone w="40%" h="0.8rem" />
               <Bone w="70%" h="2.4rem" style={{ marginTop: '1rem' }} />
               <Bone w="50%" h="1.1rem" style={{ marginTop: '0.75rem' }} />
               <Bone w="95%" h="0.9rem" style={{ marginTop: '1.5rem' }} />
               <Bone w="80%" h="0.9rem" style={{ marginTop: '0.5rem' }} />
-            </div>
-          </Skeleton>
-        </section>
-      )}
-      {loading && (
-        <section className={styles.block}>
-          <Skeleton label={copy('a11y').loadingStory} className={`glass ${styles.path} ${styles.pathWait}`}>
-            <Bone w="min(60%, 22rem)" h="2.6rem" />
-            <Bone w="min(85%, 34rem)" h="1rem" />
-            <div className={styles.pathWaitRow}>
-              {[0, 1, 2, 3].map(i => <Bone key={i} h="auto" r="22px" style={{ aspectRatio: '1' }} />)}
             </div>
           </Skeleton>
         </section>
@@ -225,7 +230,7 @@ const Home = () => {
             chapters={chapters}
             photo={photo}
             name={name}
-            kinds={{ experience: t.storyKindWork, education: t.storyKindStudy }}
+            kinds={{ experience: t.storyKindWork, education: t.storyKindStudy, certificate: t.storyKindCert }}
             photosFor={photosFor}
             photosLabel={tph.storyPhotos}
             viewerLabels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }}
@@ -236,19 +241,6 @@ const Home = () => {
               </header>
             )}
           />
-        </section>
-      )}
-
-      {/* What is next */}
-      {certifications.length > 0 && (
-        <section id="certifications" className={styles.block}>
-          <Glass tone="pink" pad="lg" className={styles.path} data-rise>
-            <header className={styles.pathHead}>
-              <Headline text={badges.title} tone="pink" className={styles.headTitle} />
-              <p className={styles.lede} data-rise style={{ '--i': 4 }}>{badges.lede}</p>
-            </header>
-            <Credentials items={certifications} labels={badges} />
-          </Glass>
         </section>
       )}
 

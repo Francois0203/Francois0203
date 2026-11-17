@@ -12,7 +12,7 @@
 }
 
 .toast {
-    --c: var(--c-blue);
+    --c: var(--tone-info);
     position: relative;
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -21,11 +21,9 @@
     width: 100%;
     padding: 0.9rem 0.9rem 1rem 0.95rem;
     overflow: hidden;
-    border-radius: 20px;
-    background: var(--glass-strong);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 55%, var(--glass-line)), var(--glass-hi), var(--glass-cast-hover), 0 12px 40px -18px var(--c);
+    border-radius: var(--r-node);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast-hover);
     pointer-events: auto;
     touch-action: pan-y;
     cursor: grab;
@@ -39,21 +37,21 @@
 
 .toast[data-leaving] { animation: leave 260ms var(--ease) forwards; }
 
-.toast[data-type='success'] { --c: var(--ok); }
-.toast[data-type='error'] { --c: var(--danger); }
-.toast[data-type='warning'] { --c: var(--warn); }
-.toast[data-type='info'] { --c: var(--c-blue); }
-.toast[data-type='loading'] { --c: var(--c-pink); }
+.toast[data-type='success'] { --c: var(--tone-success); }
+.toast[data-type='error'] { --c: var(--tone-error); }
+.toast[data-type='warning'] { --c: var(--tone-warning); }
+.toast[data-type='info'] { --c: var(--tone-info); }
+.toast[data-type='loading'] { --c: var(--ink-2); }
 
 .orb {
     display: grid;
     place-items: center;
     width: 2.1rem;
     height: 2.1rem;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 55%, white), var(--c) 70%);
-    color: var(--on-deep);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 6px 14px -6px var(--c);
+    border-radius: var(--r-field);
+    background: var(--well);
+    color: var(--c);
+    box-shadow: var(--inset);
     animation: pop 520ms 120ms var(--spring) both;
 }
 
@@ -81,8 +79,9 @@
     margin-top: 0.5rem;
     padding: 0.3rem 0.75rem;
     border: 0;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--c) 16%, transparent);
+    border-radius: 8px;
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
     color: var(--ink);
     font-size: var(--text-xs);
     font-weight: 650;
@@ -96,23 +95,23 @@
     height: 1.9rem;
     padding: 0;
     border: 0;
-    border-radius: 50%;
+    border-radius: 8px;
     background: transparent;
     color: var(--ink-3);
     cursor: pointer;
     transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
 }
 
-.close:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); transform: rotate(90deg); }
+.close:hover { background: var(--surface-2); color: var(--danger); }
 .close svg { width: 0.9rem; height: 0.9rem; }
 
 .timer {
     position: absolute;
     left: 0;
     bottom: 0;
-    height: 3px;
+    height: 2px;
     width: 100%;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 40%, transparent), var(--c));
+    background: var(--c);
     transform-origin: left;
     animation: drain var(--life) linear forwards;
 }
@@ -120,12 +119,12 @@
 .timer[data-paused] { animation-play-state: paused; }
 
 @keyframes enter {
-    from { opacity: 0; transform: translate3d(0, -24px, 0) scale(0.9); filter: blur(6px); }
-    to { opacity: 1; transform: none; filter: none; }
+    from { opacity: 0; transform: translate3d(0, -24px, 0) scale(0.9); }
+    to { opacity: 1; transform: none; }
 }
 
 @keyframes leave {
-    to { opacity: 0; transform: translate3d(calc(var(--drag, 0px) + 40px), 0, 0) scale(0.92); filter: blur(4px); }
+    to { opacity: 0; transform: translate3d(calc(var(--drag, 0px) + 40px), 0, 0) scale(0.92); }
 }
 
 @keyframes pop { from { transform: scale(0.3) rotate(-30deg); } to { transform: none; } }

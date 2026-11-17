@@ -29,11 +29,10 @@
 
 .group::before {
     content: '';
-    width: 0.6rem;
-    height: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
-    background: var(--tone, var(--c-blue));
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone, var(--c-blue)) 22%, transparent);
+    background: var(--tone, var(--accent));
 }
 
 /* A switch with its label beside it. */
@@ -44,8 +43,8 @@
     margin: 0 0 var(--spacing-md);
     padding: 0.75rem 1rem;
     border-radius: var(--r-node);
-    background: var(--glass-weak);
-    box-shadow: inset 0 0 0 1px var(--glass-line);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
     font-size: var(--text-sm);
     font-weight: 400;
     color: var(--ink);
@@ -53,27 +52,27 @@
     transition: background-color var(--t-fast) var(--ease);
 }
 
-.toggleRow:hover { background: var(--glass); }
+.toggleRow:hover { background: var(--surface-hi); }
 .toggleRow > span { display: grid; gap: 0.15rem; }
 .toggleRow strong { font-weight: 600; }
 
 .toggleHint { display: block; font-size: var(--text-xs); color: var(--ink-3); }
 
-/* Glass cards that hold one editable item. */
+/* Raised cards that hold one editable item. */
 .card {
     position: relative;
     margin-bottom: var(--spacing-md);
     padding: 1rem 1.15rem 1.15rem;
     border-radius: var(--r-node);
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone, var(--c-blue)) 22%, var(--glass-line)), var(--glass-hi), var(--glass-cast);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
     transition: box-shadow var(--t) var(--ease), transform var(--t) var(--spring);
 }
 
 .card[data-dragging] {
     z-index: 5;
     transform: scale(1.01);
-    box-shadow: inset 0 0 0 1.5px var(--tone, var(--c-blue)), var(--glass-hi), var(--glass-cast-hover);
+    box-shadow: inset 0 0 0 1.5px var(--accent), var(--bevel), var(--cast-hover);
 }
 
 .cardHeader {
@@ -106,15 +105,15 @@
 }
 
 .cardHeader input.titleInput.titleInput.titleInput.titleInput:hover { border-color: var(--rule-strong); }
-.cardHeader input.titleInput.titleInput.titleInput.titleInput:focus { border-color: var(--tone, var(--c-blue)); background: var(--glass-strong); }
+.cardHeader input.titleInput.titleInput.titleInput.titleInput:focus { border-color: var(--accent); background: var(--surface-2); }
 
 /* The add-a-new-one panel under a list. */
 .inlineAdd {
     margin: var(--spacing-lg) 0 0;
     padding: 1.1rem 1.15rem 0.2rem;
     border-radius: var(--r-node);
-    background: color-mix(in srgb, var(--tone, var(--c-blue)) 7%, var(--glass-weak));
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone, var(--c-blue)) 30%, transparent);
+    background: var(--well);
+    box-shadow: var(--inset);
     border: 0;
 }
 
@@ -129,17 +128,17 @@
     margin-bottom: 0.6rem;
     padding: 0.5rem 0.5rem 0.5rem 0.6rem;
     border-radius: var(--r-node);
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), 0 6px 16px -10px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
     transition: box-shadow var(--t) var(--ease), transform var(--t) var(--spring);
 }
 
-.listRow:hover { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone, var(--c-blue)) 45%, var(--glass-line)), var(--glass-hi), var(--glass-cast); }
+.listRow:hover { box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift-hover); }
 
 .listRow[data-dragging] {
     z-index: 5;
     transform: scale(1.015);
-    box-shadow: inset 0 0 0 1.5px var(--tone, var(--c-blue)), var(--glass-hi), var(--glass-cast-hover);
+    box-shadow: inset 0 0 0 1.5px var(--accent), var(--bevel), var(--cast-hover);
 }
 
 .listRowContent {
@@ -159,7 +158,7 @@
 }
 
 button.listRowContent { cursor: pointer; }
-button.listRowContent:focus-visible { outline: 2px solid var(--tone, var(--c-blue)); outline-offset: 2px; }
+button.listRowContent:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 div.listRowContent { flex-direction: column; align-items: flex-start; }
 
@@ -171,8 +170,9 @@ div.listRowContent { flex-direction: column; align-items: flex-start; }
 
 .notOnCv {
     padding: 0.1rem 0.55rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--warn) 18%, transparent);
+    border-radius: var(--r-pill);
+    background: var(--well);
+    box-shadow: var(--inset);
     font-size: var(--text-xs);
     font-weight: 600;
     color: var(--tone-warning);
@@ -194,7 +194,7 @@ div.listRowContent { flex-direction: column; align-items: flex-start; }
     overflow: hidden;
     border-radius: 50%;
     background: var(--surface-2);
-    box-shadow: 0 0 0 3px var(--glass-strong), 0 0 0 6px color-mix(in srgb, var(--tone, var(--c-blue)) 55%, transparent), var(--glass-cast);
+    box-shadow: 0 0 0 4px var(--surface-hi), 0 0 0 5px var(--edge), var(--cast);
 }
 
 .photoPreview img { width: 100%; height: 100%; object-fit: cover; }
@@ -207,8 +207,8 @@ div.listRowContent { flex-direction: column; align-items: flex-start; }
     margin-bottom: var(--spacing-md);
     padding: 1.1rem 1.2rem;
     border-radius: var(--r-node);
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone, var(--c-blue)) 22%, var(--glass-line)), var(--glass-hi), var(--glass-cast);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
     animation: rise 420ms var(--ease-out) backwards;
 }
 
@@ -223,7 +223,7 @@ div.listRowContent { flex-direction: column; align-items: flex-start; }
 
 .messageHeader > div:first-child { display: grid; gap: 0.1rem; }
 
-.email { font-size: var(--text-sm); color: var(--tone-ink, var(--accent-text)); }
+.email { font-size: var(--text-sm); color: var(--accent-text); }
 
 .messageBody { margin: 0; white-space: pre-wrap; color: var(--ink); }
 
@@ -231,12 +231,12 @@ div.listRowContent { flex-direction: column; align-items: flex-start; }
 
 /* Notes, empty states and list headers. */
 .hint { margin: 0 0 var(--spacing-md); font-size: var(--text-sm); color: var(--ink-3); }
-.hint code, .empty code { padding: 0.1em 0.4em; border-radius: 6px; background: var(--glass-strong); }
+.hint code, .empty code { padding: 0.1em 0.4em; border-radius: 6px; background: var(--well); }
 
 .empty {
     margin: 0 0 var(--spacing-md);
     padding: 2rem 1rem;
-    border: 1.5px dashed color-mix(in srgb, var(--tone, var(--c-blue)) 35%, var(--rule-strong));
+    border: 1.5px dashed var(--rule-strong);
     border-radius: var(--r-node);
     text-align: center;
     color: var(--ink-3);
@@ -253,4 +253,4 @@ div.listRowContent { flex-direction: column; align-items: flex-start; }
 
 .listHead > .hint { margin: 0; }
 
-.photoPreview[data-busy] img { opacity: 0.45; filter: blur(2px); transition: opacity var(--t) var(--ease), filter var(--t) var(--ease); }
+.photoPreview[data-busy] img { opacity: 0.45; transition: opacity var(--t) var(--ease); }

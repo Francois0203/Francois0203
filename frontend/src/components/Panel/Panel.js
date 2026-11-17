@@ -1,9 +1,9 @@
 import { forwardRef, useRef } from 'react';
 import useTilt from '../../hooks/useTilt';
-import styles from './Glass.module.css';
+import styles from './Panel.module.css';
 
-// A frosted panel with a coloured rim. tilt leans it toward the pointer, in degrees.
-const Glass = forwardRef(({
+// A solid raised panel. tilt leans it toward the pointer, in degrees.
+const Panel = forwardRef(({
   as: Tag = 'div',
   tone,
   tilt = 0,
@@ -26,7 +26,7 @@ const Glass = forwardRef(({
   return (
     <Tag
       ref={setRef}
-      className={['glass', styles.panel, strong && styles.strong, flat && styles.flat, tilt > 0 && styles.tilt, styles[pad], className].filter(Boolean).join(' ')}
+      className={['panel', styles.panel, strong && styles.strong, flat && styles.flat, tilt > 0 && styles.tilt, styles[pad], className].filter(Boolean).join(' ')}
       data-tone={tone}
       {...rest}
     >
@@ -35,6 +35,6 @@ const Glass = forwardRef(({
   );
 });
 
-Glass.displayName = 'Glass';
+Panel.displayName = 'Panel';
 
-export default Glass;
+export default Panel;

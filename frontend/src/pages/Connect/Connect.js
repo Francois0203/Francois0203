@@ -11,8 +11,7 @@ import { useToast } from '../../components';
 import useAsyncAction from '../../hooks/useAsyncAction';
 import Draggable from '../../components/Draggable';
 import Button from '../../components/Button';
-import Glass from '../../components/Glass';
-import Chip from '../../components/Chip';
+import Panel from '../../components/Panel';
 import Headline from '../../components/Headline';
 import Shape from '../../components/Shape';
 import Skeleton, { Bone } from '../../components/Skeleton';
@@ -154,88 +153,17 @@ const Connect = () => {
 
   return (
     <div className={styles.page}>
-      <section className={styles.top}>
-        <div className={styles.side}>
-          <div data-rise style={{ '--i': 0 }}>
-            <Chip dot="live">{t.eyebrow}</Chip>
-          </div>
-          <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={1} />
-          <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.intro}</p>
+      <header className={styles.head}>
+        <Headline as="h1" text={t.heading} tone="orange" className={styles.title} start={0} />
+        <p className={styles.lede} data-rise style={{ '--i': 3 }}>{t.intro}</p>
+      </header>
 
-          <Glass className={styles.ways} tone="blue" data-rise style={{ '--i': 5 }}>
-            <h2 className={styles.waysTitle}>{t.waysTitle}</h2>
-
-            {loading && (
-              <Skeleton label={a11y.loadingContact}>
-                {['70%', '45%'].map(w => (
-                  <div key={w} className={styles.way}><Bone w="3rem" h="0.8rem" /><Bone w={w} h="1.1rem" /></div>
-                ))}
-              </Skeleton>
-            )}
-
-            {contact.email && (
-              <div className={styles.way}>
-                <span className={styles.wayKey}>{t.emailKey}</span>
-                <a className={styles.wayValue} href={`mailto:${contact.email}`}>{contact.email}</a>
-                <button type="button" className={styles.copy} onClick={copyEmail}>{t.copyLabel}</button>
-              </div>
-            )}
-
-            {contact.phone && (
-              <div className={styles.way}>
-                <span className={styles.wayKey}>{t.phoneKey}</span>
-                <a className={styles.wayValue} href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a>
-              </div>
-            )}
-
-            {time && (
-              <div className={styles.way}>
-                <span className={styles.wayKey}>{t.clockLabel}</span>
-                <span className={styles.wayValue}>
-                  <span className={styles.time}>{time}</span>
-                  {contact.location && <span className={styles.place}>{contact.location}</span>}
-                </span>
-              </div>
-            )}
-
-            {loading && (
-              <Skeleton label={a11y.loadingProfiles}>
-                <h3 className={styles.waysSub}>{t.socialCardTitle}</h3>
-                <ul className={styles.tiles}>
-                  {[0, 1, 2, 3].map(i => <li key={i}><Bone h="3.6rem" r="var(--r-node)" /></li>)}
-                </ul>
-              </Skeleton>
-            )}
-
-            {social.length > 0 && (
-              <>
-                <h3 className={styles.waysSub}>{t.socialCardTitle}</h3>
-                <ul className={styles.tiles} data-tones>
-                  {social.map((s, i) => {
-                    const p = platformFor(s.key, s.url);
-                    const label = p.key === 'website' ? (s.platform || s.key) : p.label;
-                    return (
-                      <li key={s.key ?? i}>
-                        <a className={styles.tile} href={s.url} target="_blank" rel="noopener noreferrer">
-                          <span className={styles.tileIcon}><SocialIcon platform={s.key} url={s.url} /></span>
-                          <span className={styles.tileText}>
-                            <span className={styles.tileName}>{label}</span>
-                            <span className={styles.tileHandle}>{handleOf(s.url)}</span>
-                          </span>
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </>
-            )}
-          </Glass>
-        </div>
-
+      {/* The letter leads; everything else sits in a tray beside it */}
+      <div className={styles.desk}>
         <div className={styles.letterWrap} data-rise style={{ '--i': 3, '--rise': '24px' }}>
-          <Glass className={styles.letter} tone="orange" tilt={2} strong pad="lg">
+          <Panel className={styles.letter} tone="orange" tilt={2} strong pad="lg">
             <Draggable className={styles.stamp} aria-hidden="true">
-              <Shape kind="star" colour="orange" className={styles.stampShape} />
+              <Shape kind="star" colour="accent" className={styles.stampShape} />
             </Draggable>
             <span className={styles.postmark} aria-hidden="true">{postmarkDate()}</span>
 
@@ -248,7 +176,7 @@ const Connect = () => {
                 </span>
                 <h2>{t.sentTitle}</h2>
                 <p>{t.sentText}</p>
-                <Button variant="glass" tone="orange" onClick={() => setSent(false)}>{t.sentAgain}</Button>
+                <Button variant="soft" tone="orange" onClick={() => setSent(false)}>{t.sentAgain}</Button>
               </div>
             ) : (
               <form onSubmit={submit} noValidate className={styles.form}>
@@ -328,38 +256,103 @@ const Connect = () => {
                 </div>
               </form>
             )}
-          </Glass>
+          </Panel>
         </div>
-      </section>
 
-      {support && (
-        <section className={`glass ${styles.support}`} data-tone="yellow">
-          <div className={styles.supportCopy}>
-            <Headline as="h2" text={t.supportTitle} tone="orange" className={styles.supportTitle} />
-            {donation.message && <p className={styles.supportText} data-rise style={{ '--i': 3 }}>{donation.message}</p>}
-            <div data-rise style={{ '--i': 4 }}>
-              <SupportButton href={donation.link}>{donation.buttonText || t.supportButton}</SupportButton>
+        <aside className={styles.tray}>
+          {time && (
+            <div className={`panel ${styles.clock}`} data-tone="blue" data-rise style={{ '--i': 2 }}>
+              <span className={styles.label}>{t.clockLabel}</span>
+              <span className={styles.time}>{time}</span>
+              {contact.location && <span className={styles.place}>{contact.location}</span>}
             </div>
+          )}
+
+          <div className={`panel ${styles.reach}`} data-tone="green" data-rise style={{ '--i': 3 }}>
+            <h2 className={styles.label}>{t.waysTitle}</h2>
+
+            {loading && (
+              <Skeleton label={a11y.loadingContact}>
+                {['70%', '45%'].map(w => (
+                  <div key={w} className={styles.way}><Bone w="3rem" h="0.8rem" /><Bone w={w} h="1.1rem" /></div>
+                ))}
+              </Skeleton>
+            )}
+
+            {contact.email && (
+              <div className={styles.way}>
+                <span className={styles.wayKey}>{t.emailKey}</span>
+                <a className={styles.wayValue} href={`mailto:${contact.email}`}>{contact.email}</a>
+                <button type="button" className={styles.copy} onClick={copyEmail}>{t.copyLabel}</button>
+              </div>
+            )}
+
+            {contact.phone && (
+              <div className={styles.way}>
+                <span className={styles.wayKey}>{t.phoneKey}</span>
+                <a className={styles.wayValue} href={`tel:${String(contact.phone).replace(/\s+/g, '')}`}>{contact.phone}</a>
+              </div>
+            )}
           </div>
 
-          {studying.length > 0 && (
-            <div className={styles.studying} data-rise style={{ '--i': 3 }}>
-              <span className={styles.studyingLabel}>{t.supportStudyingLabel}</span>
-              <ul>
-                {studying.map(s => (
-                  <li key={s.id}>
-                    <Shape kind={s.shape} colour={s.colour} className={styles.studyShape} />
-                    <span>
-                      <strong>{s.title}</strong>
-                      {s.detail && <small>{s.detail}</small>}
-                    </span>
-                  </li>
-                ))}
+          {loading && (
+            <Skeleton label={a11y.loadingProfiles}>
+              <ul className={styles.tiles}>
+                {[0, 1, 2, 3].map(i => <li key={i}><Bone h="3.6rem" r="var(--r-node)" /></li>)}
+              </ul>
+            </Skeleton>
+          )}
+
+          {social.length > 0 && (
+            <div data-rise style={{ '--i': 4 }}>
+              <h2 className={`${styles.label} ${styles.loose}`}>{t.socialCardTitle}</h2>
+              <ul className={styles.tiles} data-tones>
+                {social.map((s, i) => {
+                  const p = platformFor(s.key, s.url);
+                  const label = p.key === 'website' ? (s.platform || s.key) : p.label;
+                  return (
+                    <li key={s.key ?? i}>
+                      <a className={styles.tile} href={s.url} target="_blank" rel="noopener noreferrer">
+                        <span className={styles.tileIcon}><SocialIcon platform={s.key} url={s.url} /></span>
+                        <span className={styles.tileText}>
+                          <span className={styles.tileName}>{label}</span>
+                          <span className={styles.tileHandle}>{handleOf(s.url)}</span>
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
-        </section>
-      )}
+
+          {support && (
+            <section className={`panel ${styles.support}`} data-tone="yellow" data-rise style={{ '--i': 5 }}>
+              <Headline as="h2" text={t.supportTitle} tone="yellow" className={styles.supportTitle} />
+              {donation.message && <p className={styles.supportText}>{donation.message}</p>}
+
+              {studying.length > 0 && (
+                <div className={styles.studying}>
+                  <span className={styles.label}>{t.supportStudyingLabel}</span>
+                  <ul>
+                    {studying.map(s => (
+                      <li key={s.id}>
+                        <Shape kind={s.shape} colour={s.colour} className={styles.studyShape} />
+                        <span>
+                          <strong>{s.title}</strong>
+                          {s.detail && <small>{s.detail}</small>}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div><SupportButton href={donation.link}>{donation.buttonText || t.supportButton}</SupportButton></div>
+            </section>
+          )}
+        </aside>
+      </div>
     </div>
   );
 };

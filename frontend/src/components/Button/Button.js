@@ -34,12 +34,20 @@ const ripple = (e) => {
   dot.addEventListener('animationend', () => dot.remove(), { once: true });
 };
 
+// Colour floods the face from the point where the pointer came in.
+const aim = (e) => {
+  const el = e.currentTarget;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--fx', `${(e.clientX - r.left).toFixed(0)}px`);
+  el.style.setProperty('--fy', `${(e.clientY - r.top).toFixed(0)}px`);
+};
+
 const noop = () => {};
 
 // Give it an async action and it shows its own spinner, tick or shake.
 const Button = forwardRef(({
   as: Tag = 'button',
-  variant = 'glass',
+  variant = 'soft',
   tone,
   size = 'md',
   full = false,
@@ -51,6 +59,7 @@ const Button = forwardRef(({
   className = '',
   children,
   onPointerDown,
+  onPointerEnter,
   onClick,
   disabled,
   ...rest
@@ -100,15 +109,17 @@ const Button = forwardRef(({
       aria-busy={status === 'loading' || undefined}
       disabled={isButton ? disabled || status === 'loading' : undefined}
       aria-disabled={!isButton && disabled ? true : undefined}
+      onPointerEnter={(e) => { aim(e); onPointerEnter?.(e); }}
       onPointerDown={(e) => { ripple(e); onPointerDown?.(e); }}
       onClick={action ? (e) => { onClick?.(e); auto.run(e); } : onClick}
       {...(isButton && !rest.type ? { type: 'button' } : null)}
       {...rest}
     >
+      <span className={styles.flood} aria-hidden="true" />
       <span className={styles.face}>
         {icon && <span className={styles.icon} aria-hidden="true">{icon}</span>}
         <span className={styles.label}>{children}</span>
-        {arrow && <Arrow />}
+        {arrow && <span className={styles.tile} aria-hidden="true"><Arrow /><Arrow /></span>}
       </span>
       <span className={styles.state} aria-hidden="true">
         {status === 'loading' && <span className="spinner" />}

@@ -23,18 +23,17 @@ const SHAPES = {
 };
 
 
-// A glass solid: tinted body, light from the top left, a bright rim.
+// A matte solid lit from above. colour is a toy tone, 'accent' or 'ink'.
 const Shape = ({ kind = 'circle', colour = 'blue', sticker, className = '', style, ...rest }) => {
   const shape = SHAPES[kind] ?? SHAPES.circle;
   const id = useId().replace(/:/g, '');
-  const tone = `var(--c-${colour})`;
-  const paint = (fill, stroke, extra = 0, props = {}) => (
+  const tone = colour === 'accent' ? 'var(--accent)' : colour === 'ink' ? 'var(--ink-3)' : `var(--c-${colour})`;
+  const paint = (fill, stroke) => (
     <g
       style={{ fill, stroke }}
-      strokeWidth={shape.sw + extra}
+      strokeWidth={shape.sw}
       strokeLinejoin="round"
       dangerouslySetInnerHTML={{ __html: shape.m }}
-      {...props}
     />
   );
   return (
@@ -47,18 +46,12 @@ const Shape = ({ kind = 'circle', colour = 'blue', sticker, className = '', styl
       {...rest}
     >
       <defs>
-        <linearGradient id={`b${id}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="white" stopOpacity="0.85" />
-          <stop offset="0.45" stopColor="white" stopOpacity="0" />
-        </linearGradient>
-        <radialGradient id={`f${id}`} cx="0.35" cy="0.3" r="0.9">
+        <linearGradient id={`f${id}`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" className={styles.lit} />
           <stop offset="1" className={styles.deep} />
-        </radialGradient>
+        </linearGradient>
       </defs>
       {paint(`url(#f${id})`, `url(#f${id})`)}
-      {paint(`url(#b${id})`, 'none', 0, { className: styles.gloss })}
-      {paint('none', 'rgba(255,255,255,0.6)', 1.5, { className: styles.rim })}
     </svg>
   );
 };

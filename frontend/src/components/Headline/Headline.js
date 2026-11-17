@@ -15,8 +15,8 @@ const parseAccent = (text = '') => {
   return out;
 };
 
-// Words wrapped in *asterisks* get a coloured glass highlight that sweeps in.
-const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone = 'yellow', ...rest }) => {
+// Words wrapped in *asterisks* get an underline in the section's tone that sweeps in.
+const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone, ...rest }) => {
   const segments = parseAccent(text);
   const children = [];
   let i = start;
@@ -38,7 +38,7 @@ const Headline = ({ as = 'h2', text = '', className = '', start = 0, step, tone 
     const tail = group[group.length - 1] === ' ' ? group.pop() : null;
     if (lead) children.push(lead);
     children.push(
-      <span key={`e${s}`} className={styles.marked} style={{ '--marker': `var(--c-${tone})`, '--mi': i }}>
+      <span key={`e${s}`} className={styles.marked} style={{ '--marker': tone ? `var(--c-${tone})` : undefined, '--mi': i }}>
         {group}
       </span>,
     );

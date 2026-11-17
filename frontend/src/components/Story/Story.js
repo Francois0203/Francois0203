@@ -71,17 +71,18 @@ const Run = memo(({ runRef, chapters, head, words, kinds, photosFor, photosLabel
               data-rise="side"
               data-tone={PALETTE[i % PALETTE.length]}
               data-active={i === 0 ? '' : undefined}
-              style={{ '--chapter': `var(--c-${PALETTE[i % PALETTE.length]})`, '--chapter-ink': `var(--c-${PALETTE[i % PALETTE.length]}-ink)` }}
             >
               <span className={styles.node} data-stop aria-hidden="true" />
-              <div className={`glass ${styles.chapterInner}`}>
+              <div className={`panel ${styles.chapterInner}`}>
+                {c.badge?.src && <img className={styles.badge} src={c.badge.src} alt="" width="160" height="160" loading="lazy" />}
                 <p className={styles.kind}>
                   <span className={styles.kindDot} data-kind={c.kind} aria-hidden="true" />
                   {kinds[c.kind] ?? c.kind}
                 </p>
                 <h3 className={styles.place}>{c.place}</h3>
                 {c.what && <p className={styles.what}>{c.what}</p>}
-                {(sp.fromLabel || sp.toLabel) && (
+                {c.badge && sp.fromLabel && <p className={styles.day}>{sp.fromLabel}</p>}
+                {!c.badge && (sp.fromLabel || sp.toLabel) && (
                   <div className={styles.span} data-open={sp.current || sp.next ? '' : undefined}>
                     {sp.fromLabel && (
                       <span className={styles.stop}><small>{words.storyFrom}</small>{sp.fromLabel}</span>
@@ -120,6 +121,9 @@ const Run = memo(({ runRef, chapters, head, words, kinds, photosFor, photosLabel
                   <ul className={styles.chapterTags}>
                     {c.tags.map(t => <li key={t}>{t}</li>)}
                   </ul>
+                )}
+                {c.badge?.verify && (
+                  <a className={styles.verify} href={c.badge.verify} target="_blank" rel="noreferrer">{c.badge.verifyLabel}</a>
                 )}
               </div>
             </li>
@@ -186,7 +190,6 @@ const Story = ({ chapters = [], photo, name = '', photosFor = {}, photosLabel = 
       <div className={styles.pin} style={{ '--cc': `var(--c-${colour})`, '--cc-ink': `var(--c-${colour}-ink)` }}>
         <div className={styles.stage}>
           <div className={styles.figure}>
-            <span className={styles.glow} key={`s${active}`} aria-hidden="true" />
             <span className={styles.disc} aria-hidden="true" />
             <svg className={styles.ring} viewBox="0 0 100 100" aria-hidden="true">
               <circle cx="50" cy="50" r="47" className={styles.track} />

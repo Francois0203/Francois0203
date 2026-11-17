@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component {
 
     return (
       <div className={styles.root} role="alert">
-        <div className={`glass ${styles.inner}`} data-tone="red">
+        <div className={`panel ${styles.inner}`} data-tone="red">
           <span className={styles.mark} aria-hidden="true">!</span>
 
           <h1 className={styles.title}>{t.errorTitle}</h1>
@@ -42,7 +42,7 @@ class ErrorBoundary extends React.Component {
 
           <div className={styles.actions}>
             <Button variant="primary" onClick={this.reset}>{t.errorRetry}</Button>
-            <Button variant="glass" onClick={this.reload}>{t.errorReload}</Button>
+            <Button variant="soft" onClick={this.reload}>{t.errorReload}</Button>
             <Button variant="ghost" onClick={this.goHome}>{t.errorHome}</Button>
           </div>
 

@@ -26,11 +26,12 @@
     --measure: 60ch;
     --max: 1280px;
 
-    --r-control: 999px;
-    --r-card: 28px;
-    --r-slab: 28px;
-    --r-node: 18px;
-    --r-field: 14px;
+    --r-control: 14px;
+    --r-card: 22px;
+    --r-slab: 22px;
+    --r-node: 14px;
+    --r-field: 12px;
+    --r-pill: 999px;
 
     --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -47,87 +48,89 @@
     --z-toast: 150;
     --z-intro: 200;
 
-    /* Five jewel tones. -soft is lighter, -ink and -deep are for text and edges. */
+    /* Matte charcoal ground. The CV's five tones paint edges, markers and toys. */
+    --accent: #5b6cff;
+    --accent-hi: #7684ff;
+    --accent-lo: #2f3bd1;
+    --night: #1b1b1e;
+    --night-2: #242427;
+    --night-text: #c5c6cb;
+    --stripe: linear-gradient(90deg, var(--c-blue) 0 20%, var(--c-green) 20% 40%, var(--c-orange) 40% 60%, var(--c-pink) 60% 80%, var(--c-yellow) 80%);
+    --wall-h: 4px;
+
     --c-blue: #5b6cff;
-    --c-blue-soft: #94a0ff;
     --c-green: #20c58b;
-    --c-green-soft: #79e3bd;
     --c-pink: #a87bff;
-    --c-pink-soft: #cdb6ff;
     --c-orange: #ff7a4d;
-    --c-orange-soft: #ffb196;
     --c-yellow: #ffc63a;
-    --c-yellow-soft: #ffe08f;
     --c-red: #ef4452;
-
-    --c-blue-ink: #2f3bd1;
-    --c-green-ink: #067a52;
-    --c-pink-ink: #6236d8;
-    --c-orange-ink: #b9401b;
-    --c-yellow-ink: #7a5600;
-
-    --c-blue-deep: #2f3bd1;
-    --c-green-deep: #067a52;
-    --c-pink-deep: #6236d8;
-    --c-orange-deep: #b9401b;
-    --c-yellow-deep: #7a5600;
+    --c-teal: #17b6c9;
 
     /* What actions mean. Confirm is always green, cancel and delete always red. */
     --ok: #16a35a;
     --ok-2: #22c06e;
+    --ok-lo: #0e7a42;
     --danger: #e5394a;
     --danger-2: #ff5a68;
+    --danger-lo: #b22434;
     --warn: #e89a0c;
-    --info: var(--c-blue);
+    --info: var(--accent);
 
-    /* Text on bright tone fills, and on deep ones. */
-    --on-bright: #12131c;
+    --on-bright: #111114;
     --on-deep: #ffffff;
 
-    --blur: blur(16px) saturate(165%);
-    --blur-soft: blur(8px) saturate(150%);
+    /* Only for the scrim behind dialogs. Surfaces themselves are opaque. */
+    --blur: blur(14px);
+    --blur-soft: blur(6px);
 }
 
 :root,
 [data-theme='light'] {
     color-scheme: light;
 
-    --ink: #12131c;
-    --ink-2: #474b5e;
-    --ink-3: #7a7f94;
+    --ink: #141416;
+    --ink-2: #44454b;
+    --ink-3: #74757d;
 
-    --ground: #eceef6;
-    --ground-2: #f6f7fb;
+    --ground: #e8e8ea;
+    --ground-2: #f3f3f4;
 
-    --surface: #ffffff;
-    --surface-2: #f1f2f8;
-    --rule: rgba(18, 19, 28, 0.08);
-    --rule-strong: rgba(18, 19, 28, 0.16);
-    --accent-text: var(--c-blue-ink);
+    /* Three heights: a well sits below the ground, a surface on it, a raised piece on a surface. */
+    --well: #dcdce0;
+    --surface: #fafafa;
+    --surface-hi: #ffffff;
+    --surface-2: #f0f0f2;
+    --side: #c2c2c8;
+
+    --rule: rgba(17, 17, 20, 0.08);
+    --rule-strong: rgba(17, 17, 20, 0.16);
+    --edge: rgba(17, 17, 20, 0.1);
+    --accent-text: var(--accent-lo);
+    --accent-wash: color-mix(in srgb, var(--accent) 9%, var(--surface));
     --on-live: #ffffff;
-    --live: #12131c;
+    --live: #111114;
 
-    /* Glass: a milky fill, a bright top edge, a soft coloured shadow under it. */
-    --glass: rgba(255, 255, 255, 0.64);
-    --glass-strong: rgba(255, 255, 255, 0.8);
-    --glass-weak: rgba(255, 255, 255, 0.42);
-    --glass-line: rgba(255, 255, 255, 0.75);
-    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(18, 19, 28, 0.04);
-    --glass-cast: 0 1px 2px rgba(24, 28, 64, 0.06), 0 12px 32px -12px rgba(36, 42, 110, 0.22), 0 40px 80px -40px rgba(36, 42, 110, 0.28);
-    --glass-cast-hover: 0 2px 4px rgba(24, 28, 64, 0.06), 0 18px 40px -14px rgba(36, 42, 110, 0.3), 0 56px 100px -44px rgba(36, 42, 110, 0.36);
-    --sheen-alpha: 0.75;
+    /* Light comes from above: a lit top edge, a shaded bottom edge, then contact, key and ambient shadows. */
+    --bevel: inset 0 1px 0 #ffffff, inset 0 -1px 0 rgba(17, 17, 20, 0.05);
+    --inset: inset 0 1px 2px rgba(17, 17, 20, 0.12), inset 0 0 0 1px rgba(17, 17, 20, 0.05);
+    --cast: 0 1px 1px rgba(17, 17, 26, 0.05), 0 3px 6px -2px rgba(17, 17, 26, 0.07), 0 14px 28px -12px rgba(17, 17, 26, 0.16), 0 38px 64px -36px rgba(17, 17, 26, 0.24);
+    --cast-hover: 0 1px 1px rgba(17, 17, 26, 0.05), 0 6px 10px -4px rgba(17, 17, 26, 0.09), 0 24px 40px -16px rgba(17, 17, 26, 0.2), 0 56px 88px -44px rgba(17, 17, 26, 0.3);
 
-    --card-shadow: var(--glass-hi), var(--glass-cast);
-    --card-shadow-hover: var(--glass-hi), var(--glass-cast-hover);
-    --lift: var(--glass-hi), 0 1px 2px rgba(24, 28, 64, 0.08), 0 8px 18px -8px rgba(36, 42, 110, 0.3);
-    --lift-hover: var(--glass-hi), 0 2px 4px rgba(24, 28, 64, 0.08), 0 14px 28px -10px rgba(36, 42, 110, 0.38);
-    --lift-press: var(--glass-hi), 0 1px 2px rgba(24, 28, 64, 0.1);
+    --card-shadow: var(--bevel), var(--cast);
+    --card-shadow-hover: var(--bevel), var(--cast-hover);
+    --lift: var(--bevel), 0 1px 1px rgba(17, 17, 26, 0.07), 0 5px 12px -6px rgba(17, 17, 26, 0.2);
+    --lift-hover: var(--bevel), 0 2px 3px rgba(17, 17, 26, 0.07), 0 10px 20px -8px rgba(17, 17, 26, 0.26);
+    --lift-press: var(--bevel), 0 1px 1px rgba(17, 17, 26, 0.1);
 
-    --orb-alpha: 0.55;
-    --dot: rgba(18, 19, 28, 0.07);
-    --grain: 0.05;
+    --grain: 0.035;
 
-    --tone-info: #2f3bd1;
+    --c-blue-ink: #3440c4;
+    --c-green-ink: #067a52;
+    --c-pink-ink: #6236d8;
+    --c-orange-ink: #b9401b;
+    --c-yellow-ink: #7a5600;
+
+    --tone-info: #3440c4;
     --tone-success: #0d7a43;
     --tone-warning: #8a5a00;
     --tone-error: #c4222f;
@@ -136,37 +139,37 @@
 [data-theme='dark'] {
     color-scheme: dark;
 
-    --ink: #f3f4fa;
-    --ink-2: #b0b4c6;
-    --ink-3: #767b90;
+    --ink: #f1f1f3;
+    --ink-2: #c3c4c9;
+    --ink-3: #85868d;
 
-    --ground: #06070b;
-    --ground-2: #0c0d14;
+    --ground: #121214;
+    --ground-2: #18181a;
 
-    --surface: #12131c;
-    --surface-2: #1a1c27;
-    --rule: rgba(243, 244, 250, 0.08);
-    --rule-strong: rgba(243, 244, 250, 0.16);
-    --accent-text: var(--c-blue-soft);
-    --on-live: #12131c;
-    --live: #f3f4fa;
+    --well: #0a0a0b;
+    --surface: #1c1c1f;
+    --surface-hi: #222225;
+    --surface-2: #29292d;
+    --side: #050506;
 
-    --glass: rgba(20, 22, 33, 0.62);
-    --glass-strong: rgba(20, 22, 33, 0.78);
-    --glass-weak: rgba(20, 22, 33, 0.3);
-    --glass-line: rgba(255, 255, 255, 0.1);
-    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
-    --glass-cast: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 36px -14px rgba(0, 0, 0, 0.7), 0 44px 90px -44px rgba(0, 0, 0, 0.9);
-    --glass-cast-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 22px 46px -16px rgba(0, 0, 0, 0.75), 0 60px 110px -48px rgba(0, 0, 0, 0.95);
-    --sheen-alpha: 0.16;
+    --rule: rgba(244, 244, 246, 0.08);
+    --rule-strong: rgba(244, 244, 246, 0.16);
+    --edge: rgba(244, 244, 246, 0.09);
+    --accent-text: #a4adff;
+    --accent-wash: color-mix(in srgb, var(--accent) 16%, var(--surface));
+    --on-live: #111114;
+    --live: #f4f4f6;
 
-    --lift: var(--glass-hi), 0 8px 18px -8px rgba(0, 0, 0, 0.7);
-    --lift-hover: var(--glass-hi), 0 14px 28px -10px rgba(0, 0, 0, 0.8);
-    --lift-press: var(--glass-hi), 0 1px 2px rgba(0, 0, 0, 0.6);
+    --bevel: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+    --inset: inset 0 1px 3px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+    --cast: 0 1px 1px rgba(0, 0, 0, 0.5), 0 4px 8px -2px rgba(0, 0, 0, 0.5), 0 16px 32px -12px rgba(0, 0, 0, 0.7), 0 44px 72px -36px rgba(0, 0, 0, 0.9);
+    --cast-hover: 0 1px 1px rgba(0, 0, 0, 0.5), 0 8px 12px -4px rgba(0, 0, 0, 0.55), 0 26px 44px -16px rgba(0, 0, 0, 0.78), 0 60px 96px -44px rgba(0, 0, 0, 0.95);
 
-    --orb-alpha: 0.32;
-    --dot: rgba(243, 244, 250, 0.05);
-    --grain: 0.06;
+    --lift: var(--bevel), 0 1px 1px rgba(0, 0, 0, 0.5), 0 6px 14px -6px rgba(0, 0, 0, 0.75);
+    --lift-hover: var(--bevel), 0 2px 3px rgba(0, 0, 0, 0.5), 0 12px 22px -8px rgba(0, 0, 0, 0.85);
+    --lift-press: var(--bevel), 0 1px 1px rgba(0, 0, 0, 0.6);
+
+    --grain: 0.05;
 
     --c-blue-ink: #a9b2ff;
     --c-green-ink: #6ff0c0;
@@ -181,20 +184,4 @@
     --tone-success: #6ff3a2;
     --tone-warning: #ffd76e;
     --tone-error: #ff8a92;
-}
-
-/* Weak devices and phones get a lighter blur so scrolling stays smooth. */
-[data-tier='low'] {
-    --blur: blur(8px) saturate(150%);
-    --blur-soft: none;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-    :root {
-        --blur: none;
-        --blur-soft: none;
-        --glass: var(--surface);
-        --glass-strong: var(--surface);
-        --glass-weak: var(--surface-2);
-    }
 }

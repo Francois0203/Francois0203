@@ -9,24 +9,23 @@
     -webkit-user-select: none;
 }
 
-/* A glass shelf the toys land on. */
+/* A solid shelf the toys land on. */
 .floor {
     position: absolute;
     left: -2%;
     right: -2%;
     top: 100%;
-    height: 18px;
-    border-radius: 0 0 22px 22px;
-    background: linear-gradient(180deg, var(--glass-strong), var(--glass-weak));
+    height: 16px;
+    border-radius: 4px 4px 12px 12px;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
     box-shadow:
-        inset 0 1.5px 0 color-mix(in srgb, var(--c-blue) 45%, var(--glass-line)),
-        var(--glass-hi),
-        0 24px 40px -18px color-mix(in srgb, var(--c-pink) 45%, transparent);
-    transform: perspective(600px) rotateX(28deg);
-    transform-origin: top;
+        inset 0 0 0 1px var(--edge),
+        var(--bevel),
+        0 4px 0 var(--side),
+        0 26px 36px -18px rgba(0, 0, 0, 0.45);
 }
 
-/* The soft pool of shade under the floating portrait. */
+/* The pool of shade under the portrait. */
 .shadow {
     position: absolute;
     left: 50%;
@@ -35,8 +34,7 @@
     height: 30px;
     translate: -50% 0;
     border-radius: 50%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--c-blue-deep) 40%, transparent), transparent);
-    filter: blur(6px);
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.4), transparent);
     opacity: 0.55;
 }
 
@@ -50,28 +48,15 @@
     will-change: transform;
 }
 
-/* Glass bezel with a jewel rim. */
+/* A thick machined ring around the photo. */
 .bezel {
     position: absolute;
     inset: 0;
     display: block;
     padding: 12px;
     border-radius: 50%;
-    background: var(--glass-strong);
-    box-shadow: var(--glass-hi), var(--glass-cast-hover), 0 30px 70px -30px color-mix(in srgb, var(--c-pink) 70%, transparent);
-}
-
-.bezel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    padding: 3px;
-    border-radius: 50%;
-    background: conic-gradient(from 210deg, var(--c-blue), var(--c-pink), var(--c-orange), var(--c-yellow), var(--c-green), var(--c-blue));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: rim 14s linear infinite;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 6px 0 var(--accent), var(--cast-hover);
 }
 
 .photo,
@@ -82,8 +67,8 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    background: var(--surface-2);
-    box-shadow: 0 0 0 1px var(--glass-line), inset 0 0 0 1px var(--rule);
+    background: var(--well);
+    box-shadow: 0 0 0 1px var(--edge), 0 1px 0 1px var(--surface-hi);
 }
 
 .initials {
@@ -103,7 +88,6 @@
 
 .ball,
 .pill {
-    --rim: color-mix(in srgb, var(--tone) 80%, white);
     position: absolute;
     top: 0;
     left: 0;
@@ -121,34 +105,31 @@
 .box[data-grabbing] .ball,
 .box[data-grabbing] .pill { cursor: grabbing; }
 
-/* Glass marbles: tinted body, coloured rim and shadow. */
+/* Matte painted balls: the only place the five toy colours appear at size. */
 .ball {
     display: grid;
     place-items: center;
     width: var(--ball);
     height: var(--ball);
     border-radius: 50%;
-    background:
-        radial-gradient(circle at 70% 82%, color-mix(in srgb, var(--tone) 70%, transparent), transparent 60%),
-        color-mix(in srgb, var(--tone) 34%, var(--glass-strong));
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tone) 88%, white), var(--tone) 48%, color-mix(in srgb, var(--tone) 76%, black));
     box-shadow:
-        inset 0 0 0 1.5px var(--rim),
-        inset 0 -8px 16px -6px color-mix(in srgb, var(--tone) 70%, black),
-        0 14px 24px -12px color-mix(in srgb, var(--tone) 85%, transparent);
+        inset 0 -7px 12px -6px rgba(0, 0, 0, 0.4),
+        0 2px 2px rgba(0, 0, 0, 0.25),
+        0 12px 18px -10px rgba(0, 0, 0, 0.55);
 }
 
 .ball:hover {
     box-shadow:
-        inset 0 0 0 2px var(--rim),
-        inset 0 -8px 16px -6px color-mix(in srgb, var(--tone) 70%, black),
-        0 18px 32px -10px var(--tone);
+        inset 0 -7px 12px -6px rgba(0, 0, 0, 0.4),
+        0 3px 3px rgba(0, 0, 0, 0.25),
+        0 18px 26px -10px rgba(0, 0, 0, 0.6);
 }
 
 .icon {
-    width: 58%;
-    height: 58%;
-    color: var(--ink);
-    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5));
+    width: 56%;
+    height: 56%;
+    color: var(--on-bright);
 }
 
 .pill {
@@ -158,11 +139,12 @@
     height: calc(var(--ball) * 0.66);
     padding: 0 1.15rem 0 0.8rem;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--tone) 14%, var(--glass-strong));
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
     box-shadow:
-        inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, var(--glass-line)),
-        var(--glass-hi),
-        0 12px 22px -12px color-mix(in srgb, var(--tone) 80%, transparent);
+        inset 0 0 0 1px var(--edge),
+        var(--bevel),
+        0 3px 0 var(--tone),
+        0 12px 18px -10px rgba(0, 0, 0, 0.5);
     font-family: var(--font-display);
     font-size: clamp(0.95rem, 1.1vw, 1.1rem);
     font-weight: 650;
@@ -172,11 +154,10 @@
 }
 
 .dot {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.55rem;
+    height: 0.55rem;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 40%, white), var(--tone) 70%);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--tone) 22%, transparent);
+    background: var(--tone);
 }
 
 .caption {
@@ -185,12 +166,10 @@
     top: calc(100% + 2rem);
     margin: 0;
     padding: 0.45rem 0.95rem;
-    border-radius: 999px;
-    background: var(--glass-strong);
-    -webkit-backdrop-filter: var(--blur-soft);
-    backdrop-filter: var(--blur-soft);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--lift);
-    color: var(--ink);
+    border-radius: var(--r-pill);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel);
+    color: var(--ink-2);
     font-family: var(--font-display);
     font-size: var(--text-sm);
     font-weight: 650;
@@ -202,7 +181,7 @@
 }
 
 .caption[data-on] { opacity: 1; transform: translate(-50%, 0) scale(1); }
-.caption[data-held] { box-shadow: inset 0 0 0 1.5px var(--c-blue), var(--lift); }
+.caption[data-held] { color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--accent), var(--bevel); }
 
 @keyframes hover {
     0%, 100% { translate: 0 0; }
@@ -212,15 +191,6 @@
 @keyframes breathe {
     0%, 100% { transform: scale(1); opacity: 0.55; }
     50% { transform: scale(0.86); opacity: 0.4; }
-}
-
-@keyframes rim { to { rotate: 360deg; } }
-
-/* Low power: no blur on moving toys, they still look like glass. */
-[data-tier='low'] .ball,
-[data-tier='low'] .pill {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
 }
 
 /* Motion off: the toys rest in a row under the photo. */
@@ -241,4 +211,13 @@
 
 @media (max-width: 960px) {
     .box { --face: min(62cqw, 300px); height: clamp(400px, 105vw, 520px); }
+}
+
+/* Wide: the shelf runs under the whole hero and the portrait hangs level with the name. */
+@media (min-width: 961px) {
+    .wide { --face: min(36cqw, 430px); --at: calc(98% - var(--face) / 2); height: 100%; }
+    .wide .floor { left: 0; right: 0; }
+    .wide .face { top: 4%; left: calc(var(--at) - var(--face) / 2); }
+    .wide .shadow { top: calc(4% + var(--face) + 16px); left: var(--at); width: calc(var(--face) * 0.7); }
+    .wide .caption { left: var(--at); }
 }

@@ -1,6 +1,6 @@
 import styles from './Chip.module.css';
 
-// A small glass label. dot adds a status light, tone colours its rim.
+// A small label. dot adds a status light, tone colours the dot.
 const Chip = ({ as: Tag = 'span', dot = null, solid = false, tone, className = '', children, ...rest }) => (
   <Tag
     className={[styles.chip, solid && styles.solid, className].filter(Boolean).join(' ')}

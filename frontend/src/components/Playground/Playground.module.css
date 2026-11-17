@@ -34,9 +34,11 @@
     height: clamp(500px, 42vw, 580px);
     overflow: hidden;
     border-radius: var(--r-card);
+    /* A dotted board, like a pegboard the tools hang on. */
     background:
-        radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 0) 0 0 / 22px 22px;
-    box-shadow: inset 0 0 0 1px var(--rule);
+        radial-gradient(circle, var(--rule-strong) 1px, transparent 1.6px) 0 0 / 24px 24px,
+        var(--well);
+    box-shadow: var(--inset);
     cursor: grab;
 }
 
@@ -54,11 +56,22 @@
 }
 
 .lines line {
-    stroke: color-mix(in srgb, var(--tone) 55%, transparent);
+    stroke: var(--tone);
     stroke-width: 1.5;
-    stroke-dasharray: 3 5;
     stroke-linecap: round;
+    opacity: 0.55;
 }
+
+.ring {
+    fill: color-mix(in srgb, var(--tone) 5%, transparent);
+    stroke: var(--tone);
+    stroke-width: 1;
+    stroke-dasharray: 2 7;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.ring + .ring { fill: none; opacity: 0.28; }
 
 .field[data-live] .hub,
 .field[data-live] .piece {
@@ -68,17 +81,20 @@
     will-change: transform;
 }
 
-/* The group's name, fixed in place at the centre of its tools. */
+/* The group's name: a painted plate at the centre of its tools. */
 .hub {
     display: inline-flex;
     align-items: center;
-    height: 2.6rem;
-    padding: 0 1.1rem;
-    border-radius: 999px;
-    background: var(--tone);
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--tone) 22%, transparent), 0 14px 28px -12px var(--tone);
+    height: 3rem;
+    padding: 0 1.35rem;
+    border-radius: var(--r-pill);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tone) 86%, white), var(--tone));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 5px 0 color-mix(in srgb, var(--tone) 55%, black),
+        0 16px 22px -10px rgba(0, 0, 0, 0.55);
     font-family: var(--font-display);
-    font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+    font-size: clamp(0.95rem, 1.25vw, 1.1rem);
     font-weight: 700;
     letter-spacing: -0.01em;
     white-space: nowrap;
@@ -94,11 +110,9 @@
     gap: 0.4rem;
     height: 2.3rem;
     padding: 0 0.85rem 0 0.4rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--tone) 14%, var(--glass-strong));
-    box-shadow:
-        inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, var(--glass-line)),
-        0 10px 20px -12px color-mix(in srgb, var(--tone) 80%, transparent);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), 0 3px 0 var(--tone), 0 10px 14px -10px rgba(0, 0, 0, 0.45);
     font-family: var(--font-display);
     font-size: clamp(0.85rem, 1vw, 0.95rem);
     font-weight: 650;
@@ -112,10 +126,9 @@
     width: 0.95em;
     height: 0.95em;
     padding: 0.3em;
-    border-radius: 50%;
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 70%, transparent);
+    border-radius: 6px;
+    background: var(--tone);
+    color: var(--on-bright);
 }
 
 /* A ring that spreads from a tap on touch screens. */
@@ -128,7 +141,7 @@
     height: 520px;
     margin: -260px 0 0 -260px;
     border-radius: 50%;
-    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c-blue) 60%, transparent);
+    box-shadow: inset 0 0 0 2px var(--rule-strong);
     opacity: 0;
     transform: scale(0);
     pointer-events: none;
@@ -143,6 +156,6 @@
 
 @media (max-width: 639px) {
     /* The height is set by the layout, which stacks the groups to fit. */
-    .hub { height: 2.2rem; padding: 0 0.8rem; font-size: 0.8rem; }
+    .hub { height: 2.3rem; padding: 0 0.9rem; font-size: 0.8rem; }
     .piece { height: 2rem; font-size: 0.78rem; padding: 0 0.65rem 0 0.3rem; }
 }

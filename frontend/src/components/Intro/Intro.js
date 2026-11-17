@@ -10,10 +10,10 @@ const seen = () => { try { return sessionStorage.getItem(SEEN) === '1'; } catch 
 const markSeen = () => { try { sessionStorage.setItem(SEEN, '1'); } catch { /* storage off: it plays once per load */ } };
 
 const BLOOMS = [
-  { tone: 'blue', x: '22%', y: '26%', d: '0ms' },
-  { tone: 'pink', x: '78%', y: '24%', d: '150ms' },
-  { tone: 'green', x: '84%', y: '78%', d: '300ms' },
-  { tone: 'orange', x: '16%', y: '80%', d: '450ms' },
+  { id: 'blue', x: '22%', y: '26%', d: '0ms' },
+  { id: 'pink', x: '78%', y: '24%', d: '150ms' },
+  { id: 'green', x: '84%', y: '78%', d: '300ms' },
+  { id: 'orange', x: '16%', y: '80%', d: '450ms' },
 ];
 
 const LIFT_AT = 3100;
@@ -27,7 +27,7 @@ const shouldPlay = () => {
   return true;
 };
 
-// The opening: a glass lens forms, the name writes in, then the lens opens onto the site.
+// The opening: a solid disc lands, the name writes in, then the disc opens onto the site.
 const Intro = () => {
   const { name, role, introSkip } = useCopy('site');
   const [play] = useState(() => {
@@ -89,15 +89,15 @@ const Intro = () => {
   return (
     <div ref={rootRef} className={[styles.intro, lifting && styles.lifting].filter(Boolean).join(' ')} aria-hidden="true">
       {BLOOMS.map(b => (
-        <span key={b.tone} className={styles.bloom} style={{ left: b.x, top: b.y, '--c': `var(--c-${b.tone})`, '--d': b.d }} />
+        <span key={b.id} className={styles.bloom} style={{ left: b.x, top: b.y, '--d': b.d }} />
       ))}
 
       <div className={styles.stage}>
         <div ref={lensRef} className={styles.lens}>
           <span className={styles.rim} />
-          <span className={styles.glass} />
+          <span className={styles.disc} />
           <img className={styles.logo} src="/logo-mark.png" alt="" width="412" height="343" />
-          <span className={styles.glint} />
+          <span className={styles.pulse} />
         </div>
 
         <p className={styles.name}>

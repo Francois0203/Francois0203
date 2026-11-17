@@ -11,7 +11,7 @@ const BURST = [
   { kind: 'ring', colour: 'yellow', x: 70, y: 30, r: 20 },
 ];
 
-// A glass button with a beating heart. A click throws glass confetti.
+// A pill inside a turning five-colour ring, with a beating heart. A click throws confetti.
 const SupportButton = ({ href, children }) => {
   const [pops, setPops] = useState(0);
 
@@ -23,15 +23,18 @@ const SupportButton = ({ href, children }) => {
       rel="noopener noreferrer"
       onClick={() => setPops(n => n + 1)}
     >
-      <span className={styles.heart} aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 20.3 4.6 13a4.7 4.7 0 0 1 6.6-6.7l.8.8.8-.8a4.7 4.7 0 0 1 6.6 6.7Z" />
+      <span className={styles.ring} aria-hidden="true" />
+      <span className={styles.face}>
+        <span className={styles.heart} aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 20.3 4.6 13a4.7 4.7 0 0 1 6.6-6.7l.8.8.8-.8a4.7 4.7 0 0 1 6.6 6.7Z" />
+          </svg>
+        </span>
+        <span className={styles.label}>{children}</span>
+        <svg className={styles.arrow} viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 17 17 7M9 7h8v8" />
         </svg>
       </span>
-      <span className={styles.label}>{children}</span>
-      <svg className={styles.arrow} viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M7 17 17 7M9 7h8v8" />
-      </svg>
 
       {pops > 0 && (
         <span className={styles.burst} key={pops} aria-hidden="true">

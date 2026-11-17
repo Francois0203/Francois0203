@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useCopy } from '../../content/copy/store';
 import styles from './Modal.module.css';
 
-// A glass dialog. Escape, the scrim and the close button all close it.
+// A solid dialog. Escape, the scrim and the close button all close it.
 const Modal = ({ open, onClose, title, size = 'md', tone = 'blue', children, className = '' }) => {
   const words = useCopy('a11y');
   const panelRef = useRef(null);
@@ -50,7 +50,7 @@ const Modal = ({ open, onClose, title, size = 'md', tone = 'blue', children, cla
     <div className={styles.scrim} onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
       <div
         ref={panelRef}
-        className={`glass ${styles.panel} ${styles[size]} ${className}`}
+        className={`panel ${styles.panel} ${styles[size]} ${className}`}
         data-tone={tone}
         role="dialog"
         aria-modal="true"

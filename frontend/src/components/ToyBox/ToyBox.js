@@ -13,7 +13,7 @@ const still = () =>
   || document.documentElement.dataset.noAnimations === 'true';
 
 // The photo sits in the middle of a box of toys. Grab and throw them, or tap to shake on phones.
-const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
+const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch, wide = false }) => {
   const boxRef = useRef(null);
   const faceRef = useRef(null);
   const nodes = useRef([]);
@@ -302,7 +302,7 @@ const ToyBox = ({ photo, name = '', toys = [], hint, hintTouch }) => {
   const caption = held !== null ? list[held]?.label : !played ? (coarse ? hintTouch : hint) : null;
 
   return (
-    <div ref={boxRef} className={styles.box}>
+    <div ref={boxRef} className={wide ? `${styles.box} ${styles.wide}` : styles.box}>
       <span className={styles.floor} aria-hidden="true" />
       <span className={styles.shadow} aria-hidden="true" />
       <div ref={faceRef} className={styles.face}>

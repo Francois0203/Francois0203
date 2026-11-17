@@ -5,24 +5,24 @@
     gap: 0.5rem;
     margin-bottom: var(--spacing-lg);
     padding: 2.25rem 1.5rem;
-    border: 2px dashed color-mix(in srgb, var(--tone, var(--c-blue)) 45%, var(--rule-strong));
+    border: 2px dashed var(--rule-strong);
     border-radius: var(--r-card);
-    background: var(--glass);
+    background: var(--well);
     text-align: center;
     transition: border-color var(--t) var(--ease), background-color var(--t) var(--ease), transform var(--t) var(--spring);
 }
 
 .drop[data-over] {
-    border-color: var(--tone, var(--c-blue));
+    border-color: var(--accent);
     border-style: solid;
-    background: color-mix(in srgb, var(--tone, var(--c-blue)) 14%, var(--glass));
+    background: var(--accent-wash);
     transform: scale(1.015);
 }
 
 .dropIcon {
     width: 2.6rem;
     height: 2.6rem;
-    color: var(--tone-ink, var(--c-blue-ink));
+    color: var(--ink-2);
     transition: transform var(--t) var(--spring);
 }
 
@@ -57,17 +57,17 @@
     overflow: hidden;
     border-radius: var(--r-node);
     background: var(--surface-2);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-cast);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
     animation: pop 360ms var(--spring) backwards;
 }
 
-.upload img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; filter: blur(1px); }
+.upload img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
 
 .uploadBar {
     position: absolute;
     inset: auto 0 0 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--tone, var(--c-blue)), var(--ok));
+    height: 4px;
+    background: var(--accent);
     transform-origin: left;
     transform: scaleX(var(--p, 0));
     transition: transform 200ms linear;
@@ -93,13 +93,13 @@
 .tile {
     position: relative;
     border-radius: var(--r-node);
-    background: var(--glass);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--glass-cast);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
     transition: box-shadow var(--t) var(--ease);
 }
 
-.tile:hover { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone, var(--c-blue)) 55%, var(--glass-line)), var(--glass-hi), var(--glass-cast-hover); }
-.tile[data-dragging] { z-index: 5; box-shadow: inset 0 0 0 1.5px var(--tone, var(--c-blue)), var(--glass-cast-hover); }
+.tile:hover { box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast); }
+.tile[data-dragging] { z-index: 5; box-shadow: inset 0 0 0 1.5px var(--accent), var(--cast-hover); }
 
 .tileImage {
     display: block;
@@ -145,14 +145,14 @@
     color: var(--ink-3);
 }
 
-.tileMeta svg { color: var(--tone-ink, var(--c-blue-ink)); }
+.tileMeta svg { color: var(--ink-3); }
 
 .formPreview {
     margin: 0 0 var(--spacing-lg);
     overflow: hidden;
     border-radius: var(--r-node);
     background: var(--tint);
-    box-shadow: inset 0 0 0 1px var(--glass-line);
+    box-shadow: inset 0 0 0 1px var(--edge);
 }
 
 .formPreview img { display: block; width: 100%; max-height: 320px; object-fit: contain; }

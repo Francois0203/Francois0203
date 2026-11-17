@@ -32,8 +32,6 @@ const Rail = ({ as: Tag = 'div', onProgress, className = '' }) => {
     const light = (last) => {
       if (last === lit) return;
       lit = last;
-      const tone = last >= 0 && getComputedStyle(stops[last]).getPropertyValue('--tone').trim();
-      if (tone) rail.style.setProperty('--spark', tone);
       if (css) report.current?.(null, last);
     };
 

@@ -7,17 +7,18 @@
     padding: 0 0.6rem 0 0.95rem;
     border: 1px solid var(--rule-strong);
     border-radius: var(--r-field);
-    background: var(--glass-strong);
+    background: var(--surface-2);
+    box-shadow: var(--inset);
     font-size: var(--text-sm);
     cursor: pointer;
     transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
 
-.root :global(.sd__control:hover) { border-color: color-mix(in srgb, var(--tone, var(--c-blue)) 45%, var(--rule-strong)); }
+.root :global(.sd__control:hover) { border-color: var(--ink-3); }
 
 .root :global(.sd__control--is-focused) {
-    border-color: var(--tone, var(--c-blue));
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone, var(--c-blue)) 22%, transparent);
+    border-color: var(--tone, var(--accent));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone, var(--accent)) 24%, transparent);
 }
 
 .root :global(.sd__value-container) { display: flex; align-items: center; gap: 0.35rem; flex: 1; }
@@ -25,8 +26,28 @@
 .root :global(.sd__placeholder) { color: var(--ink-3); }
 .root :global(.sd__input-container) { color: var(--ink); }
 
+/* The typing box inside is not a field of its own: the control around it is the field. */
+.root :global(.sd__input) {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
 .root :global(.sd__indicators) { display: flex; align-items: center; gap: 0.25rem; color: var(--ink-3); }
-.root :global(.sd__indicator) { display: flex; padding: 0.25rem; cursor: pointer; transition: transform var(--t) var(--spring); }
+.root :global(.sd__indicator) {
+    display: flex;
+    padding: 0.3rem;
+    border-radius: 8px;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), 0 2px 0 var(--side);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: transform var(--t) var(--spring);
+}
 .root :global(.sd__indicator:hover) { color: var(--ink); }
 .root :global(.sd__control--menu-is-open .sd__dropdown-indicator) { transform: rotate(180deg); }
 .root :global(.sd__indicator-separator) { display: none; }
@@ -36,11 +57,9 @@
     margin-top: 0.4rem;
     padding: 0.3rem;
     overflow: hidden;
-    border-radius: 16px;
-    background: var(--glass-strong);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: inset 0 0 0 1px var(--glass-line), var(--glass-hi), var(--glass-cast-hover);
+    border-radius: var(--r-node);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast-hover);
     animation: drop 180ms var(--ease-out) both;
 }
 
@@ -49,14 +68,31 @@
 :global(.sd__menu-list) { max-height: 15rem; overflow-y: auto; }
 
 :global(.sd__option) {
-    padding: 0.55rem 0.75rem;
+    position: relative;
+    padding: 0.6rem 2.2rem 0.6rem 0.8rem;
     border-radius: 10px;
     font-size: var(--text-sm);
+    font-weight: 550;
     color: var(--ink-2);
     cursor: pointer;
 }
 
-:global(.sd__option--is-focused) { color: var(--ink); background: color-mix(in srgb, var(--tone, var(--c-blue)) 14%, transparent); }
-:global(.sd__option--is-selected) { color: var(--ink); background: color-mix(in srgb, var(--tone, var(--c-blue)) 30%, transparent); font-weight: 600; }
+:global(.sd__option + .sd__option) { margin-top: 2px; }
+:global(.sd__option--is-focused) { color: var(--ink); background: var(--surface-2); }
+:global(.sd__option--is-selected) { color: var(--ink); background: var(--well); box-shadow: var(--inset); font-weight: 650; }
+
+/* A green tick on the chosen one. */
+:global(.sd__option--is-selected)::after {
+    content: '';
+    position: absolute;
+    right: 0.95rem;
+    top: 50%;
+    width: 0.4rem;
+    height: 0.75rem;
+    margin-top: -0.5rem;
+    border: solid var(--ok);
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
 
 :global(.sd__no-options-message) { padding: 0.75rem; font-size: var(--text-sm); color: var(--ink-3); }

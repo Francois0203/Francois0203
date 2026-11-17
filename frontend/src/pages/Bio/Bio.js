@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import usePortfolioData from '../../hooks/usePortfolioData';
 import useSiteCopy from '../../hooks/useSiteCopy';
-import useActiveSection from '../../hooks/useActiveSection';
 import useCvDownload from '../../hooks/useCvDownload';
 import { resolveGroup } from '../../content/copy/resolve';
 import { githubAvatar } from '../../content/avatar';
@@ -11,8 +10,7 @@ import { PHOTOS_FIELDS } from '../../content/copy/photos';
 import { periodOf, isCurrent } from '../../content/records';
 import Skeleton, { Bone } from '../../components/Skeleton';
 import Button from '../../components/Button';
-import Chip from '../../components/Chip';
-import Glass from '../../components/Glass';
+import Headline from '../../components/Headline';
 import Draggable from '../../components/Draggable';
 import SocialIcon from '../../components/SocialIcon';
 import Credentials from '../../components/Credentials';
@@ -20,7 +18,6 @@ import Stack from '../../components/Stack';
 import Gallery from '../../components/Gallery';
 import Chapter from './Chapter';
 import Rail from '../../components/Rail';
-import Contents from './Contents';
 import Job from './Job';
 import Course from './Course';
 import { useCopy } from '../../content/copy/store';
@@ -47,12 +44,16 @@ const DownloadIcon = () => (
   </svg>
 );
 
-// The record while it loads: a paragraph and two cards.
+// The record while it loads: a paragraph in the sidebar, two cards beside it.
 const RecordSkeleton = ({ label }) => (
-  <Skeleton label={label} className={styles.wait}>
-    <Bone w="11rem" h="2.6rem" />
-    {[100, 96, 98, 60].map((w, i) => <Bone key={i} w={`${w}%`} h="1rem" />)}
-    {[0, 1].map(i => <Bone key={`c${i}`} h="9rem" r="var(--r-card)" style={{ marginTop: '1rem' }} />)}
+  <Skeleton label={label} className={styles.columns}>
+    <div className={styles.wait}>
+      <Bone w="8rem" h="2rem" />
+      {[100, 96, 98, 60].map((w, i) => <Bone key={i} w={`${w}%`} h="1rem" />)}
+    </div>
+    <div className={styles.wait}>
+      {[0, 1].map(i => <Bone key={i} h="11rem" r="var(--r-card)" />)}
+    </div>
   </Skeleton>
 );
 
@@ -85,28 +86,20 @@ const Bio = () => {
 
   const cv = useCvDownload();
 
-  const contents = [
-    { id: 'profile', label: t.profileHeading, tone: 'blue' },
-    experience.length > 0 && { id: 'experience', label: t.experienceHeading, tone: 'green' },
-    education.length > 0 && { id: 'education', label: t.educationHeading, tone: 'orange' },
-    certifications.length > 0 && { id: 'certifications', label: t.certificationsHeading, tone: 'pink' },
-    skills.length > 0 && { id: 'skills', label: t.skillsHeading, tone: 'yellow' },
-    (interests.length > 0 || languages.length > 0 || photos.length > 0) && { id: 'interests', label: t.interestsHeading, tone: 'blue' },
-  ].filter(Boolean);
-  const number = (id) => contents.findIndex(c => c.id === id) + 1;
-
-  const idKey = contents.map(c => c.id).join('|');
-  const ids = useMemo(() => idKey.split('|'), [idKey]);
-  const active = useActiveSection(ids);
+  const outside = interests.length > 0 || languages.length > 0 || photos.length > 0;
 
   return (
     <div className={styles.page}>
-      <header className={styles.hero} style={{ '--step': '70ms' }}>
-        <div className={styles.intro}>
-          <div data-rise style={{ '--i': 0 }}>
-            <Chip dot="live">{t.eyebrow}</Chip>
-          </div>
+      {/* The CV's own header: one wide slab with the stripe under it */}
+      <header className={`panel stripe ${styles.mast}`} style={{ '--step': '70ms' }}>
+        <div className={styles.portrait} data-rise style={{ '--i': 0 }}>
+          {loading ? <Bone w="100%" h="100%" r="0" /> : photo && (
+            <img src={photo} alt={name} width="480" height="480" fetchPriority="high" />
+          )}
+        </div>
 
+        <div className={styles.who}>
+          <p className={styles.eyebrow} data-rise style={{ '--i': 1 }}>{t.eyebrow}</p>
           {loading ? (
             <>
               <Bone w="min(26rem, 80%)" h="4rem" />
@@ -122,23 +115,25 @@ const Bio = () => {
               {personal.title && <p className={styles.role} data-rise style={{ '--i': 3 }}>{personal.title}</p>}
             </>
           )}
+        </div>
 
-          <div className={styles.actions} data-rise data-print-hide style={{ '--i': 4 }}>
-            <Button
-              variant="primary"
-              tone="blue"
-              size="lg"
-              icon={<DownloadIcon />}
-              status={cv.status}
-              disabled={loading || !data}
-              onClick={() => cv.run()}
-            >
-              {t.printLabel}
-            </Button>
-          </div>
+        <div className={styles.actions} data-rise data-print-hide style={{ '--i': 4 }}>
+          <Button
+            variant="primary"
+            tone="yellow"
+            size="lg"
+            icon={<DownloadIcon />}
+            status={cv.status}
+            disabled={loading || !data}
+            onClick={() => cv.run()}
+          >
+            {t.printLabel}
+          </Button>
+        </div>
 
-          <ul className={styles.contact} data-rise style={{ '--i': 5 }}>
-            {loading && [0, 1, 2].map(i => <li key={i}><Bone w="12rem" h="2.6rem" r="999px" /></li>)}
+        <div className={styles.facts} data-rise style={{ '--i': 5 }}>
+          <ul className={styles.contact}>
+            {loading && [0, 1].map(i => <li key={i}><Bone w="12rem" h="2.6rem" r="var(--r-control)" /></li>)}
             {contact.location && (
               <li className={styles.pill} data-tone="green">
                 <span className={styles.pillKey}>{t.basedLabel}</span>
@@ -162,137 +157,122 @@ const Bio = () => {
               </li>
             )}
           </ul>
-        </div>
-
-        <div className={styles.cardWrap} data-rise style={{ '--i': 2, '--rise': '40px' }}>
-          <Glass tone="pink" tilt={9} lift={18} pad="none" className={styles.card}>
-            <div className={styles.portrait}>
-              {loading ? <Bone w="100%" h="100%" r="0" /> : photo && (
-                <img src={photo} alt={name} width="480" height="480" fetchPriority="high" />
-              )}
+          {social.length > 0 && (
+            <div className={styles.social} data-print-hide data-tones>
+              {social.map((s, i) => (
+                <a
+                  key={s.key ?? i}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                  aria-label={s.platform || s.key}
+                  title={s.platform || s.key}
+                >
+                  <SocialIcon platform={s.key} url={s.url} />
+                </a>
+              ))}
             </div>
-            <div className={styles.cardFoot}>
-              <div className={styles.cardName}>
-                <strong>{name}</strong>
-                {personal.title && <span>{personal.title}</span>}
-              </div>
-              {social.length > 0 && (
-                <div className={styles.social} data-tones>
-                  {social.map((s, i) => (
-                    <a
-                      key={s.key ?? i}
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.socialLink}
-                      aria-label={s.platform || s.key}
-                      title={s.platform || s.key}
-                    >
-                      <SocialIcon platform={s.key} url={s.url} />
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Glass>
+          )}
         </div>
       </header>
 
-      <div className={styles.body}>
-        <aside className={styles.rail}>
-          <Contents title={t.contentsLabel} items={contents} active={active} />
-        </aside>
+      {/* The profile reads across: its title on the left, the words on the right */}
+      {!loading && (
+        <section id="profile" className={styles.profile}>
+          <Headline as="h2" text={`*${t.profileHeading}*`} tone="blue" className={styles.profileTitle} start={1} />
+          <p className={styles.summary} data-rise style={{ '--i': 2 }}>{summary}</p>
+        </section>
+      )}
 
-        <div className={styles.record}>
-          {loading ? <RecordSkeleton label={a11y.loadingCv} /> : (
-            <Chapter id="profile" n={number('profile')} title={t.profileHeading} tone="blue">
-              <Glass tone="blue" pad="lg" className={styles.summary} data-rise style={{ '--i': 2 }}>
-                <p>{summary}</p>
-              </Glass>
-            </Chapter>
-          )}
-
-          {experience.length > 0 && (
-            <Chapter id="experience" n={number('experience')} title={t.experienceHeading} tone="green">
-              <div className={styles.timeline}>
-                <Rail />
-                {experience.map((e, i) => (
-                  <Job
-                    key={e.id ?? i}
-                    i={i + 2}
-                    tone={TONES[i % TONES.length]}
-                    title={e.role}
-                    org={[e.company, e.location].filter(Boolean).join(', ')}
-                    when={periodOf(e)}
-                    note={e.description}
-                    tags={e.tags}
-                    current={isCurrent(e)}
-                    nowLabel={t.nowLabel}
-                  />
-                ))}
-              </div>
-            </Chapter>
-          )}
-
-          {education.length > 0 && (
-            <Chapter id="education" n={number('education')} title={t.educationHeading} tone="orange">
-              <div className={styles.courses}>
-                {education.map((e, i) => (
-                  <Course
-                    key={e.id ?? i}
-                    i={i + 2}
-                    tone={TONES[(i + 2) % TONES.length]}
-                    title={[e.degree, e.field].filter(Boolean).join(', ') || e.institution}
-                    org={e.institution}
-                    when={periodOf(e) || t.earlierLabel}
-                    note={e.description}
-                    current={isCurrent(e)}
-                    nowLabel={t.nowLabel}
-                  />
-                ))}
-              </div>
-            </Chapter>
-          )}
-
-          {certifications.length > 0 && (
-            <Chapter id="certifications" n={number('certifications')} title={t.certificationsHeading} tone="pink">
-              <Credentials items={certifications} labels={badges} detailed />
-            </Chapter>
-          )}
-
-          {skills.length > 0 && (
-            <Chapter id="skills" n={number('skills')} title={t.skillsHeading} tone="yellow" aside={t.skillsHint}>
-              <Stack entries={skills} />
-            </Chapter>
-          )}
-
-          {(interests.length > 0 || languages.length > 0 || photos.length > 0) && (
-            <Chapter id="interests" n={number('interests')} title={t.interestsHeading} tone="blue">
-              {photos.length > 0 && (
-                <>
-                  <p className={styles.galleryLede} data-rise style={{ '--i': 2 }}>{tph.bioLede}</p>
-                  <Gallery photos={photos} labels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }} />
-                </>
-              )}
-              {interests.length > 0 && (
-                <ul className={styles.interests} data-tones>
-                  {interests.map((n, i) => (
-                    <li key={n} data-rise style={{ '--i': i + 3 }}>
-                      <Draggable className={styles.interest}>{n}</Draggable>
-                    </li>
+      {/* Two columns like the printed CV: what he studied beside where he has worked */}
+      {loading ? <RecordSkeleton label={a11y.loadingCv} /> : (
+        <div className={styles.columns}>
+          <div className={styles.aside}>
+            {education.length > 0 && (
+              <Chapter id="education" title={t.educationHeading} tone="orange">
+                <ul className={`panel ${styles.ledger}`}>
+                  {education.map((e, i) => (
+                    <Course
+                      key={e.id ?? i}
+                      i={i + 2}
+                      tone={TONES[(i + 2) % TONES.length]}
+                      title={[e.degree, e.field].filter(Boolean).join(', ') || e.institution}
+                      org={e.institution}
+                      when={periodOf(e) || t.earlierLabel}
+                      note={e.description}
+                      current={isCurrent(e)}
+                      nowLabel={t.nowLabel}
+                    />
                   ))}
                 </ul>
-              )}
-              {languages.length > 0 && (
-                <p className={styles.langs} data-rise style={{ '--i': 4 }}>
-                  <span className={styles.pillKey}>{t.languagesLabel}</span>
-                  {languages.join(', ')}
-                </p>
-              )}
-            </Chapter>
-          )}
+              </Chapter>
+            )}
+
+            {certifications.length > 0 && (
+              <Chapter id="certifications" title={t.certificationsHeading} tone="pink">
+                <Credentials items={certifications} labels={badges} detailed />
+              </Chapter>
+            )}
+          </div>
+
+          <div className={styles.main}>
+            {experience.length > 0 && (
+              <Chapter id="experience" title={t.experienceHeading} tone="green">
+                <div className={styles.timeline}>
+                  <Rail />
+                  {experience.map((e, i) => (
+                    <Job
+                      key={e.id ?? i}
+                      i={i + 2}
+                      tone={TONES[i % TONES.length]}
+                      title={e.role}
+                      org={[e.company, e.location].filter(Boolean).join(', ')}
+                      when={periodOf(e)}
+                      note={e.description}
+                      tags={e.tags}
+                      current={isCurrent(e)}
+                      nowLabel={t.nowLabel}
+                    />
+                  ))}
+                </div>
+              </Chapter>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {skills.length > 0 && (
+        <Chapter id="skills" title={t.skillsHeading} tone="yellow" aside={t.skillsHint}>
+          <Stack entries={skills} />
+        </Chapter>
+      )}
+
+      {outside && (
+        <Chapter id="interests" title={t.interestsHeading} tone="blue">
+          {photos.length > 0 && (
+            <>
+              <p className={styles.galleryLede} data-rise style={{ '--i': 2 }}>{tph.bioLede}</p>
+              <Gallery photos={photos} labels={{ close: tph.viewerClose, next: tph.viewerNext, prev: tph.viewerPrev }} />
+            </>
+          )}
+          {interests.length > 0 && (
+            <ul className={styles.interests} data-tones>
+              {interests.map((n, i) => (
+                <li key={n} data-rise style={{ '--i': i + 3 }}>
+                  <Draggable className={styles.interest}>{n}</Draggable>
+                </li>
+              ))}
+            </ul>
+          )}
+          {languages.length > 0 && (
+            <p className={styles.langs} data-rise style={{ '--i': 4 }}>
+              <span className={styles.pillKey}>{t.languagesLabel}</span>
+              {languages.join(', ')}
+            </p>
+          )}
+        </Chapter>
+      )}
     </div>
   );
 };

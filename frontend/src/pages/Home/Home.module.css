@@ -39,31 +39,41 @@
 .empty {
     padding: 2rem;
     border-radius: var(--r-card);
-    background: var(--glass-weak);
+    background: var(--well);
+    box-shadow: var(--inset);
     color: var(--ink-3);
 }
 
-/* Hello: name and words on the left, the toy box on the right. */
+/* Hello: the name stands over a shelf of toys that runs the whole width. */
 .hero {
+    --shelf: clamp(3.5rem, 8vh, 5rem);
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    align-items: center;
-    gap: clamp(2rem, 5vw, 5rem);
     width: 100%;
     max-width: var(--max);
-    min-height: min(100svh, 920px);
+    min-height: min(100svh, 940px);
     margin: 0 auto;
-    padding: calc(72px + clamp(2rem, 6vh, 4rem)) var(--gutter) clamp(3rem, 8vh, 5rem);
+    padding: calc(72px + clamp(1.75rem, 6vh, 4rem)) var(--gutter) calc(var(--shelf) + 11rem);
+}
+
+/* The toys live behind the words, so a thrown one flies past the name. */
+.heroToys {
+    position: absolute;
+    inset: 92px var(--gutter) var(--shelf);
 }
 
 .heroCopy {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.6rem;
-    min-width: 0;
+    gap: 1.5rem;
+    max-width: 62%;
+    pointer-events: none;
 }
+
+.heroCopy a,
+.heroCopy button { pointer-events: auto; }
 
 .name {
     margin: 0;
@@ -75,7 +85,7 @@
 
 .intro {
     margin: 0;
-    max-width: 40ch;
+    max-width: 42ch;
     font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
     line-height: 1.55;
     color: var(--ink-2);
@@ -83,17 +93,16 @@
 
 .actions {
     display: flex;
+    align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
 }
 
-.heroToys { min-width: 0; min-height: clamp(420px, 58vh, 560px); }
-
 .heroWait {
     display: grid;
-    place-items: start center;
+    place-items: start end;
     height: 100%;
-    padding-top: 2%;
+    padding: 4% 2% 0;
 }
 
 /* The story */
@@ -110,23 +119,6 @@
 .storyWaitRing { justify-self: center; }
 .storyWaitCard { padding: 1.75rem; }
 .storyWaitCard > span { display: block; }
-
-/* The AWS path: one wide glass slab with the heading beside the badges. */
-.path {
-    display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    align-items: center;
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-    border-radius: calc(var(--r-card) + 8px);
-}
-
-.pathHead { display: flex; flex-direction: column; gap: 0.9rem; }
-.pathHead .headTitle { font-size: var(--display-md); }
-.pathHead .lede { font-size: var(--text-md); }
-
-/* The path while it loads: heading bones above a row of badge tiles. */
-.pathWait { grid-template-columns: minmax(0, 1fr); gap: 1rem; padding: clamp(1.5rem, 3.6vw, 2.75rem); }
-.pathWaitRow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.75rem, 2vw, 1.5rem); margin-top: 0.75rem; max-width: 40rem; }
 
 /* Off the clock */
 .photos { padding-bottom: clamp(1rem, 4vh, 3rem); }
@@ -150,18 +142,17 @@
     .hintTouch { display: block; }
 }
 
-@media (max-width: 1080px) {
-    .path { grid-template-columns: minmax(0, 1fr); }
-}
-
 @media (max-width: 960px) {
     .hero {
-        grid-template-columns: minmax(0, 1fr);
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
         min-height: 0;
-        padding-top: calc(64px + 2.5rem);
-        padding-bottom: 4rem;
+        padding: calc(64px + 2.5rem) var(--gutter) 5rem;
     }
-    .heroToys { min-height: clamp(400px, 105vw, 520px); }
+    .heroCopy { order: 0; max-width: none; pointer-events: auto; }
+    .heroToys { order: 1; position: relative; inset: auto; min-height: clamp(400px, 105vw, 520px); }
+    .heroWait { place-items: start center; padding: 2% 0 0; }
 }
 
 @media (max-width: 900px) {

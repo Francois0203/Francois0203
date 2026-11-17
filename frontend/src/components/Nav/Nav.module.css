@@ -19,13 +19,10 @@
     gap: 0.75rem;
     width: 100%;
     max-width: var(--max);
-    height: 3.75rem;
+    height: calc(3.75rem + var(--wall-h));
     padding: 0 0.55rem 0 0.9rem;
     border-radius: var(--r-control);
-    background: var(--glass-weak);
-    -webkit-backdrop-filter: var(--blur);
-    backdrop-filter: var(--blur);
-    box-shadow: var(--glass-hi);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--lift);
     pointer-events: auto;
     transition: max-width 500ms var(--ease-out), height 400ms var(--ease-out), background-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
     animation: slideIn 800ms 200ms var(--spring) both;
@@ -33,9 +30,8 @@
 
 .wrap[data-stuck] .bar {
     max-width: 980px;
-    height: 3.4rem;
-    background: var(--glass);
-    box-shadow: var(--glass-hi), var(--glass-cast);
+    height: calc(3.4rem + var(--wall-h));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--bevel), var(--cast);
 }
 
 @keyframes slideIn { from { opacity: 0; transform: translateY(-120%) scale(0.95); } }
@@ -59,15 +55,14 @@
 .routes {
     --ix: 0px;
     --iw: 0px;
-    --itone: var(--c-blue);
     position: relative;
     display: flex;
     align-items: center;
     gap: 0.15rem;
     padding: 0.25rem;
-    border-radius: var(--r-control);
-    background: color-mix(in srgb, var(--ink) 5%, transparent);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+    border-radius: calc(var(--r-control) - 2px);
+    background: var(--well);
+    box-shadow: var(--inset);
 }
 
 .indicator {
@@ -76,19 +71,19 @@
     bottom: 0.25rem;
     left: 0;
     width: var(--iw);
-    border-radius: var(--r-control);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--itone) 60%, white), var(--itone));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 6px 16px -6px var(--itone);
+    border-radius: calc(var(--r-control) - 5px);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
     transform: translateX(var(--ix));
     opacity: var(--io, 0);
-    transition: transform 460ms var(--spring), width 460ms var(--spring), background 300ms var(--ease), opacity 200ms var(--ease);
+    transition: transform 460ms var(--spring), width 460ms var(--spring), opacity 200ms var(--ease);
 }
 
 .route {
     position: relative;
     z-index: 1;
     padding: 0.5rem 1rem;
-    border-radius: var(--r-control);
+    border-radius: calc(var(--r-control) - 5px);
     color: var(--ink-2);
     font-size: var(--text-sm);
     font-weight: 600;
@@ -97,14 +92,10 @@
 }
 
 /* The link the pill sits under, marked by the script that moves the pill. */
-.route[data-pill] { color: var(--on-bright); }
+.route[data-pill] { color: var(--ink); }
 
-/* While the pill sits under another link, the current page keeps a soft tint and readable text. */
-.route[aria-current='page']:not([data-pill]) {
-    color: var(--tab-ink);
-    background: color-mix(in srgb, var(--tab) 16%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tab) 45%, transparent);
-}
+/* The current page carries the accent, wherever the key sits. */
+.route[aria-current='page'] { color: var(--accent-text); }
 
 .route:active { transform: scale(0.94); }
 
@@ -117,14 +108,14 @@
     height: 2.6rem;
     padding: 0;
     border: 0;
-    border-radius: 50%;
+    border-radius: calc(var(--r-control) - 3px);
     background: transparent;
     color: var(--ink-2);
     cursor: pointer;
     transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), transform var(--t) var(--spring);
 }
 
-.menu:hover { background: var(--glass-strong); color: var(--ink); box-shadow: inset 0 0 0 1px var(--glass-line); }
+.menu:hover { background: var(--surface-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--edge); }
 
 .menu:active { transform: scale(0.88); }
 
@@ -158,9 +149,7 @@
     display: flex;
     align-items: flex-start;
     padding: 5.5rem var(--gutter) 2rem;
-    background: color-mix(in srgb, var(--ground) 50%, transparent);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    backdrop-filter: blur(18px) saturate(140%);
+    background: var(--ground);
     animation: fade 260ms var(--ease) both;
 }
 
@@ -186,15 +175,14 @@
 .big:active { transform: scale(0.97); }
 .big:hover { color: var(--ink); }
 
-.big[aria-current='page'] { background: color-mix(in srgb, var(--tone) 20%, var(--glass-strong)); }
+.big[aria-current='page'] { color: var(--accent-text); }
 
 .bigDot {
     flex: none;
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--tone) 40%, white), var(--tone));
-    box-shadow: 0 4px 10px -3px var(--tone);
+    background: var(--ink-3);
 }
 
 .bigText { display: flex; flex-direction: column; gap: 0.2rem; }
@@ -220,3 +208,5 @@
 @media (max-width: 380px) {
     .markName { display: none; }
 }
+
+.big[aria-current='page'] .bigDot { background: var(--accent); }

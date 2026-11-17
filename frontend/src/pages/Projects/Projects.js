@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useGitHubProjects, useStudioSites } from '../../hooks';
 import useSiteCopy from '../../hooks/useSiteCopy';
-import useReveal from '../../hooks/useReveal';
 import { resolveGroup } from '../../content/copy/resolve';
 import { PROJECTS_FIELDS } from '../../content/copy/projects';
 import { Modal } from '../../components';
@@ -13,7 +12,7 @@ import ReadmeRenderer from './ReadmeRenderer';
 import Repo from './Repo';
 import Filter from './Filter';
 import { platformLabels } from './platform';
-import Tally, { TallySkeleton } from './Tally';
+import Jump from './Jump';
 import { useCopy } from '../../content/copy/store';
 import styles from './Projects.module.css';
 
@@ -24,14 +23,13 @@ const toneOf = (name = '') => TONES[[...name].reduce((a, c) => a + c.charCodeAt(
 
 const RepoSkeleton = ({ label }) => (
   <Skeleton label={label} className={styles.grid}>
-    {[0, 1, 2, 3, 4, 5].map(i => <Bone key={i} h="14rem" r="26px" />)}
+    {[0, 1, 2].map(i => <Bone key={i} h="7rem" r="var(--r-card)" />)}
   </Skeleton>
 );
 
-const Head = ({ title, lede, tone, n }) => {
+const Head = ({ title, lede, tone }) => {
   return (
     <header className={styles.sectionHead} data-tone={tone}>
-      <span className={styles.num} data-rise aria-hidden="true">{String(n).padStart(2, '0')}</span>
       <Headline as="h2" text={title} tone={tone} start={1} />
       {lede && <p data-rise style={{ '--i': 3 }}>{lede}</p>}
     </header>
@@ -59,17 +57,14 @@ const Projects = () => {
 
   const shown = useMemo(() => (pick ? repos.filter(p => platformLabels(p.topics).includes(pick)) : repos), [repos, pick]);
 
-  const [headRef, headShown] = useReveal();
-
-  const tally = [
-    { value: sites.length, label: t.statSites, tone: 'green' },
-    { value: repos.length, label: t.statRepos, tone: 'blue' },
-    { value: platforms.length, label: t.statPlatforms, tone: 'pink' },
+  const jump = [
+    { id: 'sites', value: sites.length, label: t.statSites, tone: 'green' },
+    { id: 'bench', value: repos.length, label: t.statRepos, tone: 'blue' },
   ];
 
   return (
     <div className={styles.page}>
-      <header ref={headRef} className={styles.hero} data-shown={headShown ? '' : undefined}>
+      <header className={styles.hero}>
         <div className={styles.heroCopy}>
           <div data-rise style={{ '--i': 0 }}>
             <Chip dot="live">{t.eyebrow}</Chip>
@@ -77,11 +72,11 @@ const Projects = () => {
           <Headline as="h1" text={t.heading} tone="green" className={styles.title} start={1} />
           <p className={styles.lede} data-rise style={{ '--i': 4 }}>{t.lede}</p>
         </div>
-        {loading || sitesLoading ? <TallySkeleton label={a11y.loadingRepos} /> : <Tally items={tally} shown={headShown} />}
+        <Jump items={jump} label={t.jumpLabel} loading={loading || sitesLoading} />
       </header>
 
       <section className={styles.block} id="sites">
-        <Head n={1} tone="green" title={t.studioTitle} lede={t.studioLede} />
+        <Head tone="green" title={t.studioTitle} lede={t.studioLede} />
         {sitesError
           ? <p className={styles.note}>{t.studioError}</p>
           : sitesLoading
@@ -96,7 +91,7 @@ const Projects = () => {
         id="bench"
         style={{ '--step': '45ms' }}
       >
-        <Head n={2} tone="blue" title={t.codeTitle} lede={t.codeLede} />
+        <Head tone="blue" title={t.codeTitle} lede={t.codeLede} />
 
         {platforms.length > 1 && (
           <div className={styles.filter} data-rise style={{ '--i': 1 }}>

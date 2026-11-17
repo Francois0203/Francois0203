@@ -22,13 +22,15 @@
 .body code {
     padding: 0.1em 0.35em;
     border-radius: 6px;
-    background: color-mix(in srgb, var(--c-blue) 12%, transparent);
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
     font-size: 0.85em;
 }
 
 .body pre {
     margin: 0 0 1rem;
-    background: color-mix(in srgb, var(--ground) 70%, transparent);
+    background: var(--well);
+    box-shadow: var(--inset);
+    border: 0;
 }
 
 .body pre code { padding: 0; background: none; }
@@ -36,7 +38,7 @@
 .body blockquote {
     margin: 0 0 1rem;
     padding-left: 1rem;
-    border-left: 3px solid var(--c-blue);
+    border-left: 2px solid var(--rule-strong);
     color: var(--ink-3);
 }
 

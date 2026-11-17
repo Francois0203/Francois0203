@@ -1,51 +1,83 @@
+/* A thick key: an ink face on a painted edge. Colour floods the face on hover and it sinks when pressed. */
 .btn {
-    --bg: var(--glass-strong);
+    --tone: var(--accent);
+    --on: var(--on-deep);
+    --bg: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
     --fg: var(--ink);
-    --edge: var(--glass-line);
-    --glow: transparent;
+    --fg-hover: var(--on);
+    --rim: var(--edge);
+    --wall: var(--side);
+    --paint: var(--tone);
+    --d: var(--wall-h);
     --h: 3rem;
+    --fx: 50%;
+    --fy: 100%;
     position: relative;
     isolation: isolate;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    height: var(--h);
+    height: calc(var(--h) + var(--d));
     min-width: var(--h);
     padding: 0 1.4rem;
     overflow: hidden;
     border: 0;
+    border-bottom: var(--d) solid transparent;
     border-radius: var(--r-control);
-    background: var(--bg);
+    background: var(--bg) padding-box, linear-gradient(var(--wall), var(--wall)) border-box;
     color: var(--fg);
     font-family: var(--font-text);
     font-size: var(--text-md);
-    font-weight: 600;
-    letter-spacing: -0.005em;
+    font-weight: 650;
+    letter-spacing: -0.01em;
     text-decoration: none;
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-    box-shadow: inset 0 0 0 1px var(--edge), var(--lift), 0 10px 30px -12px var(--glow);
+    box-shadow: inset 0 0 0 1px var(--rim), 0 1px 2px rgba(0, 0, 0, 0.16), 0 10px 16px -10px rgba(0, 0, 0, 0.35);
     transition:
         width 420ms var(--spring),
         padding 420ms var(--spring),
-        transform var(--t) var(--spring),
-        box-shadow var(--t) var(--ease),
-        background var(--t) var(--ease),
-        color var(--t-fast) var(--ease);
+        color 260ms var(--ease),
+        box-shadow var(--t-fast) var(--ease);
 }
 
-.btn:hover:not(:disabled):not([data-status]) {
-    transform: translateY(-2px);
-    box-shadow: inset 0 0 0 1px var(--edge), var(--lift-hover), 0 16px 36px -12px var(--glow);
+.btn[data-tone='green'],
+.btn[data-tone='orange'],
+.btn[data-tone='yellow'] { --on: var(--on-bright); }
+
+/* The colour that floods in. It is a transform, so it costs nothing. */
+.flood {
+    position: absolute;
+    left: var(--fx);
+    top: var(--fy);
+    z-index: -1;
+    width: 240%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--paint);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 620ms var(--ease-out);
+    pointer-events: none;
 }
 
+.btn:hover:not(:disabled):not([data-status]),
+.btn:focus-visible:not([data-status]) { color: var(--fg-hover); }
+
+.btn:hover:not(:disabled):not([data-status]) .flood,
+.btn:focus-visible:not([data-status]) .flood { transform: translate(-50%, -50%) scale(1); }
+
+/* Pressed: the face drops onto its edge. */
 .btn:active:not(:disabled):not([data-status]) {
-    transform: translateY(0) scale(0.96);
-    box-shadow: inset 0 0 0 1px var(--edge), var(--lift-press);
-    transition-duration: 90ms;
+    height: var(--h);
+    margin-top: var(--d);
+    border-bottom-width: 0;
+    box-shadow: inset 0 0 0 1px var(--rim), inset 0 2px 4px rgba(0, 0, 0, 0.25);
 }
+
+.btn[data-status] { height: var(--h); margin-top: var(--d); border-bottom-width: 0; }
+.btn[data-status] .flood { display: none; }
 
 .btn:disabled:not([data-status]),
 .btn[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
@@ -53,15 +85,34 @@
 .face {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    transition: opacity 180ms var(--ease), transform 300ms var(--ease-out), filter 180ms var(--ease);
+    gap: 0.6rem;
+    transition: opacity 180ms var(--ease), transform 300ms var(--ease-out);
 }
 
 .icon { display: inline-flex; font-size: 1.15em; }
 .icon svg { width: 1em; height: 1em; }
 
-.arrow { width: 1rem; height: 1rem; transition: transform var(--t) var(--spring); }
-.btn:hover .arrow { transform: translateX(4px); }
+/* The arrow rides in its own painted tile; on hover it flies out and a fresh one flies in. */
+.tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    margin-right: -0.75rem;
+    overflow: hidden;
+    border-radius: calc(var(--r-control) - 5px);
+    background: var(--paint);
+    color: var(--on);
+    transition: background 260ms var(--ease), color 260ms var(--ease);
+}
+
+.arrow { grid-area: 1 / 1; width: 1rem; height: 1rem; transition: transform 460ms var(--ease-out); }
+.arrow + .arrow { transform: translateX(-180%); }
+
+.btn:hover:not(:disabled):not([data-status]) .tile { background: var(--fg-tile, var(--ink)); color: var(--ground); }
+.btn:hover:not(:disabled):not([data-status]) .arrow { transform: translateX(180%); }
+.btn:hover:not(:disabled):not([data-status]) .arrow + .arrow { transform: none; transition-delay: 80ms; }
 
 .state {
     position: absolute;
@@ -72,22 +123,22 @@
 }
 
 .btn[data-status] { padding: 0; cursor: default; }
-.btn[data-status] .face { opacity: 0; transform: scale(0.6); filter: blur(4px); }
+.btn[data-status] .face { opacity: 0; transform: scale(0.6); }
 
 .btn[data-status='loading'] .state .spinner { font-size: 1.2rem; }
 
 .btn[data-status='success'] {
     --bg: var(--ok);
     --fg: var(--on-deep);
-    --edge: color-mix(in srgb, var(--ok) 60%, white);
-    --glow: var(--ok);
+    --rim: transparent;
+    --wall: var(--ok-lo);
 }
 
 .btn[data-status='error'] {
     --bg: var(--danger);
     --fg: var(--on-deep);
-    --edge: color-mix(in srgb, var(--danger) 60%, white);
-    --glow: var(--danger);
+    --rim: transparent;
+    --wall: var(--danger-lo);
     animation: shake 0.5s var(--ease) both;
 }
 
@@ -111,8 +162,8 @@
     height: 12px;
     margin: -6px 0 0 -6px;
     border-radius: 50%;
-    background: var(--page-tone, currentColor);
-    opacity: 0.35;
+    background: currentColor;
+    opacity: 0.22;
     pointer-events: none;
     animation: ripple 620ms var(--ease-out) forwards;
 }
@@ -121,70 +172,76 @@
 
 /* Variants */
 
+/* The main action: ink face, edge painted in the tone. */
 .primary {
-    --tone: var(--c-blue);
-    --bg: linear-gradient(135deg, color-mix(in srgb, var(--tone) 82%, white), var(--tone) 55%, color-mix(in srgb, var(--tone) 80%, black));
-    --fg: var(--on-deep);
-    --edge: color-mix(in srgb, var(--tone) 50%, white);
-    --glow: color-mix(in srgb, var(--tone) 70%, transparent);
+    --bg: linear-gradient(180deg, color-mix(in srgb, var(--ink) 88%, var(--ground)), var(--ink));
+    --fg: var(--ground);
+    --rim: transparent;
+    --wall: var(--tone);
 }
 
-.primary[data-tone='yellow'],
-.primary[data-tone='green'],
-.primary[data-tone='orange'] { --fg: var(--on-bright); }
-
-.glass {
-    --edge: color-mix(in srgb, var(--tone, var(--ink)) 26%, var(--glass-line));
-}
+/* The quiet action: neutral face, the edge only shows its colour on hover. */
+.soft { --paint: var(--surface-hi); --fg-hover: var(--ink); }
+.soft:hover:not(:disabled):not([data-status]) { --wall: var(--tone); }
+.soft .tile { background: var(--well); color: var(--ink); }
 
 .confirm {
-    --bg: linear-gradient(135deg, var(--ok-2), var(--ok));
+    --bg: linear-gradient(180deg, var(--ok-2), var(--ok));
     --fg: var(--on-deep);
-    --edge: color-mix(in srgb, var(--ok) 50%, white);
-    --glow: color-mix(in srgb, var(--ok) 70%, transparent);
+    --fg-hover: var(--on-deep);
+    --rim: transparent;
+    --wall: var(--ok-lo);
+    --paint: var(--ok-lo);
 }
 
 .danger {
-    --bg: linear-gradient(135deg, var(--danger-2), var(--danger));
+    --bg: linear-gradient(180deg, var(--danger-2), var(--danger));
     --fg: var(--on-deep);
-    --edge: color-mix(in srgb, var(--danger) 50%, white);
-    --glow: color-mix(in srgb, var(--danger) 70%, transparent);
+    --fg-hover: var(--on-deep);
+    --rim: transparent;
+    --wall: var(--danger-lo);
+    --paint: var(--danger-lo);
 }
 
 .ghost {
     --bg: transparent;
-    --edge: var(--rule-strong);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: inset 0 0 0 1px var(--edge);
+    --rim: var(--rule-strong);
+    --paint: var(--surface-2);
+    --fg-hover: var(--ink);
+    --d: 0px;
+    box-shadow: inset 0 0 0 1px var(--rim);
 }
 
-.ghost:hover:not(:disabled):not([data-status]) { --bg: var(--glass); }
+.ghost:active:not(:disabled):not([data-status]) { box-shadow: inset 0 0 0 1px var(--rim); }
 
 .text {
     --bg: transparent;
-    --edge: transparent;
+    --rim: transparent;
+    --d: 0px;
+    --fg-hover: var(--accent-text);
     height: auto;
     min-width: 0;
     padding: 0.25rem 0;
     overflow: visible;
     border-radius: 4px;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
     box-shadow: none;
-    color: var(--tone-ink, var(--accent-text));
+    color: var(--accent-text);
 }
 
-.text::after { display: none; }
+.text .flood { display: none; }
+.text .tile { width: auto; height: auto; margin: 0; background: none; color: inherit; }
+.text:hover:not(:disabled):not([data-status]) .tile { background: none; color: inherit; }
 .text .label { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: background-size var(--t) var(--ease-out); }
 .text:hover .label { background-size: 100% 1.5px; }
-.text:hover:not(:disabled):not([data-status]) { transform: none; box-shadow: none; }
+.text:active:not(:disabled):not([data-status]) { height: auto; margin-top: 0; box-shadow: none; }
 
 /* Sizes */
 
-.sm { --h: 2.3rem; padding: 0 1rem; font-size: var(--text-sm); }
+.sm { --h: 2.3rem; --d: 3px; padding: 0 1rem; font-size: var(--text-sm); }
+.sm .tile { width: 1.5rem; height: 1.5rem; margin-right: -0.5rem; }
 .md { --h: 3rem; }
-.lg { --h: 3.6rem; padding: 0 1.9rem; font-size: var(--text-lg); }
+.lg { --h: 3.6rem; padding: 0 1.7rem; font-size: var(--text-lg); }
+.lg .tile { width: 2.4rem; height: 2.4rem; margin-right: -1.05rem; }
 .sm.text, .lg.text { padding: 0.25rem 0; }
 
 .full { width: 100%; }

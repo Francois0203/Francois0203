@@ -1,64 +1,42 @@
-/* A bento of client sites: wide and narrow cards take turns. */
+/* One wide row per site. The window and the words swap sides down the page. */
 .grid {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: clamp(1rem, 2vw, 1.5rem);
+    gap: clamp(3rem, 9vh, 6rem);
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.slot {
-    grid-column: span 6;
-    display: flex;
-    min-width: 0;
-}
+.slot { min-width: 0; }
 
 .card {
-    --rx: 0deg;
-    --ry: 0deg;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-rows: 1fr auto;
+    grid-template-areas: 'cover text' 'cover foot';
+    column-gap: clamp(1.5rem, 4.5vw, 4.5rem);
+    row-gap: 1.5rem;
     min-width: 0;
-    padding: clamp(0.9rem, 1.6vw, 1.15rem);
-    border-radius: var(--r-card);
-    transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry));
-    transform-style: preserve-3d;
-    transition: transform 500ms var(--ease-out), box-shadow var(--t) var(--ease);
 }
 
-.card[data-tilting] { transition: transform 120ms linear, box-shadow var(--t) var(--ease); }
+.slot:nth-child(even) .card {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-areas: 'text cover' 'foot cover';
+}
 
-.card:hover { box-shadow: var(--glass-hi), var(--glass-cast-hover), 0 30px 60px -30px var(--tone); }
-
-.grid > .slot:nth-child(4n + 1) { grid-column: span 7; }
-.grid > .slot:nth-child(4n + 2) { grid-column: span 5; }
-.grid > .slot:nth-child(4n + 3) { grid-column: span 5; }
-.grid > .slot:nth-child(4n + 4) { grid-column: span 7; }
-.grid > .slot:only-child { grid-column: 1 / -1; }
-
-.cover { position: relative; transform-style: preserve-3d; }
+.cover { grid-area: cover; position: relative; }
 
 /* A small browser window that lifts off the card on hover. */
 .window {
     overflow: hidden;
     border-radius: calc(var(--r-card) - 10px);
     background: var(--surface);
-    box-shadow:
-        0 0 0 1px color-mix(in srgb, var(--tone) 40%, var(--rule)),
-        0 18px 40px -22px color-mix(in srgb, var(--tone) 70%, transparent);
-    transform: translateZ(0);
-    transition: transform 600ms var(--ease-out), box-shadow 600ms var(--ease-out);
+    box-shadow: 0 0 0 1px var(--rule-strong), 0 7px 0 var(--tone), var(--cast);
+    transition: transform 500ms var(--ease-out);
 }
 
-.card:hover .window {
-    transform: translateZ(30px) translateY(-4px);
-    box-shadow:
-        0 0 0 1.5px color-mix(in srgb, var(--tone) 60%, var(--rule)),
-        0 30px 60px -24px color-mix(in srgb, var(--tone) 80%, transparent);
-}
+.card:hover .window { transform: translateY(-6px); }
 
 .bar {
     display: flex;
@@ -77,17 +55,14 @@
     background: var(--rule-strong);
 }
 
-.bar > i:nth-child(1) { background: var(--danger); }
-.bar > i:nth-child(2) { background: var(--c-yellow); }
-.bar > i:nth-child(3) { background: var(--ok); }
-
 .address {
     flex: 1;
     margin-left: 0.6rem;
     padding: 0.2rem 0.75rem;
     overflow: hidden;
-    border-radius: 999px;
-    background: var(--surface);
+    border-radius: 6px;
+    background: var(--well);
+    box-shadow: var(--inset);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--ink-3);
@@ -100,7 +75,7 @@
     position: relative;
     aspect-ratio: 16 / 10;
     overflow: hidden;
-    background: color-mix(in srgb, var(--tone) 12%, var(--surface));
+    background: var(--surface-2);
 }
 
 .shot {
@@ -137,7 +112,7 @@
     display: block;
     height: 0.45rem;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--tone) 35%, var(--rule));
+    background: var(--rule-strong);
 }
 
 .sketchNav i { width: 2rem; }
@@ -148,8 +123,8 @@
 .sketchButton {
     width: 5rem;
     height: 1.3rem;
-    border-radius: 999px;
-    background: var(--tone);
+    border-radius: 6px;
+    background: var(--ink-3);
 }
 
 .initial {
@@ -157,14 +132,14 @@
     place-items: center;
     width: 3.5rem;
     height: 3.5rem;
-    border-radius: 18px;
-    background: var(--tone);
+    border-radius: var(--r-node);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
     color: var(--ink);
     font-family: var(--font-display);
     font-size: 1.6rem;
     font-weight: 700;
     text-transform: uppercase;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 20px -10px var(--tone);
+    box-shadow: inset 0 0 0 1px var(--edge), var(--lift);
 }
 
 .icon { width: 3.5rem; height: 3.5rem; border-radius: 14px; }
@@ -195,11 +170,28 @@
     color-scheme: light;
 }
 
-.text { padding: 0 0.35rem; }
+.text { grid-area: text; align-self: end; min-width: 0; }
+
+.index {
+    display: grid;
+    place-items: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    margin-bottom: 1.1rem;
+    border-radius: 10px;
+    background: var(--tone);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--on-bright);
+    transition: transform 520ms var(--spring);
+}
+
+.card:hover .index { transform: rotate(-6deg) scale(1.06); }
 
 .name {
     margin: 0;
-    font-size: var(--display-sm);
+    font-size: var(--display-md);
 }
 
 .name a { color: var(--ink); text-decoration: none; }
@@ -214,15 +206,15 @@
 }
 
 .about {
-    margin: 0.35rem 0 0;
+    margin: 0.5rem 0 0;
+    font-size: var(--text-lg);
     font-weight: 550;
     color: var(--tone-ink);
 }
 
 .description {
-    margin: 0.6rem 0 0;
-    max-width: 52ch;
-    font-size: var(--text-sm);
+    margin: 0.9rem 0 0;
+    max-width: 46ch;
     color: var(--ink-2);
 }
 
@@ -231,8 +223,8 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 0.6rem 1rem;
-    margin-top: auto;
-    padding: 0 0.35rem 0.25rem;
+    grid-area: foot;
+    align-self: start;
 }
 
 .cta {
@@ -242,6 +234,7 @@
     display: inline-flex;
 }
 
+/* A key cap that sinks when the card is pressed. */
 .visit {
     position: relative;
     isolation: isolate;
@@ -249,21 +242,23 @@
     align-items: center;
     gap: 0.75rem;
     height: 3rem;
-    padding: 0 0.35rem 0 1.25rem;
+    padding: 0 0.4rem 0 1.15rem;
     overflow: hidden;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--tone) 12%, var(--glass-strong));
+    border-radius: var(--r-control);
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface-2));
     box-shadow:
-        inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 65%, var(--glass-line)),
-        0 10px 24px -14px var(--tone);
+        inset 0 0 0 1px var(--edge),
+        var(--bevel),
+        0 4px 0 var(--tone),
+        0 12px 18px -10px rgba(0, 0, 0, 0.4);
     color: var(--ink);
     font-size: var(--text-md);
     font-weight: 650;
     letter-spacing: -0.01em;
-    transition: box-shadow 400ms var(--ease), color 300ms var(--ease), scale 200ms var(--spring);
+    transition: box-shadow 200ms var(--ease), color 300ms var(--ease), translate 200ms var(--ease);
 }
 
-/* Colour that floods out from wherever the pointer came in. */
+/* The accent floods out from wherever the pointer came in. */
 .flood {
     position: absolute;
     left: var(--fx);
@@ -303,13 +298,13 @@
     position: relative;
     display: grid;
     place-items: center;
-    width: 2.3rem;
-    height: 2.3rem;
+    width: 2.2rem;
+    height: 2.2rem;
     overflow: hidden;
-    border-radius: 50%;
-    background: var(--tone);
-    color: var(--on-bright, var(--ink));
-    transition: background 400ms var(--ease), color 400ms var(--ease), rotate 500ms var(--spring);
+    border-radius: calc(var(--r-control) - 4px);
+    background: var(--ink);
+    color: var(--ground);
+    transition: background 400ms var(--ease), color 400ms var(--ease);
 }
 
 .orb svg {
@@ -330,8 +325,9 @@
 .card:focus-within .visit {
     color: var(--on-bright);
     box-shadow:
-        inset 0 0 0 1.5px var(--tone),
-        0 16px 34px -12px var(--tone);
+        inset 0 0 0 1px transparent,
+        0 4px 0 color-mix(in srgb, var(--tone) 62%, black),
+        0 14px 20px -10px rgba(0, 0, 0, 0.5);
 }
 
 .card:hover .flood,
@@ -352,7 +348,7 @@
 .card:hover .orb svg + svg,
 .card:focus-within .orb svg + svg { transform: none; transition-delay: 90ms; }
 
-.card:active .visit { scale: 0.95; }
+.card:active .visit { translate: 0 4px; box-shadow: inset 0 0 0 1px transparent, 0 0 0 var(--tone); }
 .card:active .flood { transform: translate(-50%, -50%) scale(1); transition-duration: 250ms; }
 
 /* A ring that bursts out of the button when the site opens. */
@@ -360,14 +356,13 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    box-shadow: 0 0 0 0 var(--tone);
     animation: ripple 700ms var(--ease-out) forwards;
     pointer-events: none;
 }
 
 @keyframes ripple {
-    from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 70%, transparent); }
-    to { box-shadow: 0 0 0 22px transparent; }
+    from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 60%, transparent); }
+    to { box-shadow: 0 0 0 20px transparent; }
 }
 
 .host {
@@ -380,16 +375,23 @@
     position: relative;
     z-index: 3;
     font-size: var(--text-sm);
-    color: var(--tone-ink);
+    color: var(--accent-text);
 }
 
-.ghost { --tone: var(--rule-strong); --tone-ink: var(--ink-3); pointer-events: none; }
+.ghost { --tone: var(--side); --tone-ink: var(--ink-3); pointer-events: none; }
 
 @media (max-width: 860px) {
-    .grid > .slot:nth-child(n) { grid-column: 1 / -1; }
+    .grid { gap: 3rem; }
+    .card,
+    .slot:nth-child(even) .card {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        grid-template-areas: 'cover' 'text' 'foot';
+    }
+    .name { font-size: var(--display-sm); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .card, .window, .orb svg, .flood, .roll > span, .roll::after, .live { transition: none; }
-    .card:hover, .card:hover .window { transform: none; }
+    .window, .orb svg, .flood, .roll > span, .roll::after, .live { transition: none; }
+    .card:hover .window { transform: none; }
 }

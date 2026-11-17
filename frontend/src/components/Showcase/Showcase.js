@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import Skeleton, { Bone } from '../Skeleton';
 import { gsap, motionOff } from '../../hooks/gsap';
-import useTilt from '../../hooks/useTilt';
 import { useCopy } from '../../content/copy/store';
 import styles from './Showcase.module.css';
 
 const TONES = ['blue', 'green', 'orange', 'pink', 'yellow'];
 
-const linksOf = (site) => {
+export const linksOf = (site) => {
   const list = Array.isArray(site?.sites) ? site.sites : [];
   return list.map(t => (typeof t === 'string' ? { url: t } : t)).filter(t => t?.url);
 };
 
-const host = (url) => {
+export const host = (url) => {
   try { return new URL(url).host.replace(/^www\./, ''); } catch { return url; }
 };
 
@@ -41,14 +40,14 @@ const SiteIcon = ({ url, name }) => {
 const FRAME_WIDTH = 1280;
 
 // Live views only on capable computers with data to spare. Phones and weak machines keep the screenshot.
-const liveAllowed = () => typeof window !== 'undefined'
+export const liveAllowed = () => typeof window !== 'undefined'
   && window.innerWidth >= 700
   && !window.matchMedia('(pointer: coarse)').matches
   && !navigator.connection?.saveData
   && document.documentElement.dataset.tier !== 'low';
 
 // The real site, scaled down and click-proof. Loaded the first time its card is hovered, shown only while it is.
-const LiveView = ({ url, title, on }) => {
+export const LiveView = ({ url, title, on }) => {
   const ref = useRef(null);
   const [ready, setReady] = useState(false);
   const [scale, setScale] = useState(0.4);
@@ -78,7 +77,7 @@ const LiveView = ({ url, title, on }) => {
 
 // Hovering wakes the live site, but only a real mouse move does: cards sliding under a still cursor while
 // the page scrolls never count, and scrolling puts the screenshot back.
-const useLiveHover = (cardRef, allowed) => {
+export const useLiveHover = (cardRef, allowed) => {
   const [on, setOn] = useState(false);
   const [wanted, setWanted] = useState(false);
   useEffect(() => {
@@ -149,7 +148,6 @@ const Card = ({ site, tone, visitLabel, index }) => {
   const ref = useRef(null);
   const visitRef = useRef(null);
   const [pressed, setPressed] = useState(0);
-  useTilt(ref, { max: 4 });
   useVisit(ref, visitRef);
   const [live, setLive] = useState(false);
   useEffect(() => { setLive(liveAllowed()); }, []);
@@ -161,7 +159,7 @@ const Card = ({ site, tone, visitLabel, index }) => {
 
   return (
     <li className={styles.slot} data-rise>
-      <div ref={ref} className={`glass ${styles.card}`} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
+      <div ref={ref} className={styles.card} data-tone={tone} style={{ '--k': index }} onClick={() => setPressed(n => n + 1)}>
         <div className={styles.cover} aria-hidden="true">
           <div className={styles.window}>
             <span className={styles.bar}>
@@ -185,6 +183,7 @@ const Card = ({ site, tone, visitLabel, index }) => {
         </div>
 
         <div className={styles.text}>
+          <span className={styles.index} aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
           <h3 className={styles.name}>
             <a className={styles.stretch} href={main.url} target="_blank" rel="noopener noreferrer">{name}</a>
           </h3>
@@ -218,7 +217,7 @@ export const ShowcaseSkeleton = ({ count = 2 }) => {
     <Skeleton label={loadingSites}>
       <ul className={styles.grid}>
         {Array.from({ length: count }, (_, i) => (
-          <li key={i} className={styles.slot}><div className={`glass ${styles.card} ${styles.ghost}`}>
+          <li key={i} className={styles.slot}><div className={`${styles.card} ${styles.ghost}`}>
             <div className={styles.cover}>
               <div className={styles.window}>
                 <span className={styles.bar}><i /><i /><i /><Bone w="45%" h="0.9rem" r="999px" /></span>
@@ -239,7 +238,7 @@ export const ShowcaseSkeleton = ({ count = 2 }) => {
   );
 };
 
-// Client websites as simple cards: what it is, who it is for, and one button to open it.
+// Client websites as wide rows that swap sides: the site in a window, and what it is beside it.
 const Showcase = ({ sites = [], visitLabel = 'Visit website' }) => {
   return (
     <ul className={styles.grid}>
